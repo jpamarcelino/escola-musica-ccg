@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(git --version)",
+      "Bash(brew --version)",
+      "Bash(brew install *)",
+      "Bash(npx --yes create-next-app@latest . --ts --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Read(//Users/jpamarcelino/Desktop/**)",
+      "Bash(npx --yes create-next-app@latest escola-musica-tmp --ts --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Bash(rsync -a \"/Users/jpamarcelino/Desktop/escola-musica-tmp/\" \"/Users/jpamarcelino/Desktop/Claude App/\")",
+      "Bash(rm -rf \"/Users/jpamarcelino/Desktop/escola-musica-tmp\")",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
