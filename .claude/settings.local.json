@@ -20,7 +20,9 @@
       "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; cat {}')",
       "Bash(npm view *)",
       "Bash(npm search *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(python3 -c ' *)",
+      "Bash(pip3 install *)"
     ]
   }
 }

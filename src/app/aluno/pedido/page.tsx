@@ -135,7 +135,7 @@ export default async function PedidoPage({
           {erro && <p className="text-sm text-red-600">{erro}</p>}
           <button
             type="submit"
-            className="w-full rounded bg-black text-white py-2"
+            className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
           >
             Enviar pedido
           </button>

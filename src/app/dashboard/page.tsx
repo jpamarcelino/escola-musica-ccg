@@ -162,7 +162,7 @@ export default async function DashboardPage({
                 </p>
                 <Link
                   href="/aluno/pedido"
-                  className="block rounded bg-black py-2 text-center text-white"
+                  className="block rounded bg-brand py-2 text-center text-white hover:bg-brand-hover"
                 >
                   Pedir aula
                 </Link>
@@ -409,7 +409,7 @@ export default async function DashboardPage({
 
                   <button
                     type="submit"
-                    className="w-full rounded bg-black py-2 text-sm text-white"
+                    className="w-full rounded bg-brand py-2 text-sm text-white hover:bg-brand-hover"
                   >
                     Criar horários
                   </button>

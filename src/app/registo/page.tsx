@@ -106,7 +106,7 @@ export default function RegistoPage() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded bg-black text-white py-2 disabled:opacity-50"
+          className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
         >
           {pending ? 'A criar conta...' : 'Criar conta'}
         </button>

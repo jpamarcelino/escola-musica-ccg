@@ -20,7 +20,7 @@ export default async function Home() {
         professor e os horários que preferes.
       </p>
       <div className="flex gap-3">
-        <Link href="/registo" className="rounded bg-black text-white px-4 py-2">
+        <Link href="/registo" className="rounded bg-brand text-white hover:bg-brand-hover px-4 py-2">
           Criar conta
         </Link>
         <Link
