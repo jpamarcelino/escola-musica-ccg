@@ -12,6 +12,7 @@ create table profiles (
   -- pedir aulas de Música e de Dança sem estar preso a nenhuma das duas.
   programa text check (programa in ('musica', 'danca')),
   admin boolean not null default false,
+  foto_url text,
   criado_em timestamptz not null default now(),
   constraint profiles_professor_tem_programa check (tipo <> 'professor' or programa is not null)
 );
@@ -105,13 +106,20 @@ create policy "Utilizadores autenticados veem instrumentos"
 insert into instrumentos (nome, programa) values
   ('Piano', 'musica'), ('Guitarra', 'musica'), ('Violino', 'musica'),
   ('Bateria', 'musica'), ('Canto', 'musica'), ('Flauta', 'musica'),
-  ('Ballet', 'danca'), ('Hip Hop', 'danca'), ('Contemporâneo', 'danca'),
-  ('Jazz', 'danca'), ('Danças de Salão', 'danca');
+  ('Acordeão', 'musica'), ('Concertina', 'musica'), ('Saxofone', 'musica'),
+  ('Baixo Elétrico', 'musica'), ('Teoria Musical', 'musica'),
+  ('Estilos Urbanos', 'danca'), ('Ballet Clássico', 'danca'),
+  ('Dança Moderna', 'danca'), ('Dança Contemporânea', 'danca'),
+  ('Dança Moderna para Adultos', 'danca');
 
 -- 3. Que professores ensinam que instrumentos
 create table professor_instrumentos (
   professor_id uuid not null references profiles(id) on delete cascade,
   instrumento_id bigint not null references instrumentos(id) on delete cascade,
+  -- Nota curta e opcional (ex: "Piano clássico" vs "Piano jazz/rock") mostrada
+  -- por baixo do nome do professor quando um aluno navega por disciplina, para
+  -- distinguir professores que ensinam variantes diferentes da mesma disciplina.
+  especialidade text,
   primary key (professor_id, instrumento_id)
 );
 
@@ -228,4 +236,31 @@ create policy "Aluno gere as suas disponibilidades"
   )
   with check (
     exists (select 1 from matriculas m where m.id = matricula_id and m.aluno_id = auth.uid())
+  );
+
+-- 7. Bucket de armazenamento para as fotos dos professores. Cada professor só
+-- pode carregar/atualizar o seu próprio ficheiro, guardado em "<user_id>/foto".
+insert into storage.buckets (id, name, public)
+values ('fotos-professores', 'fotos-professores', true)
+on conflict (id) do nothing;
+
+create policy "Fotos de professores são públicas"
+  on storage.objects for select
+  to public
+  using (bucket_id = 'fotos-professores');
+
+create policy "Professor carrega a própria foto"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'fotos-professores'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "Professor substitui a própria foto"
+  on storage.objects for update
+  to authenticated
+  using (
+    bucket_id = 'fotos-professores'
+    and (storage.foldername(name))[1] = auth.uid()::text
   );

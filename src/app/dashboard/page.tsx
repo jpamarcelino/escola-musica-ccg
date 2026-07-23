@@ -6,6 +6,7 @@ import {
   confirmarHorario,
   alternarEstadoHorario,
   atualizarInstrumentos,
+  atualizarFoto,
   criarHorarios,
   apagarHorarios,
   bloquearHorarios,
@@ -64,7 +65,7 @@ export default async function DashboardPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('nome, tipo, admin, programa')
+    .select('nome, tipo, admin, programa, foto_url')
     .eq('id', user.id)
     .single()
 
@@ -84,7 +85,7 @@ export default async function DashboardPage({
   let horarios: HorarioProfessor[] = []
   let confirmadosPorHorario = new Map<number, string[]>()
   let todosInstrumentos: { id: number; nome: string }[] = []
-  let meusInstrumentos: { id: number; nome: string }[] = []
+  let meusInstrumentos: { id: number; nome: string; especialidade: string | null }[] = []
 
   if (profile?.tipo === 'professor') {
     const { data: instrumentosData } = await supabase
@@ -96,15 +97,16 @@ export default async function DashboardPage({
 
     const { data: meusInstrumentosData } = await supabase
       .from('professor_instrumentos')
-      .select('instrumentos(id, nome)')
+      .select('especialidade, instrumentos(id, nome)')
       .eq('professor_id', user.id)
     meusInstrumentos = (
       (meusInstrumentosData ?? []) as unknown as {
+        especialidade: string | null
         instrumentos: { id: number; nome: string } | null
       }[]
     )
-      .map((r) => r.instrumentos)
-      .filter((i): i is { id: number; nome: string } => i !== null)
+      .filter((r) => r.instrumentos !== null)
+      .map((r) => ({ ...r.instrumentos!, especialidade: r.especialidade }))
 
     const { data: pedidosData } = await supabase
       .from('matriculas')
@@ -226,6 +228,39 @@ export default async function DashboardPage({
                 {erroHorarios}
               </p>
             )}
+
+            <section className="space-y-3">
+              <h2 className="font-semibold">A tua foto</h2>
+              <div className="flex items-center gap-4">
+                {profile.foto_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={profile.foto_url}
+                    alt={profile.nome}
+                    className="h-20 w-20 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-foreground/10 text-xs text-foreground/50">
+                    Sem foto
+                  </div>
+                )}
+                <form action={atualizarFoto} className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    name="foto"
+                    accept="image/*"
+                    required
+                    className="text-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
+                  >
+                    Carregar foto
+                  </button>
+                </form>
+              </div>
+            </section>
 
             <section className="space-y-3">
               <h2 className="font-semibold">Pedidos por confirmar</h2>
@@ -365,19 +400,38 @@ export default async function DashboardPage({
 
             <section className="space-y-3">
               <h2 className="font-semibold">Disciplinas que ensinas</h2>
+              <p className="text-xs text-foreground/50">
+                A especialidade é opcional — usa-a quando ensinas uma
+                disciplina de forma diferente de outros professores (ex:
+                &quot;Piano clássico&quot; vs. &quot;Piano jazz/rock&quot;).
+                Aparece por baixo do teu nome quando um aluno escolher essa
+                disciplina.
+              </p>
               <form action={atualizarInstrumentos} className="space-y-3">
-                <div className="flex flex-wrap gap-3">
-                  {todosInstrumentos.map((i) => (
-                    <label key={i.id} className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        name="instrumentos"
-                        value={i.id}
-                        defaultChecked={meusInstrumentos.some((m) => m.id === i.id)}
-                      />
-                      {i.nome}
-                    </label>
-                  ))}
+                <div className="space-y-2">
+                  {todosInstrumentos.map((i) => {
+                    const meu = meusInstrumentos.find((m) => m.id === i.id)
+                    return (
+                      <div key={i.id} className="flex items-center gap-2 text-sm">
+                        <label className="flex w-40 shrink-0 items-center gap-2">
+                          <input
+                            type="checkbox"
+                            name="instrumentos"
+                            value={i.id}
+                            defaultChecked={meu !== undefined}
+                          />
+                          {i.nome}
+                        </label>
+                        <input
+                          type="text"
+                          name={`especialidade_${i.id}`}
+                          defaultValue={meu?.especialidade ?? ''}
+                          placeholder="Especialidade (opcional)"
+                          className="w-full rounded border border-foreground/20 bg-background px-3 py-1 text-sm"
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
                 <button
                   type="submit"

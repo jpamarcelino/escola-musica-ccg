@@ -116,10 +116,16 @@ export default async function PedidoPage({
 
   // Passo 2: escolher professor
   if (!professor) {
-    const { data: professores } = await supabase
+    const { data: professoresData } = await supabase
       .from('professor_instrumentos')
-      .select('professor_id, profiles(nome)')
+      .select('professor_id, especialidade, profiles(nome, foto_url)')
       .eq('instrumento_id', instrumento)
+
+    const professores = (professoresData ?? []) as unknown as {
+      professor_id: string
+      especialidade: string | null
+      profiles: { nome: string; foto_url: string | null } | null
+    }[]
 
     return (
       <Wizard
@@ -127,14 +133,31 @@ export default async function PedidoPage({
         voltar={`/aluno/pedido?programa=${programa}`}
       >
         <div className="space-y-2">
-          {professores?.length ? (
+          {professores.length ? (
             professores.map((p) => (
               <Link
                 key={p.professor_id}
                 href={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}&professor=${p.professor_id}`}
-                className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
+                className="flex items-center gap-3 rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
               >
-                {(p.profiles as unknown as { nome: string } | null)?.nome}
+                {p.profiles?.foto_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={p.profiles.foto_url}
+                    alt={p.profiles.nome}
+                    className="h-10 w-10 shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-xs text-foreground/50">
+                    {p.profiles?.nome?.slice(0, 1)}
+                  </div>
+                )}
+                <div>
+                  <p>{p.profiles?.nome}</p>
+                  {p.especialidade && (
+                    <p className="text-xs text-foreground/50">{p.especialidade}</p>
+                  )}
+                </div>
               </Link>
             ))
           ) : (

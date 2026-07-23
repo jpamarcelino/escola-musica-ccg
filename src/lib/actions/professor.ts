@@ -85,10 +85,51 @@ export async function atualizarInstrumentos(formData: FormData) {
         idsValidos.map((id) => ({
           professor_id: user.id,
           instrumento_id: id,
+          especialidade: String(formData.get(`especialidade_${id}`) ?? '').trim() || null,
         }))
       )
     }
   }
+
+  revalidatePath('/dashboard')
+}
+
+export async function atualizarFoto(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  function voltarComErro(mensagem: string): never {
+    redirect(`/dashboard?erroHorarios=${encodeURIComponent(mensagem)}`)
+  }
+
+  const ficheiro = formData.get('foto')
+  if (!(ficheiro instanceof File) || ficheiro.size === 0) {
+    voltarComErro('Escolhe uma foto para carregar.')
+  }
+
+  const caminho = `${user.id}/foto`
+  const { error: erroUpload } = await supabase.storage
+    .from('fotos-professores')
+    .upload(caminho, ficheiro, { upsert: true, contentType: ficheiro.type })
+
+  if (erroUpload) {
+    voltarComErro('Não foi possível carregar a foto. Tenta novamente.')
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('fotos-professores').getPublicUrl(caminho)
+
+  // Query string para a foto atualizar de imediato (o caminho no storage é sempre o mesmo).
+  const fotoUrl = `${publicUrl}?v=${Date.now()}`
+
+  await supabase.from('profiles').update({ foto_url: fotoUrl }).eq('id', user.id)
 
   revalidatePath('/dashboard')
 }
