@@ -31,6 +31,18 @@ export async function escolherDisponibilidades(formData: FormData) {
     voltarComErro('Seleciona pelo menos um horário.')
   }
 
+  const { data: matriculaExistente } = await supabase
+    .from('matriculas')
+    .select('id')
+    .eq('aluno_id', user.id)
+    .eq('instrumento_id', Number(instrumentoId))
+    .in('estado', ['a_escolher', 'confirmado'])
+    .maybeSingle()
+
+  if (matriculaExistente) {
+    voltarComErro('Já tens um pedido ou uma aula confirmada nesta disciplina.')
+  }
+
   const { data: matricula, error: matriculaError } = await supabase
     .from('matriculas')
     .insert({
@@ -40,6 +52,10 @@ export async function escolherDisponibilidades(formData: FormData) {
     })
     .select('id')
     .single()
+
+  if (matriculaError?.code === '23505') {
+    voltarComErro('Já tens um pedido ou uma aula confirmada nesta disciplina.')
+  }
 
   if (matriculaError || !matricula) {
     voltarComErro('Não foi possível criar o pedido. Tenta novamente.')

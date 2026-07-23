@@ -153,6 +153,12 @@ create table matriculas (
   criado_em timestamptz not null default now()
 );
 
+-- Um aluno pode ter matrículas em várias disciplinas ao mesmo tempo, mas não
+-- pode ter duas matrículas ativas (pendente ou confirmada) na mesma disciplina.
+create unique index matriculas_aluno_instrumento_ativa_unique
+  on matriculas (aluno_id, instrumento_id)
+  where estado in ('a_escolher', 'confirmado');
+
 alter table matriculas enable row level security;
 
 create policy "Aluno e professor veem as suas matrículas"

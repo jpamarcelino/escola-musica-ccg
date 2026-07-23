@@ -58,6 +58,28 @@ export default async function PedidoPage({
     )
   }
 
+  const { data: matriculaExistente } = await supabase
+    .from('matriculas')
+    .select('id, estado')
+    .eq('aluno_id', user.id)
+    .eq('instrumento_id', instrumento)
+    .in('estado', ['a_escolher', 'confirmado'])
+    .maybeSingle()
+
+  if (matriculaExistente) {
+    return (
+      <Wizard title="Já tens um pedido nesta disciplina" voltar="/aluno/pedido">
+        <p className="text-sm text-foreground/60">
+          {matriculaExistente.estado === 'confirmado'
+            ? 'Já tens uma aula confirmada nesta disciplina.'
+            : 'Já tens um pedido pendente nesta disciplina.'}{' '}
+          Cancela-o no dashboard antes de pedires outro professor para a mesma
+          disciplina. Podes pedir outra disciplina à vontade.
+        </p>
+      </Wizard>
+    )
+  }
+
   // Passo 2: escolher professor
   if (!professor) {
     const { data: professores } = await supabase
