@@ -16,7 +16,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Escola de Música",
-  description: "Marcação de aulas da escola de música",
+  description: "Marcação de aulas da escola de música do Centro Cultural",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Escola de Música",
+  },
+};
+
+export const viewport = {
+  themeColor: "#26619c",
 };
 
 export default function RootLayout({
