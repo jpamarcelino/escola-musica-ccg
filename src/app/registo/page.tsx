@@ -1,11 +1,12 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link'
 import { signup } from '@/lib/actions/auth'
 
 export default function RegistoPage() {
   const [state, action, pending] = useActionState(signup, undefined)
+  const [tipo, setTipo] = useState<'aluno' | 'professor'>('aluno')
 
   return (
     <main className="flex-1 flex items-center justify-center p-6">
@@ -19,15 +20,46 @@ export default function RegistoPage() {
           <span className="block text-sm font-medium">Eu sou...</span>
           <div className="flex gap-4">
             <label className="flex items-center gap-2">
-              <input type="radio" name="tipo" value="aluno" defaultChecked required />
+              <input
+                type="radio"
+                name="tipo"
+                value="aluno"
+                checked={tipo === 'aluno'}
+                onChange={() => setTipo('aluno')}
+                required
+              />
               Aluno
             </label>
             <label className="flex items-center gap-2">
-              <input type="radio" name="tipo" value="professor" required />
+              <input
+                type="radio"
+                name="tipo"
+                value="professor"
+                checked={tipo === 'professor'}
+                onChange={() => setTipo('professor')}
+                required
+              />
               Professor
             </label>
           </div>
         </div>
+
+        {tipo === 'professor' && (
+          <div className="space-y-1">
+            <label htmlFor="codigoProfessor" className="block text-sm font-medium">
+              Código de professor
+            </label>
+            <input
+              id="codigoProfessor"
+              name="codigoProfessor"
+              required
+              className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+            />
+            <p className="text-xs text-foreground/50">
+              Pede este código à direção da escola.
+            </p>
+          </div>
+        )}
 
         <div className="space-y-1">
           <label htmlFor="nome" className="block text-sm font-medium">

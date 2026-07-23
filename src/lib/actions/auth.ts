@@ -21,6 +21,13 @@ export async function signup(
     return { error: 'A password deve ter pelo menos 6 caracteres.' }
   }
 
+  if (tipo === 'professor') {
+    const codigoProfessor = String(formData.get('codigoProfessor') ?? '').trim()
+    if (!codigoProfessor || codigoProfessor !== process.env.PROFESSOR_INVITE_CODE) {
+      return { error: 'Código de professor inválido.' }
+    }
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signUp({
     email,
