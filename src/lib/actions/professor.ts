@@ -239,6 +239,32 @@ export async function apagarHorario(formData: FormData) {
   redirect('/dashboard')
 }
 
+export async function bloquearHorarios(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const ids = formData.getAll('horarioIds').map(String)
+
+  if (ids.length === 0) {
+    redirect('/dashboard?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
+  }
+
+  await supabase
+    .from('horarios')
+    .update({ estado: 'bloqueado' })
+    .in('id', ids)
+    .eq('professor_id', user.id)
+
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
+
 export async function apagarHorarios(formData: FormData) {
   const supabase = await createClient()
   const {

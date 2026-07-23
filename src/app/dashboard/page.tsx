@@ -8,9 +8,12 @@ import {
   atualizarInstrumentos,
   criarHorarios,
   apagarHorarios,
+  bloquearHorarios,
 } from '@/lib/actions/professor'
 import { cancelarPedido } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
+import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 
 type Matricula = {
   id: number
@@ -260,6 +263,7 @@ export default async function DashboardPage({
             <section className="space-y-3">
               <h2 className="font-semibold">Os teus horários</h2>
               <form id="apagar-horarios-form" action={apagarHorarios} />
+              <form id="bloquear-horarios-form" action={bloquearHorarios} />
               {horarios.length === 0 && (
                 <p className="text-sm text-foreground/60">
                   Ainda não tens horários definidos.
@@ -317,13 +321,17 @@ export default async function DashboardPage({
                 </div>
               ))}
               {horarios.length > 0 && (
-                <button
-                  type="submit"
-                  form="apagar-horarios-form"
-                  className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
-                >
-                  Apagar selecionados
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <BotaoSelecionarTodos />
+                  <button
+                    type="submit"
+                    form="apagar-horarios-form"
+                    className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
+                  >
+                    Apagar selecionados
+                  </button>
+                  <BotaoBloquearSelecionados />
+                </div>
               )}
             </section>
 
