@@ -272,20 +272,28 @@ export default async function DashboardPage({
                       </p>
                     )}
                   </div>
-                  <form action={alternarEstadoHorario}>
-                    <input type="hidden" name="horarioId" value={h.id} />
-                    <input
-                      type="hidden"
-                      name="novoEstado"
-                      value={h.estado === 'aberto' ? 'bloqueado' : 'aberto'}
-                    />
-                    <button
-                      type="submit"
-                      className="shrink-0 rounded border border-foreground/20 px-3 py-1 text-sm"
+                  <div className="flex shrink-0 gap-2">
+                    <Link
+                      href={`/professor/horarios/${h.id}`}
+                      className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
                     >
-                      {h.estado === 'aberto' ? 'Bloquear' : 'Desbloquear'}
-                    </button>
-                  </form>
+                      Editar
+                    </Link>
+                    <form action={alternarEstadoHorario}>
+                      <input type="hidden" name="horarioId" value={h.id} />
+                      <input
+                        type="hidden"
+                        name="novoEstado"
+                        value={h.estado === 'aberto' ? 'bloqueado' : 'aberto'}
+                      />
+                      <button
+                        type="submit"
+                        className="rounded border border-foreground/20 px-3 py-1 text-sm"
+                      >
+                        {h.estado === 'aberto' ? 'Bloquear' : 'Desbloquear'}
+                      </button>
+                    </form>
+                  </div>
                 </div>
               ))}
             </section>

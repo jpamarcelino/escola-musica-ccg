@@ -27,7 +27,8 @@
       "Skill(fewer-permission-prompts)",
       "Skill(fewer-permission-prompts:*)",
       "Bash(ls -la ~/.claude/projects/ 2>&1 | head -20)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(mkdir -p \"/Users/jpamarcelino/Desktop/Claude App/src/app/professor/horarios/[id]\")"
     ]
   }
 }

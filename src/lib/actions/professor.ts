@@ -144,3 +144,82 @@ export async function criarHorarios(formData: FormData) {
 
   revalidatePath('/dashboard')
 }
+
+export async function atualizarHorario(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const horarioId = String(formData.get('horarioId') ?? '')
+  const instrumentoId = String(formData.get('instrumentoId') ?? '')
+  const diaSemana = String(formData.get('diaSemana') ?? '')
+  const horaInicio = String(formData.get('horaInicio') ?? '')
+  const horaFim = String(formData.get('horaFim') ?? '')
+
+  function voltarComErro(mensagem: string): never {
+    redirect(
+      `/professor/horarios/${horarioId}?erro=${encodeURIComponent(mensagem)}`
+    )
+  }
+
+  if (!instrumentoId || !diaSemana || !horaInicio || !horaFim) {
+    voltarComErro('Preenche todos os campos.')
+  }
+  if (horaFim <= horaInicio) {
+    voltarComErro('A hora de fim tem de ser depois da hora de início.')
+  }
+
+  const { error } = await supabase
+    .from('horarios')
+    .update({
+      instrumento_id: Number(instrumentoId),
+      dia_semana: diaSemana,
+      hora_inicio: horaInicio,
+      hora_fim: horaFim,
+    })
+    .eq('id', horarioId)
+    .eq('professor_id', user.id)
+
+  if (error) {
+    voltarComErro('Não foi possível guardar as alterações. Tenta novamente.')
+  }
+
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
+
+export async function apagarHorario(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const horarioId = String(formData.get('horarioId') ?? '')
+
+  const { error } = await supabase
+    .from('horarios')
+    .delete()
+    .eq('id', horarioId)
+    .eq('professor_id', user.id)
+
+  if (error) {
+    const mensagem = error.code === '23503'
+      ? 'Não é possível apagar: já tens alunos confirmados neste horário. Bloqueia-o em vez disso.'
+      : 'Não foi possível apagar o horário. Tenta novamente.'
+    redirect(
+      `/professor/horarios/${horarioId}?erro=${encodeURIComponent(mensagem)}`
+    )
+  }
+
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
