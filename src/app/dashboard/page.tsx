@@ -2,7 +2,13 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/actions/auth'
-import { confirmarHorario, alternarEstadoHorario } from '@/lib/actions/professor'
+import {
+  confirmarHorario,
+  alternarEstadoHorario,
+  atualizarInstrumentos,
+  criarHorarios,
+} from '@/lib/actions/professor'
+import { DIAS_SEMANA } from '@/lib/dias-semana'
 
 type Matricula = {
   estado: string
@@ -35,7 +41,13 @@ type Confirmado = {
   profiles: { nome: string } | null
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erroHorarios?: string }>
+}) {
+  const { erroHorarios } = await searchParams
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -68,8 +80,28 @@ export default async function DashboardPage() {
   let pedidos: Pedido[] = []
   let horarios: HorarioProfessor[] = []
   let confirmadosPorHorario = new Map<number, string[]>()
+  let todosInstrumentos: { id: number; nome: string }[] = []
+  let meusInstrumentos: { id: number; nome: string }[] = []
 
   if (profile?.tipo === 'professor') {
+    const { data: instrumentosData } = await supabase
+      .from('instrumentos')
+      .select('id, nome')
+      .order('nome')
+    todosInstrumentos = instrumentosData ?? []
+
+    const { data: meusInstrumentosData } = await supabase
+      .from('professor_instrumentos')
+      .select('instrumentos(id, nome)')
+      .eq('professor_id', user.id)
+    meusInstrumentos = (
+      (meusInstrumentosData ?? []) as unknown as {
+        instrumentos: { id: number; nome: string } | null
+      }[]
+    )
+      .map((r) => r.instrumentos)
+      .filter((i): i is { id: number; nome: string } => i !== null)
+
     const { data: pedidosData } = await supabase
       .from('matriculas')
       .select(
@@ -243,6 +275,146 @@ export default async function DashboardPage() {
                   </form>
                 </div>
               ))}
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="font-semibold">Instrumentos que ensinas</h2>
+              <form action={atualizarInstrumentos} className="space-y-3">
+                <div className="flex flex-wrap gap-3">
+                  {todosInstrumentos.map((i) => (
+                    <label key={i.id} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        name="instrumentos"
+                        value={i.id}
+                        defaultChecked={meusInstrumentos.some((m) => m.id === i.id)}
+                      />
+                      {i.nome}
+                    </label>
+                  ))}
+                </div>
+                <button
+                  type="submit"
+                  className="rounded border border-foreground/20 px-3 py-1 text-sm"
+                >
+                  Guardar instrumentos
+                </button>
+              </form>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="font-semibold">Criar horários</h2>
+              {meusInstrumentos.length === 0 ? (
+                <p className="text-sm text-foreground/60">
+                  Escolhe primeiro os instrumentos que ensinas, acima.
+                </p>
+              ) : (
+                <form
+                  action={criarHorarios}
+                  className="space-y-3 rounded border border-foreground/15 p-4"
+                >
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="instrumentoId"
+                      className="block text-sm font-medium"
+                    >
+                      Instrumento
+                    </label>
+                    <select
+                      id="instrumentoId"
+                      name="instrumentoId"
+                      required
+                      className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                    >
+                      {meusInstrumentos.map((i) => (
+                        <option key={i.id} value={i.id}>
+                          {i.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="block text-sm font-medium">
+                      Dias da semana
+                    </span>
+                    <div className="flex flex-wrap gap-3">
+                      {DIAS_SEMANA.map((dia) => (
+                        <label
+                          key={dia}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <input type="checkbox" name="dias" value={dia} />
+                          {dia}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="flex-1 space-y-1">
+                      <label
+                        htmlFor="horaInicio"
+                        className="block text-sm font-medium"
+                      >
+                        Das
+                      </label>
+                      <input
+                        id="horaInicio"
+                        name="horaInicio"
+                        type="time"
+                        required
+                        className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <label
+                        htmlFor="horaFim"
+                        className="block text-sm font-medium"
+                      >
+                        Até
+                      </label>
+                      <input
+                        id="horaFim"
+                        name="horaFim"
+                        type="time"
+                        required
+                        className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="duracaoMinutos"
+                      className="block text-sm font-medium"
+                    >
+                      Duração de cada aula (minutos)
+                    </label>
+                    <input
+                      id="duracaoMinutos"
+                      name="duracaoMinutos"
+                      type="number"
+                      min={5}
+                      step={5}
+                      defaultValue={50}
+                      required
+                      className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
+
+                  {erroHorarios && (
+                    <p className="text-sm text-red-600">{erroHorarios}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full rounded bg-black py-2 text-sm text-white"
+                  >
+                    Criar horários
+                  </button>
+                </form>
+              )}
             </section>
           </div>
         )}

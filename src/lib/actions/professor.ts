@@ -47,3 +47,100 @@ export async function alternarEstadoHorario(formData: FormData) {
 
   revalidatePath('/dashboard')
 }
+
+export async function atualizarInstrumentos(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const instrumentoIds = formData.getAll('instrumentos').map(String)
+
+  await supabase.from('professor_instrumentos').delete().eq('professor_id', user.id)
+
+  if (instrumentoIds.length > 0) {
+    await supabase.from('professor_instrumentos').insert(
+      instrumentoIds.map((id) => ({
+        professor_id: user.id,
+        instrumento_id: Number(id),
+      }))
+    )
+  }
+
+  revalidatePath('/dashboard')
+}
+
+function gerarBlocos(horaInicio: string, horaFim: string, duracaoMinutos: number) {
+  const paraMinutos = (hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number)
+    return h * 60 + m
+  }
+  const paraHHMM = (minutos: number) => {
+    const h = Math.floor(minutos / 60).toString().padStart(2, '0')
+    const m = (minutos % 60).toString().padStart(2, '0')
+    return `${h}:${m}`
+  }
+
+  const inicio = paraMinutos(horaInicio)
+  const fim = paraMinutos(horaFim)
+  const blocos: { inicio: string; fim: string }[] = []
+
+  for (let t = inicio; t + duracaoMinutos <= fim; t += duracaoMinutos) {
+    blocos.push({ inicio: paraHHMM(t), fim: paraHHMM(t + duracaoMinutos) })
+  }
+
+  return blocos
+}
+
+export async function criarHorarios(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const instrumentoId = String(formData.get('instrumentoId') ?? '')
+  const dias = formData.getAll('dias').map(String)
+  const horaInicio = String(formData.get('horaInicio') ?? '')
+  const horaFim = String(formData.get('horaFim') ?? '')
+  const duracaoMinutos = Number(formData.get('duracaoMinutos') ?? 0)
+
+  function voltarComErro(mensagem: string): never {
+    redirect(`/dashboard?erroHorarios=${encodeURIComponent(mensagem)}`)
+  }
+
+  if (!instrumentoId || dias.length === 0 || !horaInicio || !horaFim || !duracaoMinutos) {
+    voltarComErro('Preenche todos os campos.')
+  }
+
+  const blocos = gerarBlocos(horaInicio, horaFim, duracaoMinutos)
+  if (blocos.length === 0) {
+    voltarComErro('Esse intervalo não cabe nenhuma aula com essa duração.')
+  }
+
+  const linhas = dias.flatMap((dia) =>
+    blocos.map((b) => ({
+      professor_id: user.id,
+      instrumento_id: Number(instrumentoId),
+      dia_semana: dia,
+      hora_inicio: b.inicio,
+      hora_fim: b.fim,
+      estado: 'aberto',
+    }))
+  )
+
+  const { error } = await supabase.from('horarios').insert(linhas)
+
+  if (error) {
+    voltarComErro('Não foi possível criar os horários. Tenta novamente.')
+  }
+
+  revalidatePath('/dashboard')
+}

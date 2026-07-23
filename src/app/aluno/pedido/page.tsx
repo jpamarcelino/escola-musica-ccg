@@ -2,16 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
-
-const DIAS_SEMANA = [
-  'Segunda',
-  'Terça',
-  'Quarta',
-  'Quinta',
-  'Sexta',
-  'Sábado',
-  'Domingo',
-]
+import { DIAS_SEMANA } from '@/lib/dias-semana'
 
 export default async function PedidoPage({
   searchParams,
