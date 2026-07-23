@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/actions/auth'
 import {
   confirmarHorario,
+  cancelarMatricula,
   alternarEstadoHorario,
   atualizarInstrumentos,
   atualizarFoto,
@@ -43,8 +44,11 @@ type HorarioProfessor = {
 }
 
 type Confirmado = {
+  id: number
   horario_final_id: number | null
+  instrumentos: { nome: string } | null
   profiles: { nome: string } | null
+  horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
 }
 
 export default async function DashboardPage({
@@ -83,6 +87,7 @@ export default async function DashboardPage({
 
   let pedidos: Pedido[] = []
   let horarios: HorarioProfessor[] = []
+  let confirmados: Confirmado[] = []
   let confirmadosPorHorario = new Map<number, string[]>()
   let todosInstrumentos: { id: number; nome: string }[] = []
   let meusInstrumentos: { id: number; nome: string; especialidade: string | null }[] = []
@@ -128,12 +133,16 @@ export default async function DashboardPage({
 
     const { data: confirmadosData } = await supabase
       .from('matriculas')
-      .select('horario_final_id, profiles!matriculas_aluno_id_fkey(nome)')
+      .select(
+        'id, horario_final_id, instrumentos(nome), profiles!matriculas_aluno_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim)'
+      )
       .eq('professor_id', user.id)
       .eq('estado', 'confirmado')
+      .order('criado_em')
+    confirmados = (confirmadosData ?? []) as unknown as Confirmado[]
 
     confirmadosPorHorario = new Map()
-    for (const c of (confirmadosData ?? []) as unknown as Confirmado[]) {
+    for (const c of confirmados) {
       if (!c.horario_final_id) continue
       const nomes = confirmadosPorHorario.get(c.horario_final_id) ?? []
       nomes.push(c.profiles?.nome ?? '')
@@ -302,6 +311,41 @@ export default async function DashboardPage({
                       </form>
                     ))}
                   </div>
+                </div>
+              ))}
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="font-semibold">Alunos confirmados</h2>
+              {confirmados.length === 0 && (
+                <p className="text-sm text-foreground/60">
+                  Ainda não tens alunos confirmados.
+                </p>
+              )}
+              {confirmados.map((c) => (
+                <div
+                  key={c.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded border border-foreground/15 px-4 py-2 text-sm"
+                >
+                  <p>
+                    <strong>{c.profiles?.nome}</strong> — {c.instrumentos?.nome}
+                    {c.horarios && (
+                      <>
+                        : {c.horarios.dia_semana},{' '}
+                        {c.horarios.hora_inicio.slice(0, 5)}–
+                        {c.horarios.hora_fim.slice(0, 5)}
+                      </>
+                    )}
+                  </p>
+                  <form action={cancelarMatricula}>
+                    <input type="hidden" name="matriculaId" value={c.id} />
+                    <button
+                      type="submit"
+                      className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
+                    >
+                      Cancelar matrícula
+                    </button>
+                  </form>
                 </div>
               ))}
             </section>

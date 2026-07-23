@@ -27,6 +27,27 @@ export async function confirmarHorario(formData: FormData) {
   revalidatePath('/dashboard')
 }
 
+export async function cancelarMatricula(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = String(formData.get('matriculaId') ?? '')
+
+  await supabase
+    .from('matriculas')
+    .delete()
+    .eq('id', matriculaId)
+    .eq('professor_id', user.id)
+
+  revalidatePath('/dashboard')
+}
+
 export async function alternarEstadoHorario(formData: FormData) {
   const supabase = await createClient()
   const {

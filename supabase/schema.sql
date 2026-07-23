@@ -209,6 +209,14 @@ create policy "Aluno cancela o seu pedido pendente"
   to authenticated
   using (auth.uid() = aluno_id and estado = 'a_escolher');
 
+-- Permite ao professor cancelar uma matrícula (pendente ou já confirmada) de
+-- um aluno seu — ex: aluno desistiu a meio do ano ou precisa de mudar de
+-- horário e tem de voltar a pedir.
+create policy "Professor cancela matrículas dos seus alunos"
+  on matriculas for delete
+  to authenticated
+  using (auth.uid() = professor_id);
+
 -- 6. Disponibilidades que o aluno marcou como possíveis (opções, não pedidos)
 create table disponibilidades_selecionadas (
   id bigint generated always as identity primary key,
