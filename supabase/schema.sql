@@ -6,6 +6,7 @@ create table profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   nome text not null,
   tipo text not null check (tipo in ('aluno', 'professor')),
+  admin boolean not null default false,
   criado_em timestamptz not null default now()
 );
 
@@ -20,6 +21,41 @@ create policy "Utilizador atualiza o seu próprio perfil"
   on profiles for update
   to authenticated
   using (auth.uid() = id);
+
+create policy "Administradores atualizam professores (para gerir admins)"
+  on profiles for update
+  to authenticated
+  using (
+    tipo = 'professor'
+    and exists (select 1 from profiles p where p.id = auth.uid() and p.admin)
+  )
+  with check (
+    tipo = 'professor'
+    and exists (select 1 from profiles p where p.id = auth.uid() and p.admin)
+  );
+
+-- Impede que alguém se torne administrador a si próprio por fora da app
+-- (ex: chamando a API diretamente). Só um administrador existente pode
+-- alterar a coluna "admin" de outra conta.
+create or replace function public.impedir_auto_promocao_admin()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.admin is distinct from old.admin then
+    if not exists (select 1 from public.profiles where id = auth.uid() and admin) then
+      raise exception 'Só um administrador pode alterar este campo.';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+create trigger profiles_impedir_auto_promocao_admin
+  before update on profiles
+  for each row execute function public.impedir_auto_promocao_admin();
 
 -- Cria automaticamente um "profile" sempre que alguém se regista
 create or replace function public.handle_new_user()
@@ -81,14 +117,16 @@ create policy "Professor gere os seus próprios instrumentos"
   with check (auth.uid() = professor_id);
 
 -- 4. Horários semanais que um professor disponibiliza (molde recorrente, sem data específica)
+-- Não estão ligados a um instrumento específico: um professor que dá vários
+-- instrumentos tem horários livres, válidos para qualquer um deles.
 create table horarios (
   id bigint generated always as identity primary key,
   professor_id uuid not null references profiles(id) on delete cascade,
-  instrumento_id bigint not null references instrumentos(id) on delete cascade,
   dia_semana text not null check (dia_semana in ('Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo')),
   hora_inicio time not null,
   hora_fim time not null,
-  estado text not null default 'aberto' check (estado in ('aberto', 'bloqueado'))
+  estado text not null default 'aberto' check (estado in ('aberto', 'bloqueado')),
+  unique (professor_id, dia_semana, hora_inicio, hora_fim)
 );
 
 alter table horarios enable row level security;
@@ -121,6 +159,11 @@ create policy "Aluno e professor veem as suas matrículas"
   on matriculas for select
   to authenticated
   using (auth.uid() = aluno_id or auth.uid() = professor_id);
+
+create policy "Administradores veem todas as matrículas"
+  on matriculas for select
+  to authenticated
+  using (exists (select 1 from profiles p where p.id = auth.uid() and p.admin));
 
 create policy "Aluno cria a sua matrícula"
   on matriculas for insert

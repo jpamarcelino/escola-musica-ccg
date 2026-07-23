@@ -93,7 +93,6 @@ export default async function PedidoPage({
     .from('horarios')
     .select('id, dia_semana, hora_inicio, hora_fim')
     .eq('professor_id', professor)
-    .eq('instrumento_id', instrumento)
     .eq('estado', 'aberto')
 
   const horariosOrdenados = (horarios ?? []).slice().sort((a, b) => {

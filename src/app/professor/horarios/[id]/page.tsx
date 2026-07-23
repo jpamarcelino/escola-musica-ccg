@@ -25,7 +25,7 @@ export default async function EditarHorarioPage({
 
   const { data: horario } = await supabase
     .from('horarios')
-    .select('id, instrumento_id, dia_semana, hora_inicio, hora_fim, estado')
+    .select('id, dia_semana, hora_inicio, hora_fim, estado')
     .eq('id', id)
     .eq('professor_id', user.id)
     .maybeSingle()
@@ -33,18 +33,6 @@ export default async function EditarHorarioPage({
   if (!horario) {
     notFound()
   }
-
-  const { data: meusInstrumentosData } = await supabase
-    .from('professor_instrumentos')
-    .select('instrumentos(id, nome)')
-    .eq('professor_id', user.id)
-  const meusInstrumentos = (
-    (meusInstrumentosData ?? []) as unknown as {
-      instrumentos: { id: number; nome: string } | null
-    }[]
-  )
-    .map((r) => r.instrumentos)
-    .filter((i): i is { id: number; nome: string } => i !== null)
 
   const { data: confirmadosData } = await supabase
     .from('matriculas')
@@ -69,25 +57,6 @@ export default async function EditarHorarioPage({
           <h1 className="text-xl font-semibold">Editar horário</h1>
 
           <input type="hidden" name="horarioId" value={horario.id} />
-
-          <div className="space-y-1">
-            <label htmlFor="instrumentoId" className="block text-sm font-medium">
-              Instrumento
-            </label>
-            <select
-              id="instrumentoId"
-              name="instrumentoId"
-              required
-              defaultValue={horario.instrumento_id}
-              className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
-            >
-              {meusInstrumentos.map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.nome}
-                </option>
-              ))}
-            </select>
-          </div>
 
           <div className="space-y-1">
             <label htmlFor="diaSemana" className="block text-sm font-medium">

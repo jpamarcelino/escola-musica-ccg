@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { DIAS_SEMANA } from '@/lib/dias-semana'
 
 export async function confirmarHorario(formData: FormData) {
   const supabase = await createClient()
@@ -106,39 +107,52 @@ export async function criarHorarios(formData: FormData) {
     redirect('/login')
   }
 
-  const instrumentoId = String(formData.get('instrumentoId') ?? '')
-  const dias = formData.getAll('dias').map(String)
-  const horaInicio = String(formData.get('horaInicio') ?? '')
-  const horaFim = String(formData.get('horaFim') ?? '')
   const duracaoMinutos = Number(formData.get('duracaoMinutos') ?? 0)
 
   function voltarComErro(mensagem: string): never {
     redirect(`/dashboard?erroHorarios=${encodeURIComponent(mensagem)}`)
   }
 
-  if (!instrumentoId || dias.length === 0 || !horaInicio || !horaFim || !duracaoMinutos) {
-    voltarComErro('Preenche todos os campos.')
+  if (!duracaoMinutos) {
+    voltarComErro('Indica a duração de cada aula.')
   }
 
-  const blocos = gerarBlocos(horaInicio, horaFim, duracaoMinutos)
-  if (blocos.length === 0) {
-    voltarComErro('Esse intervalo não cabe nenhuma aula com essa duração.')
-  }
+  const linhas: {
+    professor_id: string
+    dia_semana: string
+    hora_inicio: string
+    hora_fim: string
+    estado: string
+  }[] = []
 
-  const linhas = dias.flatMap((dia) =>
-    blocos.map((b) => ({
-      professor_id: user.id,
-      instrumento_id: Number(instrumentoId),
-      dia_semana: dia,
-      hora_inicio: b.inicio,
-      hora_fim: b.fim,
-      estado: 'aberto',
-    }))
-  )
+  DIAS_SEMANA.forEach((dia, i) => {
+    const horaInicio = String(formData.get(`inicio_${i}`) ?? '')
+    const horaFim = String(formData.get(`fim_${i}`) ?? '')
+    if (!horaInicio || !horaFim) return
+
+    for (const b of gerarBlocos(horaInicio, horaFim, duracaoMinutos)) {
+      linhas.push({
+        professor_id: user.id,
+        dia_semana: dia,
+        hora_inicio: b.inicio,
+        hora_fim: b.fim,
+        estado: 'aberto',
+      })
+    }
+  })
+
+  if (linhas.length === 0) {
+    voltarComErro('Preenche pelo menos um dia com horário.')
+  }
 
   const { error } = await supabase.from('horarios').insert(linhas)
 
   if (error) {
+    if (error.code === '23505') {
+      voltarComErro(
+        'Já tens um horário igual criado (mesmo dia e hora). Verifica os horários que já existem.'
+      )
+    }
     voltarComErro('Não foi possível criar os horários. Tenta novamente.')
   }
 
@@ -156,7 +170,6 @@ export async function atualizarHorario(formData: FormData) {
   }
 
   const horarioId = String(formData.get('horarioId') ?? '')
-  const instrumentoId = String(formData.get('instrumentoId') ?? '')
   const diaSemana = String(formData.get('diaSemana') ?? '')
   const horaInicio = String(formData.get('horaInicio') ?? '')
   const horaFim = String(formData.get('horaFim') ?? '')
@@ -167,7 +180,7 @@ export async function atualizarHorario(formData: FormData) {
     )
   }
 
-  if (!instrumentoId || !diaSemana || !horaInicio || !horaFim) {
+  if (!diaSemana || !horaInicio || !horaFim) {
     voltarComErro('Preenche todos os campos.')
   }
   if (horaFim <= horaInicio) {
@@ -177,7 +190,6 @@ export async function atualizarHorario(formData: FormData) {
   const { error } = await supabase
     .from('horarios')
     .update({
-      instrumento_id: Number(instrumentoId),
       dia_semana: diaSemana,
       hora_inicio: horaInicio,
       hora_fim: horaFim,
@@ -186,6 +198,9 @@ export async function atualizarHorario(formData: FormData) {
     .eq('professor_id', user.id)
 
   if (error) {
+    if (error.code === '23505') {
+      voltarComErro('Já tens outro horário igual (mesmo dia e hora).')
+    }
     voltarComErro('Não foi possível guardar as alterações. Tenta novamente.')
   }
 
@@ -221,5 +236,51 @@ export async function apagarHorario(formData: FormData) {
   }
 
   revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
+
+export async function apagarHorarios(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const ids = formData.getAll('horarioIds').map(String)
+
+  if (ids.length === 0) {
+    redirect('/dashboard?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
+  }
+
+  let apagados = 0
+  let bloqueados = 0
+
+  for (const id of ids) {
+    const { error } = await supabase
+      .from('horarios')
+      .delete()
+      .eq('id', id)
+      .eq('professor_id', user.id)
+
+    if (error) {
+      bloqueados += 1
+    } else {
+      apagados += 1
+    }
+  }
+
+  revalidatePath('/dashboard')
+
+  if (bloqueados > 0) {
+    redirect(
+      `/dashboard?erroHorarios=${encodeURIComponent(
+        `${apagados} horário(s) apagado(s). ${bloqueados} não puderam ser apagados por teres alunos confirmados — bloqueia-os em vez disso.`
+      )}`
+    )
+  }
+
   redirect('/dashboard')
 }

@@ -7,6 +7,7 @@ import {
   alternarEstadoHorario,
   atualizarInstrumentos,
   criarHorarios,
+  apagarHorarios,
 } from '@/lib/actions/professor'
 import { cancelarPedido } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
@@ -35,7 +36,6 @@ type HorarioProfessor = {
   hora_inicio: string
   hora_fim: string
   estado: string
-  instrumentos: { nome: string } | null
 }
 
 type Confirmado = {
@@ -61,7 +61,7 @@ export default async function DashboardPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('nome, tipo')
+    .select('nome, tipo, admin')
     .eq('id', user.id)
     .single()
 
@@ -116,7 +116,7 @@ export default async function DashboardPage({
 
     const { data: horariosData } = await supabase
       .from('horarios')
-      .select('id, dia_semana, hora_inicio, hora_fim, estado, instrumentos(nome)')
+      .select('id, dia_semana, hora_inicio, hora_fim, estado')
       .eq('professor_id', user.id)
       .order('dia_semana')
       .order('hora_inicio')
@@ -153,6 +153,11 @@ export default async function DashboardPage({
           <p className="text-sm text-foreground/60">
             Estás autenticado como <strong>{profile?.tipo}</strong>.
           </p>
+          {profile?.admin && (
+            <Link href="/admin" className="text-sm underline">
+              Visão geral (diretor)
+            </Link>
+          )}
         </div>
 
         {profile?.tipo === 'aluno' && (
@@ -202,6 +207,12 @@ export default async function DashboardPage({
 
         {profile?.tipo === 'professor' && (
           <div className="space-y-6">
+            {erroHorarios && (
+              <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
+                {erroHorarios}
+              </p>
+            )}
+
             <section className="space-y-3">
               <h2 className="font-semibold">Pedidos por confirmar</h2>
               {pedidos.length === 0 && (
@@ -248,6 +259,7 @@ export default async function DashboardPage({
 
             <section className="space-y-3">
               <h2 className="font-semibold">Os teus horários</h2>
+              <form id="apagar-horarios-form" action={apagarHorarios} />
               {horarios.length === 0 && (
                 <p className="text-sm text-foreground/60">
                   Ainda não tens horários definidos.
@@ -258,19 +270,27 @@ export default async function DashboardPage({
                   key={h.id}
                   className="flex items-center justify-between gap-3 rounded border border-foreground/15 px-4 py-2"
                 >
-                  <div className="text-sm">
-                    <p>
-                      {h.dia_semana}, {h.hora_inicio.slice(0, 5)}–
-                      {h.hora_fim.slice(0, 5)} — {h.instrumentos?.nome}{' '}
-                      {h.estado === 'bloqueado' && (
-                        <span className="text-foreground/50">(bloqueado)</span>
-                      )}
-                    </p>
-                    {(confirmadosPorHorario.get(h.id)?.length ?? 0) > 0 && (
-                      <p className="text-xs text-foreground/60">
-                        Alunos: {confirmadosPorHorario.get(h.id)?.join(', ')}
+                  <div className="flex items-center gap-3 text-sm">
+                    <input
+                      type="checkbox"
+                      name="horarioIds"
+                      value={h.id}
+                      form="apagar-horarios-form"
+                    />
+                    <div>
+                      <p>
+                        {h.dia_semana}, {h.hora_inicio.slice(0, 5)}–
+                        {h.hora_fim.slice(0, 5)}{' '}
+                        {h.estado === 'bloqueado' && (
+                          <span className="text-foreground/50">(bloqueado)</span>
+                        )}
                       </p>
-                    )}
+                      {(confirmadosPorHorario.get(h.id)?.length ?? 0) > 0 && (
+                        <p className="text-xs text-foreground/60">
+                          Alunos: {confirmadosPorHorario.get(h.id)?.join(', ')}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className="flex shrink-0 gap-2">
                     <Link
@@ -296,6 +316,15 @@ export default async function DashboardPage({
                   </div>
                 </div>
               ))}
+              {horarios.length > 0 && (
+                <button
+                  type="submit"
+                  form="apagar-horarios-form"
+                  className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
+                >
+                  Apagar selecionados
+                </button>
+              )}
             </section>
 
             <section className="space-y-3">
@@ -325,117 +354,60 @@ export default async function DashboardPage({
 
             <section className="space-y-3">
               <h2 className="font-semibold">Criar horários</h2>
-              {meusInstrumentos.length === 0 ? (
-                <p className="text-sm text-foreground/60">
-                  Escolhe primeiro os instrumentos que ensinas, acima.
-                </p>
-              ) : (
-                <form
-                  action={criarHorarios}
-                  className="space-y-3 rounded border border-foreground/15 p-4"
-                >
-                  <div className="space-y-1">
-                    <label
-                      htmlFor="instrumentoId"
-                      className="block text-sm font-medium"
-                    >
-                      Instrumento
-                    </label>
-                    <select
-                      id="instrumentoId"
-                      name="instrumentoId"
-                      required
-                      className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
-                    >
-                      {meusInstrumentos.map((i) => (
-                        <option key={i.id} value={i.id}>
-                          {i.nome}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <span className="block text-sm font-medium">
-                      Dias da semana
-                    </span>
-                    <div className="flex flex-wrap gap-3">
-                      {DIAS_SEMANA.map((dia) => (
-                        <label
-                          key={dia}
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <input type="checkbox" name="dias" value={dia} />
-                          {dia}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <div className="flex-1 space-y-1">
-                      <label
-                        htmlFor="horaInicio"
-                        className="block text-sm font-medium"
-                      >
-                        Das
-                      </label>
+              <p className="text-xs text-foreground/50">
+                Os horários não são específicos de um instrumento — servem para
+                qualquer um dos que ensinas. Preenche só os dias em que dás
+                aulas; deixa os outros em branco.
+              </p>
+              <form
+                action={criarHorarios}
+                className="space-y-3 rounded border border-foreground/15 p-4"
+              >
+                <div className="space-y-2">
+                  {DIAS_SEMANA.map((dia, i) => (
+                    <div key={dia} className="flex items-center gap-2">
+                      <span className="w-16 shrink-0 text-sm">{dia}</span>
                       <input
-                        id="horaInicio"
-                        name="horaInicio"
+                        name={`inicio_${i}`}
                         type="time"
-                        required
+                        className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                      />
+                      <span className="text-sm text-foreground/50">até</span>
+                      <input
+                        name={`fim_${i}`}
+                        type="time"
                         className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
                       />
                     </div>
-                    <div className="flex-1 space-y-1">
-                      <label
-                        htmlFor="horaFim"
-                        className="block text-sm font-medium"
-                      >
-                        Até
-                      </label>
-                      <input
-                        id="horaFim"
-                        name="horaFim"
-                        type="time"
-                        required
-                        className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
-                      />
-                    </div>
-                  </div>
+                  ))}
+                </div>
 
-                  <div className="space-y-1">
-                    <label
-                      htmlFor="duracaoMinutos"
-                      className="block text-sm font-medium"
-                    >
-                      Duração de cada aula (minutos)
-                    </label>
-                    <input
-                      id="duracaoMinutos"
-                      name="duracaoMinutos"
-                      type="number"
-                      min={5}
-                      step={5}
-                      defaultValue={50}
-                      required
-                      className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
-                    />
-                  </div>
-
-                  {erroHorarios && (
-                    <p className="text-sm text-red-600">{erroHorarios}</p>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="w-full rounded bg-brand py-2 text-sm text-white hover:bg-brand-hover"
+                <div className="space-y-1">
+                  <label
+                    htmlFor="duracaoMinutos"
+                    className="block text-sm font-medium"
                   >
-                    Criar horários
-                  </button>
-                </form>
-              )}
+                    Duração de cada aula (minutos)
+                  </label>
+                  <input
+                    id="duracaoMinutos"
+                    name="duracaoMinutos"
+                    type="number"
+                    min={5}
+                    step={5}
+                    defaultValue={50}
+                    required
+                    className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full rounded bg-brand py-2 text-sm text-white hover:bg-brand-hover"
+                >
+                  Criar horários
+                </button>
+              </form>
             </section>
           </div>
         )}
