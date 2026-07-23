@@ -280,57 +280,74 @@ export default async function DashboardPage({
                   Ainda não tens horários definidos.
                 </p>
               )}
-              {horarios.map((h) => (
-                <div
-                  key={h.id}
-                  className="flex items-center justify-between gap-3 rounded border border-foreground/15 px-4 py-2"
-                >
-                  <div className="flex items-center gap-3 text-sm">
-                    <input
-                      type="checkbox"
-                      name="horarioIds"
-                      value={h.id}
-                      form="apagar-horarios-form"
-                    />
-                    <div>
-                      <p>
-                        {h.dia_semana}, {h.hora_inicio.slice(0, 5)}–
-                        {h.hora_fim.slice(0, 5)}{' '}
-                        {h.estado === 'bloqueado' && (
-                          <span className="text-foreground/50">(bloqueado)</span>
-                        )}
-                      </p>
-                      {(confirmadosPorHorario.get(h.id)?.length ?? 0) > 0 && (
-                        <p className="text-xs text-foreground/60">
-                          Alunos: {confirmadosPorHorario.get(h.id)?.join(', ')}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 gap-2">
-                    <Link
-                      href={`/professor/horarios/${h.id}`}
-                      className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
-                    >
-                      Editar
-                    </Link>
-                    <form action={alternarEstadoHorario}>
-                      <input type="hidden" name="horarioId" value={h.id} />
-                      <input
-                        type="hidden"
-                        name="novoEstado"
-                        value={h.estado === 'aberto' ? 'bloqueado' : 'aberto'}
-                      />
-                      <button
-                        type="submit"
-                        className="rounded border border-foreground/20 px-3 py-1 text-sm"
-                      >
-                        {h.estado === 'aberto' ? 'Bloquear' : 'Desbloquear'}
-                      </button>
-                    </form>
-                  </div>
+              {horarios.length > 0 && (
+                <div className="overflow-x-auto rounded border border-foreground/15">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-foreground/15 text-xs text-foreground/60">
+                        <th className="w-8 px-3 py-2"></th>
+                        <th className="px-3 py-2 font-medium">Dia</th>
+                        <th className="px-3 py-2 font-medium">Horário</th>
+                        <th className="px-3 py-2 font-medium">Estado</th>
+                        <th className="px-3 py-2 font-medium">Alunos</th>
+                        <th className="px-3 py-2 font-medium">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {horarios.map((h) => (
+                        <tr key={h.id} className="border-b border-foreground/10 last:border-0">
+                          <td className="px-3 py-2">
+                            <input
+                              type="checkbox"
+                              name="horarioIds"
+                              value={h.id}
+                              form="apagar-horarios-form"
+                            />
+                          </td>
+                          <td className="px-3 py-2 whitespace-nowrap">{h.dia_semana}</td>
+                          <td className="px-3 py-2 whitespace-nowrap">
+                            {h.hora_inicio.slice(0, 5)}–{h.hora_fim.slice(0, 5)}
+                          </td>
+                          <td className="px-3 py-2 whitespace-nowrap">
+                            {h.estado === 'bloqueado' ? (
+                              <span className="text-foreground/50">Bloqueado</span>
+                            ) : (
+                              'Aberto'
+                            )}
+                          </td>
+                          <td className="px-3 py-2 text-xs text-foreground/60">
+                            {confirmadosPorHorario.get(h.id)?.join(', ') ?? '—'}
+                          </td>
+                          <td className="px-3 py-2">
+                            <div className="flex flex-wrap gap-2">
+                              <Link
+                                href={`/professor/horarios/${h.id}`}
+                                className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
+                              >
+                                Editar
+                              </Link>
+                              <form action={alternarEstadoHorario}>
+                                <input type="hidden" name="horarioId" value={h.id} />
+                                <input
+                                  type="hidden"
+                                  name="novoEstado"
+                                  value={h.estado === 'aberto' ? 'bloqueado' : 'aberto'}
+                                />
+                                <button
+                                  type="submit"
+                                  className="rounded border border-foreground/20 px-3 py-1 text-sm"
+                                >
+                                  {h.estado === 'aberto' ? 'Bloquear' : 'Desbloquear'}
+                                </button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ))}
+              )}
               {horarios.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   <BotaoSelecionarTodos />
