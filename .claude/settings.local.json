@@ -13,7 +13,14 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(npm install *)",
-      "Bash(openssl rand *)"
+      "Bash(openssl rand *)",
+      "Bash(gh auth *)",
+      "Bash(git -C \"/Users/jpamarcelino/Desktop/Claude App\" remote -v)",
+      "Bash(npx vercel *)",
+      "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; cat {}')",
+      "Bash(npm view *)",
+      "Bash(npm search *)",
+      "Bash(npm run *)"
     ]
   }
 }
