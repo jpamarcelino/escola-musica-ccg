@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 
 export async function escolherDisponibilidades(formData: FormData) {
@@ -58,4 +59,26 @@ export async function escolherDisponibilidades(formData: FormData) {
   }
 
   redirect('/dashboard')
+}
+
+export async function cancelarPedido(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = String(formData.get('matriculaId') ?? '')
+
+  await supabase
+    .from('matriculas')
+    .delete()
+    .eq('id', matriculaId)
+    .eq('aluno_id', user.id)
+    .eq('estado', 'a_escolher')
+
+  revalidatePath('/dashboard')
 }

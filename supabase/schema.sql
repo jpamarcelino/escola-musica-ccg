@@ -133,6 +133,11 @@ create policy "Professor atualiza matrículas dos seus alunos"
   using (auth.uid() = professor_id)
   with check (auth.uid() = professor_id);
 
+create policy "Aluno cancela o seu pedido pendente"
+  on matriculas for delete
+  to authenticated
+  using (auth.uid() = aluno_id and estado = 'a_escolher');
+
 -- 6. Disponibilidades que o aluno marcou como possíveis (opções, não pedidos)
 create table disponibilidades_selecionadas (
   id bigint generated always as identity primary key,

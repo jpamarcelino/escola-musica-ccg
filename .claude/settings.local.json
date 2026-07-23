@@ -22,7 +22,12 @@
       "Bash(npm search *)",
       "Bash(npm run *)",
       "Bash(python3 -c ' *)",
-      "Bash(pip3 install *)"
+      "Bash(pip3 install *)",
+      "Bash(rm -f \"/Users/jpamarcelino/Desktop/Claude App\"/*.pyc 2>/dev/null; echo ok)",
+      "Skill(fewer-permission-prompts)",
+      "Skill(fewer-permission-prompts:*)",
+      "Bash(ls -la ~/.claude/projects/ 2>&1 | head -20)",
+      "Read(//tmp/**)"
     ]
   }
 }

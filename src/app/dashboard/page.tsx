@@ -8,9 +8,11 @@ import {
   atualizarInstrumentos,
   criarHorarios,
 } from '@/lib/actions/professor'
+import { cancelarPedido } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 
 type Matricula = {
+  id: number
   estado: string
   instrumentos: { nome: string } | null
   profiles: { nome: string } | null
@@ -68,7 +70,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from('matriculas')
       .select(
-        'estado, instrumentos(nome), profiles!matriculas_professor_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim)'
+        'id, estado, instrumentos(nome), profiles!matriculas_professor_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim)'
       )
       .eq('aluno_id', user.id)
       .order('criado_em', { ascending: false })
@@ -169,12 +171,23 @@ export default async function DashboardPage({
               </>
             )}
             {matricula && matricula.estado === 'a_escolher' && (
-              <p className="text-sm">
-                Pedido enviado para{' '}
-                <strong>{matricula.profiles?.nome}</strong> (
-                {matricula.instrumentos?.nome}). A aguardar que o professor
-                escolha o horário final.
-              </p>
+              <>
+                <p className="text-sm">
+                  Pedido enviado para{' '}
+                  <strong>{matricula.profiles?.nome}</strong> (
+                  {matricula.instrumentos?.nome}). A aguardar que o professor
+                  escolha o horário final.
+                </p>
+                <form action={cancelarPedido}>
+                  <input type="hidden" name="matriculaId" value={matricula.id} />
+                  <button
+                    type="submit"
+                    className="w-full rounded border border-red-600/40 py-2 text-sm text-red-600 hover:bg-red-600/5"
+                  >
+                    Cancelar pedido
+                  </button>
+                </form>
+              </>
             )}
             {matricula && matricula.estado === 'confirmado' && matricula.horarios && (
               <p className="text-sm">
