@@ -102,15 +102,17 @@ create policy "Utilizadores autenticados veem instrumentos"
   to authenticated
   using (true);
 
--- Alguns exemplos iniciais (podes editar/adicionar mais tarde)
+-- Disciplinas reais da escola (podes editar/adicionar mais tarde)
 insert into instrumentos (nome, programa) values
-  ('Piano', 'musica'), ('Guitarra', 'musica'), ('Violino', 'musica'),
-  ('Bateria', 'musica'), ('Canto', 'musica'), ('Flauta', 'musica'),
+  ('Piano', 'musica'), ('Guitarra', 'musica'),
+  ('Bateria', 'musica'), ('Canto', 'musica'),
   ('Acordeão', 'musica'), ('Concertina', 'musica'), ('Saxofone', 'musica'),
   ('Baixo Elétrico', 'musica'), ('Teoria Musical', 'musica'),
-  ('Estilos Urbanos', 'danca'), ('Ballet Clássico', 'danca'),
-  ('Dança Moderna', 'danca'), ('Dança Contemporânea', 'danca'),
-  ('Dança Moderna para Adultos', 'danca');
+  ('Estilos Urbanos (6 aos 18 anos)', 'danca'),
+  ('Ballet Clássico (4 aos 12 anos)', 'danca'),
+  ('Dança Moderna (12 aos 15 anos)', 'danca'),
+  ('Dança Contemporânea (15 aos 18 anos)', 'danca'),
+  ('Dança Moderna para Adultos (18 aos 55 anos)', 'danca');
 
 -- 3. Que professores ensinam que instrumentos
 create table professor_instrumentos (

@@ -121,11 +121,15 @@ export default async function PedidoPage({
       .select('professor_id, especialidade, profiles(nome, foto_url)')
       .eq('instrumento_id', instrumento)
 
-    const professores = (professoresData ?? []) as unknown as {
-      professor_id: string
-      especialidade: string | null
-      profiles: { nome: string; foto_url: string | null } | null
-    }[]
+    const professores = (
+      (professoresData ?? []) as unknown as {
+        professor_id: string
+        especialidade: string | null
+        profiles: { nome: string; foto_url: string | null } | null
+      }[]
+    ).sort((a, b) =>
+      (a.profiles?.nome ?? '').localeCompare(b.profiles?.nome ?? '', 'pt')
+    )
 
     return (
       <Wizard
