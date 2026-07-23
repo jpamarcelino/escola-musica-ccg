@@ -11,7 +11,8 @@
       "Bash(rsync -a \"/Users/jpamarcelino/Desktop/escola-musica-tmp/\" \"/Users/jpamarcelino/Desktop/Claude App/\")",
       "Bash(rm -rf \"/Users/jpamarcelino/Desktop/escola-musica-tmp\")",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(npm install *)"
     ]
   }
 }
