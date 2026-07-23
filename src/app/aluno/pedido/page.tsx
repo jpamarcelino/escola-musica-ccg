@@ -8,12 +8,13 @@ export default async function PedidoPage({
   searchParams,
 }: {
   searchParams: Promise<{
+    programa?: string
     instrumento?: string
     professor?: string
     erro?: string
   }>
 }) {
-  const { instrumento, professor, erro } = await searchParams
+  const { programa, instrumento, professor, erro } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -34,20 +35,50 @@ export default async function PedidoPage({
     redirect('/dashboard')
   }
 
-  // Passo 1: escolher instrumento
+  // Passo 1: escolher escola
+  if (programa !== 'musica' && programa !== 'danca') {
+    return (
+      <Wizard title="Que escola?">
+        <div className="space-y-2">
+          <Link
+            href="/aluno/pedido?programa=musica"
+            className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
+          >
+            Escola de Música
+          </Link>
+          <Link
+            href="/aluno/pedido?programa=danca"
+            className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
+          >
+            Escola de Dança
+          </Link>
+        </div>
+      </Wizard>
+    )
+  }
+
+  // Passo 2: escolher disciplina
   if (!instrumento) {
     const { data: instrumentos } = await supabase
       .from('instrumentos')
       .select('id, nome')
+      .eq('programa', programa)
       .order('nome')
 
     return (
-      <Wizard title="Que instrumento queres aprender?">
+      <Wizard
+        title={
+          programa === 'musica'
+            ? 'Que instrumento queres aprender?'
+            : 'Que modalidade queres aprender?'
+        }
+        voltar="/aluno/pedido"
+      >
         <div className="space-y-2">
           {instrumentos?.map((i) => (
             <Link
               key={i.id}
-              href={`/aluno/pedido?instrumento=${i.id}`}
+              href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
               className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
             >
               {i.nome}
@@ -68,7 +99,10 @@ export default async function PedidoPage({
 
   if (matriculaExistente) {
     return (
-      <Wizard title="Já tens um pedido nesta disciplina" voltar="/aluno/pedido">
+      <Wizard
+        title="Já tens um pedido nesta disciplina"
+        voltar={`/aluno/pedido?programa=${programa}`}
+      >
         <p className="text-sm text-foreground/60">
           {matriculaExistente.estado === 'confirmado'
             ? 'Já tens uma aula confirmada nesta disciplina.'
@@ -88,13 +122,16 @@ export default async function PedidoPage({
       .eq('instrumento_id', instrumento)
 
     return (
-      <Wizard title="Escolhe o professor" voltar="/aluno/pedido">
+      <Wizard
+        title="Escolhe o professor"
+        voltar={`/aluno/pedido?programa=${programa}`}
+      >
         <div className="space-y-2">
           {professores?.length ? (
             professores.map((p) => (
               <Link
                 key={p.professor_id}
-                href={`/aluno/pedido?instrumento=${instrumento}&professor=${p.professor_id}`}
+                href={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}&professor=${p.professor_id}`}
                 className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
               >
                 {(p.profiles as unknown as { nome: string } | null)?.nome}
@@ -102,7 +139,7 @@ export default async function PedidoPage({
             ))
           ) : (
             <p className="text-sm text-foreground/60">
-              Ainda não há professores para este instrumento.
+              Ainda não há professores para esta disciplina.
             </p>
           )}
         </div>
@@ -127,7 +164,7 @@ export default async function PedidoPage({
   return (
     <Wizard
       title="Escolhe os horários que te dão jeito"
-      voltar={`/aluno/pedido?instrumento=${instrumento}`}
+      voltar={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}`}
     >
       {horariosOrdenados.length === 0 ? (
         <p className="text-sm text-foreground/60">

@@ -1,13 +1,19 @@
 -- Esquema da base de dados da Fase 1
--- Escola de Música: registo, escolha de instrumento/professor, disponibilidades, atribuição final
+-- Centro Cultural: registo, escolha de disciplina/professor, disponibilidades, atribuição final
+-- Duas escolas partilham a mesma estrutura: Música e Dança, distinguidas pela
+-- coluna "programa" em instrumentos (que aqui também guarda modalidades de dança).
 
 -- 1. Perfis de utilizador (aluno ou professor), ligados à conta de login do Supabase
 create table profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   nome text not null,
   tipo text not null check (tipo in ('aluno', 'professor')),
+  -- Só professores têm programa (a escola em que ensinam); um aluno pode
+  -- pedir aulas de Música e de Dança sem estar preso a nenhuma das duas.
+  programa text check (programa in ('musica', 'danca')),
   admin boolean not null default false,
-  criado_em timestamptz not null default now()
+  criado_em timestamptz not null default now(),
+  constraint profiles_professor_tem_programa check (tipo <> 'professor' or programa is not null)
 );
 
 alter table profiles enable row level security;
@@ -65,11 +71,12 @@ security definer
 set search_path = ''
 as $$
 begin
-  insert into public.profiles (id, nome, tipo)
+  insert into public.profiles (id, nome, tipo, programa)
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'nome', ''),
-    coalesce(new.raw_user_meta_data ->> 'tipo', 'aluno')
+    coalesce(new.raw_user_meta_data ->> 'tipo', 'aluno'),
+    new.raw_user_meta_data ->> 'programa'
   );
   return new;
 end;
@@ -79,10 +86,12 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- 2. Instrumentos disponíveis na escola
+-- 2. Instrumentos (Música) e modalidades (Dança) disponíveis, distinguidos por "programa"
 create table instrumentos (
   id bigint generated always as identity primary key,
-  nome text not null unique
+  nome text not null,
+  programa text not null default 'musica' check (programa in ('musica', 'danca')),
+  unique (programa, nome)
 );
 
 alter table instrumentos enable row level security;
@@ -92,9 +101,12 @@ create policy "Utilizadores autenticados veem instrumentos"
   to authenticated
   using (true);
 
--- Alguns instrumentos iniciais (podes editar/adicionar mais tarde)
-insert into instrumentos (nome) values
-  ('Piano'), ('Guitarra'), ('Violino'), ('Bateria'), ('Canto'), ('Flauta');
+-- Alguns exemplos iniciais (podes editar/adicionar mais tarde)
+insert into instrumentos (nome, programa) values
+  ('Piano', 'musica'), ('Guitarra', 'musica'), ('Violino', 'musica'),
+  ('Bateria', 'musica'), ('Canto', 'musica'), ('Flauta', 'musica'),
+  ('Ballet', 'danca'), ('Hip Hop', 'danca'), ('Contemporâneo', 'danca'),
+  ('Jazz', 'danca'), ('Danças de Salão', 'danca');
 
 -- 3. Que professores ensinam que instrumentos
 create table professor_instrumentos (

@@ -2,7 +2,13 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarAdministradores } from '@/lib/actions/admin'
 
-type Perfil = { id: string; nome: string; tipo: string; admin: boolean }
+type Perfil = {
+  id: string
+  nome: string
+  tipo: string
+  admin: boolean
+  programa: string | null
+}
 
 type MatriculaResumo = {
   id: number
@@ -46,7 +52,7 @@ export default async function AdminPage() {
 
   const { data: perfisData } = await supabase
     .from('profiles')
-    .select('id, nome, tipo, admin')
+    .select('id, nome, tipo, admin, programa')
     .order('criado_em')
   const perfis = (perfisData ?? []) as Perfil[]
   const alunos = perfis.filter((p) => p.tipo === 'aluno')
@@ -118,7 +124,7 @@ export default async function AdminPage() {
           )}
           <div className="space-y-2">
             {alunos.map((aluno) => {
-              const matriculaDoAluno = matriculas.find(
+              const matriculasDoAluno = matriculas.filter(
                 (m) => m.aluno_id === aluno.id
               )
               return (
@@ -127,26 +133,27 @@ export default async function AdminPage() {
                   className="rounded border border-foreground/15 px-4 py-2 text-sm"
                 >
                   <p className="font-medium">{aluno.nome}</p>
-                  {!matriculaDoAluno && (
+                  {matriculasDoAluno.length === 0 && (
                     <p className="text-xs text-foreground/60">Ainda não pediu aula.</p>
                   )}
-                  {matriculaDoAluno && matriculaDoAluno.estado === 'a_escolher' && (
-                    <p className="text-xs text-foreground/60">
-                      A aguardar confirmação de {matriculaDoAluno.professor?.nome} (
-                      {matriculaDoAluno.instrumentos?.nome})
+                  {matriculasDoAluno.map((m) => (
+                    <p key={m.id} className="text-xs text-foreground/60">
+                      {m.estado === 'a_escolher' && (
+                        <>
+                          A aguardar confirmação de {m.professor?.nome} (
+                          {m.instrumentos?.nome})
+                        </>
+                      )}
+                      {m.estado === 'confirmado' && m.horarios && (
+                        <>
+                          Confirmado com {m.professor?.nome} (
+                          {m.instrumentos?.nome}): {m.horarios.dia_semana},{' '}
+                          {m.horarios.hora_inicio.slice(0, 5)}–
+                          {m.horarios.hora_fim.slice(0, 5)}
+                        </>
+                      )}
                     </p>
-                  )}
-                  {matriculaDoAluno &&
-                    matriculaDoAluno.estado === 'confirmado' &&
-                    matriculaDoAluno.horarios && (
-                      <p className="text-xs text-foreground/60">
-                        Confirmado com {matriculaDoAluno.professor?.nome} (
-                        {matriculaDoAluno.instrumentos?.nome}):{' '}
-                        {matriculaDoAluno.horarios.dia_semana},{' '}
-                        {matriculaDoAluno.horarios.hora_inicio.slice(0, 5)}–
-                        {matriculaDoAluno.horarios.hora_fim.slice(0, 5)}
-                      </p>
-                    )}
+                  ))}
                 </div>
               )
             })}
@@ -182,6 +189,15 @@ export default async function AdminPage() {
                 >
                   <p className="font-medium">
                     {professor.nome}{' '}
+                    <span className="text-xs text-foreground/50">
+                      (
+                      {professor.programa === 'musica'
+                        ? 'Música'
+                        : professor.programa === 'danca'
+                          ? 'Dança'
+                          : 'sem escola'}
+                      )
+                    </span>{' '}
                     {professor.admin && (
                       <span className="text-xs text-foreground/50">(admin)</span>
                     )}

@@ -64,11 +64,11 @@ export default async function DashboardPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('nome, tipo, admin')
+    .select('nome, tipo, admin, programa')
     .eq('id', user.id)
     .single()
 
-  let matricula: Matricula | null = null
+  let matriculas: Matricula[] = []
   if (profile?.tipo === 'aluno') {
     const { data } = await supabase
       .from('matriculas')
@@ -77,9 +77,7 @@ export default async function DashboardPage({
       )
       .eq('aluno_id', user.id)
       .order('criado_em', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-    matricula = data as unknown as Matricula | null
+    matriculas = (data ?? []) as unknown as Matricula[]
   }
 
   let pedidos: Pedido[] = []
@@ -92,6 +90,7 @@ export default async function DashboardPage({
     const { data: instrumentosData } = await supabase
       .from('instrumentos')
       .select('id, nome')
+      .eq('programa', profile.programa)
       .order('nome')
     todosInstrumentos = instrumentosData ?? []
 
@@ -154,7 +153,10 @@ export default async function DashboardPage({
         <div className={largo ? 'text-left' : ''}>
           <h1 className="text-xl font-semibold">Bem-vindo, {profile?.nome}</h1>
           <p className="text-sm text-foreground/60">
-            Estás autenticado como <strong>{profile?.tipo}</strong>.
+            Estás autenticado como <strong>{profile?.tipo}</strong>
+            {profile?.programa &&
+              ` — Escola de ${profile.programa === 'musica' ? 'Música' : 'Dança'}`}
+            .
           </p>
           {profile?.admin && (
             <Link href="/admin" className="text-sm underline">
@@ -164,47 +166,56 @@ export default async function DashboardPage({
         </div>
 
         {profile?.tipo === 'aluno' && (
-          <div className="space-y-3 rounded border border-foreground/15 p-4 text-left">
-            {!matricula && (
-              <>
-                <p className="text-sm text-foreground/60">
-                  Ainda não pediste nenhuma aula.
-                </p>
-                <Link
-                  href="/aluno/pedido"
-                  className="block rounded bg-brand py-2 text-center text-white hover:bg-brand-hover"
-                >
-                  Pedir aula
-                </Link>
-              </>
-            )}
-            {matricula && matricula.estado === 'a_escolher' && (
-              <>
-                <p className="text-sm">
-                  Pedido enviado para{' '}
-                  <strong>{matricula.profiles?.nome}</strong> (
-                  {matricula.instrumentos?.nome}). A aguardar que o professor
-                  escolha o horário final.
-                </p>
-                <form action={cancelarPedido}>
-                  <input type="hidden" name="matriculaId" value={matricula.id} />
-                  <button
-                    type="submit"
-                    className="w-full rounded border border-red-600/40 py-2 text-sm text-red-600 hover:bg-red-600/5"
-                  >
-                    Cancelar pedido
-                  </button>
-                </form>
-              </>
-            )}
-            {matricula && matricula.estado === 'confirmado' && matricula.horarios && (
-              <p className="text-sm">
-                Aula confirmada com <strong>{matricula.profiles?.nome}</strong>{' '}
-                ({matricula.instrumentos?.nome}): {matricula.horarios.dia_semana}
-                , {matricula.horarios.hora_inicio.slice(0, 5)}–
-                {matricula.horarios.hora_fim.slice(0, 5)}.
+          <div className="space-y-4 text-left">
+            {matriculas.length === 0 && (
+              <p className="text-sm text-foreground/60">
+                Ainda não pediste nenhuma aula.
               </p>
             )}
+            {matriculas.map((matricula) => (
+              <div
+                key={matricula.id}
+                className="space-y-3 rounded border border-foreground/15 p-4"
+              >
+                {matricula.estado === 'a_escolher' && (
+                  <>
+                    <p className="text-sm">
+                      Pedido enviado para{' '}
+                      <strong>{matricula.profiles?.nome}</strong> (
+                      {matricula.instrumentos?.nome}). A aguardar que o
+                      professor escolha o horário final.
+                    </p>
+                    <form action={cancelarPedido}>
+                      <input
+                        type="hidden"
+                        name="matriculaId"
+                        value={matricula.id}
+                      />
+                      <button
+                        type="submit"
+                        className="w-full rounded border border-red-600/40 py-2 text-sm text-red-600 hover:bg-red-600/5"
+                      >
+                        Cancelar pedido
+                      </button>
+                    </form>
+                  </>
+                )}
+                {matricula.estado === 'confirmado' && matricula.horarios && (
+                  <p className="text-sm">
+                    Aula confirmada com <strong>{matricula.profiles?.nome}</strong>{' '}
+                    ({matricula.instrumentos?.nome}): {matricula.horarios.dia_semana}
+                    , {matricula.horarios.hora_inicio.slice(0, 5)}–
+                    {matricula.horarios.hora_fim.slice(0, 5)}.
+                  </p>
+                )}
+              </div>
+            ))}
+            <Link
+              href="/aluno/pedido"
+              className="block rounded bg-brand py-2 text-center text-white hover:bg-brand-hover"
+            >
+              Pedir aula
+            </Link>
           </div>
         )}
 
@@ -336,7 +347,7 @@ export default async function DashboardPage({
             </section>
 
             <section className="space-y-3">
-              <h2 className="font-semibold">Instrumentos que ensinas</h2>
+              <h2 className="font-semibold">Disciplinas que ensinas</h2>
               <form action={atualizarInstrumentos} className="space-y-3">
                 <div className="flex flex-wrap gap-3">
                   {todosInstrumentos.map((i) => (
@@ -355,7 +366,7 @@ export default async function DashboardPage({
                   type="submit"
                   className="rounded border border-foreground/20 px-3 py-1 text-sm"
                 >
-                  Guardar instrumentos
+                  Guardar disciplinas
                 </button>
               </form>
             </section>
@@ -363,9 +374,9 @@ export default async function DashboardPage({
             <section className="space-y-3">
               <h2 className="font-semibold">Criar horários</h2>
               <p className="text-xs text-foreground/50">
-                Os horários não são específicos de um instrumento — servem para
-                qualquer um dos que ensinas. Preenche só os dias em que dás
-                aulas; deixa os outros em branco.
+                Os horários não são específicos de uma disciplina — servem
+                para qualquer uma das que ensinas. Preenche só os dias em que
+                dás aulas; deixa os outros em branco.
               </p>
               <form
                 action={criarHorarios}

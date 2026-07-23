@@ -61,15 +61,33 @@ export async function atualizarInstrumentos(formData: FormData) {
 
   const instrumentoIds = formData.getAll('instrumentos').map(String)
 
+  const { data: perfil } = await supabase
+    .from('profiles')
+    .select('programa')
+    .eq('id', user.id)
+    .single()
+
   await supabase.from('professor_instrumentos').delete().eq('professor_id', user.id)
 
-  if (instrumentoIds.length > 0) {
-    await supabase.from('professor_instrumentos').insert(
-      instrumentoIds.map((id) => ({
-        professor_id: user.id,
-        instrumento_id: Number(id),
-      }))
-    )
+  if (instrumentoIds.length > 0 && perfil?.programa) {
+    // Confirma que os ids pertencem mesmo à escola (programa) do professor,
+    // para não aceitar disciplinas da outra escola por manipulação do formulário.
+    const { data: instrumentosValidos } = await supabase
+      .from('instrumentos')
+      .select('id')
+      .eq('programa', perfil.programa)
+      .in('id', instrumentoIds.map(Number))
+
+    const idsValidos = (instrumentosValidos ?? []).map((i) => i.id)
+
+    if (idsValidos.length > 0) {
+      await supabase.from('professor_instrumentos').insert(
+        idsValidos.map((id) => ({
+          professor_id: user.id,
+          instrumento_id: id,
+        }))
+      )
+    }
   }
 
   revalidatePath('/dashboard')

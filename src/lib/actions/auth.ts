@@ -29,10 +29,16 @@ export async function signup(
     return { error: 'A password deve ter pelo menos 6 caracteres.' }
   }
 
+  let programa: string | null = null
   if (tipo === 'professor') {
     const codigoProfessor = String(formData.get('codigoProfessor') ?? '').trim()
     if (!codigoProfessor || codigoProfessor !== process.env.PROFESSOR_INVITE_CODE) {
       return { error: 'Código de professor inválido.' }
+    }
+
+    programa = String(formData.get('programa') ?? '')
+    if (programa !== 'musica' && programa !== 'danca') {
+      return { error: 'Escolhe a escola (Música ou Dança).' }
     }
   }
 
@@ -40,7 +46,7 @@ export async function signup(
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { nome, tipo } },
+    options: { data: { nome, tipo, programa } },
   })
 
   if (error) {

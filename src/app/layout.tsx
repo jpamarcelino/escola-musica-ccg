@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Escola de Música",
-  description: "Marcação de aulas da escola de música do Centro Cultural",
+  title: "Centro Cultural",
+  description: "Marcação de aulas das escolas de Música e Dança do Centro Cultural",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Escola de Música",
+    title: "Centro Cultural",
   },
 };
 
@@ -51,10 +51,7 @@ export default function RootLayout({
                 priority
               />
               <span className="text-sm font-semibold leading-tight">
-                Escola de Música
-                <span className="block text-xs font-normal text-foreground/50">
-                  Centro Cultural
-                </span>
+                Centro Cultural
               </span>
             </Link>
           </div>
