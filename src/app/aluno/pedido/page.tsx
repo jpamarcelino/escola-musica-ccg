@@ -226,7 +226,7 @@ function Wizard({
   children: React.ReactNode
 }) {
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
+    <main className="flex-1 flex items-start justify-center p-6">
       <div className="w-full max-w-sm space-y-4">
         {title && <h1 className="text-xl font-semibold">{title}</h1>}
         {children}
