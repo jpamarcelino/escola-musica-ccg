@@ -50,7 +50,7 @@ export default async function PedidoPage({
   // Passo 1: escolher escola
   if (programa !== 'musica' && programa !== 'danca') {
     return (
-      <Wizard>
+      <Wizard voltar="/dashboard">
         <div className="option-stack">
           <OptionCard href="/aluno/pedido?programa=musica" nome={'Escola\nde\nMúsica'} wide />
           <OptionCard href="/aluno/pedido?programa=danca" nome={'Escola\nde\nDança'} wide />
