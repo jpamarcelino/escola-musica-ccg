@@ -16,7 +16,7 @@ export default async function Home() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center gap-8 p-6 text-center">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">Centro Cultural</h1>
+        <h1 className="text-2xl font-semibold">Centro Cultural da Guarda</h1>
         <p className="max-w-sm text-foreground/60">
           Marca as tuas aulas de forma simples: escolhe a escola, a disciplina,
           o professor e os horários que preferes.

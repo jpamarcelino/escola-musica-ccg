@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Centro Cultural',
+    name: 'Centro Cultural da Guarda',
     short_name: 'Centro Cultural',
-    description: 'Marcação de aulas das escolas de Música e Dança do Centro Cultural',
+    description: 'Marcação de aulas das escolas de Música e Dança do Centro Cultural da Guarda',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

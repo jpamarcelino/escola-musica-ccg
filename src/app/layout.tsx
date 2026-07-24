@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Centro Cultural",
-  description: "Marcação de aulas das escolas de Música e Dança do Centro Cultural",
+  title: "Centro Cultural da Guarda",
+  description: "Marcação de aulas das escolas de Música e Dança do Centro Cultural da Guarda",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Centro Cultural",
+    title: "Centro Cultural da Guarda",
   },
 };
 
@@ -44,14 +44,14 @@ export default function RootLayout({
             <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/logo.png"
-                alt="Centro Cultural"
+                alt="Centro Cultural da Guarda"
                 width={32}
                 height={48}
                 className="h-9 w-auto"
                 priority
               />
               <span className="text-sm font-semibold leading-tight">
-                Centro Cultural
+                Centro Cultural da Guarda
               </span>
             </Link>
           </div>

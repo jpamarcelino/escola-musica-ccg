@@ -228,13 +228,22 @@ function Wizard({
   return (
     <main className="flex-1 flex items-start justify-center p-6">
       <div className="w-full max-w-sm space-y-4">
-        {title && <h1 className="text-xl font-semibold">{title}</h1>}
-        {children}
         {voltar && (
-          <Link href={voltar} className="block text-sm text-center underline">
-            Voltar
+          <Link href={voltar} className="back-button" aria-label="Voltar">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M15 5 L8 12 L15 19"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </Link>
         )}
+        {title && <h1 className="text-xl font-semibold">{title}</h1>}
+        {children}
       </div>
     </main>
   )
