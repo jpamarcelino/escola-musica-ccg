@@ -16,6 +16,16 @@ const ICONE_PADDING: Record<string, string | undefined> = {
   'Teoria Musical': '18%',
 }
 
+// Idem, para os ícones das modalidades de dança (chave = título sem a
+// faixa etária). Por omissão usam iconePadding="12%" (ver mais abaixo).
+const DANCA_ICONE_PADDING: Record<string, string> = {
+  'Ballet Clássico': '12%',
+  'Dança Moderna': '9%',
+  'Dança Contemporânea': '9%',
+  'Dança Moderna para Adultos': '5%',
+  'Estilos Urbanos': '5%',
+}
+
 // As modalidades de dança guardam a faixa etária entre parênteses no
 // nome (ex: "Estilos Urbanos (6 aos 18 anos)"); separa-a para mostrar
 // numa linha própria, sem parênteses, por baixo do nome a negrito.
@@ -97,7 +107,7 @@ export default async function PedidoPage({
                   subtitulo={idade}
                   imagemUrl={i.imagem_url}
                   icone
-                  iconePadding="12%"
+                  iconePadding={DANCA_ICONE_PADDING[titulo] ?? '12%'}
                   tituloNegrito
                   index={idx}
                 />
