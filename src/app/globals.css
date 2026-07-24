@@ -59,6 +59,13 @@ body::before {
   gap: 14px;
 }
 
+/* Cartões grandes empilhados, sem imagem — usados na escolha da escola */
+.option-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .option-card {
   display: flex;
   flex-direction: column;
@@ -126,6 +133,22 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.option-card.wide {
+  aspect-ratio: auto;
+  min-height: 108px;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-card.wide .option-card-label {
+  border-top: none;
+  padding: 20px;
+}
+
+.option-card.wide .option-card-name {
+  font-size: 20px;
 }
 
 .option-card-name {

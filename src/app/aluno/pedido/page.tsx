@@ -39,10 +39,10 @@ export default async function PedidoPage({
   // Passo 1: escolher escola
   if (programa !== 'musica' && programa !== 'danca') {
     return (
-      <Wizard title="Que escola?">
-        <div className="option-grid">
-          <OptionCard href="/aluno/pedido?programa=musica" nome="Escola de Música" />
-          <OptionCard href="/aluno/pedido?programa=danca" nome="Escola de Dança" />
+      <Wizard>
+        <div className="option-stack">
+          <OptionCard href="/aluno/pedido?programa=musica" nome="Escola de Música" wide />
+          <OptionCard href="/aluno/pedido?programa=danca" nome="Escola de Dança" wide />
         </div>
       </Wizard>
     )
@@ -208,14 +208,14 @@ function Wizard({
   voltar,
   children,
 }: {
-  title: string
+  title?: string
   voltar?: string
   children: React.ReactNode
 }) {
   return (
     <main className="flex-1 flex items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-4 border border-foreground/15 rounded-lg p-6">
-        <h1 className="text-xl font-semibold">{title}</h1>
+        {title && <h1 className="text-xl font-semibold">{title}</h1>}
         {children}
         {voltar && (
           <Link href={voltar} className="block text-sm text-center underline">
