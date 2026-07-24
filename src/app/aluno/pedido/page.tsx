@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { OptionCard } from '@/components/option-card'
 
 export default async function PedidoPage({
   searchParams,
@@ -39,19 +40,9 @@ export default async function PedidoPage({
   if (programa !== 'musica' && programa !== 'danca') {
     return (
       <Wizard title="Que escola?">
-        <div className="space-y-2">
-          <Link
-            href="/aluno/pedido?programa=musica"
-            className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
-          >
-            Escola de Música
-          </Link>
-          <Link
-            href="/aluno/pedido?programa=danca"
-            className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
-          >
-            Escola de Dança
-          </Link>
+        <div className="option-grid">
+          <OptionCard href="/aluno/pedido?programa=musica" nome="Escola de Música" />
+          <OptionCard href="/aluno/pedido?programa=danca" nome="Escola de Dança" />
         </div>
       </Wizard>
     )
@@ -61,7 +52,7 @@ export default async function PedidoPage({
   if (!instrumento) {
     const { data: instrumentos } = await supabase
       .from('instrumentos')
-      .select('id, nome')
+      .select('id, nome, imagem_url')
       .eq('programa', programa)
       .order('nome')
 
@@ -74,15 +65,14 @@ export default async function PedidoPage({
         }
         voltar="/aluno/pedido"
       >
-        <div className="space-y-2">
+        <div className="option-grid">
           {instrumentos?.map((i) => (
-            <Link
+            <OptionCard
               key={i.id}
               href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
-              className="block rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
-            >
-              {i.nome}
-            </Link>
+              nome={i.nome}
+              imagemUrl={i.imagem_url}
+            />
           ))}
         </div>
       </Wizard>
@@ -136,40 +126,23 @@ export default async function PedidoPage({
         title="Escolhe o professor"
         voltar={`/aluno/pedido?programa=${programa}`}
       >
-        <div className="space-y-2">
-          {professores.length ? (
-            professores.map((p) => (
-              <Link
+        {professores.length ? (
+          <div className="option-grid">
+            {professores.map((p) => (
+              <OptionCard
                 key={p.professor_id}
                 href={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}&professor=${p.professor_id}`}
-                className="flex items-center gap-3 rounded border border-foreground/20 px-4 py-2 hover:bg-foreground/5"
-              >
-                {p.profiles?.foto_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.profiles.foto_url}
-                    alt={p.profiles.nome}
-                    className="h-10 w-10 shrink-0 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-xs text-foreground/50">
-                    {p.profiles?.nome?.slice(0, 1)}
-                  </div>
-                )}
-                <div>
-                  <p>{p.profiles?.nome}</p>
-                  {p.especialidade && (
-                    <p className="text-xs text-foreground/50">{p.especialidade}</p>
-                  )}
-                </div>
-              </Link>
-            ))
-          ) : (
-            <p className="text-sm text-foreground/60">
-              Ainda não há professores para esta disciplina.
-            </p>
-          )}
-        </div>
+                nome={p.profiles?.nome ?? ''}
+                imagemUrl={p.profiles?.foto_url}
+                subtitulo={p.especialidade}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-foreground/60">
+            Ainda não há professores para esta disciplina.
+          </p>
+        )}
       </Wizard>
     )
   }

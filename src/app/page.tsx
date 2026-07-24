@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { OptionCard } from '@/components/option-card'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -22,25 +23,9 @@ export default async function Home() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="flex w-64 flex-col gap-3 rounded-lg border border-foreground/15 p-6">
-          <h2 className="font-semibold">Escola de Música</h2>
-          <Link
-            href="/registo?programa=musica"
-            className="rounded bg-brand text-white hover:bg-brand-hover px-4 py-2"
-          >
-            Criar conta
-          </Link>
-        </div>
-        <div className="flex w-64 flex-col gap-3 rounded-lg border border-foreground/15 p-6">
-          <h2 className="font-semibold">Escola de Dança</h2>
-          <Link
-            href="/registo?programa=danca"
-            className="rounded bg-brand text-white hover:bg-brand-hover px-4 py-2"
-          >
-            Criar conta
-          </Link>
-        </div>
+      <div className="option-grid w-full max-w-xs">
+        <OptionCard href="/registo?programa=musica" nome="Escola de Música" />
+        <OptionCard href="/registo?programa=danca" nome="Escola de Dança" />
       </div>
 
       <Link href="/login" className="rounded border border-foreground/20 px-4 py-2">

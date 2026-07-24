@@ -92,6 +92,7 @@ create table instrumentos (
   id bigint generated always as identity primary key,
   nome text not null,
   programa text not null default 'musica' check (programa in ('musica', 'danca')),
+  imagem_url text,
   unique (programa, nome)
 );
 
