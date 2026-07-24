@@ -16,6 +16,15 @@ const ICONE_PADDING: Record<string, string | undefined> = {
   'Teoria Musical': '18%',
 }
 
+// As modalidades de dança guardam a faixa etária entre parênteses no
+// nome (ex: "Estilos Urbanos (6 aos 18 anos)"); separa-a para mostrar
+// numa linha própria, sem parênteses, por baixo do nome a negrito.
+function separarFaixaEtaria(nome: string): { titulo: string; idade?: string } {
+  const match = nome.match(/^(.*)\s\(([^)]+)\)$/)
+  if (!match) return { titulo: nome }
+  return { titulo: match[1], idade: match[2] }
+}
+
 export default async function PedidoPage({
   searchParams,
 }: {
@@ -77,17 +86,32 @@ export default async function PedidoPage({
         voltar="/aluno/pedido"
       >
         <div className="option-grid">
-          {instrumentos?.map((i, idx) => (
-            <OptionCard
-              key={i.id}
-              href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
-              nome={i.nome}
-              imagemUrl={i.imagem_url}
-              icone
-              iconePadding={ICONE_PADDING[i.nome]}
-              index={idx}
-            />
-          ))}
+          {instrumentos?.map((i, idx) => {
+            if (programa === 'danca') {
+              const { titulo, idade } = separarFaixaEtaria(i.nome)
+              return (
+                <OptionCard
+                  key={i.id}
+                  href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
+                  nome={titulo}
+                  subtitulo={idade}
+                  tituloNegrito
+                  index={idx}
+                />
+              )
+            }
+            return (
+              <OptionCard
+                key={i.id}
+                href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
+                nome={i.nome}
+                imagemUrl={i.imagem_url}
+                icone
+                iconePadding={ICONE_PADDING[i.nome]}
+                index={idx}
+              />
+            )
+          })}
         </div>
       </Wizard>
     )

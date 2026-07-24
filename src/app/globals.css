@@ -196,6 +196,14 @@ body {
   gap: 2px;
 }
 
+/* Reserva sempre o mesmo espaço para o texto, mesmo quando o nome é
+   curto e sobra espaço — usado nas modalidades de dança (nome +
+   faixa etária), para os cartões ficarem uniformes entre si. */
+.option-card-label.tall {
+  min-height: 80px;
+  justify-content: center;
+}
+
 .option-card.wide {
   align-items: center;
   justify-content: center;
@@ -217,6 +225,10 @@ body {
   font-size: 14.5px;
   color: var(--brand-hover);
   line-height: 1.25;
+}
+
+.option-card-name.negrito {
+  font-weight: 700;
 }
 
 .option-card-sub {

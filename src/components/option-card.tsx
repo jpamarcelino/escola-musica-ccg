@@ -10,6 +10,7 @@ export function OptionCard({
   icone = false,
   iconePadding,
   index = 0,
+  tituloNegrito = false,
 }: {
   href: string
   nome: string
@@ -19,6 +20,7 @@ export function OptionCard({
   icone?: boolean
   iconePadding?: string
   index?: number
+  tituloNegrito?: boolean
 }) {
   return (
     <Link
@@ -42,8 +44,10 @@ export function OptionCard({
           )}
         </span>
       )}
-      <span className="option-card-label">
-        <span className="option-card-name">{nome}</span>
+      <span className={tituloNegrito ? 'option-card-label tall' : 'option-card-label'}>
+        <span className={tituloNegrito ? 'option-card-name negrito' : 'option-card-name'}>
+          {nome}
+        </span>
         {subtitulo && <span className="option-card-sub">{subtitulo}</span>}
       </span>
     </Link>
