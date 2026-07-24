@@ -11,7 +11,9 @@ import { OptionCard } from '@/components/option-card'
 const ICONE_PADDING: Record<string, string | undefined> = {
   Guitarra: '14%',
   'Baixo Elétrico': '14%',
-  Bateria: '18%',
+  Bateria: '14%',
+  Concertina: '18%',
+  'Teoria Musical': '18%',
 }
 
 export default async function PedidoPage({
