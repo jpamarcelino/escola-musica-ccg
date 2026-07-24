@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/actions/auth'
@@ -158,11 +159,17 @@ export default async function DashboardPage({
         className={
           largo
             ? 'w-full max-w-2xl space-y-6'
-            : 'w-full max-w-sm space-y-4 text-center self-center'
+            : 'w-full max-w-sm space-y-4 text-center'
         }
       >
-        <div className={largo ? 'text-left' : ''}>
-          <h1 className="text-xl font-semibold">Bem-vindo, {profile?.nome}</h1>
+        <div
+          className={`entrada-esquerda ${largo ? 'text-left' : ''}`}
+          style={{ '--card-index': 0 } as CSSProperties}
+        >
+          <h1 className="text-2xl">
+            <span className="saudacao">Bem-vindo,</span>{' '}
+            <span className="font-semibold text-foreground">{profile?.nome}</span>
+          </h1>
           <p className="text-sm text-foreground/60">
             Estás autenticado como <strong>{profile?.tipo}</strong>
             {profile?.programa &&
@@ -179,14 +186,18 @@ export default async function DashboardPage({
         {profile?.tipo === 'aluno' && (
           <div className="space-y-4 text-left">
             {matriculas.length === 0 && (
-              <p className="text-sm text-foreground/60">
+              <p
+                className="entrada-esquerda text-sm text-foreground/60"
+                style={{ '--card-index': 1 } as CSSProperties}
+              >
                 Ainda não pediste nenhuma aula.
               </p>
             )}
-            {matriculas.map((matricula) => (
+            {matriculas.map((matricula, idx) => (
               <div
                 key={matricula.id}
-                className="space-y-3 rounded border border-foreground/15 p-4"
+                className="entrada-esquerda space-y-3 rounded border border-foreground/15 p-4"
+                style={{ '--card-index': idx + 1 } as CSSProperties}
               >
                 {matricula.estado === 'a_escolher' && (
                   <>
@@ -223,7 +234,8 @@ export default async function DashboardPage({
             ))}
             <Link
               href="/aluno/pedido"
-              className="block rounded bg-brand py-2 text-center text-white hover:bg-brand-hover"
+              className="botao-cartao entrada-esquerda"
+              style={{ '--card-index': matriculas.length + 1 } as CSSProperties}
             >
               Pedir aula
             </Link>
