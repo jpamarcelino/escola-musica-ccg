@@ -136,8 +136,6 @@ body::before {
 }
 
 .option-card.wide {
-  aspect-ratio: auto;
-  min-height: 108px;
   align-items: center;
   justify-content: center;
 }
@@ -148,7 +146,7 @@ body::before {
 }
 
 .option-card.wide .option-card-name {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .option-card-name {
