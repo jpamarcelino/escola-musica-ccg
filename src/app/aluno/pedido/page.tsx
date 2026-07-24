@@ -95,6 +95,9 @@ export default async function PedidoPage({
                   href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
                   nome={titulo}
                   subtitulo={idade}
+                  imagemUrl={i.imagem_url}
+                  icone
+                  iconePadding="12%"
                   tituloNegrito
                   index={idx}
                 />
