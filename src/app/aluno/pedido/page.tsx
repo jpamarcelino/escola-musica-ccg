@@ -41,8 +41,8 @@ export default async function PedidoPage({
     return (
       <Wizard>
         <div className="option-stack">
-          <OptionCard href="/aluno/pedido?programa=musica" nome="Escola de Música" wide />
-          <OptionCard href="/aluno/pedido?programa=danca" nome="Escola de Dança" wide />
+          <OptionCard href="/aluno/pedido?programa=musica" nome={'Escola\nde\nMúsica'} wide />
+          <OptionCard href="/aluno/pedido?programa=danca" nome={'Escola\nde\nDança'} wide />
         </div>
       </Wizard>
     )
