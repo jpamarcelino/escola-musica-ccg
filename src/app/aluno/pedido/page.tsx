@@ -72,6 +72,8 @@ export default async function PedidoPage({
               href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
               nome={i.nome}
               imagemUrl={i.imagem_url}
+              icone
+              iconePadding={i.nome === 'Bateria' ? '18%' : undefined}
             />
           ))}
         </div>

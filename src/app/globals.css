@@ -112,6 +112,13 @@ body {
   display: block;
 }
 
+/* Ícones de instrumento — símbolo pequeno e centrado, não a foto toda. */
+.option-card-media.icon img {
+  box-sizing: border-box;
+  object-fit: contain;
+  padding: 22%;
+}
+
 .option-card-initial {
   font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
   font-size: 30px;
