@@ -5,6 +5,15 @@ import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { OptionCard } from '@/components/option-card'
 
+// Afinação fina do tamanho de cada ícone de instrumento dentro do cartão
+// (percentagem de espaço à volta — menos padding = ícone maior). Sem
+// entrada aqui, usa o valor por omissão definido em globals.css.
+const ICONE_PADDING: Record<string, string | undefined> = {
+  Guitarra: '14%',
+  'Baixo Elétrico': '14%',
+  Bateria: '18%',
+}
+
 export default async function PedidoPage({
   searchParams,
 }: {
@@ -73,7 +82,7 @@ export default async function PedidoPage({
               nome={i.nome}
               imagemUrl={i.imagem_url}
               icone
-              iconePadding={i.nome === 'Bateria' ? '18%' : undefined}
+              iconePadding={ICONE_PADDING[i.nome]}
             />
           ))}
         </div>
