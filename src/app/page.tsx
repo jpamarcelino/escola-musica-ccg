@@ -24,8 +24,8 @@ export default async function Home() {
       </div>
 
       <div className="option-grid w-full max-w-xs">
-        <OptionCard href="/registo?programa=musica" nome="Escola de Música" />
-        <OptionCard href="/registo?programa=danca" nome="Escola de Dança" />
+        <OptionCard href="/registo?programa=musica" nome="Escola de Música" index={0} />
+        <OptionCard href="/registo?programa=danca" nome="Escola de Dança" index={1} />
       </div>
 
       <Link href="/login" className="rounded border border-foreground/20 px-4 py-2">

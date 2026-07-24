@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type { CSSProperties } from 'react'
 
 export function OptionCard({
   href,
@@ -8,6 +9,7 @@ export function OptionCard({
   wide = false,
   icone = false,
   iconePadding,
+  index = 0,
 }: {
   href: string
   nome: string
@@ -16,9 +18,14 @@ export function OptionCard({
   wide?: boolean
   icone?: boolean
   iconePadding?: string
+  index?: number
 }) {
   return (
-    <Link href={href} className={wide ? 'option-card wide' : 'option-card'}>
+    <Link
+      href={href}
+      className={wide ? 'option-card wide' : 'option-card'}
+      style={{ '--card-index': index } as CSSProperties}
+    >
       {!wide && (
         <span className={icone ? 'option-card-media icon' : 'option-card-media'}>
           {imagemUrl ? (

@@ -52,8 +52,8 @@ export default async function PedidoPage({
     return (
       <Wizard voltar="/dashboard">
         <div className="option-stack">
-          <OptionCard href="/aluno/pedido?programa=musica" nome={'Escola\nde\nMúsica'} wide />
-          <OptionCard href="/aluno/pedido?programa=danca" nome={'Escola\nde\nDança'} wide />
+          <OptionCard href="/aluno/pedido?programa=musica" nome={'Escola\nde\nMúsica'} wide index={0} />
+          <OptionCard href="/aluno/pedido?programa=danca" nome={'Escola\nde\nDança'} wide index={1} />
         </div>
       </Wizard>
     )
@@ -77,7 +77,7 @@ export default async function PedidoPage({
         voltar="/aluno/pedido"
       >
         <div className="option-grid">
-          {instrumentos?.map((i) => (
+          {instrumentos?.map((i, idx) => (
             <OptionCard
               key={i.id}
               href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
@@ -85,6 +85,7 @@ export default async function PedidoPage({
               imagemUrl={i.imagem_url}
               icone
               iconePadding={ICONE_PADDING[i.nome]}
+              index={idx}
             />
           ))}
         </div>
@@ -141,13 +142,14 @@ export default async function PedidoPage({
       >
         {professores.length ? (
           <div className="option-grid">
-            {professores.map((p) => (
+            {professores.map((p, idx) => (
               <OptionCard
                 key={p.professor_id}
                 href={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}&professor=${p.professor_id}`}
                 nome={p.profiles?.nome ?? ''}
                 imagemUrl={p.profiles?.foto_url}
                 subtitulo={p.especialidade}
+                index={idx}
               />
             ))}
           </div>
