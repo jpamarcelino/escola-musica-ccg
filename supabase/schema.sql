@@ -13,6 +13,16 @@ create table profiles (
   programa text check (programa in ('musica', 'danca')),
   admin boolean not null default false,
   foto_url text,
+  -- Guardamos a data de nascimento (e não a idade em número) para a idade estar
+  -- sempre correta: as turmas de dança são por escalões etários, e um número
+  -- fixo desalinhava-se ao fim de um ano.
+  -- Fica nullable de propósito: os alunos registados antes desta coluna não têm
+  -- data, e torná-la obrigatória partia essas contas. A obrigatoriedade é
+  -- imposta no formulário de registo, para contas novas de aluno.
+  data_nascimento date check (
+    data_nascimento is null
+    or (data_nascimento > '1900-01-01' and data_nascimento <= current_date)
+  ),
   criado_em timestamptz not null default now(),
   constraint profiles_professor_tem_programa check (tipo <> 'professor' or programa is not null)
 );
@@ -72,12 +82,17 @@ security definer
 set search_path = ''
 as $$
 begin
-  insert into public.profiles (id, nome, tipo, programa)
+  insert into public.profiles (id, nome, tipo, programa, data_nascimento)
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'nome', ''),
     coalesce(new.raw_user_meta_data ->> 'tipo', 'aluno'),
-    new.raw_user_meta_data ->> 'programa'
+    new.raw_user_meta_data ->> 'programa',
+    case
+      when new.raw_user_meta_data ->> 'data_nascimento' ~ '^\d{4}-\d{2}-\d{2}$'
+        then (new.raw_user_meta_data ->> 'data_nascimento')::date
+      else null
+    end
   );
   return new;
 end;

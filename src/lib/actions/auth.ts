@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { calcularIdade } from '@/lib/idade'
 
 async function origem() {
   const headersList = await headers()
@@ -29,6 +30,26 @@ export async function signup(
     return { error: 'A password deve ter pelo menos 6 caracteres.' }
   }
 
+  let dataNascimento: string | null = null
+  if (tipo === 'aluno') {
+    dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
+      return { error: 'Indica a tua data de nascimento.' }
+    }
+
+    const idade = calcularIdade(dataNascimento)
+    if (idade === null) {
+      return { error: 'Essa data de nascimento não é válida.' }
+    }
+    if (idade < 0) {
+      return { error: 'A data de nascimento não pode ser no futuro.' }
+    }
+    if (idade > 120) {
+      return { error: 'Confirma a data de nascimento.' }
+    }
+  }
+
   let programa: string | null = null
   if (tipo === 'professor') {
     const codigoProfessor = String(formData.get('codigoProfessor') ?? '').trim()
@@ -46,7 +67,7 @@ export async function signup(
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { nome, tipo, programa } },
+    options: { data: { nome, tipo, programa, data_nascimento: dataNascimento } },
   })
 
   if (error) {

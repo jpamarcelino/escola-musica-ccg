@@ -15,6 +15,9 @@ export default function RegistoForm() {
     programaLink === 'musica' || programaLink === 'danca' ? programaLink : ''
   )
 
+  // Impede escolher uma data futura no próprio seletor do browser.
+  const hoje = new Date().toISOString().slice(0, 10)
+
   return (
     <form
       action={action}
@@ -108,6 +111,25 @@ export default function RegistoForm() {
           className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
         />
       </div>
+
+      {tipo === 'aluno' && (
+        <div className="space-y-1">
+          <label htmlFor="dataNascimento" className="block text-sm font-medium">
+            Data de nascimento
+          </label>
+          <input
+            id="dataNascimento"
+            name="dataNascimento"
+            type="date"
+            required
+            max={hoje}
+            className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+          />
+          <p className="text-xs text-foreground/50">
+            Serve para sabermos em que turmas podes entrar.
+          </p>
+        </div>
+      )}
 
       <div className="space-y-1">
         <label htmlFor="email" className="block text-sm font-medium">
