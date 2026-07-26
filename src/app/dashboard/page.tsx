@@ -6,17 +6,19 @@ import { logout } from '@/lib/actions/auth'
 import {
   confirmarHorario,
   cancelarMatricula,
-  alternarEstadoHorario,
   atualizarInstrumentos,
   atualizarFoto,
   criarHorarios,
   apagarHorarios,
   bloquearHorarios,
+  desbloquearHorarios,
 } from '@/lib/actions/professor'
 import { cancelarPedido } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
+import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
 import { BotaoConfirmarHorario } from '@/components/confirmar-horario-botao'
 
 type Matricula = {
@@ -94,6 +96,14 @@ export default async function DashboardPage({
   let confirmadosPorHorario = new Map<number, string[]>()
   let todosInstrumentos: { id: number; nome: string }[] = []
   let meusInstrumentos: { id: number; nome: string; especialidade: string | null }[] = []
+  // Grelha de horários do professor — mesma ideia da grelha do aluno: só
+  // mostra as horas entre o horário mais cedo e o mais tarde deste
+  // professor, não um intervalo fixo do dia.
+  const horariosPorDia = new Map<string, HorarioProfessor[]>()
+  const indicePorHorario = new Map<number, number>()
+  let horaInicioGrade = 0
+  let horasGrade: number[] = []
+  let alturaGrade = 0
 
   if (profile?.tipo === 'professor') {
     const { data: instrumentosData } = await supabase
@@ -133,6 +143,36 @@ export default async function DashboardPage({
       .order('dia_semana')
       .order('hora_inicio')
     horarios = (horariosData ?? []) as unknown as HorarioProfessor[]
+
+    if (horarios.length > 0) {
+      horaInicioGrade = Math.floor(
+        Math.min(...horarios.map((h) => paraMinutos(h.hora_inicio))) / 60
+      )
+      const horaFimGrade = Math.ceil(
+        Math.max(...horarios.map((h) => paraMinutos(h.hora_fim))) / 60
+      )
+      horasGrade = Array.from(
+        { length: horaFimGrade - horaInicioGrade },
+        (_, i) => horaInicioGrade + i
+      )
+      alturaGrade = horasGrade.length * HOUR_HEIGHT
+
+      for (const dia of DIAS_SEMANA) horariosPorDia.set(dia, [])
+      for (const h of horarios) horariosPorDia.get(h.dia_semana)?.push(h)
+      for (const dia of DIAS_SEMANA) {
+        horariosPorDia
+          .get(dia)
+          ?.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
+      }
+
+      let indiceAtual = 0
+      for (const dia of DIAS_SEMANA) {
+        for (const h of horariosPorDia.get(dia) ?? []) {
+          indicePorHorario.set(h.id, indiceAtual)
+          indiceAtual += 1
+        }
+      }
+    }
 
     const { data: confirmadosData } = await supabase
       .from('matriculas')
@@ -390,91 +430,88 @@ export default async function DashboardPage({
               <h2 className="font-semibold">Os teus horários</h2>
               <form id="apagar-horarios-form" action={apagarHorarios} />
               <form id="bloquear-horarios-form" action={bloquearHorarios} />
-              {horarios.length === 0 && (
+              <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
+              {horarios.length === 0 ? (
                 <p className="text-sm text-foreground/60">
                   Ainda não tens horários definidos.
                 </p>
-              )}
-              {horarios.length > 0 && (
-                <div className="overflow-x-auto rounded border border-foreground/15">
-                  <table className="w-full text-left text-sm">
-                    <thead>
-                      <tr className="border-b border-foreground/15 text-xs text-foreground/60">
-                        <th className="w-8 px-3 py-2"></th>
-                        <th className="px-3 py-2 font-medium">Dia</th>
-                        <th className="px-3 py-2 font-medium">Horário</th>
-                        <th className="px-3 py-2 font-medium">Estado</th>
-                        <th className="px-3 py-2 font-medium">Alunos</th>
-                        <th className="px-3 py-2 font-medium">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {horarios.map((h) => (
-                        <tr key={h.id} className="border-b border-foreground/10 last:border-0">
-                          <td className="px-3 py-2">
-                            <input
-                              type="checkbox"
-                              name="horarioIds"
-                              value={h.id}
-                              form="apagar-horarios-form"
-                            />
-                          </td>
-                          <td className="px-3 py-2 whitespace-nowrap">{h.dia_semana}</td>
-                          <td className="px-3 py-2 whitespace-nowrap">
-                            {h.hora_inicio.slice(0, 5)}–{h.hora_fim.slice(0, 5)}
-                          </td>
-                          <td className="px-3 py-2 whitespace-nowrap">
-                            {h.estado === 'bloqueado' ? (
-                              <span className="text-foreground/50">Bloqueado</span>
-                            ) : (
-                              'Aberto'
-                            )}
-                          </td>
-                          <td className="px-3 py-2 text-xs text-foreground/60">
-                            {confirmadosPorHorario.get(h.id)?.join(', ') ?? '—'}
-                          </td>
-                          <td className="px-3 py-2">
-                            <div className="flex flex-wrap gap-2">
-                              <Link
-                                href={`/professor/horarios/${h.id}`}
-                                className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
-                              >
-                                Editar
-                              </Link>
-                              <form action={alternarEstadoHorario}>
-                                <input type="hidden" name="horarioId" value={h.id} />
-                                <input
-                                  type="hidden"
-                                  name="novoEstado"
-                                  value={h.estado === 'aberto' ? 'bloqueado' : 'aberto'}
-                                />
-                                <button
-                                  type="submit"
-                                  className="rounded border border-foreground/20 px-3 py-1 text-sm"
-                                >
-                                  {h.estado === 'aberto' ? 'Bloquear' : 'Desbloquear'}
-                                </button>
-                              </form>
-                            </div>
-                          </td>
-                        </tr>
+              ) : (
+                <>
+                  <p className="text-xs text-foreground/50">
+                    Seleciona um ou vários horários para os bloquear,
+                    desbloquear ou apagar.
+                  </p>
+                  <div className="horarios-grade">
+                    <div className="horarios-coluna-horas">
+                      <div className="horarios-coluna-horas-cabecalho" />
+                      {horasGrade.map((hora) => (
+                        <div
+                          key={hora}
+                          className="horarios-hora-label"
+                          style={{ height: HOUR_HEIGHT }}
+                        >
+                          {hora}h
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-              {horarios.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  <BotaoSelecionarTodos />
-                  <button
-                    type="submit"
-                    form="apagar-horarios-form"
-                    className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
-                  >
-                    Apagar selecionados
-                  </button>
-                  <BotaoBloquearSelecionados />
-                </div>
+                    </div>
+                    {DIAS_SEMANA.map((dia) => (
+                      <div key={dia} className="horarios-coluna-dia">
+                        <div className="horarios-coluna-dia-cabecalho">
+                          {dia.slice(0, 3)}
+                        </div>
+                        <div
+                          className="horarios-coluna-dia-corpo"
+                          style={{
+                            height: alturaGrade,
+                            backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
+                          }}
+                        >
+                          {horariosPorDia.get(dia)?.map((h) => {
+                            const inicioMin = paraMinutos(h.hora_inicio)
+                            const fimMin = paraMinutos(h.hora_fim)
+                            const bloqueado = h.estado === 'bloqueado'
+                            const alunos = confirmadosPorHorario.get(h.id)?.join(', ')
+                            const estilo = {
+                              top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
+                              height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
+                              '--card-index': indicePorHorario.get(h.id) ?? 0,
+                            } as CSSProperties
+
+                            return (
+                              <label
+                                key={h.id}
+                                className={`horario-bloco entrada-esquerda${bloqueado ? ' bloqueado-selecionavel' : ''}`}
+                                style={estilo}
+                                title={alunos ? `Aluno(s): ${alunos}` : undefined}
+                              >
+                                <input
+                                  type="checkbox"
+                                  name="horarioIds"
+                                  value={h.id}
+                                  form="apagar-horarios-form"
+                                />
+                                <span>{formatarHora(h.hora_inicio)}</span>
+                                <span>{formatarHora(h.hora_fim)}</span>
+                              </label>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <BotaoSelecionarTodos />
+                    <button
+                      type="submit"
+                      form="apagar-horarios-form"
+                      className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
+                    >
+                      Apagar selecionados
+                    </button>
+                    <BotaoBloquearSelecionados />
+                    <BotaoDesbloquearSelecionados />
+                  </div>
+                </>
               )}
             </section>
 

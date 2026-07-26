@@ -14,25 +14,11 @@ import {
   dentroDaFaixa,
   elegivelParaDisciplina,
 } from '@/lib/idade-disciplinas'
-
-// Grelha de horários (Passo 3) — altura em pixels de uma hora de relógio;
-// cada cartão de horário ocupa exatamente a fração correspondente à sua
-// duração real, não à altura da linha.
-const HOUR_HEIGHT = 64
+import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 
 // Dias mostrados na grelha, da esquerda para a direita. Sem Domingo — a
 // escola não funciona nesse dia.
 const DIAS_GRADE = DIAS_SEMANA.slice(0, 6)
-
-function paraMinutos(hhmmss: string): number {
-  const [h, m] = hhmmss.split(':').map(Number)
-  return h * 60 + m
-}
-
-function formatarHora(hhmmss: string): string {
-  const [h, m] = hhmmss.split(':').map(Number)
-  return m === 0 ? `${h}h` : `${h}h${String(m).padStart(2, '0')}`
-}
 
 // Afinação fina do tamanho de cada ícone de instrumento dentro do cartão
 // (percentagem de espaço à volta — menos padding = ícone maior). Sem
