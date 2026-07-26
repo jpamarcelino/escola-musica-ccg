@@ -7,6 +7,10 @@
 create table profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   nome text not null,
+  -- Duplicado de auth.users.email: a tabela de autenticação não é legível
+  -- por outros utilizadores, e um professor precisa de ver o email de um
+  -- aluno (e vice-versa). Sincronizado no registo pelo trigger abaixo.
+  email text,
   tipo text not null check (tipo in ('aluno', 'professor')),
   -- Só professores têm programa (a escola em que ensinam); um aluno pode
   -- pedir aulas de Música e de Dança sem estar preso a nenhuma das duas.
@@ -85,10 +89,11 @@ security definer
 set search_path = ''
 as $$
 begin
-  insert into public.profiles (id, nome, tipo, programa, data_nascimento, telefone)
+  insert into public.profiles (id, nome, email, tipo, programa, data_nascimento, telefone)
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'nome', ''),
+    new.email,
     coalesce(new.raw_user_meta_data ->> 'tipo', 'aluno'),
     new.raw_user_meta_data ->> 'programa',
     case

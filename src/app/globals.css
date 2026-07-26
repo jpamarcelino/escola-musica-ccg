@@ -496,6 +496,16 @@ body {
   opacity: 0.7;
 }
 
+/* Nome(s) do(s) aluno(s) dentro do bloco, na agenda automática (só
+   professores de música — em dança o horário fica sem nomes). */
+.horario-bloco-alunos {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
 .horario-bloco.bloqueado-selecionavel:has(input:checked) {
   filter: none;
   opacity: 1;

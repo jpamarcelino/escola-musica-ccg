@@ -164,6 +164,12 @@ export default async function DashboardPage() {
               wide
               index={3}
             />
+            <OptionCard
+              href="/dashboard/agenda"
+              nome="Horários e Alunos"
+              wide
+              index={4}
+            />
           </div>
         )}
 
