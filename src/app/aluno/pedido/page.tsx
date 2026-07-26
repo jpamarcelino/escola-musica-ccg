@@ -14,6 +14,25 @@ import {
   elegivelParaDisciplina,
 } from '@/lib/idade-disciplinas'
 
+// Grelha de horários (Passo 3) — altura em pixels de uma hora de relógio;
+// cada cartão de horário ocupa exatamente a fração correspondente à sua
+// duração real, não à altura da linha.
+const HOUR_HEIGHT = 64
+
+// Dias mostrados na grelha, da esquerda para a direita. Sem Domingo — a
+// escola não funciona nesse dia.
+const DIAS_GRADE = DIAS_SEMANA.slice(0, 6)
+
+function paraMinutos(hhmmss: string): number {
+  const [h, m] = hhmmss.split(':').map(Number)
+  return h * 60 + m
+}
+
+function formatarHora(hhmmss: string): string {
+  const [h, m] = hhmmss.split(':').map(Number)
+  return m === 0 ? `${h}h` : `${h}h${String(m).padStart(2, '0')}`
+}
+
 // Afinação fina do tamanho de cada ícone de instrumento dentro do cartão
 // (percentagem de espaço à volta — menos padding = ícone maior). Sem
 // entrada aqui, usa o valor por omissão definido em globals.css.
@@ -255,57 +274,128 @@ export default async function PedidoPage({
   }
 
   // Passo 3: escolher horários
+  // Traz também os bloqueados (não só os "aberto") — continuam visíveis na
+  // grelha, a preto e branco e sem poder ser escolhidos, para o aluno ver
+  // o horário completo do professor.
   const { data: horarios } = await supabase
     .from('horarios')
-    .select('id, dia_semana, hora_inicio, hora_fim')
+    .select('id, dia_semana, hora_inicio, hora_fim, estado')
     .eq('professor_id', professor)
-    .eq('estado', 'aberto')
 
-  const horariosOrdenados = (horarios ?? []).slice().sort((a, b) => {
-    const diaA = DIAS_SEMANA.indexOf(a.dia_semana)
-    const diaB = DIAS_SEMANA.indexOf(b.dia_semana)
-    if (diaA !== diaB) return diaA - diaB
-    return a.hora_inicio.localeCompare(b.hora_inicio)
-  })
+  const horariosGrade = (horarios ?? []).filter((h) =>
+    DIAS_GRADE.includes(h.dia_semana)
+  )
+
+  if (horariosGrade.length === 0) {
+    return (
+      <Wizard
+        title="Escolhe os horários que te dão jeito"
+        voltar={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}`}
+      >
+        <p className="text-sm text-foreground/60">
+          Este professor ainda não tem horários disponíveis.
+        </p>
+      </Wizard>
+    )
+  }
+
+  // A grelha só mostra as horas entre a aula mais cedo e a mais tarde deste
+  // professor (arredondadas à hora certa), não um intervalo fixo do dia.
+  const horaInicioGrade = Math.floor(
+    Math.min(...horariosGrade.map((h) => paraMinutos(h.hora_inicio))) / 60
+  )
+  const horaFimGrade = Math.ceil(
+    Math.max(...horariosGrade.map((h) => paraMinutos(h.hora_fim))) / 60
+  )
+  const horas = Array.from(
+    { length: horaFimGrade - horaInicioGrade },
+    (_, i) => horaInicioGrade + i
+  )
+  const alturaGrade = horas.length * HOUR_HEIGHT
+
+  const horariosPorDia = new Map<string, typeof horariosGrade>()
+  for (const dia of DIAS_GRADE) horariosPorDia.set(dia, [])
+  for (const h of horariosGrade) horariosPorDia.get(h.dia_semana)?.push(h)
 
   return (
     <Wizard
       title="Escolhe os horários que te dão jeito"
       voltar={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}`}
     >
-      {horariosOrdenados.length === 0 ? (
-        <p className="text-sm text-foreground/60">
-          Este professor ainda não tem horários disponíveis.
+      <form action={escolherDisponibilidades} className="space-y-4">
+        <input type="hidden" name="instrumentoId" value={instrumento} />
+        <input type="hidden" name="professorId" value={professor} />
+        <p className="text-xs text-foreground/50">
+          Podes escolher várias opções — o professor decide depois qual fica
+          confirmada.
         </p>
-      ) : (
-        <form action={escolherDisponibilidades} className="space-y-4">
-          <input type="hidden" name="instrumentoId" value={instrumento} />
-          <input type="hidden" name="professorId" value={professor} />
-          <p className="text-xs text-foreground/50">
-            Podes escolher várias opções — o professor decide depois qual fica
-            confirmada.
-          </p>
-          <div className="space-y-2">
-            {horariosOrdenados.map((h) => (
-              <label
-                key={h.id}
-                className="flex items-center gap-3 rounded border border-foreground/20 px-4 py-2"
+        <div className="horarios-grade">
+          <div className="horarios-coluna-horas">
+            <div className="horarios-coluna-horas-cabecalho" />
+            {horas.map((hora) => (
+              <div
+                key={hora}
+                className="horarios-hora-label"
+                style={{ height: HOUR_HEIGHT }}
               >
-                <input type="checkbox" name="horarios" value={h.id} />
-                {h.dia_semana}, {h.hora_inicio.slice(0, 5)}–
-                {h.hora_fim.slice(0, 5)}
-              </label>
+                {hora}h
+              </div>
             ))}
           </div>
-          {erro && <p className="text-sm text-red-600">{erro}</p>}
-          <button
-            type="submit"
-            className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
-          >
-            Enviar pedido
-          </button>
-        </form>
-      )}
+          {DIAS_GRADE.map((dia) => (
+            <div key={dia} className="horarios-coluna-dia">
+              <div className="horarios-coluna-dia-cabecalho">
+                {dia.slice(0, 3)}
+              </div>
+              <div
+                className="horarios-coluna-dia-corpo"
+                style={{
+                  height: alturaGrade,
+                  backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
+                }}
+              >
+                {horariosPorDia.get(dia)?.map((h) => {
+                  const inicioMin = paraMinutos(h.hora_inicio)
+                  const fimMin = paraMinutos(h.hora_fim)
+                  const estilo = {
+                    top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
+                    height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
+                  }
+
+                  if (h.estado === 'bloqueado') {
+                    return (
+                      <div
+                        key={h.id}
+                        className="horario-bloco bloqueado"
+                        style={estilo}
+                        aria-disabled="true"
+                      >
+                        <span>{formatarHora(h.hora_inicio)}</span>
+                        <span>{formatarHora(h.hora_fim)}</span>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <label key={h.id} className="horario-bloco" style={estilo}>
+                      <input type="checkbox" name="horarios" value={h.id} />
+                      <span>{formatarHora(h.hora_inicio)}</span>
+                      <span>{formatarHora(h.hora_fim)}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        {erro && <p className="text-sm text-red-600">{erro}</p>}
+        <button
+          type="submit"
+          className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
+        >
+          Enviar pedido
+        </button>
+      </form>
     </Wizard>
   )
 }
