@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 export function OptionCard({
   href,
@@ -11,6 +11,7 @@ export function OptionCard({
   iconePadding,
   index = 0,
   tituloNegrito = false,
+  bloqueado = false,
 }: {
   href: string
   nome: string
@@ -21,13 +22,10 @@ export function OptionCard({
   iconePadding?: string
   index?: number
   tituloNegrito?: boolean
+  bloqueado?: boolean
 }) {
-  return (
-    <Link
-      href={href}
-      className={wide ? 'option-card wide' : 'option-card'}
-      style={{ '--card-index': index } as CSSProperties}
-    >
+  const conteudo: ReactNode = (
+    <>
       {!wide && (
         <span className={icone ? 'option-card-media icon' : 'option-card-media'}>
           {imagemUrl ? (
@@ -50,6 +48,25 @@ export function OptionCard({
         </span>
         {subtitulo && <span className="option-card-sub">{subtitulo}</span>}
       </span>
+    </>
+  )
+
+  const className = `option-card${wide ? ' wide' : ''}${bloqueado ? ' locked' : ''}`
+  const style = { '--card-index': index } as CSSProperties
+
+  // Um cartão bloqueado não é um destino navegável — não faz sentido ser um
+  // link (nem para leitores de ecrã, nem para navegação por teclado).
+  if (bloqueado) {
+    return (
+      <div className={className} style={style} aria-disabled="true">
+        {conteudo}
+      </div>
+    )
+  }
+
+  return (
+    <Link href={href} className={className} style={style}>
+      {conteudo}
     </Link>
   )
 }

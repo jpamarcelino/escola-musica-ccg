@@ -123,6 +123,23 @@ body {
   outline-offset: 3px;
 }
 
+/* Cartão bloqueado — disciplina fora da idade do aluno. Sem cor, sem
+   relevo, sem interação; pointer-events:none evita até o :hover disparar. */
+.option-card.locked {
+  filter: grayscale(1);
+  background: #e3e3e3;
+  box-shadow: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+  animation: none;
+}
+
+.option-card.locked .option-card-label {
+  border-top-color: rgba(0, 0, 0, 0.12);
+}
+
 /* Botão de voltar — mesmo acabamento em opala dos cartões, em miniatura. */
 .back-button {
   display: inline-flex;

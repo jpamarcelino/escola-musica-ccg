@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { OptionCard } from '@/components/option-card'
+import { calcularIdade } from '@/lib/idade'
 
 // Afinação fina do tamanho de cada ícone de instrumento dentro do cartão
 // (percentagem de espaço à volta — menos padding = ícone maior). Sem
@@ -35,6 +36,30 @@ function separarFaixaEtaria(nome: string): { titulo: string; idade?: string } {
   return { titulo: match[1], idade: match[2] }
 }
 
+// Idade mínima/máxima aceite por disciplina, para bloquear as que não
+// correspondem à idade do aluno. Para a Música ainda não há escalões
+// próprios por instrumento — usa-se um intervalo largo para todos,
+// por agora.
+const MUSICA_IDADE_MIN = 5
+const MUSICA_IDADE_MAX = 80
+
+function parseFaixaEtaria(idade: string | undefined): { min: number; max: number } | null {
+  if (!idade) return null
+  const match = idade.match(/(\d+)\s*aos\s*(\d+)/)
+  if (!match) return null
+  return { min: Number(match[1]), max: Number(match[2]) }
+}
+
+// Sem data de nascimento (contas antigas, criadas antes deste campo
+// existir), não há como saber a idade — nesse caso não bloqueia nada.
+function dentroDaFaixa(
+  idadeAluno: number | null,
+  faixa: { min: number; max: number } | null
+): boolean {
+  if (idadeAluno === null || !faixa) return true
+  return idadeAluno >= faixa.min && idadeAluno <= faixa.max
+}
+
 export default async function PedidoPage({
   searchParams,
 }: {
@@ -58,13 +83,15 @@ export default async function PedidoPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tipo')
+    .select('tipo, data_nascimento')
     .eq('id', user.id)
     .single()
 
   if (profile?.tipo !== 'aluno') {
     redirect('/dashboard')
   }
+
+  const idadeAluno = calcularIdade(profile.data_nascimento)
 
   // Passo 1: escolher escola
   if (programa !== 'musica' && programa !== 'danca') {
@@ -86,6 +113,34 @@ export default async function PedidoPage({
       .eq('programa', programa)
       .order('nome')
 
+    // As disciplinas dentro da idade do aluno aparecem primeiro, com o
+    // estilo normal; as restantes ficam por baixo, a preto e branco e sem
+    // poderem ser escolhidas. Sem data de nascimento, nada fica bloqueado.
+    const itens = (instrumentos ?? []).map((i) => {
+      if (programa === 'danca') {
+        const { titulo, idade } = separarFaixaEtaria(i.nome)
+        return {
+          ...i,
+          titulo,
+          idade,
+          elegivel: dentroDaFaixa(idadeAluno, parseFaixaEtaria(idade)),
+        }
+      }
+      return {
+        ...i,
+        titulo: i.nome,
+        idade: undefined as string | undefined,
+        elegivel: dentroDaFaixa(idadeAluno, {
+          min: MUSICA_IDADE_MIN,
+          max: MUSICA_IDADE_MAX,
+        }),
+      }
+    })
+    const ordenados = [
+      ...itens.filter((i) => i.elegivel),
+      ...itens.filter((i) => !i.elegivel),
+    ]
+
     return (
       <Wizard
         title={
@@ -96,24 +151,21 @@ export default async function PedidoPage({
         voltar="/aluno/pedido"
       >
         <div className="option-grid">
-          {instrumentos?.map((i, idx) => {
-            if (programa === 'danca') {
-              const { titulo, idade } = separarFaixaEtaria(i.nome)
-              return (
-                <OptionCard
-                  key={i.id}
-                  href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
-                  nome={titulo}
-                  subtitulo={idade}
-                  imagemUrl={i.imagem_url}
-                  icone
-                  iconePadding={DANCA_ICONE_PADDING[titulo] ?? '12%'}
-                  tituloNegrito
-                  index={idx}
-                />
-              )
-            }
-            return (
+          {ordenados.map((i, idx) =>
+            programa === 'danca' ? (
+              <OptionCard
+                key={i.id}
+                href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
+                nome={i.titulo}
+                subtitulo={i.idade}
+                imagemUrl={i.imagem_url}
+                icone
+                iconePadding={DANCA_ICONE_PADDING[i.titulo] ?? '12%'}
+                tituloNegrito
+                index={idx}
+                bloqueado={!i.elegivel}
+              />
+            ) : (
               <OptionCard
                 key={i.id}
                 href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
@@ -122,9 +174,10 @@ export default async function PedidoPage({
                 icone
                 iconePadding={ICONE_PADDING[i.nome]}
                 index={idx}
+                bloqueado={!i.elegivel}
               />
             )
-          })}
+          )}
         </div>
       </Wizard>
     )
