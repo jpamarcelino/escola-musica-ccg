@@ -5,6 +5,14 @@ import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { OptionCard } from '@/components/option-card'
 import { calcularIdade } from '@/lib/idade'
+import {
+  MUSICA_IDADE_MIN,
+  MUSICA_IDADE_MAX,
+  separarFaixaEtaria,
+  parseFaixaEtaria,
+  dentroDaFaixa,
+  elegivelParaDisciplina,
+} from '@/lib/idade-disciplinas'
 
 // Afinação fina do tamanho de cada ícone de instrumento dentro do cartão
 // (percentagem de espaço à volta — menos padding = ícone maior). Sem
@@ -25,39 +33,6 @@ const DANCA_ICONE_PADDING: Record<string, string> = {
   'Dança Contemporânea': '9%',
   'Dança Moderna para Adultos': '5%',
   'Estilos Urbanos': '5%',
-}
-
-// As modalidades de dança guardam a faixa etária entre parênteses no
-// nome (ex: "Estilos Urbanos (6 aos 18 anos)"); separa-a para mostrar
-// numa linha própria, sem parênteses, por baixo do nome a negrito.
-function separarFaixaEtaria(nome: string): { titulo: string; idade?: string } {
-  const match = nome.match(/^(.*)\s\(([^)]+)\)$/)
-  if (!match) return { titulo: nome }
-  return { titulo: match[1], idade: match[2] }
-}
-
-// Idade mínima/máxima aceite por disciplina, para bloquear as que não
-// correspondem à idade do aluno. Para a Música ainda não há escalões
-// próprios por instrumento — usa-se um intervalo largo para todos,
-// por agora.
-const MUSICA_IDADE_MIN = 5
-const MUSICA_IDADE_MAX = 80
-
-function parseFaixaEtaria(idade: string | undefined): { min: number; max: number } | null {
-  if (!idade) return null
-  const match = idade.match(/(\d+)\s*aos\s*(\d+)/)
-  if (!match) return null
-  return { min: Number(match[1]), max: Number(match[2]) }
-}
-
-// Sem data de nascimento (contas antigas, criadas antes deste campo
-// existir), não há como saber a idade — nesse caso não bloqueia nada.
-function dentroDaFaixa(
-  idadeAluno: number | null,
-  faixa: { min: number; max: number } | null
-): boolean {
-  if (idadeAluno === null || !faixa) return true
-  return idadeAluno >= faixa.min && idadeAluno <= faixa.max
 }
 
 export default async function PedidoPage({
@@ -179,6 +154,33 @@ export default async function PedidoPage({
             )
           )}
         </div>
+      </Wizard>
+    )
+  }
+
+  const { data: instrumentoAtual } = await supabase
+    .from('instrumentos')
+    .select('nome')
+    .eq('id', instrumento)
+    .single()
+
+  // Reforça aqui o mesmo bloqueio do Passo 2 — protege quem chega
+  // diretamente a este link (ex: partilhado, ou o "Voltar" do browser)
+  // sem passar pela grelha de cartões, onde a disciplina já estaria
+  // desativada. A ação que cria mesmo o pedido (escolherDisponibilidades)
+  // repete esta verificação no servidor, que é o que impede de facto.
+  if (
+    instrumentoAtual &&
+    !elegivelParaDisciplina(idadeAluno, programa, instrumentoAtual.nome)
+  ) {
+    return (
+      <Wizard
+        title="Não disponível para a tua idade"
+        voltar={`/aluno/pedido?programa=${programa}`}
+      >
+        <p className="text-sm text-foreground/60">
+          Esta disciplina não está disponível para a tua idade.
+        </p>
       </Wizard>
     )
   }

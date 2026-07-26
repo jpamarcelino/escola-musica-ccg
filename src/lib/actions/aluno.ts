@@ -3,6 +3,8 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { calcularIdade } from '@/lib/idade'
+import { elegivelParaDisciplina } from '@/lib/idade-disciplinas'
 
 export async function escolherDisponibilidades(formData: FormData) {
   const supabase = await createClient()
@@ -29,6 +31,30 @@ export async function escolherDisponibilidades(formData: FormData) {
   }
   if (horarioIds.length === 0) {
     voltarComErro('Seleciona pelo menos um horário.')
+  }
+
+  // Nunca confiar apenas no ecrã (que só esconde/desativa o cartão) — é
+  // esta verificação, feita no servidor com a idade guardada na base de
+  // dados, que impede de facto o pedido de disciplinas fora da idade do
+  // aluno, mesmo que o pedido chegue diretamente a este endpoint.
+  const [{ data: perfilAluno }, { data: instrumentoPedido }] = await Promise.all([
+    supabase.from('profiles').select('data_nascimento').eq('id', user.id).single(),
+    supabase
+      .from('instrumentos')
+      .select('nome, programa')
+      .eq('id', Number(instrumentoId))
+      .single(),
+  ])
+
+  if (
+    !instrumentoPedido ||
+    !elegivelParaDisciplina(
+      calcularIdade(perfilAluno?.data_nascimento),
+      instrumentoPedido.programa,
+      instrumentoPedido.nome
+    )
+  ) {
+    voltarComErro('Esta disciplina não está disponível para a tua idade.')
   }
 
   const { data: matriculaExistente } = await supabase
