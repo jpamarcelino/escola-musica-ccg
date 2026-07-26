@@ -23,6 +23,9 @@ create table profiles (
     data_nascimento is null
     or (data_nascimento > '1900-01-01' and data_nascimento <= current_date)
   ),
+  -- Contas antigas não têm; obrigatório no formulário para contas novas
+  -- (alunos e professores) — dá jeito para contacto direto fora da app.
+  telefone text check (telefone is null or char_length(telefone) between 9 and 20),
   criado_em timestamptz not null default now(),
   constraint profiles_professor_tem_programa check (tipo <> 'professor' or programa is not null)
 );
@@ -82,7 +85,7 @@ security definer
 set search_path = ''
 as $$
 begin
-  insert into public.profiles (id, nome, tipo, programa, data_nascimento)
+  insert into public.profiles (id, nome, tipo, programa, data_nascimento, telefone)
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'nome', ''),
@@ -92,7 +95,8 @@ begin
       when new.raw_user_meta_data ->> 'data_nascimento' ~ '^\d{4}-\d{2}-\d{2}$'
         then (new.raw_user_meta_data ->> 'data_nascimento')::date
       else null
-    end
+    end,
+    new.raw_user_meta_data ->> 'telefone'
   );
   return new;
 end;

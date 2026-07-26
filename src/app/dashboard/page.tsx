@@ -29,7 +29,7 @@ type Matricula = {
 type Pedido = {
   id: number
   mensagem: string | null
-  profiles: { nome: string } | null
+  profiles: { nome: string; telefone: string | null } | null
   instrumentos: { nome: string } | null
   disponibilidades_selecionadas: {
     horario_id: number
@@ -49,7 +49,7 @@ type Confirmado = {
   id: number
   horario_final_id: number | null
   instrumentos: { nome: string } | null
-  profiles: { nome: string } | null
+  profiles: { nome: string; telefone: string | null } | null
   horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
 }
 
@@ -118,7 +118,7 @@ export default async function DashboardPage({
     const { data: pedidosData } = await supabase
       .from('matriculas')
       .select(
-        'id, mensagem, profiles!matriculas_aluno_id_fkey(nome), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
+        'id, mensagem, profiles!matriculas_aluno_id_fkey(nome, telefone), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
       )
       .eq('professor_id', user.id)
       .eq('estado', 'a_escolher')
@@ -136,7 +136,7 @@ export default async function DashboardPage({
     const { data: confirmadosData } = await supabase
       .from('matriculas')
       .select(
-        'id, horario_final_id, instrumentos(nome), profiles!matriculas_aluno_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim)'
+        'id, horario_final_id, instrumentos(nome), profiles!matriculas_aluno_id_fkey(nome, telefone), horarios(dia_semana, hora_inicio, hora_fim)'
       )
       .eq('professor_id', user.id)
       .eq('estado', 'confirmado')
@@ -300,6 +300,14 @@ export default async function DashboardPage({
                     <strong>{pedido.profiles?.nome}</strong> —{' '}
                     {pedido.instrumentos?.nome}
                   </p>
+                  {pedido.profiles?.telefone && (
+                    <p className="text-xs text-foreground/60">
+                      Telemóvel:{' '}
+                      <a href={`tel:${pedido.profiles.telefone}`} className="underline">
+                        {pedido.profiles.telefone}
+                      </a>
+                    </p>
+                  )}
                   {pedido.mensagem && (
                     <p className="rounded bg-foreground/5 p-2 text-sm italic text-foreground/70">
                       “{pedido.mensagem}”
@@ -345,16 +353,26 @@ export default async function DashboardPage({
                   key={c.id}
                   className="flex flex-wrap items-center justify-between gap-3 rounded border border-foreground/15 px-4 py-2 text-sm"
                 >
-                  <p>
-                    <strong>{c.profiles?.nome}</strong> — {c.instrumentos?.nome}
-                    {c.horarios && (
-                      <>
-                        : {c.horarios.dia_semana},{' '}
-                        {c.horarios.hora_inicio.slice(0, 5)}–
-                        {c.horarios.hora_fim.slice(0, 5)}
-                      </>
+                  <div>
+                    <p>
+                      <strong>{c.profiles?.nome}</strong> — {c.instrumentos?.nome}
+                      {c.horarios && (
+                        <>
+                          : {c.horarios.dia_semana},{' '}
+                          {c.horarios.hora_inicio.slice(0, 5)}–
+                          {c.horarios.hora_fim.slice(0, 5)}
+                        </>
+                      )}
+                    </p>
+                    {c.profiles?.telefone && (
+                      <p className="text-xs text-foreground/60">
+                        Telemóvel:{' '}
+                        <a href={`tel:${c.profiles.telefone}`} className="underline">
+                          {c.profiles.telefone}
+                        </a>
+                      </p>
                     )}
-                  </p>
+                  </div>
                   <form action={cancelarMatricula}>
                     <input type="hidden" name="matriculaId" value={c.id} />
                     <button

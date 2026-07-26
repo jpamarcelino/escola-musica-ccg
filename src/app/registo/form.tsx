@@ -112,6 +112,20 @@ export default function RegistoForm() {
         />
       </div>
 
+      <div className="space-y-1">
+        <label htmlFor="telefone" className="block text-sm font-medium">
+          Número de telemóvel
+        </label>
+        <input
+          id="telefone"
+          name="telefone"
+          type="tel"
+          autoComplete="tel"
+          required
+          className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+        />
+      </div>
+
       {tipo === 'aluno' && (
         <div className="space-y-1">
           <label htmlFor="dataNascimento" className="block text-sm font-medium">

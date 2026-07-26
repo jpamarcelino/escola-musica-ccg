@@ -22,12 +22,18 @@ export async function signup(
   const email = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
   const tipo = String(formData.get('tipo') ?? '')
+  const telefone = String(formData.get('telefone') ?? '').trim()
 
   if (!nome || !email || !password || (tipo !== 'aluno' && tipo !== 'professor')) {
     return { error: 'Preenche todos os campos.' }
   }
   if (password.length < 6) {
     return { error: 'A password deve ter pelo menos 6 caracteres.' }
+  }
+  // Aceita vários formatos (com/sem indicativo, espaços, traços) — só
+  // confirma que há dígitos suficientes para ser um número a sério.
+  if (telefone.replace(/[^0-9]/g, '').length < 9) {
+    return { error: 'Indica um número de telemóvel válido.' }
   }
 
   let dataNascimento: string | null = null
@@ -67,7 +73,9 @@ export async function signup(
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { nome, tipo, programa, data_nascimento: dataNascimento } },
+    options: {
+      data: { nome, tipo, programa, data_nascimento: dataNascimento, telefone },
+    },
   })
 
   if (error) {
