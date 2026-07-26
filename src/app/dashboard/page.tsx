@@ -17,6 +17,7 @@ import { cancelarPedido } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
+import { BotaoConfirmarHorario } from '@/components/confirmar-horario-botao'
 
 type Matricula = {
   id: number
@@ -314,28 +315,27 @@ export default async function DashboardPage({
                     </p>
                   )}
                   <div className="flex flex-wrap gap-2">
-                    {pedido.disponibilidades_selecionadas.map((d) => (
-                      <form key={d.horario_id} action={confirmarHorario}>
-                        <input
-                          type="hidden"
-                          name="matriculaId"
-                          value={pedido.id}
-                        />
-                        <input
-                          type="hidden"
-                          name="horarioId"
-                          value={d.horario_id}
-                        />
-                        <button
-                          type="submit"
-                          className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
-                        >
-                          {d.horarios?.dia_semana},{' '}
-                          {d.horarios?.hora_inicio.slice(0, 5)}–
-                          {d.horarios?.hora_fim.slice(0, 5)}
-                        </button>
-                      </form>
-                    ))}
+                    {pedido.disponibilidades_selecionadas.map((d) => {
+                      const label = `${d.horarios?.dia_semana}, ${d.horarios?.hora_inicio.slice(0, 5)}–${d.horarios?.hora_fim.slice(0, 5)}`
+                      return (
+                        <form key={d.horario_id} action={confirmarHorario}>
+                          <input
+                            type="hidden"
+                            name="matriculaId"
+                            value={pedido.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="horarioId"
+                            value={d.horario_id}
+                          />
+                          <BotaoConfirmarHorario
+                            label={label}
+                            mensagemConfirmacao={`Confirmar a aula de ${pedido.profiles?.nome} (${pedido.instrumentos?.nome}) — ${label}? Tens a certeza?`}
+                          />
+                        </form>
+                      )
+                    })}
                   </div>
                 </div>
               ))}
