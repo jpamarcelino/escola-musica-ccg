@@ -347,8 +347,9 @@ body {
 .horarios-hora-label {
   box-sizing: border-box;
   padding: 2px 4px 0;
-  font-size: 11px;
-  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-hover);
 }
 
 .horarios-coluna-dia {
@@ -377,6 +378,7 @@ body {
 
 .horarios-coluna-dia-corpo {
   position: relative;
+  overflow: hidden;
 }
 
 .horario-bloco {

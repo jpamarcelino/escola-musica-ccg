@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
@@ -289,7 +290,7 @@ export default async function PedidoPage({
   if (horariosGrade.length === 0) {
     return (
       <Wizard
-        title="Escolhe os horários que te dão jeito"
+        title="Seleciona os vários horários em que tens disponibilidade"
         voltar={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}`}
       >
         <p className="text-sm text-foreground/60">
@@ -316,10 +317,24 @@ export default async function PedidoPage({
   const horariosPorDia = new Map<string, typeof horariosGrade>()
   for (const dia of DIAS_GRADE) horariosPorDia.set(dia, [])
   for (const h of horariosGrade) horariosPorDia.get(h.dia_semana)?.push(h)
+  for (const dia of DIAS_GRADE) {
+    horariosPorDia.get(dia)?.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
+  }
+
+  // Ordem para a entrada animada dos cartões (dia a dia, de cima para
+  // baixo em cada coluna) — a mesma cascata usada nos cartões de opção.
+  const indicePorHorario = new Map<number, number>()
+  let indiceAtual = 0
+  for (const dia of DIAS_GRADE) {
+    for (const h of horariosPorDia.get(dia) ?? []) {
+      indicePorHorario.set(h.id, indiceAtual)
+      indiceAtual += 1
+    }
+  }
 
   return (
     <Wizard
-      title="Escolhe os horários que te dão jeito"
+      title="Seleciona os vários horários em que tens disponibilidade"
       voltar={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}`}
     >
       <form action={escolherDisponibilidades} className="space-y-4">
@@ -360,13 +375,14 @@ export default async function PedidoPage({
                   const estilo = {
                     top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
                     height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
-                  }
+                    '--card-index': indicePorHorario.get(h.id) ?? 0,
+                  } as CSSProperties
 
                   if (h.estado === 'bloqueado') {
                     return (
                       <div
                         key={h.id}
-                        className="horario-bloco bloqueado"
+                        className="horario-bloco entrada-esquerda bloqueado"
                         style={estilo}
                         aria-disabled="true"
                       >
@@ -377,7 +393,11 @@ export default async function PedidoPage({
                   }
 
                   return (
-                    <label key={h.id} className="horario-bloco" style={estilo}>
+                    <label
+                      key={h.id}
+                      className="horario-bloco entrada-esquerda"
+                      style={estilo}
+                    >
                       <input type="checkbox" name="horarios" value={h.id} />
                       <span>{formatarHora(h.hora_inicio)}</span>
                       <span>{formatarHora(h.hora_fim)}</span>
