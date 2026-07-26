@@ -188,6 +188,11 @@ create table matriculas (
   instrumento_id bigint not null references instrumentos(id) on delete cascade,
   horario_final_id bigint references horarios(id),
   estado text not null default 'a_escolher' check (estado in ('a_escolher', 'confirmado')),
+  -- Pedido de mensagem: o aluno usa isto quando nenhum horário lhe dá
+  -- jeito (ou estão todos bloqueados), em vez de escolher um horário. Não
+  -- é um sistema de conversação — o professor lê e decide se quer
+  -- contactar o aluno fora da app; não há resposta dentro da aplicação.
+  mensagem text check (mensagem is null or char_length(mensagem) <= 500),
   criado_em timestamptz not null default now()
 );
 

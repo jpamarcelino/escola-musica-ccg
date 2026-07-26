@@ -19,18 +19,21 @@ export async function escolherDisponibilidades(formData: FormData) {
   const instrumentoId = String(formData.get('instrumentoId') ?? '')
   const professorId = String(formData.get('professorId') ?? '')
   const horarioIds = formData.getAll('horarios').map(String)
+  const mensagem = String(formData.get('mensagem') ?? '').trim().slice(0, 500)
 
-  function voltarComErro(mensagem: string): never {
+  function voltarComErro(mensagemErro: string): never {
     redirect(
-      `/aluno/pedido?instrumento=${instrumentoId}&professor=${professorId}&erro=${encodeURIComponent(mensagem)}`
+      `/aluno/pedido?instrumento=${instrumentoId}&professor=${professorId}&erro=${encodeURIComponent(mensagemErro)}`
     )
   }
 
   if (!instrumentoId || !professorId) {
     redirect('/aluno/pedido')
   }
-  if (horarioIds.length === 0) {
-    voltarComErro('Seleciona pelo menos um horário.')
+  // O aluno tem de escolher pelo menos um horário OU deixar uma mensagem —
+  // nunca os dois em branco, mas qualquer um dos dois chega.
+  if (horarioIds.length === 0 && !mensagem) {
+    voltarComErro('Seleciona pelo menos um horário ou escreve uma mensagem.')
   }
 
   // Nunca confiar apenas no ecrã (que só esconde/desativa o cartão) — é
@@ -75,6 +78,7 @@ export async function escolherDisponibilidades(formData: FormData) {
       aluno_id: user.id,
       professor_id: professorId,
       instrumento_id: Number(instrumentoId),
+      mensagem: mensagem || null,
     })
     .select('id')
     .single()
@@ -87,17 +91,21 @@ export async function escolherDisponibilidades(formData: FormData) {
     voltarComErro('Não foi possível criar o pedido. Tenta novamente.')
   }
 
-  const { error: disponibilidadesError } = await supabase
-    .from('disponibilidades_selecionadas')
-    .insert(
-      horarioIds.map((horarioId) => ({
-        matricula_id: matricula.id,
-        horario_id: Number(horarioId),
-      }))
-    )
+  // Só há disponibilidades a guardar se o aluno tiver marcado algum horário
+  // — um pedido só com mensagem não tem nenhuma.
+  if (horarioIds.length > 0) {
+    const { error: disponibilidadesError } = await supabase
+      .from('disponibilidades_selecionadas')
+      .insert(
+        horarioIds.map((horarioId) => ({
+          matricula_id: matricula.id,
+          horario_id: Number(horarioId),
+        }))
+      )
 
-  if (disponibilidadesError) {
-    voltarComErro('Não foi possível guardar as disponibilidades. Tenta novamente.')
+    if (disponibilidadesError) {
+      voltarComErro('Não foi possível guardar as disponibilidades. Tenta novamente.')
+    }
   }
 
   redirect('/dashboard')

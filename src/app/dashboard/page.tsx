@@ -28,6 +28,7 @@ type Matricula = {
 
 type Pedido = {
   id: number
+  mensagem: string | null
   profiles: { nome: string } | null
   instrumentos: { nome: string } | null
   disponibilidades_selecionadas: {
@@ -117,7 +118,7 @@ export default async function DashboardPage({
     const { data: pedidosData } = await supabase
       .from('matriculas')
       .select(
-        'id, profiles!matriculas_aluno_id_fkey(nome), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
+        'id, mensagem, profiles!matriculas_aluno_id_fkey(nome), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
       )
       .eq('professor_id', user.id)
       .eq('estado', 'a_escolher')
@@ -299,6 +300,11 @@ export default async function DashboardPage({
                     <strong>{pedido.profiles?.nome}</strong> —{' '}
                     {pedido.instrumentos?.nome}
                   </p>
+                  {pedido.mensagem && (
+                    <p className="rounded bg-foreground/5 p-2 text-sm italic text-foreground/70">
+                      “{pedido.mensagem}”
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-2">
                     {pedido.disponibilidades_selecionadas.map((d) => (
                       <form key={d.horario_id} action={confirmarHorario}>

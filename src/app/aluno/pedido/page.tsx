@@ -286,28 +286,20 @@ export default async function PedidoPage({
   const horariosGrade = (horarios ?? []).filter((h) =>
     DIAS_GRADE.includes(h.dia_semana)
   )
-
-  if (horariosGrade.length === 0) {
-    return (
-      <Wizard
-        title="Seleciona os vários horários em que tens disponibilidade"
-        voltar={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}`}
-      >
-        <p className="text-sm text-foreground/60">
-          Este professor ainda não tem horários disponíveis.
-        </p>
-      </Wizard>
-    )
-  }
+  const semHorarios = horariosGrade.length === 0
 
   // A grelha só mostra as horas entre a aula mais cedo e a mais tarde deste
   // professor (arredondadas à hora certa), não um intervalo fixo do dia.
-  const horaInicioGrade = Math.floor(
-    Math.min(...horariosGrade.map((h) => paraMinutos(h.hora_inicio))) / 60
-  )
-  const horaFimGrade = Math.ceil(
-    Math.max(...horariosGrade.map((h) => paraMinutos(h.hora_fim))) / 60
-  )
+  const horaInicioGrade = semHorarios
+    ? 0
+    : Math.floor(
+        Math.min(...horariosGrade.map((h) => paraMinutos(h.hora_inicio))) / 60
+      )
+  const horaFimGrade = semHorarios
+    ? 0
+    : Math.ceil(
+        Math.max(...horariosGrade.map((h) => paraMinutos(h.hora_fim))) / 60
+      )
   const horas = Array.from(
     { length: horaFimGrade - horaInicioGrade },
     (_, i) => horaInicioGrade + i
@@ -340,74 +332,102 @@ export default async function PedidoPage({
       <form action={escolherDisponibilidades} className="space-y-4">
         <input type="hidden" name="instrumentoId" value={instrumento} />
         <input type="hidden" name="professorId" value={professor} />
-        <p className="text-xs text-foreground/50">
-          Podes escolher várias opções — o professor decide depois qual fica
-          confirmada.
-        </p>
-        <div className="horarios-grade">
-          <div className="horarios-coluna-horas">
-            <div className="horarios-coluna-horas-cabecalho" />
-            {horas.map((hora) => (
-              <div
-                key={hora}
-                className="horarios-hora-label"
-                style={{ height: HOUR_HEIGHT }}
-              >
-                {hora}h
+        {semHorarios ? (
+          <p className="text-sm text-foreground/60">
+            Este professor ainda não tem horários disponíveis. Podes deixar-lhe
+            uma mensagem em baixo.
+          </p>
+        ) : (
+          <>
+            <p className="text-xs text-foreground/50">
+              Podes escolher várias opções — o professor decide depois qual
+              fica confirmada.
+            </p>
+            <div className="horarios-grade">
+              <div className="horarios-coluna-horas">
+                <div className="horarios-coluna-horas-cabecalho" />
+                {horas.map((hora) => (
+                  <div
+                    key={hora}
+                    className="horarios-hora-label"
+                    style={{ height: HOUR_HEIGHT }}
+                  >
+                    {hora}h
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {DIAS_GRADE.map((dia) => (
-            <div key={dia} className="horarios-coluna-dia">
-              <div className="horarios-coluna-dia-cabecalho">
-                {dia.slice(0, 3)}
-              </div>
-              <div
-                className="horarios-coluna-dia-corpo"
-                style={{
-                  height: alturaGrade,
-                  backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
-                }}
-              >
-                {horariosPorDia.get(dia)?.map((h) => {
-                  const inicioMin = paraMinutos(h.hora_inicio)
-                  const fimMin = paraMinutos(h.hora_fim)
-                  const estilo = {
-                    top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
-                    height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
-                    '--card-index': indicePorHorario.get(h.id) ?? 0,
-                  } as CSSProperties
+              {DIAS_GRADE.map((dia) => (
+                <div key={dia} className="horarios-coluna-dia">
+                  <div className="horarios-coluna-dia-cabecalho">
+                    {dia.slice(0, 3)}
+                  </div>
+                  <div
+                    className="horarios-coluna-dia-corpo"
+                    style={{
+                      height: alturaGrade,
+                      backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
+                    }}
+                  >
+                    {horariosPorDia.get(dia)?.map((h) => {
+                      const inicioMin = paraMinutos(h.hora_inicio)
+                      const fimMin = paraMinutos(h.hora_fim)
+                      const estilo = {
+                        top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
+                        height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
+                        '--card-index': indicePorHorario.get(h.id) ?? 0,
+                      } as CSSProperties
 
-                  if (h.estado === 'bloqueado') {
-                    return (
-                      <div
-                        key={h.id}
-                        className="horario-bloco entrada-esquerda bloqueado"
-                        style={estilo}
-                        aria-disabled="true"
-                      >
-                        <span>{formatarHora(h.hora_inicio)}</span>
-                        <span>{formatarHora(h.hora_fim)}</span>
-                      </div>
-                    )
-                  }
+                      if (h.estado === 'bloqueado') {
+                        return (
+                          <div
+                            key={h.id}
+                            className="horario-bloco entrada-esquerda bloqueado"
+                            style={estilo}
+                            aria-disabled="true"
+                          >
+                            <span>{formatarHora(h.hora_inicio)}</span>
+                            <span>{formatarHora(h.hora_fim)}</span>
+                          </div>
+                        )
+                      }
 
-                  return (
-                    <label
-                      key={h.id}
-                      className="horario-bloco entrada-esquerda"
-                      style={estilo}
-                    >
-                      <input type="checkbox" name="horarios" value={h.id} />
-                      <span>{formatarHora(h.hora_inicio)}</span>
-                      <span>{formatarHora(h.hora_fim)}</span>
-                    </label>
-                  )
-                })}
-              </div>
+                      return (
+                        <label
+                          key={h.id}
+                          className="horario-bloco entrada-esquerda"
+                          style={estilo}
+                        >
+                          <input type="checkbox" name="horarios" value={h.id} />
+                          <span>{formatarHora(h.hora_inicio)}</span>
+                          <span>{formatarHora(h.hora_fim)}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </>
+        )}
+
+        <div className="space-y-1">
+          <label htmlFor="mensagem" className="block text-sm font-medium">
+            Nenhum horário te dá jeito?
+          </label>
+          <textarea
+            id="mensagem"
+            name="mensagem"
+            rows={3}
+            maxLength={500}
+            placeholder="Ex: só posso às quintas-feiras a partir das 16h — achas que dá para arranjar?"
+            className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+          />
+          <p className="text-xs text-foreground/50">
+            Deixa uma mensagem ao professor em vez de escolher um horário. Ele
+            decide se quer entrar em contacto contigo fora da app.
+          </p>
         </div>
+
         {erro && <p className="text-sm text-red-600">{erro}</p>}
         <button
           type="submit"
