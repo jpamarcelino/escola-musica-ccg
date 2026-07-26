@@ -12,6 +12,7 @@ export function OptionCard({
   index = 0,
   tituloNegrito = false,
   bloqueado = false,
+  badge,
 }: {
   href: string
   nome: string
@@ -23,9 +24,15 @@ export function OptionCard({
   index?: number
   tituloNegrito?: boolean
   bloqueado?: boolean
+  badge?: number
 }) {
   const conteudo: ReactNode = (
     <>
+      {!!badge && badge > 0 && (
+        <span className="option-card-badge" aria-label={`${badge} pedidos por responder`}>
+          {badge}
+        </span>
+      )}
       {!wide && (
         <span className={icone ? 'option-card-media icon' : 'option-card-media'}>
           {imagemUrl ? (

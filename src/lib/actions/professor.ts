@@ -25,6 +25,8 @@ export async function confirmarHorario(formData: FormData) {
     .eq('professor_id', user.id)
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/pedidos')
+  revalidatePath('/dashboard/horarios')
 }
 
 export async function cancelarMatricula(formData: FormData) {
@@ -46,6 +48,30 @@ export async function cancelarMatricula(formData: FormData) {
     .eq('professor_id', user.id)
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/horarios')
+}
+
+export async function recusarPedido(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = String(formData.get('matriculaId') ?? '')
+
+  await supabase
+    .from('matriculas')
+    .delete()
+    .eq('id', matriculaId)
+    .eq('professor_id', user.id)
+    .eq('estado', 'a_escolher')
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/pedidos')
 }
 
 export async function alternarEstadoHorario(formData: FormData) {
@@ -113,6 +139,7 @@ export async function atualizarInstrumentos(formData: FormData) {
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/conta')
 }
 
 export async function atualizarFoto(formData: FormData) {
@@ -126,7 +153,7 @@ export async function atualizarFoto(formData: FormData) {
   }
 
   function voltarComErro(mensagem: string): never {
-    redirect(`/dashboard?erroHorarios=${encodeURIComponent(mensagem)}`)
+    redirect(`/dashboard/conta?erroHorarios=${encodeURIComponent(mensagem)}`)
   }
 
   const ficheiro = formData.get('foto')
@@ -153,6 +180,7 @@ export async function atualizarFoto(formData: FormData) {
   await supabase.from('profiles').update({ foto_url: fotoUrl }).eq('id', user.id)
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/conta')
 }
 
 function gerarBlocos(horaInicio: string, horaFim: string, duracaoMinutos: number) {
@@ -190,7 +218,7 @@ export async function criarHorarios(formData: FormData) {
   const duracaoMinutos = Number(formData.get('duracaoMinutos') ?? 0)
 
   function voltarComErro(mensagem: string): never {
-    redirect(`/dashboard?erroHorarios=${encodeURIComponent(mensagem)}`)
+    redirect(`/dashboard/horarios?erroHorarios=${encodeURIComponent(mensagem)}`)
   }
 
   if (!duracaoMinutos) {
@@ -237,6 +265,7 @@ export async function criarHorarios(formData: FormData) {
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/horarios')
 }
 
 export async function atualizarHorario(formData: FormData) {
@@ -332,7 +361,7 @@ export async function bloquearHorarios(formData: FormData) {
   const ids = formData.getAll('horarioIds').map(String)
 
   if (ids.length === 0) {
-    redirect('/dashboard?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
+    redirect('/dashboard/horarios?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
   }
 
   await supabase
@@ -342,7 +371,8 @@ export async function bloquearHorarios(formData: FormData) {
     .eq('professor_id', user.id)
 
   revalidatePath('/dashboard')
-  redirect('/dashboard')
+  revalidatePath('/dashboard/horarios')
+  redirect('/dashboard/horarios')
 }
 
 export async function desbloquearHorarios(formData: FormData) {
@@ -358,7 +388,7 @@ export async function desbloquearHorarios(formData: FormData) {
   const ids = formData.getAll('horarioIds').map(String)
 
   if (ids.length === 0) {
-    redirect('/dashboard?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
+    redirect('/dashboard/horarios?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
   }
 
   await supabase
@@ -368,7 +398,8 @@ export async function desbloquearHorarios(formData: FormData) {
     .eq('professor_id', user.id)
 
   revalidatePath('/dashboard')
-  redirect('/dashboard')
+  revalidatePath('/dashboard/horarios')
+  redirect('/dashboard/horarios')
 }
 
 export async function apagarHorarios(formData: FormData) {
@@ -384,7 +415,7 @@ export async function apagarHorarios(formData: FormData) {
   const ids = formData.getAll('horarioIds').map(String)
 
   if (ids.length === 0) {
-    redirect('/dashboard?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
+    redirect('/dashboard/horarios?erroHorarios=' + encodeURIComponent('Seleciona pelo menos um horário.'))
   }
 
   let apagados = 0
@@ -405,14 +436,15 @@ export async function apagarHorarios(formData: FormData) {
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/horarios')
 
   if (bloqueados > 0) {
     redirect(
-      `/dashboard?erroHorarios=${encodeURIComponent(
+      `/dashboard/horarios?erroHorarios=${encodeURIComponent(
         `${apagados} horário(s) apagado(s). ${bloqueados} não puderam ser apagados por teres alunos confirmados — bloqueia-os em vez disso.`
       )}`
     )
   }
 
-  redirect('/dashboard')
+  redirect('/dashboard/horarios')
 }

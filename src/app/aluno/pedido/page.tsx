@@ -1,10 +1,10 @@
-import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { OptionCard } from '@/components/option-card'
+import { BackButton } from '@/components/back-button'
 import { calcularIdade } from '@/lib/idade'
 import {
   MUSICA_IDADE_MIN,
@@ -438,20 +438,7 @@ function Wizard({
   return (
     <main className="flex-1 flex items-start justify-center p-6">
       <div className="w-full max-w-sm space-y-4">
-        {voltar && (
-          <Link href={voltar} className="back-button" aria-label="Voltar">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M15 5 L8 12 L15 19"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
-        )}
+        {voltar && <BackButton href={voltar} />}
         {title && <h1 className="text-xl font-semibold">{title}</h1>}
         {children}
       </div>

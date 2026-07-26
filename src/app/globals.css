@@ -53,7 +53,18 @@ body {
   margin: 0 auto;
 }
 
+/* Cartões largos empilhados — usado no hub do professor (menu principal
+   após o login). Ao contrário de .option-stack, ocupa a largura toda do
+   ecrã disponível em vez de ficar limitado a 220px. */
+.hub-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .option-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   aspect-ratio: 3 / 4;
@@ -283,8 +294,13 @@ body {
 }
 
 .option-card.wide {
+  aspect-ratio: auto;
   align-items: center;
   justify-content: center;
+  /* Cartões largos nunca mostram imagem (media fica sempre escondida),
+     por isso não há nada a recortar — e assim a bolinha de notificação
+     pode ficar meia dentro, meia fora do canto do cartão. */
+  overflow: visible;
 }
 
 .option-card.wide .option-card-label {
@@ -312,6 +328,29 @@ body {
 .option-card-sub {
   font-size: 11.5px;
   color: var(--ink-soft);
+}
+
+/* Bolinha vermelha de notificação — meia dentro, meia fora do canto
+   superior direito do cartão. Só aparece quando há pedidos por responder. */
+.option-card-badge {
+  position: absolute;
+  top: -11px;
+  right: -11px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e0392f;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 0 2px #fff;
 }
 
 /* Grelha de horários (aluno a escolher horários de um professor) — dias
