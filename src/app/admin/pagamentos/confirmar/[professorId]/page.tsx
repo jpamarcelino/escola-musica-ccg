@@ -9,6 +9,7 @@ import {
 
 type MatriculaResumo = {
   id: number
+  aluno_id: string
   valor_mensal: number | null
   aluno: { nome: string } | null
   instrumentos: { nome: string } | null
@@ -62,7 +63,9 @@ export default async function ConfirmarMensalidadesProfessorPage({
 
   const { data: matriculasData } = await supabase
     .from('matriculas')
-    .select('id, valor_mensal, aluno:profiles!matriculas_aluno_id_fkey(nome), instrumentos(nome)')
+    .select(
+      'id, aluno_id, valor_mensal, aluno:profiles!matriculas_aluno_id_fkey(nome), instrumentos(nome)'
+    )
     .eq('professor_id', professorId)
     .eq('estado', 'confirmado')
   const matriculas = (matriculasData ?? []) as unknown as MatriculaResumo[]
@@ -123,6 +126,13 @@ export default async function ConfirmarMensalidadesProfessorPage({
                     </div>
                     <form action={marcarMensalidadePaga}>
                       <input type="hidden" name="matriculaId" value={m.id} />
+                      <input type="hidden" name="alunoId" value={m.aluno_id} />
+                      <input type="hidden" name="professorId" value={professorId} />
+                      <input
+                        type="hidden"
+                        name="instrumentoNome"
+                        value={m.instrumentos?.nome ?? ''}
+                      />
                       <input type="hidden" name="ano" value={ano} />
                       <input type="hidden" name="mes" value={mes} />
                       <input type="hidden" name="valor" value={m.valor_mensal ?? 0} />
@@ -157,6 +167,13 @@ export default async function ConfirmarMensalidadesProfessorPage({
                   </form>
                   <form action={definirNumeroFatura} className="flex items-center gap-2">
                     <input type="hidden" name="matriculaId" value={m.id} />
+                    <input type="hidden" name="alunoId" value={m.aluno_id} />
+                    <input type="hidden" name="professorId" value={professorId} />
+                    <input
+                      type="hidden"
+                      name="instrumentoNome"
+                      value={m.instrumentos?.nome ?? ''}
+                    />
                     <input type="hidden" name="ano" value={ano} />
                     <input type="hidden" name="mes" value={mes} />
                     <input type="hidden" name="valor" value={m.valor_mensal ?? 0} />
