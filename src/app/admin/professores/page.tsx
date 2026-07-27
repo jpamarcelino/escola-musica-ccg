@@ -1,13 +1,12 @@
 import type { CSSProperties } from 'react'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
+import { OptionCard } from '@/components/option-card'
 
 type Professor = {
   id: string
   nome: string
-  programa: string | null
 }
 
 export default async function AdminProfessoresPage() {
@@ -32,7 +31,7 @@ export default async function AdminProfessoresPage() {
 
   const { data: professoresData } = await supabase
     .from('profiles')
-    .select('id, nome, programa')
+    .select('id, nome')
     .eq('tipo', 'professor')
     .order('nome')
   const professores = (professoresData ?? []) as Professor[]
@@ -51,22 +50,16 @@ export default async function AdminProfessoresPage() {
         {professores.length === 0 ? (
           <p className="text-sm text-foreground/60">Ainda não há professores registados.</p>
         ) : (
-          <div className="space-y-2">
-            {professores.map((professor) => (
-              <Link
+          <div className="hub-stack compacto">
+            {professores.map((professor, idx) => (
+              <OptionCard
                 key={professor.id}
                 href={`/admin/professores/${professor.id}`}
-                className="lista-item block"
-              >
-                <p className="lista-item-titulo">{professor.nome}</p>
-                <p className="lista-item-sub">
-                  {professor.programa === 'musica'
-                    ? 'Música'
-                    : professor.programa === 'danca'
-                      ? 'Dança'
-                      : 'sem escola'}
-                </p>
-              </Link>
+                nome={professor.nome}
+                wide
+                compacto
+                index={idx + 1}
+              />
             ))}
           </div>
         )}

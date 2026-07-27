@@ -314,6 +314,20 @@ body {
   line-height: 1.3;
 }
 
+/* Versão compacta do cartão largo — usada em listas longas (alunos,
+   professores) onde só o nome interessa, sem gastar tanta altura. */
+.option-card.wide.compacto .option-card-label {
+  padding: 10px 16px;
+}
+
+.option-card.wide.compacto .option-card-name {
+  font-size: 17px;
+}
+
+.hub-stack.compacto {
+  gap: 8px;
+}
+
 .option-card-name {
   font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
   font-size: 14.5px;

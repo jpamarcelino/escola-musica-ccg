@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
+import { OptionCard } from '@/components/option-card'
 
 type Aluno = {
   id: string
@@ -50,11 +50,16 @@ export default async function AdminAlunosPage() {
         {alunos.length === 0 ? (
           <p className="text-sm text-foreground/60">Ainda não há alunos registados.</p>
         ) : (
-          <div className="space-y-2">
-            {alunos.map((aluno) => (
-              <Link key={aluno.id} href={`/admin/alunos/${aluno.id}`} className="lista-item block">
-                <p className="lista-item-titulo">{aluno.nome}</p>
-              </Link>
+          <div className="hub-stack compacto">
+            {alunos.map((aluno, idx) => (
+              <OptionCard
+                key={aluno.id}
+                href={`/admin/alunos/${aluno.id}`}
+                nome={aluno.nome}
+                wide
+                compacto
+                index={idx + 1}
+              />
             ))}
           </div>
         )}

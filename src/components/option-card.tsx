@@ -7,6 +7,7 @@ export function OptionCard({
   imagemUrl,
   subtitulo,
   wide = false,
+  compacto = false,
   icone = false,
   iconePadding,
   index = 0,
@@ -19,6 +20,7 @@ export function OptionCard({
   imagemUrl?: string | null
   subtitulo?: string | null
   wide?: boolean
+  compacto?: boolean
   icone?: boolean
   iconePadding?: string
   index?: number
@@ -58,7 +60,7 @@ export function OptionCard({
     </>
   )
 
-  const className = `option-card${wide ? ' wide' : ''}${bloqueado ? ' locked' : ''}`
+  const className = `option-card${wide ? ' wide' : ''}${compacto ? ' compacto' : ''}${bloqueado ? ' locked' : ''}`
   const style = { '--card-index': index } as CSSProperties
 
   // Um cartão bloqueado não é um destino navegável — não faz sentido ser um
