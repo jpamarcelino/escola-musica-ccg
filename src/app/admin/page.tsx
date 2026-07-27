@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarAdministradores } from '@/lib/actions/admin'
@@ -145,6 +146,9 @@ export default async function AdminPage() {
             <p className="text-sm text-foreground/60">
               Só tu (e outros administradores) vês esta página.
             </p>
+            <Link href="/admin/pagamentos" className="text-sm underline">
+              Mensalidades
+            </Link>
           </div>
         </div>
 
