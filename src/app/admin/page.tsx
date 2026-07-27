@@ -1,6 +1,8 @@
+import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarAdministradores } from '@/lib/actions/admin'
+import { BackButton } from '@/components/back-button'
 
 type Perfil = {
   id: string
@@ -28,6 +30,18 @@ type HorarioResumo = {
   hora_fim: string
   estado: string
   professor_id: string
+}
+
+type PresencaResumo = {
+  estado: string
+  matriculas: { aluno_id: string; aluno: { nome: string } | null } | null
+}
+
+type ResumoFaltas = {
+  nome: string
+  presente: number
+  falta_aviso: number
+  falta_sem_aviso: number
 }
 
 export default async function AdminPage() {
@@ -88,37 +102,79 @@ export default async function AdminPage() {
   const totalConfirmadas = matriculas.filter((m) => m.estado === 'confirmado').length
   const totalPendentes = matriculas.filter((m) => m.estado === 'a_escolher').length
 
+  const { data: presencasData } = await supabase
+    .from('presencas')
+    .select(
+      'estado, matriculas(aluno_id, aluno:profiles!matriculas_aluno_id_fkey(nome))'
+    )
+  const presencas = (presencasData ?? []) as unknown as PresencaResumo[]
+
+  const faltasPorAluno = new Map<string, ResumoFaltas>()
+  for (const p of presencas) {
+    if (!p.matriculas?.aluno) continue
+    const atual = faltasPorAluno.get(p.matriculas.aluno_id) ?? {
+      nome: p.matriculas.aluno.nome,
+      presente: 0,
+      falta_aviso: 0,
+      falta_sem_aviso: 0,
+    }
+    if (p.estado === 'presente') atual.presente += 1
+    else if (p.estado === 'falta_aviso') atual.falta_aviso += 1
+    else if (p.estado === 'falta_sem_aviso') atual.falta_sem_aviso += 1
+    faltasPorAluno.set(p.matriculas.aluno_id, atual)
+  }
+  const resumoFaltas = [...faltasPorAluno.values()].sort(
+    (a, b) =>
+      b.falta_aviso + b.falta_sem_aviso - (a.falta_aviso + a.falta_sem_aviso) ||
+      a.nome.localeCompare(b.nome)
+  )
+
   return (
     <main className="flex-1 flex justify-center p-6">
       <div className="w-full max-w-3xl space-y-8 text-left">
-        <div>
-          <h1 className="text-xl font-semibold">Visão geral</h1>
-          <p className="text-sm text-foreground/60">
-            Só tu (e outros administradores) vês esta página.
-          </p>
+        <div
+          className="entrada-esquerda flex items-center gap-3"
+          style={{ '--card-index': 0 } as CSSProperties}
+        >
+          <BackButton href="/dashboard" />
+          <div>
+            <h1 className="text-2xl">
+              <span className="saudacao">Visão</span>{' '}
+              <span className="font-semibold text-foreground">geral</span>
+            </h1>
+            <p className="text-sm text-foreground/60">
+              Só tu (e outros administradores) vês esta página.
+            </p>
+          </div>
         </div>
 
-        <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded border border-foreground/15 p-4 text-center">
-            <p className="text-2xl font-semibold">{alunos.length}</p>
-            <p className="text-xs text-foreground/60">Alunos</p>
+        <section
+          className="entrada-esquerda grid grid-cols-2 gap-3 sm:grid-cols-4"
+          style={{ '--card-index': 1 } as CSSProperties}
+        >
+          <div className="stat-tile">
+            <p className="stat-tile-numero">{alunos.length}</p>
+            <p className="stat-tile-legenda">Alunos</p>
           </div>
-          <div className="rounded border border-foreground/15 p-4 text-center">
-            <p className="text-2xl font-semibold">{professores.length}</p>
-            <p className="text-xs text-foreground/60">Professores</p>
+          <div className="stat-tile">
+            <p className="stat-tile-numero">{professores.length}</p>
+            <p className="stat-tile-legenda">Professores</p>
           </div>
-          <div className="rounded border border-foreground/15 p-4 text-center">
-            <p className="text-2xl font-semibold">{totalConfirmadas}</p>
-            <p className="text-xs text-foreground/60">Aulas confirmadas</p>
+          <div className="stat-tile">
+            <p className="stat-tile-numero">{totalConfirmadas}</p>
+            <p className="stat-tile-legenda">Aulas confirmadas</p>
           </div>
-          <div className="rounded border border-foreground/15 p-4 text-center">
-            <p className="text-2xl font-semibold">{totalPendentes}</p>
-            <p className="text-xs text-foreground/60">Pedidos por confirmar</p>
+          <div className="stat-tile">
+            <p className="stat-tile-numero">{totalPendentes}</p>
+            <p className="stat-tile-legenda">Pedidos por confirmar</p>
           </div>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="font-semibold">Alunos</h2>
+        <section
+          className="entrada-esquerda space-y-3"
+          style={{ '--card-index': 2 } as CSSProperties}
+        >
+          <h2 className="secao-titulo">Alunos</h2>
           {alunos.length === 0 && (
             <p className="text-sm text-foreground/60">Ainda não há alunos registados.</p>
           )}
@@ -128,16 +184,13 @@ export default async function AdminPage() {
                 (m) => m.aluno_id === aluno.id
               )
               return (
-                <div
-                  key={aluno.id}
-                  className="rounded border border-foreground/15 px-4 py-2 text-sm"
-                >
-                  <p className="font-medium">{aluno.nome}</p>
+                <div key={aluno.id} className="lista-item">
+                  <p className="lista-item-titulo">{aluno.nome}</p>
                   {matriculasDoAluno.length === 0 && (
-                    <p className="text-xs text-foreground/60">Ainda não pediu aula.</p>
+                    <p className="lista-item-sub">Ainda não pediu aula.</p>
                   )}
                   {matriculasDoAluno.map((m) => (
-                    <p key={m.id} className="text-xs text-foreground/60">
+                    <p key={m.id} className="lista-item-sub">
                       {m.estado === 'a_escolher' && (
                         <>
                           A aguardar confirmação de {m.professor?.nome} (
@@ -160,8 +213,11 @@ export default async function AdminPage() {
           </div>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="font-semibold">Professores</h2>
+        <section
+          className="entrada-esquerda space-y-3"
+          style={{ '--card-index': 3 } as CSSProperties}
+        >
+          <h2 className="secao-titulo">Professores</h2>
           {professores.length === 0 && (
             <p className="text-sm text-foreground/60">
               Ainda não há professores registados.
@@ -183,13 +239,10 @@ export default async function AdminPage() {
                 instrumentosPorProfessor.get(professor.id) ?? []
 
               return (
-                <div
-                  key={professor.id}
-                  className="rounded border border-foreground/15 px-4 py-2 text-sm"
-                >
-                  <p className="font-medium">
+                <div key={professor.id} className="lista-item">
+                  <p className="lista-item-titulo">
                     {professor.nome}{' '}
-                    <span className="text-xs text-foreground/50">
+                    <span className="font-sans text-xs font-normal text-foreground/50">
                       (
                       {professor.programa === 'musica'
                         ? 'Música'
@@ -199,10 +252,12 @@ export default async function AdminPage() {
                       )
                     </span>{' '}
                     {professor.admin && (
-                      <span className="text-xs text-foreground/50">(admin)</span>
+                      <span className="font-sans text-xs font-normal text-foreground/50">
+                        (admin)
+                      </span>
                     )}
                   </p>
-                  <p className="text-xs text-foreground/60">
+                  <p className="lista-item-sub">
                     {instrumentosDoProfessor.length > 0
                       ? instrumentosDoProfessor.join(', ')
                       : 'Sem instrumentos definidos'}{' '}
@@ -215,8 +270,35 @@ export default async function AdminPage() {
           </div>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="font-semibold">Administradores</h2>
+        <section
+          className="entrada-esquerda space-y-3"
+          style={{ '--card-index': 4 } as CSSProperties}
+        >
+          <h2 className="secao-titulo">Presenças</h2>
+          {resumoFaltas.length === 0 && (
+            <p className="text-sm text-foreground/60">
+              Ainda não há presenças marcadas por nenhum professor.
+            </p>
+          )}
+          <div className="space-y-2">
+            {resumoFaltas.map((r) => (
+              <div key={r.nome} className="lista-item">
+                <p className="lista-item-titulo">{r.nome}</p>
+                <p className="lista-item-sub">
+                  {r.presente} presença{r.presente === 1 ? '' : 's'} —{' '}
+                  {r.falta_aviso} falta{r.falta_aviso === 1 ? '' : 's'} com aviso —{' '}
+                  {r.falta_sem_aviso} falta{r.falta_sem_aviso === 1 ? '' : 's'} sem aviso
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="entrada-esquerda space-y-3"
+          style={{ '--card-index': 5 } as CSSProperties}
+        >
+          <h2 className="secao-titulo">Administradores</h2>
           <p className="text-xs text-foreground/50">
             Quem estiver marcado ganha acesso a esta página. Não te consegues
             desmarcar a ti próprio, para nunca ficares sem acesso.
@@ -226,10 +308,7 @@ export default async function AdminPage() {
               {professores.map((professor) => {
                 const souEu = professor.id === user.id
                 return (
-                  <label
-                    key={professor.id}
-                    className="flex items-center gap-2 text-sm"
-                  >
+                  <label key={professor.id} className="lista-item flex items-center gap-2">
                     <input
                       type="checkbox"
                       name="admins"
@@ -240,15 +319,14 @@ export default async function AdminPage() {
                     {souEu && (
                       <input type="hidden" name="admins" value={professor.id} />
                     )}
-                    {professor.nome} {souEu && '(tu)'}
+                    <span className="text-sm text-foreground">
+                      {professor.nome} {souEu && '(tu)'}
+                    </span>
                   </label>
                 )
               })}
             </div>
-            <button
-              type="submit"
-              className="rounded border border-foreground/20 px-3 py-1 text-sm"
-            >
+            <button type="submit" className="botao-cartao">
               Guardar administradores
             </button>
           </form>

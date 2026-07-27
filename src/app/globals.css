@@ -496,6 +496,17 @@ body {
   opacity: 0.7;
 }
 
+/* Sala atribuída automaticamente, dentro do bloco de horário — discreta,
+   por baixo da hora e (quando há) dos nomes dos alunos. */
+.horario-bloco-sala {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  opacity: 0.75;
+}
+
 /* Nome(s) do(s) aluno(s) dentro do bloco, na agenda automática (só
    professores de música — em dança o horário fica sem nomes). */
 .horario-bloco-alunos {
@@ -504,6 +515,66 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 600;
+}
+
+/* Cartão de estatística (página de admin) — mesmo acabamento em opala
+   dos cartões de navegação, mas sem interação, só para exibir um número. */
+.stat-tile {
+  border-radius: 14px;
+  padding: 16px 10px;
+  text-align: center;
+  background:
+    radial-gradient(120% 90% at 15% 10%, rgba(255, 255, 255, 0.9), transparent 55%),
+    linear-gradient(150deg, var(--opal-1) 0%, var(--opal-2) 55%, var(--opal-3) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(140, 165, 190, 0.3),
+    0 10px 20px -14px rgba(18, 58, 94, 0.3);
+}
+
+.stat-tile-numero {
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--brand-hover);
+  line-height: 1.1;
+}
+
+.stat-tile-legenda {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+/* Título de secção (Alunos / Professores / Administradores) — mesma
+   família e cor dos nomes nos cartões, para ligar visualmente a página. */
+.secao-titulo {
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--brand-hover);
+}
+
+/* Linha de lista (aluno / professor / admin) — acabamento em opala
+   suave, mais discreto que os cartões de navegação. */
+.lista-item {
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: var(--opal-1);
+  border: 1px solid var(--card-border);
+}
+
+.lista-item-titulo {
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--brand-hover);
+}
+
+.lista-item-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--ink-soft);
 }
 
 .horario-bloco.bloqueado-selecionavel:has(input:checked) {

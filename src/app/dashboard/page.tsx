@@ -5,13 +5,19 @@ import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/actions/auth'
 import { cancelarPedido } from '@/lib/actions/aluno'
 import { OptionCard } from '@/components/option-card'
+import { formatarSala } from '@/lib/sala'
 
 type Matricula = {
   id: number
   estado: string
   instrumentos: { nome: string } | null
   profiles: { nome: string } | null
-  horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+  horarios: {
+    dia_semana: string
+    hora_inicio: string
+    hora_fim: string
+    salas: { nome: string; piso: number | null; numero: number | null } | null
+  } | null
 }
 
 export default async function DashboardPage() {
@@ -35,7 +41,7 @@ export default async function DashboardPage() {
     const { data } = await supabase
       .from('matriculas')
       .select(
-        'id, estado, instrumentos(nome), profiles!matriculas_professor_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim)'
+        'id, estado, instrumentos(nome), profiles!matriculas_professor_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
       )
       .eq('aluno_id', user.id)
       .order('criado_em', { ascending: false })
@@ -128,7 +134,10 @@ export default async function DashboardPage() {
                     Aula confirmada com <strong>{matricula.profiles?.nome}</strong>{' '}
                     ({matricula.instrumentos?.nome}): {matricula.horarios.dia_semana}
                     , {matricula.horarios.hora_inicio.slice(0, 5)}–
-                    {matricula.horarios.hora_fim.slice(0, 5)}.
+                    {matricula.horarios.hora_fim.slice(0, 5)}
+                    {formatarSala(matricula.horarios.salas) &&
+                      ` — ${formatarSala(matricula.horarios.salas)}`}
+                    .
                   </p>
                 )}
               </div>
@@ -159,16 +168,22 @@ export default async function DashboardPage() {
               badge={pedidosPendentes}
             />
             <OptionCard
+              href="/dashboard/presencas"
+              nome="Presenças"
+              wide
+              index={3}
+            />
+            <OptionCard
               href="/dashboard/horarios"
               nome="Gestão de Horários"
               wide
-              index={3}
+              index={4}
             />
             <OptionCard
               href="/dashboard/agenda"
               nome="Horários e Alunos"
               wide
-              index={4}
+              index={5}
             />
           </div>
         )}

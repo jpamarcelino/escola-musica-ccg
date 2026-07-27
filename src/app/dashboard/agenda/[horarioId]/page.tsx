@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
 import { OptionCard } from '@/components/option-card'
 import { formatarHora } from '@/lib/horarios-grade'
+import { formatarSala } from '@/lib/sala'
 
 type Aluno = {
   id: number
@@ -36,12 +37,18 @@ export default async function AgendaHorarioPage({
     redirect('/dashboard')
   }
 
-  const { data: horario } = await supabase
+  const { data: horarioData } = await supabase
     .from('horarios')
-    .select('dia_semana, hora_inicio, hora_fim')
+    .select('dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero)')
     .eq('id', Number(horarioId))
     .eq('professor_id', user.id)
     .maybeSingle()
+  const horario = horarioData as unknown as {
+    dia_semana: string
+    hora_inicio: string
+    hora_fim: string
+    salas: { nome: string; piso: number | null; numero: number | null } | null
+  } | null
 
   if (!horario) {
     notFound()
@@ -67,6 +74,7 @@ export default async function AgendaHorarioPage({
             </h1>
             <p className="text-sm text-foreground/60">
               {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
+              {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}
             </p>
           </div>
         </div>

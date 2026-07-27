@@ -4,13 +4,19 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
+import { formatarSala } from '@/lib/sala'
 import { BackButton } from '@/components/back-button'
 
 type Confirmado = {
   id: number
   horario_final_id: number | null
   profiles: { nome: string } | null
-  horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+  horarios: {
+    dia_semana: string
+    hora_inicio: string
+    hora_fim: string
+    salas: { nome: string; piso: number | null; numero: number | null } | null
+  } | null
 }
 
 type BlocoAgenda = {
@@ -18,6 +24,7 @@ type BlocoAgenda = {
   dia_semana: string
   hora_inicio: string
   hora_fim: string
+  sala: string | null
   alunos: string[]
 }
 
@@ -46,7 +53,7 @@ export default async function AgendaPage() {
   const { data: confirmadosData } = await supabase
     .from('matriculas')
     .select(
-      'id, horario_final_id, profiles!matriculas_aluno_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim)'
+      'id, horario_final_id, profiles!matriculas_aluno_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -64,6 +71,7 @@ export default async function AgendaPage() {
       dia_semana: c.horarios.dia_semana,
       hora_inicio: c.horarios.hora_inicio,
       hora_fim: c.horarios.hora_fim,
+      sala: formatarSala(c.horarios.salas),
       alunos: [],
     }
     bloco.alunos.push(c.profiles?.nome ?? '')
@@ -160,10 +168,15 @@ export default async function AgendaPage() {
                           href={`/dashboard/agenda/${b.horarioId}`}
                           className="horario-bloco entrada-esquerda"
                           style={estilo}
-                          title={mostrarNomes ? undefined : b.alunos.join(', ')}
+                          title={[b.sala, mostrarNomes ? null : b.alunos.join(', ')]
+                            .filter(Boolean)
+                            .join(' — ') || undefined}
                         >
                           <span>{formatarHora(b.hora_inicio)}</span>
                           <span>{formatarHora(b.hora_fim)}</span>
+                          {b.sala && (
+                            <span className="horario-bloco-sala">{b.sala}</span>
+                          )}
                           {mostrarNomes && (
                             <span className="horario-bloco-alunos">
                               {b.alunos.join(', ')}

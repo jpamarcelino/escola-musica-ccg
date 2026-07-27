@@ -2,6 +2,10 @@
 -- Centro Cultural: registo, escolha de disciplina/professor, disponibilidades, atribuição final
 -- Duas escolas partilham a mesma estrutura: Música e Dança, distinguidas pela
 -- coluna "programa" em instrumentos (que aqui também guarda modalidades de dança).
+--
+-- Este ficheiro é o estado inicial (bootstrap num projeto Supabase vazio).
+-- Mudanças posteriores ao esquema em produção ficam em supabase/migrations/,
+-- por ordem — corre-as pela SQL Editor do Supabase, uma de cada vez.
 
 -- 1. Perfis de utilizador (aluno ou professor), ligados à conta de login do Supabase
 create table profiles (
