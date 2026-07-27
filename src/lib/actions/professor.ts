@@ -18,15 +18,33 @@ export async function confirmarHorario(formData: FormData) {
   const matriculaId = String(formData.get('matriculaId') ?? '')
   const horarioId = String(formData.get('horarioId') ?? '')
 
-  await supabase
+  const { data: matricula } = await supabase
     .from('matriculas')
     .update({ horario_final_id: Number(horarioId), estado: 'confirmado' })
     .eq('id', matriculaId)
     .eq('professor_id', user.id)
+    .select('aluno_id, instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim)')
+    .single()
+
+  if (matricula) {
+    const m = matricula as unknown as {
+      aluno_id: string
+      instrumentos: { nome: string } | null
+      horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    }
+    if (m.horarios) {
+      await supabase.from('notificacoes').insert({
+        user_id: m.aluno_id,
+        tipo: 'pedido_aceite',
+        mensagem: `A tua aula de ${m.instrumentos?.nome ?? ''} foi confirmada: ${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}.`,
+      })
+    }
+  }
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/pedidos')
   revalidatePath('/dashboard/horarios')
+  revalidatePath('/aluno/notificacoes')
 }
 
 export async function cancelarMatricula(formData: FormData) {

@@ -51,6 +51,12 @@ export function datasDoDia(diaSemana: string, desde: string, ate: string): strin
   return datas
 }
 
+// A próxima aula desse dia da semana a partir de hoje (hoje incluído) —
+// usada para mostrar a "próxima aula marcada" ao aluno.
+export function proximaOcorrenciaDoDia(diaSemana: string, referencia = new Date()): string {
+  return dataMaisRecenteDoDiaApartirDe(diaSemana, paraISO(referencia))
+}
+
 // A primeira ocorrência desse dia da semana a partir de (e incluindo) "desde".
 function dataMaisRecenteDoDiaApartirDe(diaSemana: string, desde: string): string {
   const [ano, mes, dia] = desde.split('-').map(Number)
