@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
+import { PagamentosTabs } from '@/components/pagamentos-tabs'
 import {
   definirValorMensal,
   marcarMensalidadePaga,
@@ -87,11 +88,20 @@ export default async function PagamentosPage({
     ((mensalidadesData ?? []) as MensalidadeResumo[]).map((m) => [m.matricula_id, m])
   )
 
+  // Só entram aqui os que ainda faltam confirmar (não pagos este mês) —
+  // assim que marcados como pagos, desaparecem desta lista.
+  const matriculasPorConfirmar = matriculas.filter(
+    (m) => !(mensalidadePorMatricula.get(m.id)?.pago ?? false)
+  )
+
   const matriculasPorProfessor = new Map<string, MatriculaResumo[]>()
-  for (const m of matriculas) {
+  for (const m of matriculasPorConfirmar) {
     const lista = matriculasPorProfessor.get(m.professor_id) ?? []
     lista.push(m)
     matriculasPorProfessor.set(m.professor_id, lista)
+  }
+  for (const lista of matriculasPorProfessor.values()) {
+    lista.sort((a, b) => (a.aluno?.nome ?? '').localeCompare(b.aluno?.nome ?? ''))
   }
 
   return (
@@ -112,7 +122,15 @@ export default async function PagamentosPage({
           </div>
         </div>
 
+        <PagamentosTabs ativo="confirmar" />
+
         {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
+
+        {matriculasPorProfessor.size === 0 && (
+          <p className="text-sm text-foreground/60">
+            Não há mensalidades por confirmar este mês.
+          </p>
+        )}
 
         {professores.map((professor, idx) => {
           const matriculasDoProfessor = matriculasPorProfessor.get(professor.id) ?? []
