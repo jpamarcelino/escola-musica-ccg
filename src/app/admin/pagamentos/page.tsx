@@ -101,7 +101,8 @@ export default async function PagamentosPage({
             <h1 className="text-2xl font-semibold text-foreground">Mensalidades</h1>
             <p className="text-sm text-foreground/60">
               Mês atual: {String(mes).padStart(2, '0')}/{ano}. Lembrete enviado no dia 1,
-              aviso final no dia 20 a quem ainda não estiver marcado como pago.
+              aviso final no dia 20 a quem ainda não estiver marcado como pago — só
+              dentro do ano letivo 2026/2027 (outubro a junho).
             </p>
           </div>
         </div>
