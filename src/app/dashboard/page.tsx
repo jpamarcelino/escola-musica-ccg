@@ -114,6 +114,12 @@ export default async function DashboardPage() {
               wide
               index={5}
             />
+            <OptionCard
+              href="/dashboard/calendario"
+              nome="Calendário Escolar"
+              wide
+              index={6}
+            />
           </div>
         )}
 
