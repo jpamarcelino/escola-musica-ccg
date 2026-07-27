@@ -1,9 +1,14 @@
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
 
-export default async function PagamentosPage() {
+export default async function HistoricoPagamentosProfessorPage({
+  params,
+}: {
+  params: Promise<{ professorId: string }>
+}) {
+  const { professorId } = await params
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -23,28 +28,25 @@ export default async function PagamentosPage() {
     redirect('/dashboard')
   }
 
+  const { data: professorData } = await supabase
+    .from('profiles')
+    .select('nome')
+    .eq('id', professorId)
+    .eq('tipo', 'professor')
+    .maybeSingle()
+
+  if (!professorData) {
+    notFound()
+  }
+
   return (
     <main className="flex-1 flex justify-center p-6">
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
-          <BackButton href="/admin" />
-          <h1 className="text-2xl font-semibold text-foreground">Mensalidades</h1>
+          <BackButton href="/admin/pagamentos/historico" />
+          <h1 className="text-2xl font-semibold text-foreground">{professorData.nome}</h1>
         </div>
-
-        <div className="hub-stack">
-          <OptionCard
-            href="/admin/pagamentos/confirmar"
-            nome="Mensalidades por Confirmar"
-            wide
-            index={1}
-          />
-          <OptionCard
-            href="/admin/pagamentos/historico"
-            nome="Histórico de Mensalidades"
-            wide
-            index={2}
-          />
-        </div>
+        <p className="text-sm text-foreground/60">Em breve.</p>
       </div>
     </main>
   )
