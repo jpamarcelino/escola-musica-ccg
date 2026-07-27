@@ -315,9 +315,18 @@ body {
 }
 
 /* Versão compacta do cartão largo — usada em listas longas (alunos,
-   professores) onde só o nome interessa, sem gastar tanta altura. */
+   professores) onde só o nome interessa, sem gastar tanta altura.
+   Encostada à esquerda: numa lista comprida, o texto centrado dificulta
+   a leitura rápida de cima a baixo. */
+.option-card.wide.compacto {
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
 .option-card.wide.compacto .option-card-label {
   padding: 10px 16px;
+  text-align: left;
+  align-items: flex-start;
 }
 
 .option-card.wide.compacto .option-card-name {
