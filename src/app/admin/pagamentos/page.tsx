@@ -2,7 +2,11 @@ import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
-import { definirValorMensal, marcarMensalidadePaga } from '@/lib/actions/pagamentos'
+import {
+  definirValorMensal,
+  marcarMensalidadePaga,
+  definirNumeroFatura,
+} from '@/lib/actions/pagamentos'
 
 type Professor = {
   id: string
@@ -21,6 +25,7 @@ type MatriculaResumo = {
 type MensalidadeResumo = {
   matricula_id: number
   pago: boolean
+  numero_fatura: string | null
 }
 
 export default async function PagamentosPage({
@@ -73,13 +78,13 @@ export default async function PagamentosPage({
     matriculaIds.length > 0
       ? await supabase
           .from('mensalidades')
-          .select('matricula_id, pago')
+          .select('matricula_id, pago, numero_fatura')
           .eq('ano', ano)
           .eq('mes', mes)
           .in('matricula_id', matriculaIds)
       : { data: [] }
-  const pagoPorMatricula = new Map(
-    ((mensalidadesData ?? []) as MensalidadeResumo[]).map((m) => [m.matricula_id, m.pago])
+  const mensalidadePorMatricula = new Map(
+    ((mensalidadesData ?? []) as MensalidadeResumo[]).map((m) => [m.matricula_id, m])
   )
 
   const matriculasPorProfessor = new Map<string, MatriculaResumo[]>()
@@ -133,7 +138,9 @@ export default async function PagamentosPage({
               </h2>
               <div className="space-y-2">
                 {matriculasDoProfessor.map((m) => {
-                  const pago = pagoPorMatricula.get(m.id) ?? false
+                  const mensalidade = mensalidadePorMatricula.get(m.id)
+                  const pago = mensalidade?.pago ?? false
+                  const numeroFatura = mensalidade?.numero_fatura ?? ''
                   return (
                     <div key={m.id} className="lista-item space-y-2">
                       <div className="flex items-center justify-between gap-3">
@@ -147,6 +154,7 @@ export default async function PagamentosPage({
                           <input type="hidden" name="mes" value={mes} />
                           <input type="hidden" name="valor" value={m.valor_mensal ?? 0} />
                           <input type="hidden" name="pago" value={(!pago).toString()} />
+                          <input type="hidden" name="numeroFatura" value={numeroFatura} />
                           <button
                             type="submit"
                             disabled={m.valor_mensal === null}
@@ -172,6 +180,27 @@ export default async function PagamentosPage({
                           name="valor"
                           defaultValue={m.valor_mensal ?? ''}
                           className="w-24 rounded border border-foreground/20 px-2 py-1 text-sm"
+                        />
+                        <button
+                          type="submit"
+                          className="rounded border border-foreground/20 px-2 py-1 text-xs"
+                        >
+                          Guardar
+                        </button>
+                      </form>
+                      <form action={definirNumeroFatura} className="flex items-center gap-2">
+                        <input type="hidden" name="matriculaId" value={m.id} />
+                        <input type="hidden" name="ano" value={ano} />
+                        <input type="hidden" name="mes" value={mes} />
+                        <input type="hidden" name="valor" value={m.valor_mensal ?? 0} />
+                        <input type="hidden" name="pago" value={pago.toString()} />
+                        <label className="text-xs text-foreground/60">Nº fatura</label>
+                        <input
+                          type="text"
+                          name="numeroFatura"
+                          defaultValue={numeroFatura}
+                          placeholder="ex: FT 2026/123"
+                          className="w-32 rounded border border-foreground/20 px-2 py-1 text-sm"
                         />
                         <button
                           type="submit"
