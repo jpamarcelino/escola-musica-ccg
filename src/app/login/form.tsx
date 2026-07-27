@@ -67,6 +67,12 @@ export default function LoginForm() {
           Criar conta
         </Link>
       </p>
+
+      <p className="text-sm text-center">
+        <Link href="/instalar" className="underline">
+          Como instalar no telemóvel
+        </Link>
+      </p>
     </form>
   )
 }

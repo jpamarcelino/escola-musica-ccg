@@ -131,6 +131,10 @@ export default async function DashboardPage() {
             Sair
           </button>
         </form>
+
+        <Link href="/instalar" className="block text-sm underline">
+          Como instalar no telemóvel
+        </Link>
       </div>
     </main>
   )
