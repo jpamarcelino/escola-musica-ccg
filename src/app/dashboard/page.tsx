@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/actions/auth'
 import { OptionCard } from '@/components/option-card'
+import { InstalarCallout } from '@/components/instalar-callout'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -63,6 +64,10 @@ export default async function DashboardPage() {
               Visão geral (diretor)
             </Link>
           )}
+        </div>
+
+        <div className="entrada-esquerda" style={{ '--card-index': 1 } as CSSProperties}>
+          <InstalarCallout />
         </div>
 
         {profile?.tipo === 'aluno' && (
@@ -131,10 +136,6 @@ export default async function DashboardPage() {
             Sair
           </button>
         </form>
-
-        <Link href="/instalar" className="block text-sm underline">
-          Como instalar no telemóvel
-        </Link>
       </div>
     </main>
   )

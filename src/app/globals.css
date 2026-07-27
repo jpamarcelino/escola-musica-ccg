@@ -724,3 +724,84 @@ body {
 .tabela-historico input::placeholder {
   color: #b0b0b0;
 }
+
+/* Chamada de atenção para a página de instalação — deliberadamente fora
+   da paleta azul/opala do resto da app, para se destacar como um convite,
+   não como mais uma opção do menu. */
+.callout-instalar-wrap {
+  position: relative;
+}
+
+.callout-seta {
+  position: absolute;
+  top: -34px;
+  right: 18px;
+  color: #b8860b;
+  transform: scaleX(-1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .callout-seta {
+    animation: callout-seta-aponta 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes callout-seta-aponta {
+  0%,
+  100% {
+    transform: scaleX(-1) translateY(0);
+  }
+  50% {
+    transform: scaleX(-1) translateY(6px);
+  }
+}
+
+.callout-instalar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff4d6 0%, #ffe08a 100%);
+  border: 1px solid #f0c860;
+  text-decoration: none;
+  color: var(--foreground);
+  box-shadow: 0 10px 22px -14px rgba(184, 134, 11, 0.55);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .callout-instalar {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+}
+
+.callout-instalar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px -14px rgba(184, 134, 11, 0.65);
+}
+
+.callout-instalar-icone {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fffaf0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b8860b;
+}
+
+.callout-instalar-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 13px;
+  color: #6b5518;
+}
+
+.callout-instalar-texto strong {
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-size: 16px;
+  color: #171717;
+}
