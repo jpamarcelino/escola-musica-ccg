@@ -22,12 +22,12 @@ export default async function AdminAdministradoresPage() {
 
   const { data: perfilAtual } = await supabase
     .from('profiles')
-    .select('admin')
+    .select('super_admin')
     .eq('id', user.id)
     .single()
 
-  if (!perfilAtual?.admin) {
-    redirect('/dashboard')
+  if (!perfilAtual?.super_admin) {
+    redirect('/admin')
   }
 
   const { data: professoresData } = await supabase

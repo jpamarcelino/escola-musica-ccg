@@ -16,11 +16,11 @@ export async function atualizarAdministradores(formData: FormData) {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('admin')
+    .select('super_admin')
     .eq('id', user.id)
     .single()
 
-  if (!perfil?.admin) {
+  if (!perfil?.super_admin) {
     redirect('/dashboard')
   }
 

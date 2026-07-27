@@ -16,7 +16,7 @@ export default async function AdminPage() {
 
   const { data: perfilAtual } = await supabase
     .from('profiles')
-    .select('admin')
+    .select('admin, super_admin')
     .eq('id', user.id)
     .single()
 
@@ -77,7 +77,9 @@ export default async function AdminPage() {
           <OptionCard href="/admin/pagamentos" nome="Mensalidades" wide index={2} />
           <OptionCard href="/admin/alunos" nome="Alunos" wide index={3} />
           <OptionCard href="/admin/professores" nome="Professores" wide index={4} />
-          <OptionCard href="/admin/administradores" nome="Administradores" wide index={5} />
+          {perfilAtual.super_admin && (
+            <OptionCard href="/admin/administradores" nome="Administradores" wide index={5} />
+          )}
         </div>
       </div>
     </main>
