@@ -734,10 +734,11 @@ body {
 
 .callout-seta {
   position: absolute;
-  top: -34px;
-  right: 18px;
-  color: #b8860b;
-  transform: scaleX(-1);
+  top: -40px;
+  right: -34px;
+  width: 92px;
+  height: auto;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -749,10 +750,10 @@ body {
 @keyframes callout-seta-aponta {
   0%,
   100% {
-    transform: scaleX(-1) translateY(0);
+    transform: translateY(0);
   }
   50% {
-    transform: scaleX(-1) translateY(6px);
+    transform: translateY(6px);
   }
 }
 
