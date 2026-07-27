@@ -84,5 +84,7 @@ export async function marcarPresencas(formData: FormData) {
   }
 
   revalidatePath(`/dashboard/presencas/${horarioId}`)
-  redirect(`/dashboard/presencas/${horarioId}?data=${encodeURIComponent(data)}&guardado=1`)
+  revalidatePath('/dashboard/presencas')
+  revalidatePath('/dashboard/presencas/historico')
+  redirect('/dashboard/presencas?guardado=1')
 }

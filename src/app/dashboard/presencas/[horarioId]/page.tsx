@@ -23,10 +23,10 @@ export default async function PresencasHorarioPage({
   searchParams,
 }: {
   params: Promise<{ horarioId: string }>
-  searchParams: Promise<{ data?: string; erro?: string; guardado?: string }>
+  searchParams: Promise<{ data?: string; erro?: string }>
 }) {
   const { horarioId } = await params
-  const { data: dataParam, erro, guardado } = await searchParams
+  const { data: dataParam, erro } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -105,7 +105,6 @@ export default async function PresencasHorarioPage({
         </form>
 
         {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
-        {guardado && <p className="text-sm text-green-700">Presenças guardadas.</p>}
 
         {alunos.length === 0 ? (
           <p className="text-sm text-foreground/60">Não há alunos confirmados neste horário.</p>
