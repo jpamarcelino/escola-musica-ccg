@@ -78,7 +78,7 @@ export default async function PresencasHorarioPage({
     <main className="flex-1 flex justify-center p-6">
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
-          <BackButton href="/dashboard/presencas" />
+          <BackButton href="/dashboard/presencas/confirmar" />
           <div>
             <h1 className="text-2xl font-semibold text-foreground">{horario.dia_semana}</h1>
             <p className="text-sm text-foreground/60">

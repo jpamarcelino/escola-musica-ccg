@@ -1,8 +1,7 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
-import { PresencasTabs } from '@/components/presencas-tabs'
+import { OptionCard } from '@/components/option-card'
 
 type MatriculaAluno = {
   id: number
@@ -76,27 +75,23 @@ export default async function HistoricoPresencasPage() {
     <main className="flex-1 flex justify-center p-6">
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <h1 className="text-2xl font-semibold text-foreground">Presenças</h1>
+          <BackButton href="/dashboard/presencas" />
+          <h1 className="text-2xl font-semibold text-foreground">Histórico de Presenças</h1>
         </div>
-
-        <PresencasTabs ativo="historico" />
 
         {alunos.length === 0 ? (
           <p className="text-sm text-foreground/60">Ainda não tens alunos confirmados.</p>
         ) : (
-          <div className="space-y-2">
-            {alunos.map((a) => (
-              <Link
+          <div className="hub-stack compacto">
+            {alunos.map((a, idx) => (
+              <OptionCard
                 key={a.alunoId}
                 href={`/dashboard/presencas/historico/${a.alunoId}`}
-                className="lista-item block"
-              >
-                <p className="lista-item-titulo">{a.nome}</p>
-                <p className="lista-item-sub">
-                  {a.registos} registo{a.registos === 1 ? '' : 's'} de presença
-                </p>
-              </Link>
+                nome={a.nome}
+                wide
+                compacto
+                index={idx + 1}
+              />
             ))}
           </div>
         )}
