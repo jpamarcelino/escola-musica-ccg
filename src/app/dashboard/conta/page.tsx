@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarInstrumentos, atualizarFoto } from '@/lib/actions/professor'
 import { BackButton } from '@/components/back-button'
+import { SubmitButton } from '@/components/submit-button'
 
 export default async function ContaPage({
   searchParams,
@@ -104,12 +105,12 @@ export default async function ContaPage({
                 required
                 className="text-sm"
               />
-              <button
-                type="submit"
+              <SubmitButton
+                textoAGuardar="A carregar..."
                 className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
               >
                 Carregar foto
-              </button>
+              </SubmitButton>
             </form>
           </div>
         </section>
@@ -148,12 +149,12 @@ export default async function ContaPage({
                 )
               })}
             </div>
-            <button
-              type="submit"
+            <SubmitButton
+              textoAGuardar="A guardar disciplinas..."
               className="rounded border border-foreground/20 px-3 py-1 text-sm"
             >
               Guardar disciplinas
-            </button>
+            </SubmitButton>
           </form>
         </section>
       </div>

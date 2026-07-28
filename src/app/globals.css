@@ -806,3 +806,28 @@ body {
   font-size: 16px;
   color: #171717;
 }
+
+/* Pequeno indicador de progresso dentro de botões de submeter, enquanto
+   a Server Action ainda está a correr. */
+.botao-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  vertical-align: -2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .botao-spinner {
+    animation: botao-spinner-rodar 0.6s linear infinite;
+  }
+}
+
+@keyframes botao-spinner-rodar {
+  to {
+    transform: rotate(360deg);
+  }
+}

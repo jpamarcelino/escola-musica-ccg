@@ -178,6 +178,12 @@ export async function atualizarFoto(formData: FormData) {
   if (!(ficheiro instanceof File) || ficheiro.size === 0) {
     voltarComErro('Escolhe uma foto para carregar.')
   }
+  // Margem abaixo do limite de tamanho das Server Actions (10mb, em
+  // next.config.ts) — para dar um erro claro em vez de a próprria
+  // plataforma rejeitar o pedido a meio.
+  if (ficheiro.size > 9 * 1024 * 1024) {
+    voltarComErro('Essa foto é demasiado grande (máximo 9MB). Tenta outra ou reduz o tamanho.')
+  }
 
   const caminho = `${user.id}/foto`
   const { error: erroUpload } = await supabase.storage
