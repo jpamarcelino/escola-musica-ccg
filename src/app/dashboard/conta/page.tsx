@@ -5,6 +5,7 @@ import {
   atualizarNomeConta,
   atualizarEmailConta,
   atualizarPasswordConta,
+  apagarConta,
 } from '@/lib/actions/auth'
 import { BackButton } from '@/components/back-button'
 import { SubmitButton } from '@/components/submit-button'
@@ -14,13 +15,14 @@ import {
   EditarEmailForm,
   AlterarPasswordForm,
 } from '@/components/conta-forms'
+import { BotaoApagarConta } from '@/components/apagar-conta-botao'
 
 export default async function ContaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ erroHorarios?: string }>
+  searchParams: Promise<{ erroHorarios?: string; erro?: string }>
 }) {
-  const { erroHorarios } = await searchParams
+  const { erroHorarios, erro } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -77,9 +79,9 @@ export default async function ContaPage({
           <h1 className="text-2xl font-semibold text-foreground">Conta</h1>
         </div>
 
-        {erroHorarios && (
+        {(erroHorarios || erro) && (
           <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
-            {erroHorarios}
+            {erroHorarios || erro}
           </p>
         )}
 
@@ -153,6 +155,10 @@ export default async function ContaPage({
             </section>
           </>
         )}
+
+        <section className="space-y-3 border-t border-foreground/10 pt-6">
+          <BotaoApagarConta action={apagarConta} />
+        </section>
       </div>
     </main>
   )

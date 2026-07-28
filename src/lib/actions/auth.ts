@@ -313,3 +313,34 @@ export async function atualizarPasswordConta(
 
   return { info: 'Password atualizada.' }
 }
+
+export async function apagarConta() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('tipo')
+    .eq('id', user.id)
+    .single()
+  const contaHref = profile?.tipo === 'admin' ? '/admin/conta' : '/dashboard/conta'
+
+  // Apaga a conta através de uma função da BD (a app só tem a anon key,
+  // que não pode apagar de auth.users diretamente). Isto cascateia até
+  // profiles, matrículas, disponibilidades e horários — o histórico de
+  // presenças e mensalidades fica guardado (ver migrações 0008 e 0013).
+  const { error } = await supabase.rpc('apagar_propria_conta')
+
+  if (error) {
+    redirect(`${contaHref}?erro=${encodeURIComponent('Não foi possível apagar a conta. Tenta novamente.')}`)
+  }
+
+  await supabase.auth.signOut()
+  redirect('/login')
+}

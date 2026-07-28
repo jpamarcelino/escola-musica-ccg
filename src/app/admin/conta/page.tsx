@@ -3,11 +3,19 @@ import { createClient } from '@/lib/supabase/server'
 import {
   atualizarNomeConta,
   atualizarPasswordConta,
+  apagarConta,
 } from '@/lib/actions/auth'
 import { BackButton } from '@/components/back-button'
 import { EditarNomeForm, AlterarPasswordForm } from '@/components/conta-forms'
+import { BotaoApagarConta } from '@/components/apagar-conta-botao'
 
-export default async function AdminContaPage() {
+export default async function AdminContaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erro?: string }>
+}) {
+  const { erro } = await searchParams
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -35,6 +43,10 @@ export default async function AdminContaPage() {
           <h1 className="text-2xl font-semibold text-foreground">Conta</h1>
         </div>
 
+        {erro && (
+          <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">{erro}</p>
+        )}
+
         <section className="space-y-4">
           <h2 className="font-semibold">Dados</h2>
           <EditarNomeForm action={atualizarNomeConta} nomeAtual={profile.nome} />
@@ -47,6 +59,10 @@ export default async function AdminContaPage() {
         <section className="space-y-3">
           <h2 className="font-semibold">Alterar password</h2>
           <AlterarPasswordForm action={atualizarPasswordConta} />
+        </section>
+
+        <section className="space-y-3 border-t border-foreground/10 pt-6">
+          <BotaoApagarConta action={apagarConta} />
         </section>
       </div>
     </main>

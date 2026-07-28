@@ -45,25 +45,36 @@ export async function marcarPresencas(formData: FormData) {
 
   const { data: matriculas } = await supabase
     .from('matriculas')
-    .select('id')
+    .select('id, aluno_id, instrumentos(nome)')
     .eq('horario_final_id', horarioId)
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
-  const idsValidos = new Set((matriculas ?? []).map((m) => m.id))
+  type MatriculaComInstrumento = {
+    id: number
+    aluno_id: string
+    instrumentos: { nome: string } | null
+  }
+  const matriculasValidas = (matriculas ?? []) as unknown as MatriculaComInstrumento[]
 
   const linhas: {
     matricula_id: number
+    aluno_id: string
+    professor_id: string
+    instrumento_nome: string | null
     data: string
     estado: string
     marcado_por: string
     atualizado_em: string
   }[] = []
 
-  for (const matriculaId of idsValidos) {
-    const estado = String(formData.get(`estado_${matriculaId}`) ?? '')
+  for (const matricula of matriculasValidas) {
+    const estado = String(formData.get(`estado_${matricula.id}`) ?? '')
     if (!ESTADOS_VALIDOS.includes(estado)) continue
     linhas.push({
-      matricula_id: matriculaId,
+      matricula_id: matricula.id,
+      aluno_id: matricula.aluno_id,
+      professor_id: user.id,
+      instrumento_nome: matricula.instrumentos?.nome ?? null,
       data,
       estado,
       marcado_por: user.id,
