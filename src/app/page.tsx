@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { OptionCard } from '@/components/option-card'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -23,14 +22,20 @@ export default async function Home() {
         </p>
       </div>
 
-      <div className="option-grid w-full max-w-xs">
-        <OptionCard href="/registo?programa=musica" nome="Escola de Música" index={0} />
-        <OptionCard href="/registo?programa=danca" nome="Escola de Dança" index={1} />
+      <div className="w-full max-w-xs space-y-3">
+        <Link
+          href="/registo"
+          className="block w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
+        >
+          Criar conta
+        </Link>
+        <Link
+          href="/login"
+          className="block w-full rounded border border-foreground/20 px-4 py-2"
+        >
+          Já tens conta? Entrar
+        </Link>
       </div>
-
-      <Link href="/login" className="rounded border border-foreground/20 px-4 py-2">
-        Já tens conta? Entrar
-      </Link>
     </main>
   )
 }
