@@ -227,7 +227,7 @@ export default async function HorariosPage({
           <p className="text-xs text-foreground/50">
             Os horários não são específicos de uma disciplina — servem para
             qualquer uma das que ensinas. Preenche só os dias em que dás
-            aulas; deixa os outros em branco.
+            aulas; deixa os outros em branco. Só entre as 10h e as 22h.
           </p>
           <form
             action={criarHorarios}
@@ -240,12 +240,16 @@ export default async function HorariosPage({
                   <input
                     name={`inicio_${i}`}
                     type="time"
+                    min="10:00"
+                    max="22:00"
                     className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
                   />
                   <span className="text-sm text-foreground/50">até</span>
                   <input
                     name={`fim_${i}`}
                     type="time"
+                    min="10:00"
+                    max="22:00"
                     className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
                   />
                 </div>

@@ -5,6 +5,11 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 
+// Fora deste intervalo o Centro Cultural não abre — evita horários
+// disparatados (ex: 1h da manhã) por engano de fuso ou digitação.
+const HORARIO_MIN = '10:00'
+const HORARIO_MAX = '22:00'
+
 export async function confirmarHorario(formData: FormData) {
   const supabase = await createClient()
   const {
@@ -262,6 +267,12 @@ export async function criarHorarios(formData: FormData) {
     const horaFim = String(formData.get(`fim_${i}`) ?? '')
     if (!horaInicio || !horaFim) return
 
+    if (horaInicio < HORARIO_MIN || horaFim > HORARIO_MAX) {
+      voltarComErro(
+        `Os horários têm de estar entre as ${HORARIO_MIN} e as ${HORARIO_MAX} (${dia}).`
+      )
+    }
+
     for (const b of gerarBlocos(horaInicio, horaFim, duracaoMinutos)) {
       linhas.push({
         professor_id: user.id,
@@ -318,6 +329,9 @@ export async function atualizarHorario(formData: FormData) {
   }
   if (horaFim <= horaInicio) {
     voltarComErro('A hora de fim tem de ser depois da hora de início.')
+  }
+  if (horaInicio < HORARIO_MIN || horaFim > HORARIO_MAX) {
+    voltarComErro(`Os horários têm de estar entre as ${HORARIO_MIN} e as ${HORARIO_MAX}.`)
   }
 
   const { error } = await supabase

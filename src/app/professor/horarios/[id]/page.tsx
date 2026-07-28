@@ -87,6 +87,8 @@ export default async function EditarHorarioPage({
                 name="horaInicio"
                 type="time"
                 required
+                min="10:00"
+                max="22:00"
                 defaultValue={horario.hora_inicio.slice(0, 5)}
                 className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
               />
@@ -100,6 +102,8 @@ export default async function EditarHorarioPage({
                 name="horaFim"
                 type="time"
                 required
+                min="10:00"
+                max="22:00"
                 defaultValue={horario.hora_fim.slice(0, 5)}
                 className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
               />
