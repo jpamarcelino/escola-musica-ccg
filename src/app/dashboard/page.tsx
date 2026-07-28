@@ -79,15 +79,16 @@ export default async function DashboardPage() {
 
         {profile?.tipo === 'aluno' && (
           <div className="hub-stack">
-            <OptionCard href="/aluno/pedido" nome="Pedir Aula" wide index={1} />
-            <OptionCard href="/aluno/horario" nome="Consultar Horário" wide index={2} />
-            <OptionCard href="/aluno/calendario" nome="Calendário Escolar" wide index={3} />
-            <OptionCard href="/aluno/materiais" nome="Materiais das Aulas" wide index={4} />
+            <OptionCard href="/dashboard/conta" nome="Conta" wide index={1} />
+            <OptionCard href="/aluno/pedido" nome="Pedir Aula" wide index={2} />
+            <OptionCard href="/aluno/horario" nome="Consultar Horário" wide index={3} />
+            <OptionCard href="/aluno/calendario" nome="Calendário Escolar" wide index={4} />
+            <OptionCard href="/aluno/materiais" nome="Materiais das Aulas" wide index={5} />
             <OptionCard
               href="/aluno/notificacoes"
               nome="Notificações"
               wide
-              index={5}
+              index={6}
               badge={notificacoesPorLer}
             />
           </div>

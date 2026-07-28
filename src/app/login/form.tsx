@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { login } from '@/lib/actions/auth'
 import { InstalarCallout } from '@/components/instalar-callout'
+import { PasswordInput } from '@/components/password-input'
 
 export default function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined)
@@ -38,11 +39,10 @@ export default function LoginForm() {
           <label htmlFor="password" className="block text-sm font-medium">
             Password
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
-            required
+            autoComplete="current-password"
             className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
           />
         </div>

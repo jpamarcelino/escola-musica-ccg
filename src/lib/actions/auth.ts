@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { calcularIdade } from '@/lib/idade'
@@ -182,4 +183,133 @@ export async function atualizarPassword(
   }
 
   redirect('/dashboard')
+}
+
+export async function atualizarNomeConta(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const nome = String(formData.get('nome') ?? '').trim()
+
+  if (!nome) {
+    return { error: 'O nome não pode ficar vazio.' }
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { error } = await supabase.from('profiles').update({ nome }).eq('id', user.id)
+
+  if (error) {
+    return { error: 'Não foi possível atualizar o nome. Tenta novamente.' }
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/conta')
+  revalidatePath('/admin')
+  revalidatePath('/admin/conta')
+
+  return { info: 'Nome atualizado.' }
+}
+
+export async function atualizarEmailConta(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const email = String(formData.get('email') ?? '').trim()
+
+  if (!email) {
+    return { error: 'Indica o novo email.' }
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { data: perfil } = await supabase
+    .from('profiles')
+    .select('tipo')
+    .eq('id', user.id)
+    .single()
+
+  // Só alunos podem mudar o próprio email por aqui — professores e admins
+  // pedem à direção, para já.
+  if (perfil?.tipo !== 'aluno') {
+    return { error: 'Não tens permissão para alterar o email.' }
+  }
+
+  const { error } = await supabase.auth.updateUser({ email })
+
+  if (error) {
+    return { error: 'Não foi possível atualizar o email. Tenta novamente.' }
+  }
+
+  // Não atualizamos profiles.email já aqui: o Supabase só troca o email de
+  // autenticação depois de confirmado por link (enviado para o email
+  // antigo e/ou novo, consoante a configuração do projeto) — escrever já
+  // o valor novo deixava profiles.email a mostrar um email que ainda não
+  // dá para usar no login, uma mentira até à confirmação (ou para sempre,
+  // se nunca for confirmado).
+  return {
+    info: 'Enviámos um link de confirmação para o novo email. O email só muda depois de confirmares.',
+  }
+}
+
+export async function atualizarPasswordConta(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const passwordAtual = String(formData.get('passwordAtual') ?? '')
+  const passwordNova = String(formData.get('passwordNova') ?? '')
+  const passwordNovaRepetir = String(formData.get('passwordNovaRepetir') ?? '')
+
+  if (!passwordAtual || !passwordNova || !passwordNovaRepetir) {
+    return { error: 'Preenche todos os campos.' }
+  }
+  if (passwordNova.length < 6) {
+    return { error: 'A nova password deve ter pelo menos 6 caracteres.' }
+  }
+  if (passwordNova !== passwordNovaRepetir) {
+    return { error: 'As passwords novas não coincidem.' }
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user?.email) {
+    redirect('/login')
+  }
+
+  // Confirma a password atual voltando a autenticar antes de a trocar —
+  // evita que alguém com uma sessão aberta (ex: telemóvel destrancado)
+  // mude a password sem a saber.
+  const { error: erroAtual } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: passwordAtual,
+  })
+
+  if (erroAtual) {
+    return { error: 'A password atual está incorreta.' }
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: passwordNova })
+
+  if (error) {
+    return { error: 'Não foi possível atualizar a password. Tenta novamente.' }
+  }
+
+  return { info: 'Password atualizada.' }
 }

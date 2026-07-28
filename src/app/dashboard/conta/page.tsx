@@ -1,9 +1,19 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarInstrumentos, atualizarFoto } from '@/lib/actions/professor'
+import {
+  atualizarNomeConta,
+  atualizarEmailConta,
+  atualizarPasswordConta,
+} from '@/lib/actions/auth'
 import { BackButton } from '@/components/back-button'
 import { SubmitButton } from '@/components/submit-button'
 import { FotoConta } from '@/components/foto-conta'
+import {
+  EditarNomeForm,
+  EditarEmailForm,
+  AlterarPasswordForm,
+} from '@/components/conta-forms'
 
 export default async function ContaPage({
   searchParams,
@@ -27,21 +37,29 @@ export default async function ContaPage({
     .eq('id', user.id)
     .single()
 
-  if (profile?.tipo !== 'professor') {
+  if (profile?.tipo === 'admin') {
+    redirect('/admin/conta')
+  }
+  if (profile?.tipo !== 'professor' && profile?.tipo !== 'aluno') {
     redirect('/dashboard')
   }
+  const ehProfessor = profile.tipo === 'professor'
 
-  const { data: instrumentosData } = await supabase
-    .from('instrumentos')
-    .select('id, nome')
-    .eq('programa', profile.programa)
-    .order('nome')
+  const { data: instrumentosData } = ehProfessor
+    ? await supabase
+        .from('instrumentos')
+        .select('id, nome')
+        .eq('programa', profile.programa)
+        .order('nome')
+    : { data: [] }
   const todosInstrumentos = instrumentosData ?? []
 
-  const { data: meusInstrumentosData } = await supabase
-    .from('professor_instrumentos')
-    .select('especialidade, instrumentos(id, nome)')
-    .eq('professor_id', user.id)
+  const { data: meusInstrumentosData } = ehProfessor
+    ? await supabase
+        .from('professor_instrumentos')
+        .select('especialidade, instrumentos(id, nome)')
+        .eq('professor_id', user.id)
+    : { data: [] }
   const meusInstrumentos = (
     (meusInstrumentosData ?? []) as unknown as {
       especialidade: string | null
@@ -65,71 +83,76 @@ export default async function ContaPage({
           </p>
         )}
 
-        <section className="space-y-3">
+        <section className="space-y-4">
           <h2 className="font-semibold">Dados</h2>
-          <div className="space-y-1 text-sm">
-            <p>
-              <span className="text-foreground/60">Nome: </span>
-              {profile.nome}
-            </p>
-            <p>
+          <EditarNomeForm action={atualizarNomeConta} nomeAtual={profile.nome} />
+          {!ehProfessor && (
+            <EditarEmailForm action={atualizarEmailConta} emailAtual={user.email ?? ''} />
+          )}
+          {ehProfessor && (
+            <p className="text-sm">
               <span className="text-foreground/60">Email: </span>
               {user.email}
             </p>
-          </div>
-          <p className="text-xs text-foreground/50">
-            Para mudar a password, usa a opção &quot;Esqueci a password&quot;
-            no ecrã de login.
-          </p>
+          )}
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-semibold">A tua foto</h2>
-          <FotoConta action={atualizarFoto} fotoUrl={profile.foto_url} nome={profile.nome} />
+          <h2 className="font-semibold">Alterar password</h2>
+          <AlterarPasswordForm action={atualizarPasswordConta} />
         </section>
 
-        <section className="space-y-3">
-          <h2 className="font-semibold">Disciplinas que ensinas</h2>
-          <p className="text-xs text-foreground/50">
-            A especialidade é opcional — usa-a quando ensinas uma disciplina
-            de forma diferente de outros professores (ex: &quot;Piano
-            clássico&quot; vs. &quot;Piano jazz/rock&quot;). Aparece por baixo
-            do teu nome quando um aluno escolher essa disciplina.
-          </p>
-          <form action={atualizarInstrumentos} className="space-y-3">
-            <div className="space-y-2">
-              {todosInstrumentos.map((i) => {
-                const meu = meusInstrumentos.find((m) => m.id === i.id)
-                return (
-                  <div key={i.id} className="flex items-center gap-2 text-sm">
-                    <label className="flex w-40 shrink-0 items-center gap-2">
-                      <input
-                        type="checkbox"
-                        name="instrumentos"
-                        value={i.id}
-                        defaultChecked={meu !== undefined}
-                      />
-                      {i.nome}
-                    </label>
-                    <input
-                      type="text"
-                      name={`especialidade_${i.id}`}
-                      defaultValue={meu?.especialidade ?? ''}
-                      placeholder="Especialidade (opcional)"
-                      className="w-full rounded border border-foreground/20 bg-background px-3 py-1 text-sm"
-                    />
-                  </div>
-                )
-              })}
-            </div>
-            <SubmitButton
-              textoAGuardar="A guardar disciplinas..."
-              className="rounded border border-foreground/20 px-3 py-1 text-sm"
-            >
-              Guardar disciplinas
-            </SubmitButton>
-          </form>
-        </section>
+        {ehProfessor && (
+          <>
+            <section className="space-y-3">
+              <h2 className="font-semibold">A tua foto</h2>
+              <FotoConta action={atualizarFoto} fotoUrl={profile.foto_url} nome={profile.nome} />
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="font-semibold">Disciplinas que ensinas</h2>
+              <p className="text-xs text-foreground/50">
+                A especialidade é opcional — usa-a quando ensinas uma disciplina
+                de forma diferente de outros professores (ex: &quot;Piano
+                clássico&quot; vs. &quot;Piano jazz/rock&quot;). Aparece por baixo
+                do teu nome quando um aluno escolher essa disciplina.
+              </p>
+              <form action={atualizarInstrumentos} className="space-y-3">
+                <div className="space-y-2">
+                  {todosInstrumentos.map((i) => {
+                    const meu = meusInstrumentos.find((m) => m.id === i.id)
+                    return (
+                      <div key={i.id} className="flex items-center gap-2 text-sm">
+                        <label className="flex w-40 shrink-0 items-center gap-2">
+                          <input
+                            type="checkbox"
+                            name="instrumentos"
+                            value={i.id}
+                            defaultChecked={meu !== undefined}
+                          />
+                          {i.nome}
+                        </label>
+                        <input
+                          type="text"
+                          name={`especialidade_${i.id}`}
+                          defaultValue={meu?.especialidade ?? ''}
+                          placeholder="Especialidade (opcional)"
+                          className="w-full rounded border border-foreground/20 bg-background px-3 py-1 text-sm"
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+                <SubmitButton
+                  textoAGuardar="A guardar disciplinas..."
+                  className="rounded border border-foreground/20 px-3 py-1 text-sm"
+                >
+                  Guardar disciplinas
+                </SubmitButton>
+              </form>
+            </section>
+          </>
+        )}
       </div>
     </main>
   )

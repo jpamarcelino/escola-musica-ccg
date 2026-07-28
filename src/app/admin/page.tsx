@@ -75,11 +75,14 @@ export default async function AdminPage() {
         </section>
 
         <div className="hub-stack">
-          <OptionCard href="/admin/pagamentos" nome="Mensalidades" wide index={2} />
-          <OptionCard href="/admin/alunos" nome="Alunos" wide index={3} />
-          <OptionCard href="/admin/professores" nome="Professores" wide index={4} />
+          {perfilAtual.tipo === 'admin' && (
+            <OptionCard href="/admin/conta" nome="Conta" wide index={2} />
+          )}
+          <OptionCard href="/admin/pagamentos" nome="Mensalidades" wide index={3} />
+          <OptionCard href="/admin/alunos" nome="Alunos" wide index={4} />
+          <OptionCard href="/admin/professores" nome="Professores" wide index={5} />
           {perfilAtual.super_admin && (
-            <OptionCard href="/admin/administradores" nome="Administradores" wide index={5} />
+            <OptionCard href="/admin/administradores" nome="Administradores" wide index={6} />
           )}
         </div>
 
