@@ -6,6 +6,7 @@ import {
   atualizarEmailConta,
   atualizarPasswordConta,
   apagarConta,
+  apagarContaSuperAdmin,
 } from '@/lib/actions/auth'
 import { BackButton } from '@/components/back-button'
 import { SubmitButton } from '@/components/submit-button'
@@ -16,6 +17,7 @@ import {
   AlterarPasswordForm,
 } from '@/components/conta-forms'
 import { BotaoApagarConta } from '@/components/apagar-conta-botao'
+import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
 
 export default async function ContaPage({
   searchParams,
@@ -35,7 +37,7 @@ export default async function ContaPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('nome, tipo, programa, foto_url')
+    .select('nome, tipo, programa, foto_url, super_admin')
     .eq('id', user.id)
     .single()
 
@@ -46,6 +48,11 @@ export default async function ContaPage({
     redirect('/dashboard')
   }
   const ehProfessor = profile.tipo === 'professor'
+
+  const { data: outrosAdminsData } = profile.super_admin
+    ? await supabase.from('profiles').select('id, nome').eq('admin', true).neq('id', user.id)
+    : { data: [] }
+  const outrosAdmins = outrosAdminsData ?? []
 
   const { data: instrumentosData } = ehProfessor
     ? await supabase
@@ -157,7 +164,11 @@ export default async function ContaPage({
         )}
 
         <section className="space-y-3 border-t border-foreground/10 pt-6">
-          <BotaoApagarConta action={apagarConta} />
+          {profile.super_admin ? (
+            <ApagarContaSuperAdminForm action={apagarContaSuperAdmin} outrosAdmins={outrosAdmins} />
+          ) : (
+            <BotaoApagarConta action={apagarConta} />
+          )}
         </section>
       </div>
     </main>

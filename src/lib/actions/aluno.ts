@@ -132,3 +132,26 @@ export async function cancelarPedido(formData: FormData) {
 
   revalidatePath('/dashboard')
 }
+
+export async function cancelarMatricula(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = String(formData.get('matriculaId') ?? '')
+
+  await supabase
+    .from('matriculas')
+    .delete()
+    .eq('id', matriculaId)
+    .eq('aluno_id', user.id)
+    .eq('estado', 'confirmado')
+
+  revalidatePath('/dashboard')
+  revalidatePath('/aluno/horario')
+}

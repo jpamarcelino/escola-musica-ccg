@@ -12,10 +12,12 @@ type MatriculaAtual = {
 
 type MensalidadeHistorico = {
   aluno_id: string
+  aluno_nome: string | null
   ano: number
   mes: number
-  valor: number
+  valor: number | null
   numero_fatura: string | null
+  desistencia: boolean
 }
 
 export default async function HistoricoPagamentosProfessorPage({
@@ -67,28 +69,34 @@ export default async function HistoricoPagamentosProfessorPage({
 
   const { data: mensalidadesData } = await supabase
     .from('mensalidades')
-    .select('aluno_id, ano, mes, valor, numero_fatura, aluno:profiles!mensalidades_aluno_id_fkey(nome)')
+    .select('aluno_id, aluno_nome, ano, mes, valor, numero_fatura, desistencia')
     .eq('professor_id', professorId)
-  const mensalidades = (mensalidadesData ?? []) as unknown as (MensalidadeHistorico & {
-    aluno: { nome: string } | null
-  })[]
+  const mensalidades = (mensalidadesData ?? []) as unknown as MensalidadeHistorico[]
 
+  // Um aluno que já se desmatriculou ou apagou a conta continua a
+  // aparecer, com o histórico intacto — o nome vem do snapshot guardado
+  // em cada mensalidade (aluno_nome), já que a matrícula (ou a própria
+  // conta) pode já não existir.
   const nomePorAluno = new Map<string, string>()
   for (const m of matriculasAtuais) {
     if (m.aluno) nomePorAluno.set(m.aluno_id, m.aluno.nome)
   }
   for (const m of mensalidades) {
-    if (m.aluno && !nomePorAluno.has(m.aluno_id)) nomePorAluno.set(m.aluno_id, m.aluno.nome)
+    if (m.aluno_nome && !nomePorAluno.has(m.aluno_id)) nomePorAluno.set(m.aluno_id, m.aluno_nome)
   }
   const alunos = [...nomePorAluno.entries()]
     .map(([id, nome]) => ({ id, nome }))
     .sort((a, b) => a.nome.localeCompare(b.nome))
 
-  const valorPorCelula = new Map<string, { valor: number; numero_fatura: string | null }>()
+  const valorPorCelula = new Map<
+    string,
+    { valor: number | null; numero_fatura: string | null; desistencia: boolean }
+  >()
   for (const m of mensalidades) {
     valorPorCelula.set(`${m.aluno_id}_${m.ano}_${m.mes}`, {
       valor: m.valor,
       numero_fatura: m.numero_fatura,
+      desistencia: m.desistencia,
     })
   }
 
@@ -141,6 +149,25 @@ export default async function HistoricoPagamentosProfessorPage({
                       <td className="td-aluno">{aluno.nome}</td>
                       {MESES_ANO_LETIVO.map(({ ano, mes }) => {
                         const celula = valorPorCelula.get(`${aluno.id}_${ano}_${mes}`)
+                        if (celula?.desistencia) {
+                          return (
+                            <Fragment key={`${ano}-${mes}`}>
+                              <td>
+                                <input
+                                  type="text"
+                                  readOnly
+                                  name={`v_${aluno.id}_${ano}_${mes}`}
+                                  value="DT"
+                                  title="Desistência — aluno saiu antes deste mês."
+                                  className="celula-desistencia"
+                                />
+                              </td>
+                              <td className="th-fatura">
+                                <input type="text" readOnly name={`f_${aluno.id}_${ano}_${mes}`} value="" />
+                              </td>
+                            </Fragment>
+                          )
+                        }
                         return (
                           <Fragment key={`${ano}-${mes}`}>
                             <td>
@@ -148,7 +175,7 @@ export default async function HistoricoPagamentosProfessorPage({
                                 type="text"
                                 inputMode="decimal"
                                 name={`v_${aluno.id}_${ano}_${mes}`}
-                                defaultValue={celula ? celula.valor.toFixed(2) : ''}
+                                defaultValue={celula?.valor != null ? celula.valor.toFixed(2) : ''}
                                 placeholder="--"
                               />
                             </td>

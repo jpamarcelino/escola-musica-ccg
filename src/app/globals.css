@@ -725,6 +725,12 @@ body {
   color: #b0b0b0;
 }
 
+.tabela-historico input.celula-desistencia {
+  color: #b91c1c;
+  font-weight: 700;
+  cursor: default;
+}
+
 /* Chamada de atenção para a página de instalação — deliberadamente fora
    da paleta azul/opala do resto da app, para se destacar como um convite,
    não como mais uma opção do menu. */

@@ -4,10 +4,12 @@ import {
   atualizarNomeConta,
   atualizarPasswordConta,
   apagarConta,
+  apagarContaSuperAdmin,
 } from '@/lib/actions/auth'
 import { BackButton } from '@/components/back-button'
 import { EditarNomeForm, AlterarPasswordForm } from '@/components/conta-forms'
 import { BotaoApagarConta } from '@/components/apagar-conta-botao'
+import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
 
 export default async function AdminContaPage({
   searchParams,
@@ -27,13 +29,18 @@ export default async function AdminContaPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('nome, tipo')
+    .select('nome, tipo, super_admin')
     .eq('id', user.id)
     .single()
 
   if (profile?.tipo !== 'admin') {
     redirect('/dashboard')
   }
+
+  const { data: outrosAdminsData } = profile.super_admin
+    ? await supabase.from('profiles').select('id, nome').eq('admin', true).neq('id', user.id)
+    : { data: [] }
+  const outrosAdmins = outrosAdminsData ?? []
 
   return (
     <main className="flex-1 flex justify-center p-6">
@@ -62,7 +69,11 @@ export default async function AdminContaPage({
         </section>
 
         <section className="space-y-3 border-t border-foreground/10 pt-6">
-          <BotaoApagarConta action={apagarConta} />
+          {profile.super_admin ? (
+            <ApagarContaSuperAdminForm action={apagarContaSuperAdmin} outrosAdmins={outrosAdmins} />
+          ) : (
+            <BotaoApagarConta action={apagarConta} />
+          )}
         </section>
       </div>
     </main>

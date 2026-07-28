@@ -344,3 +344,82 @@ export async function apagarConta() {
   await supabase.auth.signOut()
   redirect('/login')
 }
+
+// Um super admin não pode apagar a conta como qualquer outra: se o
+// fizesse sem escolher sucessor, ninguém mais conseguia gerir admins
+// depois (a proteção contra auto-promoção bloqueia toda a gente). Por
+// isso exige-se, além da password (a app não pode confiar só num popup
+// para uma conta com este poder), escolher outro admin para passar a ser
+// super admin antes de apagar.
+export async function apagarContaSuperAdmin(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const novoSuperAdminId = String(formData.get('novoSuperAdminId') ?? '')
+  const password = String(formData.get('password') ?? '')
+
+  if (!novoSuperAdminId) {
+    return { error: 'Escolhe quem fica como novo super admin.' }
+  }
+  if (!password) {
+    return { error: 'Introduz a tua password para confirmar.' }
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user?.email) {
+    redirect('/login')
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('super_admin')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile?.super_admin) {
+    return { error: 'Só um super admin pode usar esta opção.' }
+  }
+
+  const { data: sucessor } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', novoSuperAdminId)
+    .eq('admin', true)
+    .neq('id', user.id)
+    .maybeSingle()
+
+  if (!sucessor) {
+    return { error: 'Escolhe um administrador válido para suceder.' }
+  }
+
+  const { error: erroPassword } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password,
+  })
+
+  if (erroPassword) {
+    return { error: 'A password está incorreta.' }
+  }
+
+  const { error: erroSucessor } = await supabase
+    .from('profiles')
+    .update({ super_admin: true })
+    .eq('id', novoSuperAdminId)
+
+  if (erroSucessor) {
+    return { error: 'Não foi possível passar o super admin. Tenta novamente.' }
+  }
+
+  const { error: erroApagar } = await supabase.rpc('apagar_propria_conta')
+
+  if (erroApagar) {
+    return { error: 'Não foi possível apagar a conta. Tenta novamente.' }
+  }
+
+  await supabase.auth.signOut()
+  redirect('/login')
+}

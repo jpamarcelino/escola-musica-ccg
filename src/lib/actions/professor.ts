@@ -546,3 +546,27 @@ export async function apagarHorarios(formData: FormData) {
 
   redirect('/dashboard/horarios')
 }
+
+export async function desmatricularAluno(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = String(formData.get('matriculaId') ?? '')
+  const horarioId = String(formData.get('horarioId') ?? '')
+
+  await supabase
+    .from('matriculas')
+    .delete()
+    .eq('id', matriculaId)
+    .eq('professor_id', user.id)
+
+  revalidatePath('/dashboard/agenda')
+  revalidatePath(`/dashboard/agenda/${horarioId}`)
+  redirect(`/dashboard/agenda/${horarioId}`)
+}

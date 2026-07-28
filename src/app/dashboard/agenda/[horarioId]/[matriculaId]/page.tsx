@@ -1,7 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { calcularIdade } from '@/lib/idade'
+import { desmatricularAluno } from '@/lib/actions/professor'
 import { BackButton } from '@/components/back-button'
+import { BotaoDesmatricular } from '@/components/desmatricular-botao'
 
 type Matricula = {
   id: number
@@ -95,6 +97,16 @@ export default async function AlunoDaAulaPage({
               </a>
             </p>
           )}
+        </section>
+
+        <section className="border-t border-foreground/10 pt-6">
+          <form action={desmatricularAluno}>
+            <input type="hidden" name="matriculaId" value={matricula.id} />
+            <input type="hidden" name="horarioId" value={horarioId} />
+            <BotaoDesmatricular
+              mensagemConfirmacao={`Tens a certeza que queres desmatricular ${matricula.profiles?.nome} (${matricula.instrumentos?.nome})? Esta ação é irreversível.`}
+            />
+          </form>
         </section>
       </div>
     </main>

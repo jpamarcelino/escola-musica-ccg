@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { cancelarPedido } from '@/lib/actions/aluno'
+import { cancelarPedido, cancelarMatricula } from '@/lib/actions/aluno'
 import { formatarSala } from '@/lib/sala'
 import { formatarHora } from '@/lib/horarios-grade'
 import { proximaOcorrenciaDoDia } from '@/lib/datas'
 import { BackButton } from '@/components/back-button'
+import { BotaoCancelarMatricula } from '@/components/cancelar-matricula-botao'
 
 type Matricula = {
   id: number
@@ -47,7 +48,7 @@ export default async function ConsultarHorarioPage() {
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
           <BackButton href="/dashboard" />
-          <h1 className="text-2xl font-semibold text-foreground">Consultar Horário</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Horário e Aulas</h1>
         </div>
 
         <section className="space-y-3">
@@ -87,7 +88,7 @@ export default async function ConsultarHorarioPage() {
                 const horario = m.horarios!
                 const proxima = proximaOcorrenciaDoDia(horario.dia_semana)
                 return (
-                  <div key={m.id} className="lista-item">
+                  <div key={m.id} className="lista-item space-y-2">
                     <p className="lista-item-titulo">
                       {m.instrumentos?.nome} — {m.profiles?.nome}
                     </p>
@@ -96,6 +97,12 @@ export default async function ConsultarHorarioPage() {
                       {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
                       {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}
                     </p>
+                    <form action={cancelarMatricula}>
+                      <input type="hidden" name="matriculaId" value={m.id} />
+                      <BotaoCancelarMatricula
+                        mensagemConfirmacao={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} com ${m.profiles?.nome}? Esta ação é irreversível.`}
+                      />
+                    </form>
                   </div>
                 )
               })}
