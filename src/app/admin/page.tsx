@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { BackButton } from '@/components/back-button'
 import { OptionCard } from '@/components/option-card'
+import { logout } from '@/lib/actions/auth'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -81,6 +82,15 @@ export default async function AdminPage() {
             <OptionCard href="/admin/administradores" nome="Administradores" wide index={5} />
           )}
         </div>
+
+        <form action={logout}>
+          <button
+            type="submit"
+            className="rounded border border-foreground/20 px-4 py-2"
+          >
+            Sair
+          </button>
+        </form>
       </div>
     </main>
   )
