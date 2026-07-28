@@ -16,7 +16,12 @@ type Pedido = {
   }[]
 }
 
-export default async function PedidosPage() {
+export default async function PedidosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erro?: string }>
+}) {
+  const { erro } = await searchParams
   const supabase = await createClient()
   const {
     data: { user },
@@ -53,6 +58,8 @@ export default async function PedidosPage() {
           <BackButton href="/dashboard" />
           <h1 className="text-2xl font-semibold text-foreground">Pedidos de Aula</h1>
         </div>
+
+        {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
 
         <section className="space-y-3">
           {pedidos.length === 0 && (

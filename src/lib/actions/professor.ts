@@ -23,13 +23,73 @@ export async function confirmarHorario(formData: FormData) {
   const matriculaId = String(formData.get('matriculaId') ?? '')
   const horarioId = String(formData.get('horarioId') ?? '')
 
-  const { data: matricula } = await supabase
+  function voltarComErro(mensagem: string): never {
+    redirect(`/dashboard/pedidos?erro=${encodeURIComponent(mensagem)}`)
+  }
+
+  const { data: matriculaAtual } = await supabase
+    .from('matriculas')
+    .select('aluno_id')
+    .eq('id', matriculaId)
+    .eq('professor_id', user.id)
+    .maybeSingle()
+
+  if (!matriculaAtual) {
+    voltarComErro('Pedido não encontrado.')
+  }
+
+  const { data: horario } = await supabase
+    .from('horarios')
+    .select('dia_semana, hora_inicio, hora_fim')
+    .eq('id', horarioId)
+    .maybeSingle()
+
+  if (!horario) {
+    voltarComErro('Horário não encontrado.')
+  }
+
+  // O mesmo aluno não pode ficar com duas aulas confirmadas que se
+  // sobrepõem no tempo, mesmo que sejam com professores/disciplinas
+  // diferentes — cada aluno só está fisicamente num sítio de cada vez.
+  const { data: outrasConfirmadas } = await supabase
+    .from('matriculas')
+    .select('horarios(dia_semana, hora_inicio, hora_fim)')
+    .eq('aluno_id', matriculaAtual.aluno_id)
+    .eq('estado', 'confirmado')
+    .not('horario_final_id', 'is', null)
+    .neq('id', matriculaId)
+
+  const temSobreposicao = (
+    (outrasConfirmadas ?? []) as unknown as {
+      horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    }[]
+  ).some((c) => {
+    const h = c.horarios
+    return (
+      h &&
+      h.dia_semana === horario.dia_semana &&
+      h.hora_inicio < horario.hora_fim &&
+      h.hora_fim > horario.hora_inicio
+    )
+  })
+
+  if (temSobreposicao) {
+    voltarComErro(
+      'Este aluno já tem outra aula confirmada que se sobrepõe a este horário. Escolhe outro horário.'
+    )
+  }
+
+  const { data: matricula, error: erroConfirmar } = await supabase
     .from('matriculas')
     .update({ horario_final_id: Number(horarioId), estado: 'confirmado' })
     .eq('id', matriculaId)
     .eq('professor_id', user.id)
     .select('aluno_id, instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim)')
     .single()
+
+  if (erroConfirmar) {
+    voltarComErro('Não foi possível confirmar este horário. Tenta novamente.')
+  }
 
   if (matricula) {
     const m = matricula as unknown as {
