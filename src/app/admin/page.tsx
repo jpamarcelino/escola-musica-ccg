@@ -17,7 +17,7 @@ export default async function AdminPage() {
 
   const { data: perfilAtual } = await supabase
     .from('profiles')
-    .select('admin, super_admin')
+    .select('admin, super_admin, tipo')
     .eq('id', user.id)
     .single()
 
@@ -40,7 +40,7 @@ export default async function AdminPage() {
           className="entrada-esquerda flex items-center gap-3"
           style={{ '--card-index': 0 } as CSSProperties}
         >
-          <BackButton href="/dashboard" />
+          {perfilAtual.tipo !== 'admin' && <BackButton href="/dashboard" />}
           <div>
             <h1 className="text-2xl">
               <span className="saudacao">Visão</span>{' '}
