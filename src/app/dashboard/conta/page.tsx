@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { atualizarInstrumentos, atualizarFoto } from '@/lib/actions/professor'
 import { BackButton } from '@/components/back-button'
 import { SubmitButton } from '@/components/submit-button'
+import { FotoConta } from '@/components/foto-conta'
 
 export default async function ContaPage({
   searchParams,
@@ -84,35 +85,7 @@ export default async function ContaPage({
 
         <section className="space-y-3">
           <h2 className="font-semibold">A tua foto</h2>
-          <div className="flex items-center gap-4">
-            {profile.foto_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={profile.foto_url}
-                alt={profile.nome}
-                className="h-20 w-20 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-foreground/10 text-xs text-foreground/50">
-                Sem foto
-              </div>
-            )}
-            <form action={atualizarFoto} className="flex items-center gap-2">
-              <input
-                type="file"
-                name="foto"
-                accept="image/*"
-                required
-                className="text-sm"
-              />
-              <SubmitButton
-                textoAGuardar="A carregar..."
-                className="rounded border border-foreground/20 px-3 py-1 text-sm hover:bg-foreground/5"
-              >
-                Carregar foto
-              </SubmitButton>
-            </form>
-          </div>
+          <FotoConta action={atualizarFoto} fotoUrl={profile.foto_url} nome={profile.nome} />
         </section>
 
         <section className="space-y-3">

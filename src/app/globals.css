@@ -831,3 +831,32 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* Botão de carregar foto — envolve um <input type="file"> escondido
+   (.sr-only), para o clique cair sempre no botão em vez de num input
+   nativo feio. */
+.botao-foto {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid var(--card-border);
+  padding: 6px 12px;
+  font-size: 14px;
+  color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .botao-foto {
+    transition: background-color 0.15s ease;
+  }
+}
+
+.botao-foto:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.botao-foto.a-carregar {
+  cursor: default;
+  opacity: 0.7;
+}
