@@ -22,6 +22,13 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
+  // Contas admin (direção/secretaria, sem hub de professor nem de aluno)
+  // vão direto para a Visão geral — só se ainda tiverem acesso (um super
+  // admin pode ter revogado o "admin" sem mudar o tipo da conta).
+  if (profile?.tipo === 'admin' && profile.admin) {
+    redirect('/admin')
+  }
+
   let notificacoesPorLer = 0
   if (profile?.tipo === 'aluno') {
     const { count } = await supabase

@@ -27,7 +27,7 @@ export async function atualizarAdministradores(formData: FormData) {
   const { data: professores } = await supabase
     .from('profiles')
     .select('id')
-    .eq('tipo', 'professor')
+    .in('tipo', ['professor', 'admin'])
 
   const idsAdmin = new Set(formData.getAll('admins').map(String))
 

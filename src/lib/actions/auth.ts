@@ -24,7 +24,12 @@ export async function signup(
   const tipo = String(formData.get('tipo') ?? '')
   const telefone = String(formData.get('telefone') ?? '').trim()
 
-  if (!nome || !email || !password || (tipo !== 'aluno' && tipo !== 'professor')) {
+  if (
+    !nome ||
+    !email ||
+    !password ||
+    (tipo !== 'aluno' && tipo !== 'professor' && tipo !== 'admin')
+  ) {
     return { error: 'Preenche todos os campos.' }
   }
   if (password.length < 6) {
@@ -66,6 +71,13 @@ export async function signup(
     programa = String(formData.get('programa') ?? '')
     if (programa !== 'musica' && programa !== 'danca') {
       return { error: 'Escolhe a escola (Música ou Dança).' }
+    }
+  }
+
+  if (tipo === 'admin') {
+    const codigoAdmin = String(formData.get('codigoAdmin') ?? '').trim()
+    if (!codigoAdmin || codigoAdmin !== process.env.ADMIN_INVITE_CODE) {
+      return { error: 'Código de admin inválido.' }
     }
   }
 

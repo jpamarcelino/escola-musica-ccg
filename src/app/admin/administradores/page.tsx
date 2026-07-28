@@ -7,6 +7,7 @@ import { BackButton } from '@/components/back-button'
 type Professor = {
   id: string
   nome: string
+  tipo: string
   admin: boolean
 }
 
@@ -32,8 +33,8 @@ export default async function AdminAdministradoresPage() {
 
   const { data: professoresData } = await supabase
     .from('profiles')
-    .select('id, nome, admin')
-    .eq('tipo', 'professor')
+    .select('id, nome, tipo, admin')
+    .in('tipo', ['professor', 'admin'])
     .order('nome')
   const professores = (professoresData ?? []) as Professor[]
 
@@ -68,7 +69,10 @@ export default async function AdminAdministradoresPage() {
                   />
                   {souEu && <input type="hidden" name="admins" value={professor.id} />}
                   <span className="text-sm text-foreground">
-                    {professor.nome} {souEu && '(tu)'}
+                    {professor.nome} {souEu && '(tu)'}{' '}
+                    <span className="text-xs text-foreground/50">
+                      ({professor.tipo === 'admin' ? 'admin' : 'professor'})
+                    </span>
                   </span>
                 </label>
               )

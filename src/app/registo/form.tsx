@@ -10,7 +10,7 @@ export default function RegistoForm() {
   const searchParams = useSearchParams()
   const programaLink = searchParams.get('programa')
 
-  const [tipo, setTipo] = useState<'aluno' | 'professor'>('aluno')
+  const [tipo, setTipo] = useState<'aluno' | 'professor' | 'admin'>('aluno')
   const [programa, setPrograma] = useState<'musica' | 'danca' | ''>(
     programaLink === 'musica' || programaLink === 'danca' ? programaLink : ''
   )
@@ -49,6 +49,17 @@ export default function RegistoForm() {
               required
             />
             Professor
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="tipo"
+              value="admin"
+              checked={tipo === 'admin'}
+              onChange={() => setTipo('admin')}
+              required
+            />
+            Admin
           </label>
         </div>
       </div>
@@ -98,6 +109,23 @@ export default function RegistoForm() {
             </p>
           </div>
         </>
+      )}
+
+      {tipo === 'admin' && (
+        <div className="space-y-1">
+          <label htmlFor="codigoAdmin" className="block text-sm font-medium">
+            Código de admin
+          </label>
+          <input
+            id="codigoAdmin"
+            name="codigoAdmin"
+            required
+            className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+          />
+          <p className="text-xs text-foreground/50">
+            Pede este código à direção da escola.
+          </p>
+        </div>
       )}
 
       <div className="space-y-1">
