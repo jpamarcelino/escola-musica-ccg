@@ -1,8 +1,10 @@
 import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { criarConviteProfessor } from '@/lib/actions/convites'
 import { BackButton } from '@/components/back-button'
 import { OptionCard } from '@/components/option-card'
+import { ConvidarProfessorForm } from '@/components/convite-forms'
 
 type Professor = {
   id: string
@@ -46,6 +48,8 @@ export default async function AdminProfessoresPage() {
           <BackButton href="/admin" />
           <h1 className="text-2xl font-semibold text-foreground">Professores</h1>
         </div>
+
+        <ConvidarProfessorForm action={criarConviteProfessor} />
 
         {professores.length === 0 ? (
           <p className="text-sm text-foreground/60">Ainda não há professores registados.</p>

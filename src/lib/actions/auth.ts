@@ -22,15 +22,14 @@ export async function signup(
   const nome = String(formData.get('nome') ?? '').trim()
   const email = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
-  const tipo = String(formData.get('tipo') ?? '')
   const telefone = String(formData.get('telefone') ?? '').trim()
+  const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+  // Presente só quando se vem de um link de convite (professor, admin ou
+  // migração de um perfil de aluno) — o próprio código é revalidado no
+  // servidor pelo trigger handle_new_user, nunca confiado por si só.
+  const conviteCodigo = String(formData.get('conviteCodigo') ?? '').trim() || null
 
-  if (
-    !nome ||
-    !email ||
-    !password ||
-    (tipo !== 'aluno' && tipo !== 'professor' && tipo !== 'admin')
-  ) {
+  if (!nome || !email || !password) {
     return { error: 'Preenche todos os campos.' }
   }
   if (password.length < 6) {
@@ -42,44 +41,19 @@ export async function signup(
     return { error: 'Indica um número de telemóvel válido.' }
   }
 
-  let dataNascimento: string | null = null
-  if (tipo === 'aluno') {
-    dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
-      return { error: 'Indica a tua data de nascimento.' }
-    }
-
-    const idade = calcularIdade(dataNascimento)
-    if (idade === null) {
-      return { error: 'Essa data de nascimento não é válida.' }
-    }
-    if (idade < 0) {
-      return { error: 'A data de nascimento não pode ser no futuro.' }
-    }
-    if (idade > 120) {
-      return { error: 'Confirma a data de nascimento.' }
-    }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
+    return { error: 'Indica a tua data de nascimento.' }
   }
 
-  let programa: string | null = null
-  if (tipo === 'professor') {
-    const codigoProfessor = String(formData.get('codigoProfessor') ?? '').trim()
-    if (!codigoProfessor || codigoProfessor !== process.env.PROFESSOR_INVITE_CODE) {
-      return { error: 'Código de professor inválido.' }
-    }
-
-    programa = String(formData.get('programa') ?? '')
-    if (programa !== 'musica' && programa !== 'danca') {
-      return { error: 'Escolhe a escola (Música ou Dança).' }
-    }
+  const idade = calcularIdade(dataNascimento)
+  if (idade === null) {
+    return { error: 'Essa data de nascimento não é válida.' }
   }
-
-  if (tipo === 'admin') {
-    const codigoAdmin = String(formData.get('codigoAdmin') ?? '').trim()
-    if (!codigoAdmin || codigoAdmin !== process.env.ADMIN_INVITE_CODE) {
-      return { error: 'Código de admin inválido.' }
-    }
+  if (idade < 0) {
+    return { error: 'A data de nascimento não pode ser no futuro.' }
+  }
+  if (idade > 120) {
+    return { error: 'Confirma a data de nascimento.' }
   }
 
   const supabase = await createClient()
@@ -87,7 +61,12 @@ export async function signup(
     email,
     password,
     options: {
-      data: { nome, tipo, programa, data_nascimento: dataNascimento, telefone },
+      data: {
+        nome,
+        data_nascimento: dataNascimento,
+        telefone,
+        convite_codigo: conviteCodigo,
+      },
     },
   })
 

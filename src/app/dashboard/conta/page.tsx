@@ -18,6 +18,8 @@ import {
 } from '@/components/conta-forms'
 import { BotaoApagarConta } from '@/components/apagar-conta-botao'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
+import { criarConviteMigracaoAluno, resgatarConvite } from '@/lib/actions/convites'
+import { GerarLinkMigracaoForm, ResgatarConviteForm } from '@/components/convite-forms'
 
 export default async function ContaPage({
   searchParams,
@@ -53,6 +55,15 @@ export default async function ContaPage({
     ? await supabase.from('profiles').select('id, nome').eq('admin', true).neq('id', user.id)
     : { data: [] }
   const outrosAdmins = outrosAdminsData ?? []
+
+  const { data: meusAlunosData } = !ehProfessor
+    ? await supabase
+        .from('alunos')
+        .select('id, nome, propria_conta_id')
+        .eq('encarregado_id', user.id)
+        .order('criado_em')
+    : { data: [] }
+  const meusAlunos = meusAlunosData ?? []
 
   const { data: instrumentosData } = ehProfessor
     ? await supabase
@@ -110,6 +121,33 @@ export default async function ContaPage({
           <h2 className="font-semibold">Alterar password</h2>
           <AlterarPasswordForm action={atualizarPasswordConta} />
         </section>
+
+        {!ehProfessor && (
+          <section className="space-y-4">
+            <h2 className="font-semibold">Perfis de aluno que geres</h2>
+            {meusAlunos.length === 0 ? (
+              <p className="text-sm text-foreground/60">Nenhum perfil de aluno.</p>
+            ) : (
+              <div className="space-y-3">
+                {meusAlunos.map((a) => (
+                  <div key={a.id} className="lista-item space-y-2">
+                    <p className="lista-item-titulo">{a.nome}</p>
+                    {a.propria_conta_id === user.id ? (
+                      <p className="lista-item-sub">Este perfil és tu.</p>
+                    ) : (
+                      <GerarLinkMigracaoForm action={criarConviteMigracaoAluno} alunoId={a.id} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-foreground/50">
+              Recebeste um link de migração de outra pessoa (ex: um encarregado a passar-te o teu
+              próprio perfil)?
+            </p>
+            <ResgatarConviteForm action={resgatarConvite} />
+          </section>
+        )}
 
         {ehProfessor && (
           <>

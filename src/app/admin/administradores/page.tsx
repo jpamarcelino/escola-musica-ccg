@@ -2,7 +2,9 @@ import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarAdministradores } from '@/lib/actions/admin'
+import { criarConviteAdmin } from '@/lib/actions/convites'
 import { BackButton } from '@/components/back-button'
+import { ConvidarAdminForm } from '@/components/convite-forms'
 
 type Professor = {
   id: string
@@ -48,6 +50,8 @@ export default async function AdminAdministradoresPage() {
           <BackButton href="/admin" />
           <h1 className="text-2xl font-semibold text-foreground">Administradores</h1>
         </div>
+
+        <ConvidarAdminForm action={criarConviteAdmin} />
 
         <p className="text-xs text-foreground/50">
           Quem estiver marcado ganha acesso à Visão geral. Não te consegues
