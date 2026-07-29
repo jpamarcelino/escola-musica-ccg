@@ -7,9 +7,8 @@ import { calcularIdade } from '@/lib/idade'
 
 type AlunoPerfil = {
   nome: string
-  email: string | null
-  telefone: string | null
   data_nascimento: string | null
+  encarregado: { email: string | null; telefone: string | null } | null
 }
 
 type Matricula = {
@@ -75,12 +74,11 @@ export default async function AdminAlunoPage({
   }
 
   const { data: alunoData } = await supabase
-    .from('profiles')
-    .select('nome, email, telefone, data_nascimento')
+    .from('alunos')
+    .select('nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone)')
     .eq('id', alunoId)
-    .eq('tipo', 'aluno')
     .maybeSingle()
-  const aluno = alunoData as AlunoPerfil | null
+  const aluno = alunoData as unknown as AlunoPerfil | null
 
   if (!aluno) {
     notFound()
@@ -135,12 +133,16 @@ export default async function AdminAlunoPage({
           className="entrada-esquerda space-y-3"
           style={{ '--card-index': 1 } as CSSProperties}
         >
-          <h2 className="secao-titulo">Conta</h2>
+          <h2 className="secao-titulo">Encarregado de educação</h2>
           <div className="lista-item space-y-1">
-            {aluno.email && <p className="lista-item-sub">Email: {aluno.email}</p>}
-            {aluno.telefone && <p className="lista-item-sub">Telemóvel: {aluno.telefone}</p>}
+            {aluno.encarregado?.email && (
+              <p className="lista-item-sub">Email: {aluno.encarregado.email}</p>
+            )}
+            {aluno.encarregado?.telefone && (
+              <p className="lista-item-sub">Telemóvel: {aluno.encarregado.telefone}</p>
+            )}
             {idade !== null && <p className="lista-item-sub">Idade: {idade} anos</p>}
-            {!aluno.email && !aluno.telefone && idade === null && (
+            {!aluno.encarregado?.email && !aluno.encarregado?.telefone && idade === null && (
               <p className="lista-item-sub">Sem informação adicional.</p>
             )}
           </div>

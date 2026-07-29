@@ -30,9 +30,8 @@ export default async function AdminAlunosPage() {
   }
 
   const { data: alunosData } = await supabase
-    .from('profiles')
+    .from('alunos')
     .select('id, nome')
-    .eq('tipo', 'aluno')
     .order('nome')
   const alunos = (alunosData ?? []) as Aluno[]
 

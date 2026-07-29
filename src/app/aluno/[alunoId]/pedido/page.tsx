@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
@@ -42,8 +42,10 @@ const DANCA_ICONE_PADDING: Record<string, string> = {
 }
 
 export default async function PedidoPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ alunoId: string }>
   searchParams: Promise<{
     programa?: string
     instrumento?: string
@@ -51,6 +53,7 @@ export default async function PedidoPage({
     erro?: string
   }>
 }) {
+  const { alunoId } = await params
   const { programa, instrumento, professor, erro } = await searchParams
 
   const supabase = await createClient()
@@ -62,25 +65,26 @@ export default async function PedidoPage({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('tipo, data_nascimento')
-    .eq('id', user.id)
-    .single()
+  const { data: aluno } = await supabase
+    .from('alunos')
+    .select('nome, data_nascimento')
+    .eq('id', alunoId)
+    .eq('encarregado_id', user.id)
+    .maybeSingle()
 
-  if (profile?.tipo !== 'aluno') {
-    redirect('/dashboard')
+  if (!aluno) {
+    notFound()
   }
 
-  const idadeAluno = calcularIdade(profile.data_nascimento)
+  const idadeAluno = calcularIdade(aluno.data_nascimento)
 
   // Passo 1: escolher escola
   if (programa !== 'musica' && programa !== 'danca') {
     return (
-      <Wizard voltar="/dashboard">
+      <Wizard voltar={`/aluno/${alunoId}`}>
         <div className="option-stack">
-          <OptionCard href="/aluno/pedido?programa=musica" nome={'Escola\nde\nMúsica'} wide index={0} />
-          <OptionCard href="/aluno/pedido?programa=danca" nome={'Escola\nde\nDança'} wide index={1} />
+          <OptionCard href={`/aluno/${alunoId}/pedido?programa=musica`} nome={'Escola\nde\nMúsica'} wide index={0} />
+          <OptionCard href={`/aluno/${alunoId}/pedido?programa=danca`} nome={'Escola\nde\nDança'} wide index={1} />
         </div>
       </Wizard>
     )
@@ -129,14 +133,14 @@ export default async function PedidoPage({
             ? 'Que instrumento queres aprender?'
             : 'Que modalidade queres aprender?'
         }
-        voltar="/aluno/pedido"
+        voltar={`/aluno/${alunoId}/pedido`}
       >
         <div className="option-grid">
           {ordenados.map((i, idx) =>
             programa === 'danca' ? (
               <OptionCard
                 key={i.id}
-                href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
+                href={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${i.id}`}
                 nome={i.titulo}
                 subtitulo={i.idade}
                 imagemUrl={i.imagem_url}
@@ -149,7 +153,7 @@ export default async function PedidoPage({
             ) : (
               <OptionCard
                 key={i.id}
-                href={`/aluno/pedido?programa=${programa}&instrumento=${i.id}`}
+                href={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${i.id}`}
                 nome={i.nome}
                 imagemUrl={i.imagem_url}
                 icone
@@ -181,11 +185,11 @@ export default async function PedidoPage({
   ) {
     return (
       <Wizard
-        title="Não disponível para a tua idade"
-        voltar={`/aluno/pedido?programa=${programa}`}
+        title="Não disponível para esta idade"
+        voltar={`/aluno/${alunoId}/pedido?programa=${programa}`}
       >
         <p className="text-sm text-foreground/60">
-          Esta disciplina não está disponível para a tua idade.
+          Esta disciplina não está disponível para a idade do aluno.
         </p>
       </Wizard>
     )
@@ -194,7 +198,7 @@ export default async function PedidoPage({
   const { data: matriculaExistente } = await supabase
     .from('matriculas')
     .select('id, estado')
-    .eq('aluno_id', user.id)
+    .eq('aluno_id', alunoId)
     .eq('instrumento_id', instrumento)
     .in('estado', ['a_escolher', 'confirmado'])
     .maybeSingle()
@@ -202,14 +206,14 @@ export default async function PedidoPage({
   if (matriculaExistente) {
     return (
       <Wizard
-        title="Já tens um pedido nesta disciplina"
-        voltar={`/aluno/pedido?programa=${programa}`}
+        title="Já existe um pedido nesta disciplina"
+        voltar={`/aluno/${alunoId}/pedido?programa=${programa}`}
       >
         <p className="text-sm text-foreground/60">
           {matriculaExistente.estado === 'confirmado'
-            ? 'Já tens uma aula confirmada nesta disciplina.'
-            : 'Já tens um pedido pendente nesta disciplina.'}{' '}
-          Cancela-o no dashboard antes de pedires outro professor para a mesma
+            ? 'Já existe uma aula confirmada nesta disciplina.'
+            : 'Já existe um pedido pendente nesta disciplina.'}{' '}
+          Cancela-o no dashboard antes de pedir outro professor para a mesma
           disciplina. Podes pedir outra disciplina à vontade.
         </p>
       </Wizard>
@@ -236,14 +240,14 @@ export default async function PedidoPage({
     return (
       <Wizard
         title="Escolhe o professor"
-        voltar={`/aluno/pedido?programa=${programa}`}
+        voltar={`/aluno/${alunoId}/pedido?programa=${programa}`}
       >
         {professores.length ? (
           <div className="option-grid">
             {professores.map((p, idx) => (
               <OptionCard
                 key={p.professor_id}
-                href={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}&professor=${p.professor_id}`}
+                href={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${instrumento}&professor=${p.professor_id}`}
                 nome={p.profiles?.nome ?? ''}
                 imagemUrl={p.profiles?.foto_url}
                 subtitulo={p.especialidade}
@@ -262,8 +266,8 @@ export default async function PedidoPage({
 
   // Passo 3: escolher horários
   // Traz também os bloqueados (não só os "aberto") — continuam visíveis na
-  // grelha, a preto e branco e sem poder ser escolhidos, para o aluno ver
-  // o horário completo do professor.
+  // grelha, a preto e branco e sem poder ser escolhidos, para se ver o
+  // horário completo do professor.
   const { data: horarios } = await supabase
     .from('horarios')
     .select('id, dia_semana, hora_inicio, hora_fim, estado')
@@ -312,10 +316,11 @@ export default async function PedidoPage({
 
   return (
     <Wizard
-      title="Seleciona os vários horários em que tens disponibilidade"
-      voltar={`/aluno/pedido?programa=${programa}&instrumento=${instrumento}`}
+      title="Seleciona os vários horários em que há disponibilidade"
+      voltar={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${instrumento}`}
     >
       <form action={escolherDisponibilidades} className="space-y-4">
+        <input type="hidden" name="alunoId" value={alunoId} />
         <input type="hidden" name="instrumentoId" value={instrumento} />
         <input type="hidden" name="professorId" value={professor} />
         {semHorarios ? (
@@ -398,7 +403,7 @@ export default async function PedidoPage({
 
         <div className="space-y-1">
           <label htmlFor="mensagem" className="block text-sm font-medium">
-            Nenhum horário te dá jeito?
+            Nenhum horário dá jeito?
           </label>
           <textarea
             id="mensagem"
@@ -410,7 +415,7 @@ export default async function PedidoPage({
           />
           <p className="text-xs text-foreground/50">
             Deixa uma mensagem ao professor em vez de escolher um horário. Ele
-            decide se quer entrar em contacto contigo fora da app.
+            decide se quer entrar em contacto fora da app.
           </p>
         </div>
 

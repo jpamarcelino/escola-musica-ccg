@@ -47,7 +47,7 @@ export default async function HistoricoAlunoPage({
   }
 
   const { data: alunoData } = await supabase
-    .from('profiles')
+    .from('alunos')
     .select('nome')
     .eq('id', alunoId)
     .maybeSingle()

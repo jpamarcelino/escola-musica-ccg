@@ -16,6 +16,7 @@ export async function escolherDisponibilidades(formData: FormData) {
     redirect('/login')
   }
 
+  const alunoId = String(formData.get('alunoId') ?? '')
   const instrumentoId = String(formData.get('instrumentoId') ?? '')
   const professorId = String(formData.get('professorId') ?? '')
   const horarioIds = formData.getAll('horarios').map(String)
@@ -23,12 +24,12 @@ export async function escolherDisponibilidades(formData: FormData) {
 
   function voltarComErro(mensagemErro: string): never {
     redirect(
-      `/aluno/pedido?instrumento=${instrumentoId}&professor=${professorId}&erro=${encodeURIComponent(mensagemErro)}`
+      `/aluno/${alunoId}/pedido?instrumento=${instrumentoId}&professor=${professorId}&erro=${encodeURIComponent(mensagemErro)}`
     )
   }
 
-  if (!instrumentoId || !professorId) {
-    redirect('/aluno/pedido')
+  if (!alunoId || !instrumentoId || !professorId) {
+    redirect('/dashboard')
   }
   // O aluno tem de escolher pelo menos um horário OU deixar uma mensagem —
   // nunca os dois em branco, mas qualquer um dos dois chega.
@@ -39,9 +40,16 @@ export async function escolherDisponibilidades(formData: FormData) {
   // Nunca confiar apenas no ecrã (que só esconde/desativa o cartão) — é
   // esta verificação, feita no servidor com a idade guardada na base de
   // dados, que impede de facto o pedido de disciplinas fora da idade do
-  // aluno, mesmo que o pedido chegue diretamente a este endpoint.
-  const [{ data: perfilAluno }, { data: instrumentoPedido }] = await Promise.all([
-    supabase.from('profiles').select('data_nascimento').eq('id', user.id).single(),
+  // aluno, mesmo que o pedido chegue diretamente a este endpoint. Também
+  // confirma aqui que este aluno é mesmo gerido por quem está autenticado
+  // (a RLS já impediria o insert, mas o erro fica mais claro assim).
+  const [{ data: aluno }, { data: instrumentoPedido }] = await Promise.all([
+    supabase
+      .from('alunos')
+      .select('data_nascimento')
+      .eq('id', alunoId)
+      .eq('encarregado_id', user.id)
+      .maybeSingle(),
     supabase
       .from('instrumentos')
       .select('nome, programa')
@@ -49,33 +57,37 @@ export async function escolherDisponibilidades(formData: FormData) {
       .single(),
   ])
 
+  if (!aluno) {
+    redirect('/dashboard')
+  }
+
   if (
     !instrumentoPedido ||
     !elegivelParaDisciplina(
-      calcularIdade(perfilAluno?.data_nascimento),
+      calcularIdade(aluno.data_nascimento),
       instrumentoPedido.programa,
       instrumentoPedido.nome
     )
   ) {
-    voltarComErro('Esta disciplina não está disponível para a tua idade.')
+    voltarComErro('Esta disciplina não está disponível para a idade do aluno.')
   }
 
   const { data: matriculaExistente } = await supabase
     .from('matriculas')
     .select('id')
-    .eq('aluno_id', user.id)
+    .eq('aluno_id', alunoId)
     .eq('instrumento_id', Number(instrumentoId))
     .in('estado', ['a_escolher', 'confirmado'])
     .maybeSingle()
 
   if (matriculaExistente) {
-    voltarComErro('Já tens um pedido ou uma aula confirmada nesta disciplina.')
+    voltarComErro('Já existe um pedido ou uma aula confirmada nesta disciplina.')
   }
 
   const { data: matricula, error: matriculaError } = await supabase
     .from('matriculas')
     .insert({
-      aluno_id: user.id,
+      aluno_id: alunoId,
       professor_id: professorId,
       instrumento_id: Number(instrumentoId),
       mensagem: mensagem || null,
@@ -84,7 +96,7 @@ export async function escolherDisponibilidades(formData: FormData) {
     .single()
 
   if (matriculaError?.code === '23505') {
-    voltarComErro('Já tens um pedido ou uma aula confirmada nesta disciplina.')
+    voltarComErro('Já existe um pedido ou uma aula confirmada nesta disciplina.')
   }
 
   if (matriculaError || !matricula) {
@@ -127,7 +139,6 @@ export async function cancelarPedido(formData: FormData) {
     .from('matriculas')
     .delete()
     .eq('id', matriculaId)
-    .eq('aluno_id', user.id)
     .eq('estado', 'a_escolher')
 
   revalidatePath('/dashboard')
@@ -149,9 +160,45 @@ export async function cancelarMatricula(formData: FormData) {
     .from('matriculas')
     .delete()
     .eq('id', matriculaId)
-    .eq('aluno_id', user.id)
     .eq('estado', 'confirmado')
 
   revalidatePath('/dashboard')
-  revalidatePath('/aluno/horario')
+}
+
+export async function criarAlunoDependente(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const nome = String(formData.get('nome') ?? '').trim()
+  const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+
+  function voltarComErro(mensagem: string): never {
+    redirect(`/dashboard?erro=${encodeURIComponent(mensagem)}`)
+  }
+
+  if (!nome) {
+    voltarComErro('Indica o nome do aluno.')
+  }
+  if (dataNascimento && !/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
+    voltarComErro('Data de nascimento inválida.')
+  }
+
+  const { error } = await supabase.from('alunos').insert({
+    encarregado_id: user.id,
+    nome,
+    data_nascimento: dataNascimento || null,
+  })
+
+  if (error) {
+    voltarComErro('Não foi possível criar o perfil de aluno. Tenta novamente.')
+  }
+
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
 }

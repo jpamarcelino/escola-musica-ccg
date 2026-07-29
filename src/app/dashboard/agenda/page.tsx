@@ -10,7 +10,7 @@ import { BackButton } from '@/components/back-button'
 type Confirmado = {
   id: number
   horario_final_id: number | null
-  profiles: { nome: string } | null
+  alunos: { nome: string } | null
   horarios: {
     dia_semana: string
     hora_inicio: string
@@ -53,7 +53,7 @@ export default async function AgendaPage() {
   const { data: confirmadosData } = await supabase
     .from('matriculas')
     .select(
-      'id, horario_final_id, profiles!matriculas_aluno_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
+      'id, horario_final_id, alunos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -74,7 +74,7 @@ export default async function AgendaPage() {
       sala: formatarSala(c.horarios.salas),
       alunos: [],
     }
-    bloco.alunos.push(c.profiles?.nome ?? '')
+    bloco.alunos.push(c.alunos?.nome ?? '')
     blocosPorHorario.set(c.horario_final_id, bloco)
   }
   const blocos = [...blocosPorHorario.values()]

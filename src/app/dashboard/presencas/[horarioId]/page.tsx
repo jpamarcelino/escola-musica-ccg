@@ -9,7 +9,7 @@ import { marcarPresencas } from '@/lib/actions/presencas'
 type Aluno = {
   id: number
   instrumentos: { nome: string } | null
-  profiles: { nome: string } | null
+  alunos: { nome: string } | null
 }
 
 const ESTADOS: { valor: string; label: string }[] = [
@@ -58,7 +58,7 @@ export default async function PresencasHorarioPage({
 
   const { data: alunosData } = await supabase
     .from('matriculas')
-    .select('id, instrumentos(nome), profiles!matriculas_aluno_id_fkey(nome)')
+    .select('id, instrumentos(nome), alunos(nome)')
     .eq('horario_final_id', Number(horarioId))
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -115,7 +115,7 @@ export default async function PresencasHorarioPage({
             <div className="space-y-3">
               {alunos.map((aluno) => (
                 <div key={aluno.id} className="lista-item">
-                  <p className="lista-item-titulo">{aluno.profiles?.nome}</p>
+                  <p className="lista-item-titulo">{aluno.alunos?.nome}</p>
                   {aluno.instrumentos?.nome && (
                     <p className="lista-item-sub">{aluno.instrumentos.nome}</p>
                   )}

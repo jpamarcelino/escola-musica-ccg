@@ -64,7 +64,7 @@ export default async function ConfirmarMensalidadesProfessorPage({
   const { data: matriculasData } = await supabase
     .from('matriculas')
     .select(
-      'id, aluno_id, valor_mensal, aluno:profiles!matriculas_aluno_id_fkey(nome), instrumentos(nome)'
+      'id, aluno_id, valor_mensal, aluno:alunos(nome), instrumentos(nome)'
     )
     .eq('professor_id', professorId)
     .eq('estado', 'confirmado')

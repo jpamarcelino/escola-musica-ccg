@@ -6,7 +6,7 @@ import { OptionCard } from '@/components/option-card'
 type MatriculaAluno = {
   id: number
   aluno_id: string
-  profiles: { nome: string } | null
+  alunos: { nome: string } | null
 }
 
 type AlunoResumo = {
@@ -38,7 +38,7 @@ export default async function HistoricoPresencasPage() {
 
   const { data: matriculasData } = await supabase
     .from('matriculas')
-    .select('id, aluno_id, profiles!matriculas_aluno_id_fkey(nome)')
+    .select('id, aluno_id, alunos(nome)')
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
   const matriculas = (matriculasData ?? []) as unknown as MatriculaAluno[]
@@ -47,7 +47,7 @@ export default async function HistoricoPresencasPage() {
   for (const m of matriculas) {
     const atual = porAluno.get(m.aluno_id) ?? {
       alunoId: m.aluno_id,
-      nome: m.profiles?.nome ?? '',
+      nome: m.alunos?.nome ?? '',
       matriculaIds: [],
       registos: 0,
     }

@@ -47,7 +47,7 @@ export default async function AdminProfessorAlunosPage({
 
   const { data: matriculasData } = await supabase
     .from('matriculas')
-    .select('aluno_id, aluno:profiles!matriculas_aluno_id_fkey(nome)')
+    .select('aluno_id, aluno:alunos(nome)')
     .eq('professor_id', professorId)
   const matriculas = (matriculasData ?? []) as unknown as Matricula[]
 

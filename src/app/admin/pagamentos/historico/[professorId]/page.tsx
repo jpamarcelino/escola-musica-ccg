@@ -62,7 +62,7 @@ export default async function HistoricoPagamentosProfessorPage({
   // desmatriculou continua a aparecer, com o histórico intacto.
   const { data: matriculasData } = await supabase
     .from('matriculas')
-    .select('aluno_id, aluno:profiles!matriculas_aluno_id_fkey(nome)')
+    .select('aluno_id, aluno:alunos(nome)')
     .eq('professor_id', professorId)
     .eq('estado', 'confirmado')
   const matriculasAtuais = (matriculasData ?? []) as unknown as MatriculaAtual[]

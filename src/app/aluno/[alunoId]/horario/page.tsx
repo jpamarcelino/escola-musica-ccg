@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { cancelarPedido, cancelarMatricula } from '@/lib/actions/aluno'
 import { formatarSala } from '@/lib/sala'
@@ -20,7 +20,13 @@ type Matricula = {
   } | null
 }
 
-export default async function ConsultarHorarioPage() {
+export default async function ConsultarHorarioPage({
+  params,
+}: {
+  params: Promise<{ alunoId: string }>
+}) {
+  const { alunoId } = await params
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -30,12 +36,23 @@ export default async function ConsultarHorarioPage() {
     redirect('/login')
   }
 
+  const { data: aluno } = await supabase
+    .from('alunos')
+    .select('nome')
+    .eq('id', alunoId)
+    .eq('encarregado_id', user.id)
+    .maybeSingle()
+
+  if (!aluno) {
+    notFound()
+  }
+
   const { data } = await supabase
     .from('matriculas')
     .select(
       'id, estado, instrumentos(nome), profiles!matriculas_professor_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
     )
-    .eq('aluno_id', user.id)
+    .eq('aluno_id', alunoId)
     .in('estado', ['a_escolher', 'confirmado'])
     .order('criado_em', { ascending: false })
   const matriculas = (data ?? []) as unknown as Matricula[]
@@ -47,14 +64,14 @@ export default async function ConsultarHorarioPage() {
     <main className="flex-1 flex justify-center p-6">
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
+          <BackButton href={`/aluno/${alunoId}`} />
           <h1 className="text-2xl font-semibold text-foreground">Horário e Aulas</h1>
         </div>
 
         <section className="space-y-3">
           <h2 className="secao-titulo">Pedidos pendentes</h2>
           {pendentes.length === 0 ? (
-            <p className="text-sm text-foreground/60">Não tens pedidos por confirmar.</p>
+            <p className="text-sm text-foreground/60">Não há pedidos por confirmar.</p>
           ) : (
             <div className="space-y-2">
               {pendentes.map((m) => (
@@ -81,7 +98,7 @@ export default async function ConsultarHorarioPage() {
         <section className="space-y-3">
           <h2 className="secao-titulo">Próximas aulas</h2>
           {confirmadas.length === 0 ? (
-            <p className="text-sm text-foreground/60">Ainda não tens aulas confirmadas.</p>
+            <p className="text-sm text-foreground/60">Ainda não há aulas confirmadas.</p>
           ) : (
             <div className="space-y-2">
               {confirmadas.map((m) => {

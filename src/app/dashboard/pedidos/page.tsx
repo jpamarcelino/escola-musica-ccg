@@ -8,7 +8,10 @@ import { BotaoRecusarPedido } from '@/components/recusar-pedido-botao'
 type Pedido = {
   id: number
   mensagem: string | null
-  profiles: { nome: string; telefone: string | null } | null
+  alunos: {
+    nome: string
+    encarregado: { telefone: string | null } | null
+  } | null
   instrumentos: { nome: string } | null
   disponibilidades_selecionadas: {
     horario_id: number
@@ -44,7 +47,7 @@ export default async function PedidosPage({
   const { data: pedidosData } = await supabase
     .from('matriculas')
     .select(
-      'id, mensagem, profiles!matriculas_aluno_id_fkey(nome, telefone), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
+      'id, mensagem, alunos(nome, encarregado:profiles!alunos_encarregado_id_fkey(telefone)), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'a_escolher')
@@ -71,13 +74,13 @@ export default async function PedidosPage({
               className="space-y-2 rounded border border-foreground/15 p-4"
             >
               <p className="text-sm">
-                <strong>{pedido.profiles?.nome}</strong> — {pedido.instrumentos?.nome}
+                <strong>{pedido.alunos?.nome}</strong> — {pedido.instrumentos?.nome}
               </p>
-              {pedido.profiles?.telefone && (
+              {pedido.alunos?.encarregado?.telefone && (
                 <p className="text-xs text-foreground/60">
                   Telemóvel:{' '}
-                  <a href={`tel:${pedido.profiles.telefone}`} className="underline">
-                    {pedido.profiles.telefone}
+                  <a href={`tel:${pedido.alunos!.encarregado!.telefone}`} className="underline">
+                    {pedido.alunos!.encarregado!.telefone}
                   </a>
                 </p>
               )}
@@ -95,7 +98,7 @@ export default async function PedidosPage({
                       <input type="hidden" name="horarioId" value={d.horario_id} />
                       <BotaoConfirmarHorario
                         label={label}
-                        mensagemConfirmacao={`Confirmar a aula de ${pedido.profiles?.nome} (${pedido.instrumentos?.nome}) — ${label}? Tens a certeza?`}
+                        mensagemConfirmacao={`Confirmar a aula de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome}) — ${label}? Tens a certeza?`}
                       />
                     </form>
                   )
@@ -103,7 +106,7 @@ export default async function PedidosPage({
                 <form action={recusarPedido}>
                   <input type="hidden" name="matriculaId" value={pedido.id} />
                   <BotaoRecusarPedido
-                    mensagemConfirmacao={`Recusar o pedido de ${pedido.profiles?.nome} (${pedido.instrumentos?.nome})? O pedido será apagado.`}
+                    mensagemConfirmacao={`Recusar o pedido de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome})? O pedido será apagado.`}
                   />
                 </form>
               </div>

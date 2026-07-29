@@ -36,15 +36,15 @@ export default async function EditarHorarioPage({
 
   const { data: confirmadosData } = await supabase
     .from('matriculas')
-    .select('profiles!matriculas_aluno_id_fkey(nome)')
+    .select('alunos(nome)')
     .eq('horario_final_id', id)
     .eq('estado', 'confirmado')
   const alunosConfirmados = (
     (confirmadosData ?? []) as unknown as {
-      profiles: { nome: string } | null
+      alunos: { nome: string } | null
     }[]
   )
-    .map((c) => c.profiles?.nome)
+    .map((c) => c.alunos?.nome)
     .filter((nome): nome is string => Boolean(nome))
 
   return (

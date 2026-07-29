@@ -3,10 +3,18 @@ import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/actions/auth'
+import { criarAlunoDependente } from '@/lib/actions/aluno'
 import { OptionCard } from '@/components/option-card'
 import { InstalarCallout } from '@/components/instalar-callout'
+import { SubmitButton } from '@/components/submit-button'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erro?: string }>
+}) {
+  const { erro } = await searchParams
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -29,15 +37,15 @@ export default async function DashboardPage() {
     redirect('/admin')
   }
 
-  let notificacoesPorLer = 0
-  if (profile?.tipo === 'aluno') {
-    const { count } = await supabase
-      .from('notificacoes')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('lida', false)
-    notificacoesPorLer = count ?? 0
-  }
+  const { data: meusAlunosData } =
+    profile?.tipo === 'aluno'
+      ? await supabase
+          .from('alunos')
+          .select('id, nome')
+          .eq('encarregado_id', user.id)
+          .order('criado_em')
+      : { data: [] }
+  const meusAlunos = meusAlunosData ?? []
 
   let pedidosPendentes = 0
   if (profile?.tipo === 'professor') {
@@ -78,20 +86,59 @@ export default async function DashboardPage() {
         </div>
 
         {profile?.tipo === 'aluno' && (
-          <div className="hub-stack">
-            <OptionCard href="/dashboard/conta" nome="Conta" wide index={1} />
-            <OptionCard href="/aluno/pedido" nome="Pedir Aula" wide index={2} />
-            <OptionCard href="/aluno/horario" nome="Horário e Aulas" wide index={3} />
-            <OptionCard href="/aluno/calendario" nome="Calendário Escolar" wide index={4} />
-            <OptionCard href="/aluno/materiais" nome="Materiais das Aulas" wide index={5} />
-            <OptionCard
-              href="/aluno/notificacoes"
-              nome="Notificações"
-              wide
-              index={6}
-              badge={notificacoesPorLer}
-            />
-          </div>
+          <>
+            {erro && (
+              <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">{erro}</p>
+            )}
+            <div className="hub-stack">
+              <OptionCard href="/dashboard/conta" nome="Conta" wide index={1} />
+              {meusAlunos.map((a, idx) => (
+                <OptionCard
+                  key={a.id}
+                  href={`/aluno/${a.id}`}
+                  nome={a.nome}
+                  wide
+                  index={idx + 2}
+                />
+              ))}
+            </div>
+            <form
+              action={criarAlunoDependente}
+              className="flex flex-wrap items-end gap-2 rounded border border-foreground/15 p-3"
+            >
+              <div className="space-y-1">
+                <label htmlFor="nome" className="block text-xs font-medium text-foreground/60">
+                  Nome do aluno
+                </label>
+                <input
+                  id="nome"
+                  name="nome"
+                  required
+                  className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <label
+                  htmlFor="dataNascimento"
+                  className="block text-xs font-medium text-foreground/60"
+                >
+                  Data de nascimento
+                </label>
+                <input
+                  id="dataNascimento"
+                  name="dataNascimento"
+                  type="date"
+                  className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <SubmitButton
+                textoAGuardar="A adicionar..."
+                className="rounded border border-foreground/20 px-3 py-2 text-sm"
+              >
+                Adicionar Aluno
+              </SubmitButton>
+            </form>
+          </>
         )}
 
         {profile?.tipo === 'professor' && (

@@ -8,7 +8,7 @@ import { formatarSala } from '@/lib/sala'
 type Aluno = {
   id: number
   instrumentos: { nome: string } | null
-  profiles: { nome: string } | null
+  alunos: { nome: string } | null
 }
 
 export default async function AgendaHorarioPage({
@@ -56,7 +56,7 @@ export default async function AgendaHorarioPage({
 
   const { data: alunosData } = await supabase
     .from('matriculas')
-    .select('id, instrumentos(nome), profiles!matriculas_aluno_id_fkey(nome)')
+    .select('id, instrumentos(nome), alunos(nome)')
     .eq('horario_final_id', Number(horarioId))
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -89,7 +89,7 @@ export default async function AgendaHorarioPage({
               <OptionCard
                 key={aluno.id}
                 href={`/dashboard/agenda/${horarioId}/${aluno.id}`}
-                nome={aluno.profiles?.nome ?? ''}
+                nome={aluno.alunos?.nome ?? ''}
                 subtitulo={aluno.instrumentos?.nome}
                 wide
                 index={idx}

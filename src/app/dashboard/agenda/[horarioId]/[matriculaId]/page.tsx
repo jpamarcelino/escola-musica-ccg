@@ -8,11 +8,10 @@ import { BotaoDesmatricular } from '@/components/desmatricular-botao'
 type Matricula = {
   id: number
   instrumentos: { nome: string } | null
-  profiles: {
+  alunos: {
     nome: string
-    email: string | null
-    telefone: string | null
     data_nascimento: string | null
+    encarregado: { email: string | null; telefone: string | null } | null
   } | null
 }
 
@@ -45,7 +44,7 @@ export default async function AlunoDaAulaPage({
   const { data: matriculaData } = await supabase
     .from('matriculas')
     .select(
-      'id, instrumentos(nome), profiles!matriculas_aluno_id_fkey(nome, email, telefone, data_nascimento)'
+      'id, instrumentos(nome), alunos(nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone))'
     )
     .eq('id', Number(matriculaId))
     .eq('horario_final_id', Number(horarioId))
@@ -58,7 +57,7 @@ export default async function AlunoDaAulaPage({
     notFound()
   }
 
-  const idade = calcularIdade(matricula.profiles?.data_nascimento)
+  const idade = calcularIdade(matricula.alunos?.data_nascimento)
 
   return (
     <main className="flex-1 flex justify-center p-6">
@@ -66,7 +65,7 @@ export default async function AlunoDaAulaPage({
         <div className="flex items-center gap-3">
           <BackButton href={`/dashboard/agenda/${horarioId}`} />
           <h1 className="text-2xl font-semibold text-foreground">
-            {matricula.profiles?.nome}
+            {matricula.alunos?.nome}
           </h1>
         </div>
 
@@ -81,19 +80,19 @@ export default async function AlunoDaAulaPage({
               {idade} anos
             </p>
           )}
-          {matricula.profiles?.email && (
+          {matricula.alunos?.encarregado?.email && (
             <p>
-              <span className="text-foreground/60">Email: </span>
-              <a href={`mailto:${matricula.profiles.email}`} className="underline">
-                {matricula.profiles.email}
+              <span className="text-foreground/60">Email do encarregado: </span>
+              <a href={`mailto:${matricula.alunos.encarregado.email}`} className="underline">
+                {matricula.alunos.encarregado.email}
               </a>
             </p>
           )}
-          {matricula.profiles?.telefone && (
+          {matricula.alunos?.encarregado?.telefone && (
             <p>
-              <span className="text-foreground/60">Telemóvel: </span>
-              <a href={`tel:${matricula.profiles.telefone}`} className="underline">
-                {matricula.profiles.telefone}
+              <span className="text-foreground/60">Telemóvel do encarregado: </span>
+              <a href={`tel:${matricula.alunos.encarregado.telefone}`} className="underline">
+                {matricula.alunos.encarregado.telefone}
               </a>
             </p>
           )}
@@ -104,7 +103,7 @@ export default async function AlunoDaAulaPage({
             <input type="hidden" name="matriculaId" value={matricula.id} />
             <input type="hidden" name="horarioId" value={horarioId} />
             <BotaoDesmatricular
-              mensagemConfirmacao={`Tens a certeza que queres desmatricular ${matricula.profiles?.nome} (${matricula.instrumentos?.nome})? Esta ação é irreversível.`}
+              mensagemConfirmacao={`Tens a certeza que queres desmatricular ${matricula.alunos?.nome} (${matricula.instrumentos?.nome})? Esta ação é irreversível.`}
             />
           </form>
         </section>

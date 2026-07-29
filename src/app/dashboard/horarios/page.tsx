@@ -27,7 +27,10 @@ type Confirmado = {
   id: number
   horario_final_id: number | null
   instrumentos: { nome: string } | null
-  profiles: { nome: string; telefone: string | null } | null
+  alunos: {
+    nome: string
+    encarregado: { telefone: string | null } | null
+  } | null
   horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
 }
 
@@ -68,7 +71,7 @@ export default async function HorariosPage({
   const { data: confirmadosData } = await supabase
     .from('matriculas')
     .select(
-      'id, horario_final_id, instrumentos(nome), profiles!matriculas_aluno_id_fkey(nome, telefone), horarios(dia_semana, hora_inicio, hora_fim)'
+      'id, horario_final_id, instrumentos(nome), alunos(nome, encarregado:profiles!alunos_encarregado_id_fkey(telefone)), horarios(dia_semana, hora_inicio, hora_fim)'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -79,7 +82,7 @@ export default async function HorariosPage({
   for (const c of confirmados) {
     if (!c.horario_final_id) continue
     const nomes = confirmadosPorHorario.get(c.horario_final_id) ?? []
-    nomes.push(c.profiles?.nome ?? '')
+    nomes.push(c.alunos?.nome ?? '')
     confirmadosPorHorario.set(c.horario_final_id, nomes)
   }
 
@@ -295,7 +298,7 @@ export default async function HorariosPage({
             >
               <div>
                 <p>
-                  <strong>{c.profiles?.nome}</strong> — {c.instrumentos?.nome}
+                  <strong>{c.alunos?.nome}</strong> — {c.instrumentos?.nome}
                   {c.horarios && (
                     <>
                       : {c.horarios.dia_semana}, {c.horarios.hora_inicio.slice(0, 5)}–
@@ -303,11 +306,11 @@ export default async function HorariosPage({
                     </>
                   )}
                 </p>
-                {c.profiles?.telefone && (
+                {c.alunos?.encarregado?.telefone && (
                   <p className="text-xs text-foreground/60">
                     Telemóvel:{' '}
-                    <a href={`tel:${c.profiles.telefone}`} className="underline">
-                      {c.profiles.telefone}
+                    <a href={`tel:${c.alunos!.encarregado!.telefone}`} className="underline">
+                      {c.alunos!.encarregado!.telefone}
                     </a>
                   </p>
                 )}
