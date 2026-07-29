@@ -32,7 +32,7 @@ export default async function AdminProfessorContaPage({
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('admin')
     .eq('id', user.id)
     .single()
@@ -41,16 +41,29 @@ export default async function AdminProfessorContaPage({
     redirect('/dashboard')
   }
 
-  const { data: professorData } = await supabase
-    .from('profiles')
-    .select('nome, email, telefone, programa, admin')
+  const { data: professorPerfilData } = await supabase
+    .from('perfis_escola')
+    .select('programa, admin, profiles(nome, email, telefone)')
     .eq('id', professorId)
     .eq('tipo', 'professor')
     .maybeSingle()
-  const professor = professorData as ProfessorPerfil | null
 
-  if (!professor) {
+  const professorPerfil = professorPerfilData as {
+    programa: string | null
+    admin: boolean
+    profiles: { nome: string; email: string | null; telefone: string | null } | null
+  } | null
+
+  if (!professorPerfil) {
     notFound()
+  }
+
+  const professor: ProfessorPerfil = {
+    nome: professorPerfil.profiles?.nome ?? '',
+    email: professorPerfil.profiles?.email ?? null,
+    telefone: professorPerfil.profiles?.telefone ?? null,
+    programa: professorPerfil.programa,
+    admin: professorPerfil.admin,
   }
 
   const { data: instrumentosData } = await supabase

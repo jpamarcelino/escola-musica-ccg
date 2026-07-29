@@ -24,7 +24,7 @@ export default async function AdminAdministradoresPage() {
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('super_admin')
     .eq('id', user.id)
     .single()
@@ -34,11 +34,23 @@ export default async function AdminAdministradoresPage() {
   }
 
   const { data: professoresData } = await supabase
-    .from('profiles')
-    .select('id, nome, tipo, admin')
+    .from('perfis_escola')
+    .select('id, tipo, admin, profiles(nome)')
     .in('tipo', ['professor', 'admin'])
-    .order('nome')
-  const professores = (professoresData ?? []) as Professor[]
+    .order('nome', { referencedTable: 'profiles' })
+  const professores = (
+    (professoresData ?? []) as unknown as {
+      id: string
+      tipo: string
+      admin: boolean
+      profiles: { nome: string } | null
+    }[]
+  ).map((p) => ({
+    id: p.id,
+    nome: p.profiles?.nome ?? '',
+    tipo: p.tipo,
+    admin: p.admin,
+  })) as Professor[]
 
   return (
     <main className="flex-1 flex justify-center p-6">

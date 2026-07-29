@@ -24,11 +24,25 @@ export default async function DashboardPage({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
+  const { data: profileRowData } = await supabase
     .from('profiles')
-    .select('nome, tipo, admin, programa')
+    .select('nome, perfis_escola(tipo, admin, programa)')
     .eq('id', user.id)
     .single()
+
+  const profileRow = profileRowData as {
+    nome: string
+    perfis_escola: { tipo: string; admin: boolean; programa: string | null } | null
+  } | null
+
+  const profile = profileRow
+    ? {
+        nome: profileRow.nome,
+        tipo: profileRow.perfis_escola?.tipo,
+        admin: profileRow.perfis_escola?.admin,
+        programa: profileRow.perfis_escola?.programa,
+      }
+    : null
 
   // Contas admin (direção/secretaria, sem hub de professor nem de aluno)
   // vão direto para a Visão geral — só se ainda tiverem acesso (um super

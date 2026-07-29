@@ -37,7 +37,7 @@ export default async function HistoricoAlunoPage({
   }
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('tipo')
     .eq('id', user.id)
     .single()

@@ -20,7 +20,7 @@ export default async function AdminAlunosPage() {
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('admin')
     .eq('id', user.id)
     .single()

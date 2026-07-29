@@ -27,20 +27,42 @@ export default async function AdminContaPage({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
+  const { data: profileRowData } = await supabase
     .from('profiles')
-    .select('nome, tipo, super_admin')
+    .select('nome, perfis_escola(tipo, super_admin)')
     .eq('id', user.id)
     .single()
+
+  const profileRow = profileRowData as {
+    nome: string
+    perfis_escola: { tipo: string; super_admin: boolean } | null
+  } | null
+
+  const profile = profileRow
+    ? {
+        nome: profileRow.nome,
+        tipo: profileRow.perfis_escola?.tipo,
+        super_admin: profileRow.perfis_escola?.super_admin ?? false,
+      }
+    : null
 
   if (profile?.tipo !== 'admin') {
     redirect('/dashboard')
   }
 
   const { data: outrosAdminsData } = profile.super_admin
-    ? await supabase.from('profiles').select('id, nome').eq('admin', true).neq('id', user.id)
+    ? await supabase
+        .from('perfis_escola')
+        .select('id, profiles(nome)')
+        .eq('admin', true)
+        .neq('id', user.id)
     : { data: [] }
-  const outrosAdmins = outrosAdminsData ?? []
+  const outrosAdmins = (
+    (outrosAdminsData ?? []) as unknown as { id: string; profiles: { nome: string } | null }[]
+  ).map((p) => ({
+    id: p.id,
+    nome: p.profiles?.nome ?? '',
+  }))
 
   return (
     <main className="flex-1 flex justify-center p-6">

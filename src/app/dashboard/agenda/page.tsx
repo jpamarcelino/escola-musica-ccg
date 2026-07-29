@@ -39,7 +39,7 @@ export default async function AgendaPage() {
   }
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('tipo, programa')
     .eq('id', user.id)
     .single()

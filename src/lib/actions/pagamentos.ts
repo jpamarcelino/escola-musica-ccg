@@ -124,7 +124,7 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('admin')
     .eq('id', user.id)
     .single()

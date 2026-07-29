@@ -217,7 +217,7 @@ export async function atualizarEmailConta(
   }
 
   const { data: perfil } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('tipo')
     .eq('id', user.id)
     .single()
@@ -304,7 +304,7 @@ export async function apagarConta() {
   }
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('tipo')
     .eq('id', user.id)
     .single()
@@ -354,7 +354,7 @@ export async function apagarContaSuperAdmin(
   }
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('super_admin')
     .eq('id', user.id)
     .single()
@@ -364,7 +364,7 @@ export async function apagarContaSuperAdmin(
   }
 
   const { data: sucessor } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('id')
     .eq('id', novoSuperAdminId)
     .eq('admin', true)
@@ -385,7 +385,7 @@ export async function apagarContaSuperAdmin(
   }
 
   const { error: erroSucessor } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .update({ super_admin: true })
     .eq('id', novoSuperAdminId)
 

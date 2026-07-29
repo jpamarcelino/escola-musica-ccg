@@ -19,7 +19,7 @@ export default async function HistoricoPagamentosPage() {
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('admin')
     .eq('id', user.id)
     .single()
@@ -29,11 +29,16 @@ export default async function HistoricoPagamentosPage() {
   }
 
   const { data: professoresData } = await supabase
-    .from('profiles')
-    .select('id, nome')
+    .from('perfis_escola')
+    .select('id, profiles(nome)')
     .eq('tipo', 'professor')
-    .order('nome')
-  const professores = (professoresData ?? []) as Professor[]
+    .order('nome', { referencedTable: 'profiles' })
+  const professores = (
+    (professoresData ?? []) as unknown as { id: string; profiles: { nome: string } | null }[]
+  ).map((p) => ({
+    id: p.id,
+    nome: p.profiles?.nome ?? '',
+  })) as Professor[]
 
   return (
     <main className="flex-1 flex justify-center p-6">

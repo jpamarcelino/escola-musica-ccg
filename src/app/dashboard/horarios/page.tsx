@@ -51,7 +51,7 @@ export default async function HorariosPage({
   }
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('tipo')
     .eq('id', user.id)
     .single()

@@ -198,7 +198,7 @@ export async function atualizarInstrumentos(formData: FormData) {
   const instrumentoIds = formData.getAll('instrumentos').map(String)
 
   const { data: perfil } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('programa')
     .eq('id', user.id)
     .single()

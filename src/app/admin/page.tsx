@@ -16,7 +16,7 @@ export default async function AdminPage() {
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('admin, super_admin, tipo')
     .eq('id', user.id)
     .single()
@@ -25,7 +25,7 @@ export default async function AdminPage() {
     redirect('/dashboard')
   }
 
-  const { data: perfisData } = await supabase.from('profiles').select('tipo')
+  const { data: perfisData } = await supabase.from('perfis_escola').select('tipo')
   const alunos = (perfisData ?? []).filter((p) => p.tipo === 'aluno').length
   const professores = (perfisData ?? []).filter((p) => p.tipo === 'professor').length
 

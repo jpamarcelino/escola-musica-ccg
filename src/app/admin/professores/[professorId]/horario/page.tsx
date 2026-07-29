@@ -44,7 +44,7 @@ export default async function AdminProfessorHorarioPage({
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('admin')
     .eq('id', user.id)
     .single()
@@ -53,16 +53,23 @@ export default async function AdminProfessorHorarioPage({
     redirect('/dashboard')
   }
 
-  const { data: professorData } = await supabase
-    .from('profiles')
-    .select('nome, programa')
+  const { data: professorPerfilData } = await supabase
+    .from('perfis_escola')
+    .select('programa, profiles(nome)')
     .eq('id', professorId)
     .eq('tipo', 'professor')
     .maybeSingle()
 
-  if (!professorData) {
+  const professorPerfil = professorPerfilData as {
+    programa: string | null
+    profiles: { nome: string } | null
+  } | null
+
+  if (!professorPerfil) {
     notFound()
   }
+
+  const professorData = { nome: professorPerfil.profiles?.nome ?? '', programa: professorPerfil.programa }
 
   const mostrarNomes = professorData.programa === 'musica'
 

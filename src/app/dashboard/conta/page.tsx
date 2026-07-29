@@ -37,11 +37,27 @@ export default async function ContaPage({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
+  const { data: profileRowData } = await supabase
     .from('profiles')
-    .select('nome, tipo, programa, foto_url, super_admin')
+    .select('nome, foto_url, perfis_escola(tipo, programa, super_admin)')
     .eq('id', user.id)
     .single()
+
+  const profileRow = profileRowData as {
+    nome: string
+    foto_url: string | null
+    perfis_escola: { tipo: string; programa: string | null; super_admin: boolean } | null
+  } | null
+
+  const profile = profileRow
+    ? {
+        nome: profileRow.nome,
+        foto_url: profileRow.foto_url,
+        tipo: profileRow.perfis_escola?.tipo,
+        programa: profileRow.perfis_escola?.programa,
+        super_admin: profileRow.perfis_escola?.super_admin ?? false,
+      }
+    : null
 
   if (profile?.tipo === 'admin') {
     redirect('/admin/conta')
@@ -52,9 +68,18 @@ export default async function ContaPage({
   const ehProfessor = profile.tipo === 'professor'
 
   const { data: outrosAdminsData } = profile.super_admin
-    ? await supabase.from('profiles').select('id, nome').eq('admin', true).neq('id', user.id)
+    ? await supabase
+        .from('perfis_escola')
+        .select('id, profiles(nome)')
+        .eq('admin', true)
+        .neq('id', user.id)
     : { data: [] }
-  const outrosAdmins = outrosAdminsData ?? []
+  const outrosAdmins = (
+    (outrosAdminsData ?? []) as unknown as { id: string; profiles: { nome: string } | null }[]
+  ).map((p) => ({
+    id: p.id,
+    nome: p.profiles?.nome ?? '',
+  }))
 
   const { data: meusAlunosData } = !ehProfessor
     ? await supabase

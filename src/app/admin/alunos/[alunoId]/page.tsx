@@ -64,7 +64,7 @@ export default async function AdminAlunoPage({
   }
 
   const { data: perfilAtual } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('admin')
     .eq('id', user.id)
     .single()

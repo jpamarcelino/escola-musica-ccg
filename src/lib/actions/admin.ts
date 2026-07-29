@@ -15,7 +15,7 @@ export async function atualizarAdministradores(formData: FormData) {
   }
 
   const { data: perfil } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('super_admin')
     .eq('id', user.id)
     .single()
@@ -25,7 +25,7 @@ export async function atualizarAdministradores(formData: FormData) {
   }
 
   const { data: professores } = await supabase
-    .from('profiles')
+    .from('perfis_escola')
     .select('id')
     .in('tipo', ['professor', 'admin'])
 
@@ -34,7 +34,7 @@ export async function atualizarAdministradores(formData: FormData) {
   for (const professor of professores ?? []) {
     const deveSerAdmin = idsAdmin.has(professor.id)
     await supabase
-      .from('profiles')
+      .from('perfis_escola')
       .update({ admin: deveSerAdmin })
       .eq('id', professor.id)
   }
