@@ -25,19 +25,19 @@ export default async function Home() {
       <div className="w-full max-w-xs space-y-3">
         <Link
           href="/pedir-aula"
-          className="block w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
+          className="block w-full rounded-lg bg-brand text-white hover:bg-brand-hover py-5 text-lg font-semibold shadow-md"
         >
-          Pedir uma aula
+          Explorar escola
         </Link>
         <Link
           href="/registo"
-          className="block w-full rounded border border-foreground/20 px-4 py-2"
+          className="block w-full rounded border border-foreground/20 px-4 py-2 text-sm"
         >
           Criar conta
         </Link>
         <Link
           href="/login"
-          className="block w-full rounded border border-foreground/20 px-4 py-2"
+          className="block w-full rounded border border-foreground/20 px-4 py-2 text-sm"
         >
           Já tens conta? Entrar
         </Link>

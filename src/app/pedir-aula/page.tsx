@@ -59,23 +59,24 @@ export default async function PedirAulaPage({
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Passo 1: escolher escola
-  if (programa !== 'musica' && programa !== 'danca') {
+  // Passo 1: idade do futuro aluno (só filtra os cartões seguintes) — vem
+  // antes de escolher a escola, para logo se saber o que mostrar a azul.
+  if (idadeNum === null) {
     return (
       <Wizard voltar="/">
-        <div className="option-stack">
-          <OptionCard href="/pedir-aula?programa=musica" nome={'Escola\nde\nMúsica'} wide index={0} />
-          <OptionCard href="/pedir-aula?programa=danca" nome={'Escola\nde\nDança'} wide index={1} />
-        </div>
+        <SeletorIdade />
       </Wizard>
     )
   }
 
-  // Passo 2: idade do futuro aluno (só filtra os cartões seguintes)
-  if (idadeNum === null) {
+  // Passo 2: escolher escola
+  if (programa !== 'musica' && programa !== 'danca') {
     return (
       <Wizard voltar="/pedir-aula">
-        <SeletorIdade />
+        <div className="option-stack">
+          <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=musica`} nome={'Escola\nde\nMúsica'} wide index={0} />
+          <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=danca`} nome={'Escola\nde\nDança'} wide index={1} />
+        </div>
       </Wizard>
     )
   }
@@ -113,7 +114,7 @@ export default async function PedirAulaPage({
     return (
       <Wizard
         title={programa === 'musica' ? 'Que instrumento queres aprender?' : 'Que modalidade queres aprender?'}
-        voltar={`/pedir-aula?programa=${programa}`}
+        voltar={`/pedir-aula?idade=${idadeNum}`}
       >
         <div className="option-grid">
           {ordenados.map((i, idx) =>
