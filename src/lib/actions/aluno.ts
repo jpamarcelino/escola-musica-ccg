@@ -21,11 +21,16 @@ export async function escolherDisponibilidades(formData: FormData) {
   const professorId = String(formData.get('professorId') ?? '')
   const horarioIds = formData.getAll('horarios').map(String)
   const mensagem = String(formData.get('mensagem') ?? '').trim().slice(0, 500)
+  // Presente só quando o pedido vem do wizard público (/pedir-aula) — nesse
+  // caso os erros voltam para lá, não para /aluno/[alunoId]/pedido.
+  const origem = String(formData.get('origem') ?? '')
 
   function voltarComErro(mensagemErro: string): never {
-    redirect(
-      `/aluno/${alunoId}/pedido?instrumento=${instrumentoId}&professor=${professorId}&erro=${encodeURIComponent(mensagemErro)}`
-    )
+    const base =
+      origem === 'wizard-publico'
+        ? `/pedir-aula?instrumento=${instrumentoId}&professor=${professorId}`
+        : `/aluno/${alunoId}/pedido?instrumento=${instrumentoId}&professor=${professorId}`
+    redirect(`${base}&erro=${encodeURIComponent(mensagemErro)}`)
   }
 
   if (!alunoId || !instrumentoId || !professorId) {

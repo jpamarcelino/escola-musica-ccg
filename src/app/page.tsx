@@ -24,8 +24,14 @@ export default async function Home() {
 
       <div className="w-full max-w-xs space-y-3">
         <Link
-          href="/registo"
+          href="/pedir-aula"
           className="block w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
+        >
+          Pedir uma aula
+        </Link>
+        <Link
+          href="/registo"
+          className="block w-full rounded border border-foreground/20 px-4 py-2"
         >
           Criar conta
         </Link>
