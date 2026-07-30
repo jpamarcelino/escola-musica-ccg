@@ -31,11 +31,18 @@ export function ModalContaPedido({
 
   useEffect(() => {
     if (estadoLogin?.sucesso || estadoRegisto?.sucesso) {
+      // Depois de um registo novo, a conta já vem com um "aluno" próprio
+      // auto-criado (a própria pessoa) — mas nem sempre é para ela que é o
+      // pedido (ex: um encarregado a criar conta para inscrever um filho).
+      // Por isso, só se salta logo para o pedido quando é um LOGIN numa
+      // conta já existente com exatamente um aluno — aí sim é uma escolha
+      // já feita antes por quem está a usar a conta.
+      const veioDeLogin = !!estadoLogin?.sucesso
       setARecolherAlunos(true)
       listarMeusAlunos().then((lista) => {
         setAlunos(lista)
         setARecolherAlunos(false)
-        if (lista.length === 1) {
+        if (veioDeLogin && lista.length === 1) {
           onConcluido(lista[0].id)
         } else {
           setEcra('aluno')
