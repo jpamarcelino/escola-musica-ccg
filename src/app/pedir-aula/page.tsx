@@ -126,7 +126,7 @@ export default async function PedirAulaPage({
           programa === 'musica'
             ? 'Que instrumento queres aprender?'
             : programa === 'bebes'
-              ? 'Que faixa etária?'
+              ? 'Escolha a turma indicada'
               : 'Que modalidade queres aprender?'
         }
         voltar={`/pedir-aula?idade=${idadeNum}`}
