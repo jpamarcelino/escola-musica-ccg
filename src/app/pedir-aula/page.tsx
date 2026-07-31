@@ -70,12 +70,13 @@ export default async function PedirAulaPage({
   }
 
   // Passo 2: escolher escola
-  if (programa !== 'musica' && programa !== 'danca') {
+  if (programa !== 'musica' && programa !== 'danca' && programa !== 'bebes') {
     return (
       <Wizard voltar="/pedir-aula">
         <div className="option-stack">
           <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=musica`} nome={'Escola\nde\nMúsica'} wide index={0} />
           <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=danca`} nome={'Escola\nde\nDança'} wide index={1} />
+          <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=bebes`} nome={'Música\npara\nBebés'} wide index={2} />
         </div>
       </Wizard>
     )
@@ -99,6 +100,14 @@ export default async function PedirAulaPage({
           elegivel: dentroDaFaixa(idadeNum, parseFaixaEtaria(faixa)),
         }
       }
+      if (programa === 'bebes') {
+        return {
+          ...i,
+          titulo: i.nome,
+          idade: undefined as string | undefined,
+          elegivel: dentroDaFaixa(idadeNum, parseFaixaEtaria(i.nome)),
+        }
+      }
       return {
         ...i,
         titulo: i.nome,
@@ -113,7 +122,13 @@ export default async function PedirAulaPage({
 
     return (
       <Wizard
-        title={programa === 'musica' ? 'Que instrumento queres aprender?' : 'Que modalidade queres aprender?'}
+        title={
+          programa === 'musica'
+            ? 'Que instrumento queres aprender?'
+            : programa === 'bebes'
+              ? 'Que faixa etária?'
+              : 'Que modalidade queres aprender?'
+        }
         voltar={`/pedir-aula?idade=${idadeNum}`}
       >
         <div className="option-grid">

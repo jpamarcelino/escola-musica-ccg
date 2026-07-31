@@ -44,5 +44,11 @@ export function elegivelParaDisciplina(
     const { idade } = separarFaixaEtaria(nomeInstrumento)
     return dentroDaFaixa(idadeAluno, parseFaixaEtaria(idade))
   }
+  // "Música para bebés" guarda a faixa etária no próprio nome (ex: "0 aos 3
+  // anos"), sem título separado — parseFaixaEtaria já procura o padrão
+  // "X aos Y" em qualquer posição da string.
+  if (programa === 'bebes') {
+    return dentroDaFaixa(idadeAluno, parseFaixaEtaria(nomeInstrumento))
+  }
   return dentroDaFaixa(idadeAluno, { min: MUSICA_IDADE_MIN, max: MUSICA_IDADE_MAX })
 }
