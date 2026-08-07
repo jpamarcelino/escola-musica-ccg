@@ -48,7 +48,7 @@ export default async function AlunoHubPage({
           <OptionCard href={`/aluno/${alunoId}/pedido`} nome="Pedir Aula" wide index={1} />
           <OptionCard href={`/aluno/${alunoId}/horario`} nome="Horário e Aulas" wide index={2} />
           <OptionCard href="/aluno/calendario" nome="Calendário Escolar" wide index={3} />
-          <OptionCard href="/aluno/materiais" nome="Materiais das Aulas" wide index={4} />
+          <OptionCard href={`/aluno/${alunoId}/materiais`} nome="Materiais das Aulas" wide index={4} />
           <OptionCard
             href="/aluno/notificacoes"
             nome="Notificações"
