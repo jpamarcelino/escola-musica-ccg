@@ -189,10 +189,16 @@ export default async function DashboardPage({
               index={5}
             />
             <OptionCard
+              href="/dashboard/mensalidades"
+              nome="Mensalidades"
+              wide
+              index={6}
+            />
+            <OptionCard
               href="/dashboard/calendario"
               nome="Calendário Escolar"
               wide
-              index={6}
+              index={7}
             />
           </div>
         )}

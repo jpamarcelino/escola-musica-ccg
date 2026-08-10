@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -39,6 +40,13 @@ type Mensalidade = {
   pago: boolean
   numero_fatura: string | null
   matricula_id: number
+}
+
+const ESTADO_BENEFICIO_LABEL: Record<string, string> = {
+  pendente: 'Mês grátis por usar',
+  usado: 'Mês grátis usado',
+  expirado: 'Mês grátis expirado',
+  anulado: 'Mês grátis anulado',
 }
 
 const ESTADO_PRESENCA_LABEL: Record<string, string> = {
@@ -114,6 +122,25 @@ export default async function AdminAlunoPage({
           .order('mes', { ascending: false })
       : { data: [] }
   const mensalidades = (mensalidadesData ?? []) as unknown as Mensalidade[]
+
+  // Programa de Recomendação: o que este aluno ganhou por ter trazido
+  // outras pessoas. Quem ele recomendou não se mostra aqui — o Art. 25.º
+  // diz que essa relação é de gestão interna e vive só em
+  // /admin/recomendacoes.
+  const { data: beneficiosData } = await supabase
+    .from('beneficios')
+    .select('id, estado, ano_uso, mes_uso, valor_coberto, motivo_anulacao, recomendacao_id')
+    .eq('aluno_id', alunoId)
+    .order('criado_em')
+  const beneficios = (beneficiosData ?? []) as unknown as {
+    id: number
+    estado: string
+    ano_uso: number | null
+    mes_uso: number | null
+    valor_coberto: number | null
+    motivo_anulacao: string | null
+    recomendacao_id: number
+  }[]
 
   const matriculaPorId = new Map(matriculas.map((m) => [m.id, m]))
   const idade = calcularIdade(aluno.data_nascimento)
@@ -207,6 +234,51 @@ export default async function AdminAlunoPage({
         <section
           className="entrada-esquerda space-y-3"
           style={{ '--card-index': 4 } as CSSProperties}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="secao-titulo">Programa de Recomendação</h2>
+            <Link
+              href="/admin/recomendacoes/nova"
+              className="rounded border border-foreground/20 px-3 py-1 text-sm"
+            >
+              Registar recomendação
+            </Link>
+          </div>
+          {beneficios.length === 0 ? (
+            <p className="text-sm text-foreground/60">
+              Este aluno ainda não recomendou ninguém.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {beneficios.map((b) => (
+                <Link
+                  key={b.id}
+                  href={`/admin/recomendacoes/${b.recomendacao_id}`}
+                  className="lista-item flex items-center justify-between gap-3"
+                >
+                  <div>
+                    <p className="lista-item-titulo">
+                      {ESTADO_BENEFICIO_LABEL[b.estado] ?? b.estado}
+                    </p>
+                    <p className="lista-item-sub">
+                      {b.estado === 'usado' && b.ano_uso && b.mes_uso
+                        ? `Aplicada em ${String(b.mes_uso).padStart(2, '0')}/${b.ano_uso}` +
+                          (b.valor_coberto !== null ? ` — ${b.valor_coberto.toFixed(2)}€` : '')
+                        : b.motivo_anulacao ??
+                          (b.estado === 'pendente'
+                            ? 'Será aplicada no dia 1 do próximo mês.'
+                            : 'Não chegou a ser usada.')}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section
+          className="entrada-esquerda space-y-3"
+          style={{ '--card-index': 5 } as CSSProperties}
         >
           <h2 className="secao-titulo">Histórico de mensalidades</h2>
           {mensalidades.length === 0 ? (

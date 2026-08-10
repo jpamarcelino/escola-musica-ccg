@@ -14,14 +14,21 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient()
 
-  const [{ error: erroMensalidades }, { error: erroAvisos }] = await Promise.all([
-    supabase.rpc('gerar_mensalidades_e_avisos'),
-    supabase.rpc('avisar_pagamentos_em_falta'),
-  ])
+  const [{ error: erroMensalidades }, { error: erroAvisos }, { error: erroExpirar }] =
+    await Promise.all([
+      supabase.rpc('gerar_mensalidades_e_avisos'),
+      supabase.rpc('avisar_pagamentos_em_falta'),
+      supabase.rpc('expirar_beneficios_ano_letivo'),
+    ])
 
-  if (erroMensalidades || erroAvisos) {
+  if (erroMensalidades || erroAvisos || erroExpirar) {
     return NextResponse.json(
-      { erro: 'Falhou a gerar mensalidades ou avisos.', erroMensalidades, erroAvisos },
+      {
+        erro: 'Falhou a gerar mensalidades, avisos ou a expirar benefícios.',
+        erroMensalidades,
+        erroAvisos,
+        erroExpirar,
+      },
       { status: 500 }
     )
   }

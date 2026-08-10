@@ -1,0 +1,201 @@
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { BackButton } from '@/components/back-button'
+import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
+
+type MatriculaDoProfessor = {
+  id: number
+  aluno_id: string
+  valor_mensal: number | null
+  alunos: { nome: string } | null
+  instrumentos: { nome: string } | null
+}
+
+type MensalidadeDoMes = {
+  aluno_id: string
+  valor: number | null
+  pago: boolean
+  desistencia: boolean
+  beneficio_id: number | null
+  instrumento_nome: string | null
+}
+
+type EstadoLinha = 'nao_devida' | 'paga' | 'por_pagar' | 'por_gerar' | 'desistencia'
+
+const ESTADO: Record<EstadoLinha, { label: string; classe: string }> = {
+  nao_devida: { label: 'Não devida — Programa de Recomendação', classe: 'estado-falta_aviso' },
+  paga: { label: 'Paga', classe: 'estado-presente' },
+  por_pagar: { label: 'Por pagar', classe: 'estado-falta_sem_aviso' },
+  por_gerar: { label: 'Ainda não gerada', classe: '' },
+  desistencia: { label: 'Desistiu', classe: '' },
+}
+
+function mesPredefinido() {
+  const agora = new Date()
+  const chave = agora.getFullYear() * 12 + agora.getMonth() + 1
+  const dentroDoAno = MESES_ANO_LETIVO.find((m) => m.ano * 12 + m.mes === chave)
+  return dentroDoAno ?? MESES_ANO_LETIVO[0]
+}
+
+export default async function MensalidadesProfessorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ano?: string; mes?: string }>
+}) {
+  const { ano: anoParam, mes: mesParam } = await searchParams
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { data: perfilAtual } = await supabase
+    .from('perfis_escola')
+    .select('tipo, adere_recomendacao')
+    .eq('id', user.id)
+    .single()
+
+  if (perfilAtual?.tipo !== 'professor') {
+    redirect('/dashboard')
+  }
+
+  const escolhido =
+    MESES_ANO_LETIVO.find(
+      (m) => String(m.ano) === anoParam && String(m.mes) === mesParam
+    ) ?? mesPredefinido()
+
+  const { data: matriculasData } = await supabase
+    .from('matriculas')
+    .select('id, aluno_id, valor_mensal, alunos(nome), instrumentos(nome)')
+    .eq('professor_id', user.id)
+    .eq('estado', 'confirmado')
+  const matriculas = (matriculasData ?? []) as unknown as MatriculaDoProfessor[]
+
+  const { data: mensalidadesData } = await supabase
+    .from('mensalidades')
+    .select('aluno_id, valor, pago, desistencia, beneficio_id, instrumento_nome')
+    .eq('professor_id', user.id)
+    .eq('ano', escolhido.ano)
+    .eq('mes', escolhido.mes)
+  const mensalidades = (mensalidadesData ?? []) as MensalidadeDoMes[]
+
+  // A identidade de uma mensalidade é (aluno, professor, ano, mês) desde
+  // a 0008 — não a matrícula. Por isso a chave aqui é o aluno.
+  const mensalidadePorAluno = new Map(mensalidades.map((m) => [m.aluno_id, m]))
+
+  const linhas = matriculas
+    .map((m) => {
+      const mensalidade = mensalidadePorAluno.get(m.aluno_id)
+      let estado: EstadoLinha
+      if (!mensalidade) estado = 'por_gerar'
+      else if (mensalidade.desistencia) estado = 'desistencia'
+      else if (mensalidade.beneficio_id !== null) estado = 'nao_devida'
+      else if (mensalidade.pago) estado = 'paga'
+      else estado = 'por_pagar'
+
+      return {
+        chave: m.id,
+        nome: m.alunos?.nome ?? '',
+        disciplina: m.instrumentos?.nome ?? mensalidade?.instrumento_nome ?? '',
+        valor: mensalidade?.valor ?? m.valor_mensal,
+        estado,
+      }
+    })
+    .sort((a, b) => a.nome.localeCompare(b.nome))
+
+  const naoDevidas = linhas.filter((l) => l.estado === 'nao_devida')
+  const porPagar = linhas.filter((l) => l.estado === 'por_pagar')
+  const pagas = linhas.filter((l) => l.estado === 'paga')
+
+  return (
+    <main className="flex-1 flex justify-center p-6">
+      <div className="w-full max-w-2xl space-y-6">
+        <div className="flex items-center gap-3">
+          <BackButton href="/dashboard" />
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Mensalidades</h1>
+            <p className="text-sm text-foreground/60">
+              {escolhido.label} de {escolhido.ano}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-1">
+          {MESES_ANO_LETIVO.map((m) => (
+            <Link
+              key={`${m.ano}-${m.mes}`}
+              href={`/dashboard/mensalidades?ano=${m.ano}&mes=${m.mes}`}
+              className={
+                m.ano === escolhido.ano && m.mes === escolhido.mes
+                  ? 'rounded bg-brand px-2 py-1 text-xs text-white'
+                  : 'rounded border border-foreground/20 px-2 py-1 text-xs'
+              }
+            >
+              {m.label.slice(0, 3)}
+            </Link>
+          ))}
+        </div>
+
+        <section className="grid grid-cols-3 gap-3">
+          <div className="stat-tile">
+            <p className="stat-tile-numero">{pagas.length}</p>
+            <p className="stat-tile-legenda">Pagas</p>
+          </div>
+          <div className="stat-tile">
+            <p className="stat-tile-numero">{porPagar.length}</p>
+            <p className="stat-tile-legenda">Por pagar</p>
+          </div>
+          <div className="stat-tile">
+            <p className="stat-tile-numero">{naoDevidas.length}</p>
+            <p className="stat-tile-legenda">Não devidas</p>
+          </div>
+        </section>
+
+        {naoDevidas.length > 0 && (
+          <p className="rounded border border-foreground/15 p-3 text-sm text-foreground/70">
+            {naoDevidas.length === 1
+              ? 'Uma das mensalidades deste mês está abrangida pelo Programa de Recomendação — não há pagamento a receber por ela'
+              : `${naoDevidas.length} mensalidades deste mês estão abrangidas pelo Programa de Recomendação — não há pagamento a receber por elas`}
+            , porque a tua parcela e a do CCG foram oferecidas ao aluno que trouxe um novo
+            aluno para as tuas aulas.
+          </p>
+        )}
+
+        {linhas.length === 0 ? (
+          <p className="text-sm text-foreground/60">Não tens alunos com matrícula confirmada.</p>
+        ) : (
+          <div className="space-y-2">
+            {linhas.map((l) => (
+              <div key={l.chave} className="lista-item flex items-center justify-between gap-3">
+                <div>
+                  <p className="lista-item-titulo">{l.nome}</p>
+                  <p className="lista-item-sub">
+                    {l.disciplina}
+                    {l.estado === 'nao_devida'
+                      ? ' — 0.00€'
+                      : l.valor !== null && ` — ${l.valor.toFixed(2)}€`}
+                  </p>
+                </div>
+                <span className={`estado-pill ${ESTADO[l.estado].classe}`}>
+                  {ESTADO[l.estado].label}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!perfilAtual.adere_recomendacao && (
+          <p className="text-sm text-foreground/60">
+            Não aderiste ao Programa de Recomendação, por isso nenhuma das tuas mensalidades
+            será abrangida. A adesão faz-se junto da secretaria.
+          </p>
+        )}
+      </div>
+    </main>
+  )
+}

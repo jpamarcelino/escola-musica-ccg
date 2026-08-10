@@ -33,6 +33,11 @@ export default async function AdminPage() {
   const totalConfirmadas = (matriculasData ?? []).filter((m) => m.estado === 'confirmado').length
   const totalPendentes = (matriculasData ?? []).filter((m) => m.estado === 'a_escolher').length
 
+  const { count: recomendacoesPorValidar } = await supabase
+    .from('recomendacoes')
+    .select('id', { count: 'exact', head: true })
+    .eq('estado', 'registada')
+
   return (
     <main className="flex-1 flex justify-center p-6">
       <div className="w-full max-w-2xl space-y-6">
@@ -79,10 +84,17 @@ export default async function AdminPage() {
             <OptionCard href="/admin/conta" nome="Conta" wide index={2} />
           )}
           <OptionCard href="/admin/pagamentos" nome="Mensalidades" wide index={3} />
-          <OptionCard href="/admin/alunos" nome="Alunos" wide index={4} />
-          <OptionCard href="/admin/professores" nome="Professores" wide index={5} />
+          <OptionCard
+            href="/admin/recomendacoes"
+            nome="Programa de Recomendação"
+            wide
+            index={4}
+            badge={recomendacoesPorValidar ?? 0}
+          />
+          <OptionCard href="/admin/alunos" nome="Alunos" wide index={5} />
+          <OptionCard href="/admin/professores" nome="Professores" wide index={6} />
           {perfilAtual.super_admin && (
-            <OptionCard href="/admin/administradores" nome="Administradores" wide index={6} />
+            <OptionCard href="/admin/administradores" nome="Administradores" wide index={7} />
           )}
         </div>
 
