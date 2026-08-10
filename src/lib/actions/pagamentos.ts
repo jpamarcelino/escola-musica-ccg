@@ -5,6 +5,22 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
 
+type SupabaseServidor = Awaited<ReturnType<typeof createClient>>
+
+// "aluno_nome" existe desde a 0014 para o histórico de mensalidades
+// sobreviver ao aluno apagar a conta — a grelha do histórico usa-o como
+// recurso quando já não há matrícula nem perfil de onde tirar o nome.
+// Nenhuma das ações desta página o preenchia, o que fazia um aluno
+// desaparecer dessa grelha assim que saía. Lê-se do servidor, e não do
+// formulário, para o nome guardado ser sempre o real.
+async function nomesDosAlunos(supabase: SupabaseServidor, alunoIds: string[]) {
+  const unicos = [...new Set(alunoIds.filter(Boolean))]
+  if (unicos.length === 0) return new Map<string, string>()
+
+  const { data } = await supabase.from('alunos').select('id, nome').in('id', unicos)
+  return new Map(((data ?? []) as { id: string; nome: string }[]).map((a) => [a.id, a.nome]))
+}
+
 export async function definirValorMensal(formData: FormData) {
   const supabase = await createClient()
   const {
@@ -51,10 +67,13 @@ export async function marcarMensalidadePaga(formData: FormData) {
   const pago = String(formData.get('pago') ?? '') === 'true'
   const numeroFatura = String(formData.get('numeroFatura') ?? '').trim() || null
 
+  const nomes = await nomesDosAlunos(supabase, [alunoId])
+
   await supabase.from('mensalidades').upsert(
     {
       matricula_id: matriculaId,
       aluno_id: alunoId,
+      aluno_nome: nomes.get(alunoId) ?? null,
       professor_id: professorId,
       instrumento_nome: instrumentoNome,
       ano,
@@ -91,10 +110,13 @@ export async function definirNumeroFatura(formData: FormData) {
   const pago = String(formData.get('pago') ?? '') === 'true'
   const numeroFatura = String(formData.get('numeroFatura') ?? '').trim() || null
 
+  const nomes = await nomesDosAlunos(supabase, [alunoId])
+
   await supabase.from('mensalidades').upsert(
     {
       matricula_id: matriculaId,
       aluno_id: alunoId,
+      aluno_nome: nomes.get(alunoId) ?? null,
       professor_id: professorId,
       instrumento_nome: instrumentoNome,
       ano,
@@ -136,8 +158,24 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
   const professorId = String(formData.get('professorId') ?? '')
   const alunoIds = formData.getAll('alunoIds').map(String)
 
+  // Esta grelha inclui de propósito alunos que já se desmatricularam ou
+  // apagaram a conta — para esses já não há linha em "alunos", por isso o
+  // nome tem de vir do que já está gravado nas suas próprias mensalidades.
+  // Sem este recurso, gravar aqui apagaria o nome guardado e o aluno
+  // desapareceria da grelha na visita seguinte.
+  const nomes = await nomesDosAlunos(supabase, alunoIds)
+  const { data: nomesGravados } = await supabase
+    .from('mensalidades')
+    .select('aluno_id, aluno_nome')
+    .eq('professor_id', professorId)
+    .not('aluno_nome', 'is', null)
+  for (const m of (nomesGravados ?? []) as { aluno_id: string; aluno_nome: string }[]) {
+    if (!nomes.has(m.aluno_id)) nomes.set(m.aluno_id, m.aluno_nome)
+  }
+
   const paraGuardar: {
     aluno_id: string
+    aluno_nome: string | null
     professor_id: string
     ano: number
     mes: number
@@ -171,6 +209,7 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
 
       paraGuardar.push({
         aluno_id: alunoId,
+        aluno_nome: nomes.get(alunoId) ?? null,
         professor_id: professorId,
         ano,
         mes,

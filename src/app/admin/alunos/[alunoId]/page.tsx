@@ -36,10 +36,13 @@ type Mensalidade = {
   id: number
   ano: number
   mes: number
-  valor: number
+  // Nulo nas linhas de desistência ("DT"), que não têm valor a cobrar.
+  valor: number | null
   pago: boolean
   numero_fatura: string | null
-  matricula_id: number
+  instrumento_nome: string | null
+  desistencia: boolean
+  beneficio_id: number | null
 }
 
 const ESTADO_BENEFICIO_LABEL: Record<string, string> = {
@@ -47,6 +50,23 @@ const ESTADO_BENEFICIO_LABEL: Record<string, string> = {
   usado: 'Mês grátis usado',
   expirado: 'Mês grátis expirado',
   anulado: 'Mês grátis anulado',
+}
+
+// Os quatro estados que uma mensalidade pode ter nesta ficha. As linhas de
+// desistência ("DT", criadas por apagar_propria_conta) e as cobertas pelo
+// Programa de Recomendação só passaram a chegar aqui depois de a consulta
+// deixar de filtrar por matrícula — antes ficavam de fora, e a de
+// desistência teria rebentado a página por ter "valor" nulo.
+function estadoDaMensalidade(men: Mensalidade) {
+  if (men.desistencia) {
+    return { label: 'Desistiu', classe: '' }
+  }
+  if (men.beneficio_id !== null) {
+    return { label: 'Não devida — Programa de Recomendação', classe: 'estado-falta_aviso' }
+  }
+  return men.pago
+    ? { label: 'Pago', classe: 'estado-presente' }
+    : { label: 'Por pagar', classe: 'estado-falta_sem_aviso' }
 }
 
 const ESTADO_PRESENCA_LABEL: Record<string, string> = {
@@ -112,15 +132,20 @@ export default async function AdminAlunoPage({
       : { data: [] }
   const presencas = (presencasData ?? []) as unknown as Presenca[]
 
-  const { data: mensalidadesData } =
-    matriculaIds.length > 0
-      ? await supabase
-          .from('mensalidades')
-          .select('id, ano, mes, valor, pago, numero_fatura, matricula_id')
-          .in('matricula_id', matriculaIds)
-          .order('ano', { ascending: false })
-          .order('mes', { ascending: false })
-      : { data: [] }
+  // Por aluno_id, e não por matricula_id: desde a 0008 a identidade de uma
+  // mensalidade é (aluno, professor, ano, mês) e o vínculo à matrícula
+  // desliga-se sozinho quando ela é apagada ("on delete set null"),
+  // precisamente para o histórico sobreviver. Consultar por matrícula
+  // fazia o histórico desaparecer desta ficha assim que o aluno cancelava
+  // ou desistia — e nem sequer corria para quem nunca teve matrícula.
+  // O nome da disciplina vem do snapshot na própria mensalidade, pela
+  // mesma razão.
+  const { data: mensalidadesData } = await supabase
+    .from('mensalidades')
+    .select('id, ano, mes, valor, pago, numero_fatura, instrumento_nome, desistencia, beneficio_id')
+    .eq('aluno_id', alunoId)
+    .order('ano', { ascending: false })
+    .order('mes', { ascending: false })
   const mensalidades = (mensalidadesData ?? []) as unknown as Mensalidade[]
 
   // Programa de Recomendação: o que este aluno ganhou por ter trazido
@@ -285,25 +310,24 @@ export default async function AdminAlunoPage({
             <p className="text-sm text-foreground/60">Ainda não há mensalidades registadas.</p>
           ) : (
             <div className="space-y-2">
-              {mensalidades.map((men) => (
-                <div key={men.id} className="lista-item flex items-center justify-between gap-3">
-                  <div>
-                    <p className="lista-item-titulo">
-                      {String(men.mes).padStart(2, '0')}/{men.ano} —{' '}
-                      {matriculaPorId.get(men.matricula_id)?.instrumentos?.nome}
-                    </p>
-                    <p className="lista-item-sub">
-                      {men.valor.toFixed(2)}€
-                      {men.numero_fatura && ` — Fatura ${men.numero_fatura}`}
-                    </p>
+              {mensalidades.map((men) => {
+                const estado = estadoDaMensalidade(men)
+                return (
+                  <div key={men.id} className="lista-item flex items-center justify-between gap-3">
+                    <div>
+                      <p className="lista-item-titulo">
+                        {String(men.mes).padStart(2, '0')}/{men.ano}
+                        {men.instrumento_nome && ` — ${men.instrumento_nome}`}
+                      </p>
+                      <p className="lista-item-sub">
+                        {men.valor !== null ? `${men.valor.toFixed(2)}€` : 'Sem valor a cobrar'}
+                        {men.numero_fatura && ` — Fatura ${men.numero_fatura}`}
+                      </p>
+                    </div>
+                    <span className={`estado-pill ${estado.classe}`}>{estado.label}</span>
                   </div>
-                  <span
-                    className={`estado-pill ${men.pago ? 'estado-presente' : 'estado-falta_sem_aviso'}`}
-                  >
-                    {men.pago ? 'Pago' : 'Por pagar'}
-                  </span>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </section>
