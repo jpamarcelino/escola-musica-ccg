@@ -26,6 +26,29 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Tokens do DESIGN_SYSTEM.md (secção 2). Bloco próprio, e não "inline",
+   porque estes são valores literais e não referências a variáveis de :root.
+   Convivem com os tokens acima — nada foi substituído. */
+@theme {
+  --color-azul-logo:   #78AEDE;
+  --color-azul:        #3D7FB8;
+  --color-azul-fundo:  #1B4F7A;
+  --color-tinta:       #241F1C;
+  --color-tinta-suave: #6B615A;
+  --color-papel:       #FBF8F3;
+  --color-papel-2:     #F3EDE4;
+  --color-linha:       #E4DACC;
+  --color-dourado:     #A8763A;
+  --color-verde:       #7FA98C;
+
+  --font-display: "Fraunces", ui-serif, serif;
+  --font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-cartao: 18px;
+  --radius-botao:  13px;
+  --radius-icone:  12px;
+}
+
 body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;

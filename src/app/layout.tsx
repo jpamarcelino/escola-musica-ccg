@@ -39,7 +39,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header className="border-b border-foreground/10">
+        <header className="border-b border-[var(--color-linha)]">
           <div className="mx-auto flex max-w-3xl items-center gap-3 px-6 py-3">
             <Link href="/" className="flex items-center gap-3">
               <Image
@@ -50,8 +50,16 @@ export default function RootLayout({
                 className="h-9 w-auto"
                 priority
               />
-              <span className="text-sm font-semibold leading-tight">
-                Centro Cultural da Guarda
+              <span className="leading-tight">
+                <span className="block text-sm font-semibold">
+                  Centro Cultural da Guarda
+                </span>
+                <span
+                  className="mt-[2px] block text-[9.5px] font-medium uppercase tracking-[0.16em]"
+                  style={{ color: 'var(--color-tinta-suave)' }}
+                >
+                  Escolas Artísticas
+                </span>
               </span>
             </Link>
           </div>
