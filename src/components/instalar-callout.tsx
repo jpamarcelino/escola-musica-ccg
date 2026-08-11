@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { CartaoLink } from '@/components/cartao-link'
 
 // Só aparece em contexto de browser — quando a app já está instalada e
 // aberta a partir do ecrã principal, o SO reporta "standalone" e o
@@ -11,6 +11,27 @@ function estaInstalada() {
   const iosStandalone =
     (window.navigator as unknown as { standalone?: boolean }).standalone === true
   return modoStandalone || iosStandalone
+}
+
+// Ícone de linha, como manda a secção 6: nunca preenchido, "stroke-width"
+// 1.5 e extremidades arredondadas.
+function IconeTelemovel() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="26"
+      height="26"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ color: 'var(--color-azul-fundo)' }}
+    >
+      <rect x="7" y="2" width="10" height="20" rx="2" />
+      <path d="M11 18h2" />
+    </svg>
+  )
 }
 
 export function InstalarCallout() {
@@ -23,21 +44,30 @@ export function InstalarCallout() {
   if (!mostrar) return null
 
   return (
-    <div className="callout-instalar-wrap">
-      {/* eslint-disable-next-line @next/next/no-img-element -- decorativa, sem prioridade de carregamento */}
-      <img src="/seta-instalar.png" alt="" className="callout-seta" aria-hidden="true" />
-      <Link href="/instalar" className="callout-instalar">
-        <span className="callout-instalar-icone" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="7" y="2" width="10" height="20" rx="2" />
-            <path d="M11 18h2" strokeLinecap="round" />
-          </svg>
-        </span>
-        <span className="callout-instalar-texto">
-          <strong>Instala a app no telemóvel</strong>
-          <span>Acesso mais rápido, como uma app normal — vê como</span>
-        </span>
-      </Link>
+    <div className="relative">
+      {/* Seta gestual a apontar para o convite. Substitui o PNG vermelho:
+          continua feita à mão, como a pincelada da marca, mas em traço de
+          linha e na cor de acento da paleta. */}
+      <svg
+        className="seta-instalar"
+        viewBox="0 0 60 60"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M10 6c20 3 32 15 34 38" />
+        <path d="M35 36l9 10 8-9" />
+      </svg>
+
+      <CartaoLink
+        href="/instalar"
+        nome="Instala a app no telemóvel"
+        descricao="Acesso mais rápido, como uma app normal — vê como"
+        icone={<IconeTelemovel />}
+      />
     </div>
   )
 }

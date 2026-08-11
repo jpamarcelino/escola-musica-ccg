@@ -754,86 +754,38 @@ body {
   cursor: default;
 }
 
-/* Chamada de atenção para a página de instalação — deliberadamente fora
-   da paleta azul/opala do resto da app, para se destacar como um convite,
-   não como mais uma opção do menu. */
-.callout-instalar-wrap {
-  position: relative;
-}
-
-.callout-seta {
+/* Seta gestual que aponta para o convite de instalação. Substituiu um PNG
+   vermelho com gradiente: o cartão do convite passou a ser um CartaoLink
+   normal, e só a seta continua a ser desenho — é o traço "feito à mão" do
+   DESIGN_SYSTEM.md, agora na cor de acento em vez de vermelho. */
+.seta-instalar {
   position: absolute;
-  top: -40px;
-  right: -34px;
-  width: 92px;
+  /* Assente acima do cartão, com a ponta a encostar-lhe ao canto superior
+     direito. O "z-index" é preciso porque o cartão vem depois no DOM e,
+     sem ele, pinta por cima da seta. */
+  top: -46px;
+  right: -2px;
+  width: 54px;
   height: auto;
+  z-index: 1;
   pointer-events: none;
+  color: var(--color-dourado);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .callout-seta {
-    animation: callout-seta-aponta 1.4s ease-in-out infinite;
+  .seta-instalar {
+    animation: seta-instalar-aponta 1.8s ease-in-out infinite;
   }
 }
 
-@keyframes callout-seta-aponta {
+@keyframes seta-instalar-aponta {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(6px);
+    transform: translateY(5px);
   }
-}
-
-.callout-instalar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #fff4d6 0%, #ffe08a 100%);
-  border: 1px solid #f0c860;
-  text-decoration: none;
-  color: var(--foreground);
-  box-shadow: 0 10px 22px -14px rgba(184, 134, 11, 0.55);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .callout-instalar {
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-}
-
-.callout-instalar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 26px -14px rgba(184, 134, 11, 0.65);
-}
-
-.callout-instalar-icone {
-  flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #fffaf0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #b8860b;
-}
-
-.callout-instalar-texto {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  font-size: 13px;
-  color: #6b5518;
-}
-
-.callout-instalar-texto strong {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
-  font-size: 16px;
-  color: #171717;
 }
 
 /* Pequeno indicador de progresso dentro de botões de submeter, enquanto

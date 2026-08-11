@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { CartaoEscola } from '@/components/cartao-escola'
+import { CartaoLink } from '@/components/cartao-link'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 
@@ -107,7 +107,7 @@ export default async function Home() {
 
         <div className="mt-[26px] flex flex-col gap-[11px]">
           {ESCOLAS.map((escola) => (
-            <CartaoEscola
+            <CartaoLink
               key={escola.programa}
               href={`/pedir-aula?programa=${escola.programa}`}
               nome={escola.nome}

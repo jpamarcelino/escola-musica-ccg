@@ -1,7 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { OptionCard } from '@/components/option-card'
 import { BackButton } from '@/components/back-button'
+import { CartaoLink } from '@/components/cartao-link'
+import { FundoPapel } from '@/components/fundo-papel'
 
 export default async function AlunoHubPage({
   params,
@@ -37,27 +38,30 @@ export default async function AlunoHubPage({
     .eq('lida', false)
 
   return (
-    <main className="flex-1 flex justify-center p-6">
-      <div className="w-full max-w-2xl space-y-6">
+    <FundoPapel largura="larga">
+      <div className="space-y-[26px]">
         <div className="flex items-center gap-3">
           <BackButton href="/dashboard" />
-          <h1 className="text-2xl font-semibold text-foreground">{aluno.nome}</h1>
+          <h1
+            className="text-[22px] font-semibold leading-[1.2]"
+            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+          >
+            {aluno.nome}
+          </h1>
         </div>
 
-        <div className="hub-stack">
-          <OptionCard href={`/aluno/${alunoId}/pedido`} nome="Pedir Aula" wide index={1} />
-          <OptionCard href={`/aluno/${alunoId}/horario`} nome="Horário e Aulas" wide index={2} />
-          <OptionCard href="/aluno/calendario" nome="Calendário Escolar" wide index={3} />
-          <OptionCard href={`/aluno/${alunoId}/materiais`} nome="Materiais das Aulas" wide index={4} />
-          <OptionCard
+        <div className="flex flex-col gap-[11px]">
+          <CartaoLink href={`/aluno/${alunoId}/pedido`} nome="Pedir Aula" />
+          <CartaoLink href={`/aluno/${alunoId}/horario`} nome="Horário e Aulas" />
+          <CartaoLink href="/aluno/calendario" nome="Calendário Escolar" />
+          <CartaoLink href={`/aluno/${alunoId}/materiais`} nome="Materiais das Aulas" />
+          <CartaoLink
             href="/aluno/notificacoes"
             nome="Notificações"
-            wide
-            index={5}
-            badge={notificacoesPorLer ?? 0}
+            contagem={notificacoesPorLer ?? 0}
           />
         </div>
       </div>
-    </main>
+    </FundoPapel>
   )
 }

@@ -1,12 +1,16 @@
 import Link from 'next/link'
-import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/actions/auth'
 import { criarAlunoDependente } from '@/lib/actions/aluno'
-import { OptionCard } from '@/components/option-card'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { SubmitButton } from '@/components/submit-button'
+import { CartaoLink } from '@/components/cartao-link'
+import { Cartao } from '@/components/cartao'
+import { FundoPapel } from '@/components/fundo-papel'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
+import { CampoTexto } from '@/components/campo-formulario'
+import { MensagemErro } from '@/components/mensagem'
 
 export default async function DashboardPage({
   searchParams,
@@ -72,146 +76,94 @@ export default async function DashboardPage({
   }
 
   return (
-    <main className="flex-1 flex justify-center p-6">
-      <div className="w-full max-w-2xl space-y-6">
-        <div
-          className="entrada-esquerda text-left"
-          style={{ '--card-index': 0 } as CSSProperties}
-        >
-          <h1 className="text-2xl">
-            <span className="saudacao">Bem-vindo,</span>{' '}
-            <span className="font-semibold text-foreground">{profile?.nome}</span>
+    <FundoPapel largura="larga">
+      <div className="space-y-[26px]">
+        <div>
+          <h1
+            className="text-[22px] font-semibold leading-[1.2]"
+            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+          >
+            Bem-vindo, {profile?.nome}
           </h1>
-          <p className="text-sm text-foreground/60">
+          <p className="mt-[4px] text-[12.5px]" style={{ color: 'var(--color-tinta-suave)' }}>
             Estás autenticado como <strong>{profile?.tipo}</strong>
             {profile?.programa &&
               ` — Escola de ${profile.programa === 'musica' ? 'Música' : 'Dança'}`}
             .
           </p>
           {profile?.admin && (
-            <Link href="/admin" className="text-sm underline">
+            <Link
+              href="/admin"
+              className="mt-[8px] inline-block text-[14px] font-medium underline [text-underline-offset:3px]"
+              style={{ color: 'var(--color-tinta-suave)' }}
+            >
               Visão geral (diretor)
             </Link>
           )}
         </div>
 
-        <div className="entrada-esquerda" style={{ '--card-index': 1 } as CSSProperties}>
-          <InstalarCallout />
-        </div>
+        <InstalarCallout />
 
         {profile?.tipo === 'aluno' && (
           <>
-            {erro && (
-              <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">{erro}</p>
-            )}
-            <div className="hub-stack">
-              <OptionCard href="/dashboard/conta" nome="Conta" wide index={1} />
-              {meusAlunos.map((a, idx) => (
-                <OptionCard
-                  key={a.id}
-                  href={`/aluno/${a.id}`}
-                  nome={a.nome}
-                  wide
-                  index={idx + 2}
-                />
+            {erro && <MensagemErro>{erro}</MensagemErro>}
+
+            <div className="flex flex-col gap-[11px]">
+              <CartaoLink href="/dashboard/conta" nome="Conta" />
+              {meusAlunos.map((a) => (
+                <CartaoLink key={a.id} href={`/aluno/${a.id}`} nome={a.nome} />
               ))}
             </div>
-            <form
-              action={criarAlunoDependente}
-              className="flex flex-wrap items-end gap-2 rounded border border-foreground/15 p-3"
-            >
-              <div className="space-y-1">
-                <label htmlFor="nome" className="block text-xs font-medium text-foreground/60">
-                  Nome do aluno
-                </label>
-                <input
-                  id="nome"
-                  name="nome"
-                  required
-                  className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
-                />
-              </div>
-              <div className="space-y-1">
-                <label
-                  htmlFor="dataNascimento"
-                  className="block text-xs font-medium text-foreground/60"
+
+            <Cartao>
+              <form action={criarAlunoDependente} className="space-y-[14px]">
+                <p
+                  className="text-[9.5px] font-medium uppercase tracking-[0.16em]"
+                  style={{ color: 'var(--color-tinta-suave)' }}
                 >
-                  Data de nascimento
-                </label>
-                <input
+                  Adicionar aluno
+                </p>
+
+                <CampoTexto id="nome" name="nome" label="Nome do aluno" />
+                <CampoTexto
                   id="dataNascimento"
                   name="dataNascimento"
+                  label="Data de nascimento"
                   type="date"
-                  className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  required={false}
                 />
-              </div>
-              <SubmitButton
-                textoAGuardar="A adicionar..."
-                className="rounded border border-foreground/20 px-3 py-2 text-sm"
-              >
-                Adicionar Aluno
-              </SubmitButton>
-            </form>
+
+                <SubmitButton
+                  textoAGuardar="A adicionar..."
+                  className="flex h-[52px] w-full items-center justify-center gap-[8px] rounded-[13px] border-[1.5px] border-[var(--color-azul-fundo)] text-[15.5px] font-semibold text-[var(--color-azul-fundo)] disabled:opacity-50"
+                >
+                  Adicionar Aluno
+                </SubmitButton>
+              </form>
+            </Cartao>
           </>
         )}
 
         {profile?.tipo === 'professor' && (
-          <div className="hub-stack">
-            <OptionCard
-              href="/dashboard/conta"
-              nome="Conta"
-              wide
-              index={1}
-            />
-            <OptionCard
+          <div className="flex flex-col gap-[11px]">
+            <CartaoLink href="/dashboard/conta" nome="Conta" />
+            <CartaoLink
               href="/dashboard/pedidos"
               nome="Pedidos de Aula"
-              wide
-              index={2}
-              badge={pedidosPendentes}
+              contagem={pedidosPendentes}
             />
-            <OptionCard
-              href="/dashboard/presencas"
-              nome="Presenças"
-              wide
-              index={3}
-            />
-            <OptionCard
-              href="/dashboard/horarios"
-              nome="Gestão de Horários"
-              wide
-              index={4}
-            />
-            <OptionCard
-              href="/dashboard/agenda"
-              nome="Horários e Alunos"
-              wide
-              index={5}
-            />
-            <OptionCard
-              href="/dashboard/mensalidades"
-              nome="Mensalidades"
-              wide
-              index={6}
-            />
-            <OptionCard
-              href="/dashboard/calendario"
-              nome="Calendário Escolar"
-              wide
-              index={7}
-            />
+            <CartaoLink href="/dashboard/presencas" nome="Presenças" />
+            <CartaoLink href="/dashboard/horarios" nome="Gestão de Horários" />
+            <CartaoLink href="/dashboard/agenda" nome="Horários e Alunos" />
+            <CartaoLink href="/dashboard/mensalidades" nome="Mensalidades" />
+            <CartaoLink href="/dashboard/calendario" nome="Calendário Escolar" />
           </div>
         )}
 
-        <form action={logout}>
-          <button
-            type="submit"
-            className="rounded border border-foreground/20 px-4 py-2"
-          >
-            Sair
-          </button>
+        <form action={logout} className="flex justify-center pt-[12px]">
+          <LigacaoTerciaria>Sair</LigacaoTerciaria>
         </form>
       </div>
-    </main>
+    </FundoPapel>
   )
 }
