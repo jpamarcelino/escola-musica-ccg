@@ -1,23 +1,8 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { Fraunces, Inter } from 'next/font/google'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-
-// Fontes do DESIGN_SYSTEM.md (secção 3). Carregadas aqui e não no layout
-// porque só esta página está desenhada — as outras continuam com a Geist
-// até serem migradas.
-const fraunces = Fraunces({
-  variable: '--font-fraunces',
-  subsets: ['latin'],
-  display: 'swap',
-})
-
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
-  display: 'swap',
-})
+import { CartaoEscola } from '@/components/cartao-escola'
+import { BotaoPrimario } from '@/components/botao-primario'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 
 // Grão de papel (secção 7): é o que impede o aspeto de vetor liso. Uma só
 // camada, por cima do fundo e por baixo do conteúdo.
@@ -72,7 +57,7 @@ export default async function Home() {
 
   return (
     <main
-      className={`${fraunces.variable} ${inter.variable} relative flex flex-1 flex-col overflow-hidden`}
+      className="relative flex flex-1 flex-col overflow-hidden"
       style={{
         backgroundColor: 'var(--color-papel)',
         color: 'var(--color-tinta)',
@@ -122,100 +107,22 @@ export default async function Home() {
 
         <div className="mt-[26px] flex flex-col gap-[11px]">
           {ESCOLAS.map((escola) => (
-            <Link
+            <CartaoEscola
               key={escola.programa}
               href={`/pedir-aula?programa=${escola.programa}`}
-              className="group relative flex items-center gap-[14px] overflow-hidden rounded-[18px] border border-[var(--color-linha)] bg-white py-[15px] pl-[22px] pr-[16px] transition duration-150 hover:-translate-y-px hover:border-[var(--color-azul-logo)]"
-            >
-              {/* Barra de 3px que identifica a escola (secção 6). */}
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-0 left-0 w-[3px]"
-                style={{ backgroundColor: escola.cor }}
-              />
-
-              <span
-                aria-hidden="true"
-                className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[12px]"
-                style={{ backgroundColor: 'var(--color-papel-2)' }}
-              >
-                <Image
-                  src={escola.icone}
-                  alt=""
-                  width={escola.iconeTamanho}
-                  height={escola.iconeTamanho}
-                  className="object-contain"
-                  style={{ width: escola.iconeTamanho, height: escola.iconeTamanho }}
-                />
-              </span>
-
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-[6px]">
-                  <span
-                    className="whitespace-nowrap text-[16.5px] font-semibold leading-[1.2]"
-                    style={{
-                      fontFamily: 'var(--font-fraunces)',
-                      color: 'var(--color-azul-fundo)',
-                    }}
-                  >
-                    {escola.nome}
-                  </span>
-                  {escola.novidade && (
-                    <span
-                      className="shrink-0 rounded-[5px] border px-[5px] pb-[2px] pt-[2.5px] text-[8px] font-semibold uppercase tracking-[0.1em]"
-                      style={{
-                        color: '#6C4A1E',
-                        backgroundColor: '#F2E3CD',
-                        borderColor: '#E2CDAE',
-                      }}
-                    >
-                      Novidade
-                    </span>
-                  )}
-                </span>
-                <span
-                  className="mt-[2px] block text-[12.5px] leading-[1.35]"
-                  style={{ color: 'var(--color-tinta-suave)' }}
-                >
-                  {escola.descricao}
-                </span>
-              </span>
-
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-[20px] w-[20px] shrink-0"
-                style={{ color: 'var(--color-azul)' }}
-              >
-                <path d="m9 6 6 6-6 6" />
-              </svg>
-            </Link>
+              nome={escola.nome}
+              descricao={escola.descricao}
+              icone={escola.icone}
+              iconeTamanho={escola.iconeTamanho}
+              cor={escola.cor}
+              novidade={escola.novidade}
+            />
           ))}
         </div>
 
         <div className="mt-[26px] flex flex-col items-center gap-[14px]">
-          <Link
-            href="/registo"
-            className="flex h-[52px] w-full items-center justify-center rounded-[13px] text-[15.5px] font-semibold text-white"
-            style={{
-              backgroundColor: 'var(--color-azul-fundo)',
-              boxShadow: '0 7px 18px rgba(27,79,122,.26)',
-            }}
-          >
-            Criar conta
-          </Link>
-          <Link
-            href="/login"
-            className="text-[14px] font-medium underline [text-underline-offset:3px]"
-            style={{ color: 'var(--color-tinta-suave)' }}
-          >
-            Já tens conta? Entrar
-          </Link>
+          <BotaoPrimario href="/registo">Criar conta</BotaoPrimario>
+          <LigacaoTerciaria href="/login">Já tens conta? Entrar</LigacaoTerciaria>
         </div>
 
         {/* "mt-auto" encosta o rodapé ao fundo quando a página é mais curta
