@@ -1,12 +1,13 @@
 import { Suspense } from 'react'
+import { FundoPapel } from '@/components/fundo-papel'
 import LoginForm from './form'
 
 export default function LoginPage() {
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
+    <FundoPapel>
       <Suspense>
         <LoginForm />
       </Suspense>
-    </main>
+    </FundoPapel>
   )
 }

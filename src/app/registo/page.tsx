@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
+import { FundoPapel } from '@/components/fundo-papel'
 import RegistoForm from './form'
 
 type ConviteInfo = {
@@ -24,10 +25,10 @@ export default async function RegistoPage({
   }
 
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
+    <FundoPapel>
       <Suspense>
         <RegistoForm conviteCodigo={convite ?? null} conviteInfo={conviteInfo} />
       </Suspense>
-    </main>
+    </FundoPapel>
   )
 }

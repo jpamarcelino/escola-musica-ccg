@@ -2,10 +2,14 @@
 
 import { useActionState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import { login } from '@/lib/actions/auth'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { PasswordInput } from '@/components/password-input'
+import { Cartao } from '@/components/cartao'
+import { BotaoPrimario } from '@/components/botao-primario'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
+import { Campo, CampoTexto, classesCampo } from '@/components/campo-formulario'
+import { MensagemErro } from '@/components/mensagem'
 
 export default function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined)
@@ -13,63 +17,45 @@ export default function LoginForm() {
   const erroLink = searchParams.get('erro')
 
   return (
-    <div className="w-full max-w-sm space-y-4">
-      <form
-        action={action}
-        className="space-y-4 border border-foreground/15 rounded-lg p-6"
-      >
-        <h1 className="text-xl font-semibold">Entrar</h1>
+    <div className="space-y-[14px]">
+      <Cartao>
+        <form action={action} className="space-y-[14px]">
+          <h1
+            className="text-[22px] font-semibold leading-[1.2]"
+            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+          >
+            Entrar
+          </h1>
 
-        {erroLink && <p className="text-sm text-red-600">{erroLink}</p>}
+          {erroLink && <MensagemErro>{erroLink}</MensagemErro>}
 
-        <div className="space-y-1">
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
-          />
-        </div>
+          <CampoTexto id="email" name="email" label="Email" type="email" />
 
-        <div className="space-y-1">
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password
-          </label>
-          <PasswordInput
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
-          />
-        </div>
+          <Campo id="password" label="Password">
+            <PasswordInput
+              id="password"
+              name="password"
+              autoComplete="current-password"
+              className={classesCampo}
+            />
+          </Campo>
 
-        {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+          {state?.error && <MensagemErro>{state.error}</MensagemErro>}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-        >
-          {pending ? 'A entrar...' : 'Entrar'}
-        </button>
+          <BotaoPrimario disabled={pending}>
+            {pending ? 'A entrar...' : 'Entrar'}
+          </BotaoPrimario>
 
-        <p className="text-sm text-center">
-          <Link href="/esqueci-password" className="underline">
-            Esqueceste-te da password?
-          </Link>
-        </p>
-
-        <p className="text-sm text-center">
-          Ainda não tens conta?{' '}
-          <Link href="/registo" className="underline">
-            Criar conta
-          </Link>
-        </p>
-      </form>
+          <div className="flex flex-col items-center gap-[8px] pt-[4px]">
+            <LigacaoTerciaria href="/esqueci-password">
+              Esqueceste-te da password?
+            </LigacaoTerciaria>
+            <LigacaoTerciaria href="/registo">
+              Ainda não tens conta? Criar conta
+            </LigacaoTerciaria>
+          </div>
+        </form>
+      </Cartao>
 
       <InstalarCallout />
     </div>

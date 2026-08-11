@@ -1,9 +1,13 @@
 'use client'
 
 import { useActionState } from 'react'
-import Link from 'next/link'
 import { signup } from '@/lib/actions/auth'
 import { PasswordInput } from '@/components/password-input'
+import { Cartao } from '@/components/cartao'
+import { BotaoPrimario } from '@/components/botao-primario'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
+import { Campo, CampoTexto, classesCampo } from '@/components/campo-formulario'
+import { MensagemErro, MensagemInfo, MensagemNota } from '@/components/mensagem'
 
 type ConviteInfo = {
   tipo: string
@@ -32,124 +36,85 @@ export default function RegistoForm({
   const conviteInvalido = conviteCodigo && (!conviteInfo || !conviteInfo.valido)
 
   return (
-    <form
-      action={action}
-      className="w-full max-w-sm space-y-4 border border-foreground/15 rounded-lg p-6"
-    >
-      <h1 className="text-xl font-semibold">Criar Conta CCG</h1>
+    <Cartao>
+      <form action={action} className="space-y-[14px]">
+        <h1
+          className="text-[22px] font-semibold leading-[1.2]"
+          style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+        >
+          Criar Conta CCG
+        </h1>
 
-      {conviteCodigo && (
-        <input type="hidden" name="conviteCodigo" value={conviteCodigo} />
-      )}
+        {conviteCodigo && (
+          <input type="hidden" name="conviteCodigo" value={conviteCodigo} />
+        )}
 
-      {conviteInvalido && (
-        <p className="text-sm text-red-600">
-          Este link de convite é inválido ou já foi utilizado. Podes na mesma criar uma conta
-          normal abaixo.
-        </p>
-      )}
+        {conviteInvalido && (
+          <MensagemErro>
+            Este link de convite é inválido ou já foi utilizado. Podes na mesma criar uma conta
+            normal abaixo.
+          </MensagemErro>
+        )}
 
-      {conviteInfo?.valido && conviteInfo.tipo === 'professor' && (
-        <p className="text-sm rounded bg-foreground/5 p-2">
-          Este link cria uma conta de <strong>professor</strong>
-          {conviteInfo.programa && ` — Escola de ${PROGRAMA_LABEL[conviteInfo.programa]}`}.
-        </p>
-      )}
-      {conviteInfo?.valido && conviteInfo.tipo === 'admin' && (
-        <p className="text-sm rounded bg-foreground/5 p-2">
-          Este link cria uma conta de <strong>administrador</strong>.
-        </p>
-      )}
-      {conviteInfo?.valido && conviteInfo.tipo === 'migracao_aluno' && (
-        <p className="text-sm rounded bg-foreground/5 p-2">
-          Ao criares a tua conta, o perfil de aluno de{' '}
-          <strong>{conviteInfo.aluno_nome}</strong> passa a ficar ligado a ela.
-        </p>
-      )}
+        {conviteInfo?.valido && conviteInfo.tipo === 'professor' && (
+          <MensagemNota>
+            Este link cria uma conta de <strong>professor</strong>
+            {conviteInfo.programa && ` — Escola de ${PROGRAMA_LABEL[conviteInfo.programa]}`}.
+          </MensagemNota>
+        )}
+        {conviteInfo?.valido && conviteInfo.tipo === 'admin' && (
+          <MensagemNota>
+            Este link cria uma conta de <strong>administrador</strong>.
+          </MensagemNota>
+        )}
+        {conviteInfo?.valido && conviteInfo.tipo === 'migracao_aluno' && (
+          <MensagemNota>
+            Ao criares a tua conta, o perfil de aluno de{' '}
+            <strong>{conviteInfo.aluno_nome}</strong> passa a ficar ligado a ela.
+          </MensagemNota>
+        )}
 
-      <div className="space-y-1">
-        <label htmlFor="nome" className="block text-sm font-medium">
-          Nome
-        </label>
-        <input
-          id="nome"
-          name="nome"
-          required
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
-        />
-      </div>
+        <CampoTexto id="nome" name="nome" label="Nome" />
 
-      <div className="space-y-1">
-        <label htmlFor="telefone" className="block text-sm font-medium">
-          Número de telemóvel
-        </label>
-        <input
+        <CampoTexto
           id="telefone"
           name="telefone"
+          label="Número de telemóvel"
           type="tel"
           autoComplete="tel"
-          required
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
         />
-      </div>
 
-      <div className="space-y-1">
-        <label htmlFor="dataNascimento" className="block text-sm font-medium">
-          Data de nascimento
-        </label>
-        <input
+        <CampoTexto
           id="dataNascimento"
           name="dataNascimento"
+          label="Data de nascimento"
           type="date"
-          required
           max={hoje}
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
         />
-      </div>
 
-      <div className="space-y-1">
-        <label htmlFor="email" className="block text-sm font-medium">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
-        />
-      </div>
+        <CampoTexto id="email" name="email" label="Email" type="email" />
 
-      <div className="space-y-1">
-        <label htmlFor="password" className="block text-sm font-medium">
-          Password
-        </label>
-        <PasswordInput
-          id="password"
-          name="password"
-          minLength={6}
-          autoComplete="new-password"
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
-        />
-      </div>
+        <Campo id="password" label="Password">
+          <PasswordInput
+            id="password"
+            name="password"
+            minLength={6}
+            autoComplete="new-password"
+            className={classesCampo}
+          />
+        </Campo>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.info && <p className="text-sm text-green-600">{state.info}</p>}
+        {state?.error && <MensagemErro>{state.error}</MensagemErro>}
+        {state?.info && <MensagemInfo>{state.info}</MensagemInfo>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-      >
-        {pending ? 'A criar conta...' : 'Criar conta'}
-      </button>
+        <BotaoPrimario disabled={pending}>
+          {pending ? 'A criar conta...' : 'Criar conta'}
+        </BotaoPrimario>
 
-      <p className="text-sm text-center">
-        Já tens conta?{' '}
-        <Link href="/login" className="underline">
-          Entrar
-        </Link>
-      </p>
-    </form>
+        <div className="flex flex-col items-center pt-[4px]">
+          <LigacaoTerciaria href="/login">Já tens conta? Entrar</LigacaoTerciaria>
+        </div>
+      </form>
+    </Cartao>
   )
 }
