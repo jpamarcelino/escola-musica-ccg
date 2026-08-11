@@ -24,11 +24,16 @@ export async function escolherDisponibilidades(formData: FormData) {
   // Presente só quando o pedido vem do wizard público (/pedir-aula) — nesse
   // caso os erros voltam para lá, não para /aluno/[alunoId]/pedido.
   const origem = String(formData.get('origem') ?? '')
+  const programa = String(formData.get('programa') ?? '')
+  const idade = String(formData.get('idade') ?? '')
 
   function voltarComErro(mensagemErro: string): never {
+    // O wizard público precisa de "programa" e "idade" no caminho de volta:
+    // sem eles a página não sabe que escola é, e devolvia a pessoa ao
+    // pop-up da idade — perdendo tudo o que já tinha escolhido.
     const base =
       origem === 'wizard-publico'
-        ? `/pedir-aula?instrumento=${instrumentoId}&professor=${professorId}`
+        ? `/pedir-aula?programa=${programa}&idade=${idade}&instrumento=${instrumentoId}&professor=${professorId}`
         : `/aluno/${alunoId}/pedido?instrumento=${instrumentoId}&professor=${professorId}`
     redirect(`${base}&erro=${encodeURIComponent(mensagemErro)}`)
   }

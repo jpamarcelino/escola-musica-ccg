@@ -44,30 +44,11 @@ export function InstalarCallout() {
   if (!mostrar) return null
 
   return (
-    <div className="relative">
-      {/* Seta gestual a apontar para o convite. Substitui o PNG vermelho:
-          continua feita à mão, como a pincelada da marca, mas em traço de
-          linha e na cor de acento da paleta. */}
-      <svg
-        className="seta-instalar"
-        viewBox="0 0 60 60"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M10 6c20 3 32 15 34 38" />
-        <path d="M35 36l9 10 8-9" />
-      </svg>
-
-      <CartaoLink
-        href="/instalar"
-        nome="Instala a app no telemóvel"
-        descricao="Acesso mais rápido, como uma app normal — vê como"
-        icone={<IconeTelemovel />}
-      />
-    </div>
+    <CartaoLink
+      href="/instalar"
+      nome="Instala a app no telemóvel"
+      descricao="Acesso mais rápido, como uma app normal — vê como"
+      icone={<IconeTelemovel />}
+    />
   )
 }

@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { OptionCard } from '@/components/option-card'
@@ -59,25 +60,22 @@ export default async function PedirAulaPage({
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Passo 1: idade do futuro aluno (só filtra os cartões seguintes) — vem
-  // antes de escolher a escola, para logo se saber o que mostrar a azul.
+  // A escola escolhe-se na página inicial, que é por onde se entra aqui.
+  // Sem ela não há wizard: em vez de mostrar um passo de escolha à parte
+  // (que era o ecrã antigo, e para onde os "voltar" acabavam a cair),
+  // devolve-se a pessoa à inicial.
+  if (programa !== 'musica' && programa !== 'danca' && programa !== 'bebes') {
+    redirect('/')
+  }
+
+  // Passo 1: idade do futuro aluno, já com a escola escolhida — só filtra
+  // os cartões seguintes. Só aparece à entrada: o SeletorIdade substitui a
+  // entrada no histórico em vez de acrescentar uma, para que voltar atrás
+  // leve à página inicial e não outra vez ao pop-up.
   if (idadeNum === null) {
     return (
       <Wizard voltar="/">
         <SeletorIdade />
-      </Wizard>
-    )
-  }
-
-  // Passo 2: escolher escola
-  if (programa !== 'musica' && programa !== 'danca' && programa !== 'bebes') {
-    return (
-      <Wizard voltar="/pedir-aula">
-        <div className="option-stack">
-          <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=musica`} nome={'Escola\nde\nMúsica'} wide index={0} />
-          <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=danca`} nome={'Escola\nde\nDança'} wide index={1} />
-          <OptionCard href={`/pedir-aula?idade=${idadeNum}&programa=bebes`} nome={'Música\npara\nBebés'} wide index={2} />
-        </div>
       </Wizard>
     )
   }
@@ -129,7 +127,7 @@ export default async function PedirAulaPage({
               ? 'Escolha a turma indicada'
               : 'Que modalidade queres aprender?'
         }
-        voltar={`/pedir-aula?idade=${idadeNum}`}
+        voltar="/"
       >
         <div className="option-grid">
           {ordenados.map((i, idx) =>
@@ -261,6 +259,8 @@ export default async function PedirAulaPage({
         semHorarios={semHorarios}
         instrumentoId={instrumento}
         professorId={professor}
+        programa={programa}
+        idade={idadeNum}
         autenticado={!!user}
         erroInicial={erro}
       />

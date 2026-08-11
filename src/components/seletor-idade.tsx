@@ -17,7 +17,11 @@ export function SeletorIdade() {
   function confirmar() {
     const params = new URLSearchParams(searchParams.toString())
     params.set('idade', String(idade))
-    router.push(`${pathname}?${params.toString()}`)
+    // "replace" e não "push": o pop-up é um passo de entrada, não um sítio
+    // a que se volta. Substituindo a entrada no histórico, voltar atrás a
+    // partir das disciplinas leva à página inicial em vez de o mostrar
+    // outra vez — que era o que prendia a pessoa no wizard.
+    router.replace(`${pathname}?${params.toString()}`)
   }
 
   return (

@@ -28,6 +28,8 @@ export function FormularioPedido({
   semHorarios,
   instrumentoId,
   professorId,
+  programa,
+  idade,
   autenticado,
   erroInicial,
 }: {
@@ -39,6 +41,11 @@ export function FormularioPedido({
   semHorarios: boolean
   instrumentoId: string
   professorId: string
+  // Viajam com o pedido só para o erro poder devolver a pessoa a este
+  // mesmo passo. Sem eles, o redirect de erro caía num /pedir-aula sem
+  // escola nem idade — ou seja, no pop-up da idade, do início.
+  programa: string
+  idade: number
   autenticado: boolean
   erroInicial?: string
 }) {
@@ -178,6 +185,8 @@ export function FormularioPedido({
             enviarPedido — o alunoId real é preenchido só depois do popup. */}
         <input type="hidden" name="instrumentoId" value={instrumentoId} />
         <input type="hidden" name="professorId" value={professorId} />
+        <input type="hidden" name="programa" value={programa} />
+        <input type="hidden" name="idade" value={idade} />
       </form>
 
       {popup === 'conta' && (

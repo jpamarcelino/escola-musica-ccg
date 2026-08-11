@@ -1,30 +1,54 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { BackButton } from '@/components/back-button'
+import { FundoPapel } from '@/components/fundo-papel'
+import { Cartao } from '@/components/cartao'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 
 type SistemaId = 'ios' | 'android'
 
+// Ícones de linha, "stroke-width" 1.5 e extremidades arredondadas
+// (DESIGN_SYSTEM.md, secção 6).
 const ICONE_PARTILHA = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 3v12" strokeLinecap="round" />
-    <path d="M8 7l4-4 4 4" strokeLinecap="round" strokeLinejoin="round" />
+  <svg
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.5}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 3v12" />
+    <path d="M8 7l4-4 4 4" />
     <rect x="5" y="11" width="14" height="10" rx="2" />
   </svg>
 )
 
+// Exceção deliberada à regra dos ícones de linha: são os três pontos do
+// menu do Chrome tal como aparecem no telemóvel. Desenhados a traço
+// deixariam de se reconhecer.
 const ICONE_MENU = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-    <circle cx="12" cy="5" r="1.8" />
-    <circle cx="12" cy="12" r="1.8" />
-    <circle cx="12" cy="19" r="1.8" />
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <circle cx="12" cy="5" r="1.6" />
+    <circle cx="12" cy="12" r="1.6" />
+    <circle cx="12" cy="19" r="1.6" />
   </svg>
 )
 
 const ICONE_MAIS = (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+  <svg
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.5}
+    strokeLinecap="round"
+  >
+    <path d="M12 5v14M5 12h14" />
   </svg>
 )
 
@@ -46,63 +70,96 @@ const PASSOS: Record<SistemaId, { icone: React.ReactNode; texto: string }[]> = {
 export default function InstalarPage() {
   const [sistema, setSistema] = useState<SistemaId>('ios')
 
+  // Alvos de toque com pelo menos 44px (secção 9).
+  function classesSeparador(ativo: boolean) {
+    return `h-[44px] flex-1 rounded-[13px] border text-[14px] font-medium transition-colors ${
+      ativo
+        ? 'border-[var(--color-azul-fundo)] bg-[var(--color-azul-fundo)] text-white'
+        : 'border-[var(--color-linha)] bg-white text-[var(--color-tinta-suave)]'
+    }`
+  }
+
   return (
-    <main className="flex-1 flex justify-center p-6">
-      <div className="w-full max-w-sm space-y-6">
+    <FundoPapel>
+      <div className="space-y-[22px]">
         <div className="flex items-center gap-3">
           <BackButton href="/login" />
-          <h1 className="text-2xl font-semibold text-foreground">Instalar a app</h1>
+          <h1
+            className="text-[22px] font-semibold leading-[1.2]"
+            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+          >
+            Instalar a app
+          </h1>
         </div>
 
-        <p className="text-sm text-foreground/60">
+        <p
+          className="text-[15px] leading-[1.6]"
+          style={{ color: 'var(--color-tinta-suave)' }}
+        >
           Podes adicionar esta página ao ecrã principal do teu telemóvel, para
           abrir como se fosse uma app instalada — sem precisares da loja de
           aplicações. Os passos são diferentes consoante o telemóvel.
         </p>
 
-        <div className="presencas-tabs">
+        <div className="flex gap-[8px]">
           <button
             type="button"
             onClick={() => setSistema('ios')}
-            className={`presencas-tab${sistema === 'ios' ? ' ativo' : ''}`}
+            aria-pressed={sistema === 'ios'}
+            className={classesSeparador(sistema === 'ios')}
           >
             iPhone / iPad
           </button>
           <button
             type="button"
             onClick={() => setSistema('android')}
-            className={`presencas-tab${sistema === 'android' ? ' ativo' : ''}`}
+            aria-pressed={sistema === 'android'}
+            className={classesSeparador(sistema === 'android')}
           >
             Android
           </button>
         </div>
 
-        <ol className="space-y-3">
-          {PASSOS[sistema].map((passo, idx) => (
-            <li key={idx} className="lista-item flex items-center gap-3">
-              <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
-                {idx + 1}
-              </span>
-              <span className="flex-1 text-sm text-foreground">{passo.texto}</span>
-              {passo.icone && (
-                <span className="flex-none text-brand" aria-hidden="true">
-                  {passo.icone}
+        <Cartao>
+          <ol className="space-y-[14px]">
+            {PASSOS[sistema].map((passo, idx) => (
+              <li key={idx} className="flex items-center gap-[12px]">
+                <span
+                  className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full text-[12.5px] font-semibold text-white"
+                  style={{ backgroundColor: 'var(--color-azul-fundo)' }}
+                >
+                  {idx + 1}
                 </span>
-              )}
-            </li>
-          ))}
-        </ol>
+                <span
+                  className="flex-1 text-[13px] leading-[1.5]"
+                  style={{ color: 'var(--color-tinta)' }}
+                >
+                  {passo.texto}
+                </span>
+                {passo.icone && (
+                  <span
+                    className="flex-none"
+                    style={{ color: 'var(--color-azul-fundo)' }}
+                    aria-hidden="true"
+                  >
+                    {passo.icone}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </Cartao>
 
-        <p className="text-xs text-foreground/50">
+        <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
           Não encontras estas opções? Confirma que estás a usar o Safari (no
           iPhone) ou o Chrome (no Android) — outros navegadores nem sempre
           têm esta funcionalidade.
         </p>
 
-        <Link href="/login" className="text-sm underline">
-          Voltar ao login
-        </Link>
+        <div className="flex justify-center">
+          <LigacaoTerciaria href="/login">Voltar ao login</LigacaoTerciaria>
+        </div>
       </div>
-    </main>
+    </FundoPapel>
   )
 }
