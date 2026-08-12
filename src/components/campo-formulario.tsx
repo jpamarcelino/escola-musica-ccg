@@ -41,6 +41,44 @@ export function Campo({
   )
 }
 
+// Igual ao CampoTexto, mas de altura livre — a altura fixa de 52px só faz
+// sentido em campos de uma linha.
+export function CampoTextarea({
+  id,
+  name,
+  label,
+  ajuda,
+  rows = 3,
+  maxLength,
+  placeholder,
+}: {
+  id: string
+  name: string
+  label: string
+  ajuda?: string
+  rows?: number
+  maxLength?: number
+  placeholder?: string
+}) {
+  return (
+    <Campo id={id} label={label}>
+      <textarea
+        id={id}
+        name={name}
+        rows={rows}
+        maxLength={maxLength}
+        placeholder={placeholder}
+        className={`${classesCampo} h-auto py-[12px] leading-[1.5]`}
+      />
+      {ajuda && (
+        <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
+          {ajuda}
+        </p>
+      )}
+    </Campo>
+  )
+}
+
 export function CampoTexto({
   id,
   name,

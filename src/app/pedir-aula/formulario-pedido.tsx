@@ -2,6 +2,9 @@
 
 import { useRef, useState, useTransition, type CSSProperties } from 'react'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
+import { BotaoPrimario } from '@/components/botao-primario'
+import { CampoTextarea } from '@/components/campo-formulario'
+import { MensagemErro } from '@/components/mensagem'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 import { ModalContaPedido, ModalEscolherAluno } from '@/components/modal-conta-pedido'
 
@@ -84,13 +87,13 @@ export function FormularioPedido({
     <>
       <form ref={formRef} onSubmit={aoSubmeter} className="space-y-4">
         {semHorarios ? (
-          <p className="text-sm text-foreground/60">
+          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
             Este professor ainda não tem horários disponíveis. Podes deixar-lhe
             uma mensagem em baixo.
           </p>
         ) : (
           <>
-            <p className="text-xs text-foreground/50">
+            <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
               Podes escolher várias opções — o professor decide depois qual
               fica confirmada.
             </p>
@@ -155,32 +158,20 @@ export function FormularioPedido({
           </>
         )}
 
-        <div className="space-y-1">
-          <label htmlFor="mensagem" className="block text-sm font-medium">
-            Nenhum horário dá jeito?
-          </label>
-          <textarea
-            id="mensagem"
-            name="mensagem"
-            rows={3}
-            maxLength={500}
-            placeholder="Ex: só posso às quintas-feiras a partir das 16h — achas que dá para arranjar?"
-            className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
-          />
-          <p className="text-xs text-foreground/50">
-            Deixa uma mensagem ao professor em vez de escolher um horário. Ele
-            decide se quer entrar em contacto fora da app.
-          </p>
-        </div>
+        <CampoTextarea
+          id="mensagem"
+          name="mensagem"
+          label="Nenhum horário dá jeito?"
+          rows={3}
+          maxLength={500}
+          placeholder="Ex: só posso às quintas-feiras a partir das 16h — achas que dá para arranjar?"
+          ajuda="Deixa uma mensagem ao professor em vez de escolher um horário. Ele decide se quer entrar em contacto fora da app."
+        />
 
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
-        <button
-          type="submit"
-          disabled={aEnviar}
-          className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-        >
+        {erro && <MensagemErro>{erro}</MensagemErro>}
+        <BotaoPrimario disabled={aEnviar}>
           {aEnviar ? 'A enviar...' : 'Enviar pedido'}
-        </button>
+        </BotaoPrimario>
         {/* Campos ocultos só para dar contexto ao FormData reconstruído em
             enviarPedido — o alunoId real é preenchido só depois do popup. */}
         <input type="hidden" name="instrumentoId" value={instrumentoId} />

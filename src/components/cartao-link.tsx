@@ -18,6 +18,8 @@ export function CartaoLink({
   cor,
   novidade = false,
   contagem,
+  bloqueado = false,
+  iconeCobre = false,
 }: {
   href: string
   nome: string
@@ -26,17 +28,24 @@ export function CartaoLink({
   // para instalar a app). A caixa de 46px é a mesma nos dois casos.
   icone?: string | React.ReactNode
   iconeTamanho?: number
+  // Retratos preenchem a caixa toda, recortados; ícones de disciplina
+  // ficam inteiros, com folga à volta.
+  iconeCobre?: boolean
   cor?: string
   novidade?: boolean
   // Distintivo numérico (pedidos por responder, notificações por ler).
   // Escondido a zero, para não haver um "0" a pedir atenção sem motivo.
   contagem?: number
+  // Visível mas fora de alcance — as disciplinas que não servem à idade do
+  // aluno. Deixa de ser um destino navegável: nem para o rato, nem para o
+  // teclado, nem para um leitor de ecrã.
+  bloqueado?: boolean
 }) {
-  return (
-    <Link
-      href={href}
-      className="group relative flex items-center gap-[14px] overflow-hidden rounded-[18px] border border-[var(--color-linha)] bg-white py-[15px] pl-[22px] pr-[16px] transition duration-150 hover:-translate-y-px hover:border-[var(--color-azul-logo)]"
-    >
+  const classesBase =
+    'group relative flex items-center gap-[14px] overflow-hidden rounded-[18px] border border-[var(--color-linha)] bg-white py-[15px] pl-[22px] pr-[16px]'
+
+  const conteudo = (
+    <>
       {/* Barra de 3px que identifica a escola (secção 6). */}
       {cor && (
         <span
@@ -49,7 +58,10 @@ export function CartaoLink({
       {icone && (
         <span
           aria-hidden="true"
-          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[12px]"
+          className={
+            'flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[12px]' +
+            (iconeCobre ? ' overflow-hidden' : '')
+          }
           style={{ backgroundColor: 'var(--color-papel-2)' }}
         >
           {typeof icone === 'string' ? (
@@ -58,8 +70,8 @@ export function CartaoLink({
               alt=""
               width={iconeTamanho}
               height={iconeTamanho}
-              className="object-contain"
-              style={{ width: iconeTamanho, height: iconeTamanho }}
+              className={iconeCobre ? 'h-full w-full object-cover' : 'object-contain'}
+              style={iconeCobre ? undefined : { width: iconeTamanho, height: iconeTamanho }}
             />
           ) : (
             icone
@@ -95,19 +107,39 @@ export function CartaoLink({
         )}
       </span>
 
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-[20px] w-[20px] shrink-0"
-        style={{ color: 'var(--color-azul)' }}
-      >
-        <path d="m9 6 6 6-6 6" />
-      </svg>
+      {/* Sem seta quando está bloqueado: não há para onde ir. */}
+      {!bloqueado && (
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-[20px] w-[20px] shrink-0"
+          style={{ color: 'var(--color-azul)' }}
+        >
+          <path d="m9 6 6 6-6 6" />
+        </svg>
+      )}
+    </>
+  )
+
+  if (bloqueado) {
+    return (
+      <div className={`${classesBase} opacity-45 grayscale`} aria-disabled="true">
+        {conteudo}
+      </div>
+    )
+  }
+
+  return (
+    <Link
+      href={href}
+      className={`${classesBase} transition duration-150 hover:-translate-y-px hover:border-[var(--color-azul-logo)]`}
+    >
+      {conteudo}
     </Link>
   )
 }

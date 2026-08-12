@@ -3,8 +3,11 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
-import { OptionCard } from '@/components/option-card'
-import { BackButton } from '@/components/back-button'
+import { CartaoLink } from '@/components/cartao-link'
+import { Wizard, ListaEscolhas } from '@/components/wizard'
+import { BotaoPrimario } from '@/components/botao-primario'
+import { CampoTextarea } from '@/components/campo-formulario'
+import { MensagemErro } from '@/components/mensagem'
 import { calcularIdade } from '@/lib/idade'
 import {
   MUSICA_IDADE_MIN,
@@ -19,27 +22,6 @@ import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 // Dias mostrados na grelha, da esquerda para a direita. Sem Domingo — a
 // escola não funciona nesse dia.
 const DIAS_GRADE = DIAS_SEMANA.slice(0, 6)
-
-// Afinação fina do tamanho de cada ícone de instrumento dentro do cartão
-// (percentagem de espaço à volta — menos padding = ícone maior). Sem
-// entrada aqui, usa o valor por omissão definido em globals.css.
-const ICONE_PADDING: Record<string, string | undefined> = {
-  Guitarra: '14%',
-  'Baixo Elétrico': '14%',
-  Bateria: '14%',
-  Concertina: '18%',
-  'Teoria Musical': '18%',
-}
-
-// Idem, para os ícones das modalidades de dança (chave = título sem a
-// faixa etária). Por omissão usam iconePadding="12%" (ver mais abaixo).
-const DANCA_ICONE_PADDING: Record<string, string> = {
-  'Ballet Clássico': '12%',
-  'Dança Moderna': '9%',
-  'Dança Contemporânea': '9%',
-  'Dança Moderna para Adultos': '5%',
-  'Estilos Urbanos': '5%',
-}
 
 export default async function PedidoPage({
   params,
@@ -82,10 +64,18 @@ export default async function PedidoPage({
   if (programa !== 'musica' && programa !== 'danca') {
     return (
       <Wizard voltar={`/aluno/${alunoId}`}>
-        <div className="option-stack">
-          <OptionCard href={`/aluno/${alunoId}/pedido?programa=musica`} nome={'Escola\nde\nMúsica'} wide index={0} />
-          <OptionCard href={`/aluno/${alunoId}/pedido?programa=danca`} nome={'Escola\nde\nDança'} wide index={1} />
-        </div>
+        <ListaEscolhas>
+          <CartaoLink
+            href={`/aluno/${alunoId}/pedido?programa=musica`}
+            nome="Escola de Música"
+            cor="var(--color-azul-logo)"
+          />
+          <CartaoLink
+            href={`/aluno/${alunoId}/pedido?programa=danca`}
+            nome="Escola de Dança"
+            cor="var(--color-dourado)"
+          />
+        </ListaEscolhas>
       </Wizard>
     )
   }
@@ -135,35 +125,19 @@ export default async function PedidoPage({
         }
         voltar={`/aluno/${alunoId}/pedido`}
       >
-        <div className="option-grid">
-          {ordenados.map((i, idx) =>
-            programa === 'danca' ? (
-              <OptionCard
-                key={i.id}
-                href={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${i.id}`}
-                nome={i.titulo}
-                subtitulo={i.idade}
-                imagemUrl={i.imagem_url}
-                icone
-                iconePadding={DANCA_ICONE_PADDING[i.titulo] ?? '12%'}
-                tituloNegrito
-                index={idx}
-                bloqueado={!i.elegivel}
-              />
-            ) : (
-              <OptionCard
-                key={i.id}
-                href={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${i.id}`}
-                nome={i.nome}
-                imagemUrl={i.imagem_url}
-                icone
-                iconePadding={ICONE_PADDING[i.nome]}
-                index={idx}
-                bloqueado={!i.elegivel}
-              />
-            )
-          )}
-        </div>
+        <ListaEscolhas>
+          {ordenados.map((i) => (
+            <CartaoLink
+              key={i.id}
+              href={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${i.id}`}
+              nome={programa === 'danca' ? i.titulo : i.nome}
+              descricao={i.idade ?? undefined}
+              icone={i.imagem_url ?? undefined}
+              iconeTamanho={34}
+              bloqueado={!i.elegivel}
+            />
+          ))}
+        </ListaEscolhas>
       </Wizard>
     )
   }
@@ -188,7 +162,7 @@ export default async function PedidoPage({
         title="Não disponível para esta idade"
         voltar={`/aluno/${alunoId}/pedido?programa=${programa}`}
       >
-        <p className="text-sm text-foreground/60">
+        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
           Esta disciplina não está disponível para a idade do aluno.
         </p>
       </Wizard>
@@ -209,7 +183,7 @@ export default async function PedidoPage({
         title="Já existe um pedido nesta disciplina"
         voltar={`/aluno/${alunoId}/pedido?programa=${programa}`}
       >
-        <p className="text-sm text-foreground/60">
+        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
           {matriculaExistente.estado === 'confirmado'
             ? 'Já existe uma aula confirmada nesta disciplina.'
             : 'Já existe um pedido pendente nesta disciplina.'}{' '}
@@ -243,20 +217,21 @@ export default async function PedidoPage({
         voltar={`/aluno/${alunoId}/pedido?programa=${programa}`}
       >
         {professores.length ? (
-          <div className="option-grid">
-            {professores.map((p, idx) => (
-              <OptionCard
+          <ListaEscolhas>
+            {professores.map((p) => (
+              <CartaoLink
                 key={p.professor_id}
                 href={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${instrumento}&professor=${p.professor_id}`}
                 nome={p.profiles?.nome ?? ''}
-                imagemUrl={p.profiles?.foto_url}
-                subtitulo={p.especialidade}
-                index={idx}
+                descricao={p.especialidade ?? undefined}
+                icone={p.profiles?.foto_url ?? undefined}
+                iconeTamanho={46}
+                iconeCobre
               />
             ))}
-          </div>
+          </ListaEscolhas>
         ) : (
-          <p className="text-sm text-foreground/60">
+          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
             Ainda não há professores para esta disciplina.
           </p>
         )}
@@ -324,13 +299,13 @@ export default async function PedidoPage({
         <input type="hidden" name="instrumentoId" value={instrumento} />
         <input type="hidden" name="professorId" value={professor} />
         {semHorarios ? (
-          <p className="text-sm text-foreground/60">
+          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
             Este professor ainda não tem horários disponíveis. Podes deixar-lhe
             uma mensagem em baixo.
           </p>
         ) : (
           <>
-            <p className="text-xs text-foreground/50">
+            <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
               Podes escolher várias opções — o professor decide depois qual
               fica confirmada.
             </p>
@@ -401,52 +376,20 @@ export default async function PedidoPage({
           </>
         )}
 
-        <div className="space-y-1">
-          <label htmlFor="mensagem" className="block text-sm font-medium">
-            Nenhum horário dá jeito?
-          </label>
-          <textarea
-            id="mensagem"
-            name="mensagem"
-            rows={3}
-            maxLength={500}
-            placeholder="Ex: só posso às quintas-feiras a partir das 16h — achas que dá para arranjar?"
-            className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
-          />
-          <p className="text-xs text-foreground/50">
-            Deixa uma mensagem ao professor em vez de escolher um horário. Ele
-            decide se quer entrar em contacto fora da app.
-          </p>
-        </div>
+        <CampoTextarea
+          id="mensagem"
+          name="mensagem"
+          label="Nenhum horário dá jeito?"
+          rows={3}
+          maxLength={500}
+          placeholder="Ex: só posso às quintas-feiras a partir das 16h — achas que dá para arranjar?"
+          ajuda="Deixa uma mensagem ao professor em vez de escolher um horário. Ele decide se quer entrar em contacto fora da app."
+        />
 
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
-        <button
-          type="submit"
-          className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
-        >
-          Enviar pedido
-        </button>
+        {erro && <MensagemErro>{erro}</MensagemErro>}
+        <BotaoPrimario>Enviar pedido</BotaoPrimario>
       </form>
     </Wizard>
   )
 }
 
-function Wizard({
-  title,
-  voltar,
-  children,
-}: {
-  title?: string
-  voltar?: string
-  children: React.ReactNode
-}) {
-  return (
-    <main className="flex-1 flex items-start justify-center p-6">
-      <div className="w-full max-w-sm space-y-4">
-        {voltar && <BackButton href={voltar} />}
-        {title && <h1 className="text-xl font-semibold">{title}</h1>}
-        {children}
-      </div>
-    </main>
-  )
-}

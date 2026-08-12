@@ -18,10 +18,14 @@ export function BotaoPrimario({
   href,
   children,
   disabled = false,
+  onClick,
 }: {
   href?: string
   children: React.ReactNode
   disabled?: boolean
+  // Com "onClick" passa a botão normal em vez de submissão — é o caso do
+  // pop-up da idade, que navega em vez de submeter um formulário.
+  onClick?: () => void
 }) {
   if (href) {
     return (
@@ -33,7 +37,8 @@ export function BotaoPrimario({
 
   return (
     <button
-      type="submit"
+      type={onClick ? 'button' : 'submit'}
+      onClick={onClick}
       disabled={disabled}
       className={`${CLASSES} disabled:opacity-50`}
       style={ESTILO}

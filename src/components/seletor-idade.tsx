@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { BotaoPrimario } from '@/components/botao-primario'
+import { classesCampo } from '@/components/campo-formulario'
 
 // Popup que pede a idade do futuro aluno antes de mostrar as disciplinas —
 // só serve para filtrar/ordenar os cartões (azul = adequado, cinza =
@@ -26,15 +28,21 @@ export function SeletorIdade() {
 
   return (
     <div className="modal-fundo">
-      <div className="modal-caixa space-y-4">
-        <h1 className="text-xl font-semibold">Que idade tem o futuro aluno?</h1>
-        <p className="text-sm text-foreground/60">
+      <div className="modal-caixa space-y-[14px]">
+        <h1
+          className="text-[22px] font-semibold leading-[1.2]"
+          style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+        >
+          Que idade tem o futuro aluno?
+        </h1>
+        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
           Só para te mostrarmos as disciplinas certas para essa idade.
         </p>
         <select
           value={idade}
           onChange={(e) => setIdade(Number(e.target.value))}
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-lg text-center"
+          aria-label="Idade do futuro aluno"
+          className={`${classesCampo} text-center`}
         >
           {Array.from({ length: 100 }, (_, i) => i).map((n) => (
             <option key={n} value={n}>
@@ -42,13 +50,7 @@ export function SeletorIdade() {
             </option>
           ))}
         </select>
-        <button
-          type="button"
-          onClick={confirmar}
-          className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2"
-        >
-          Continuar
-        </button>
+        <BotaoPrimario onClick={confirmar}>Continuar</BotaoPrimario>
       </div>
     </div>
   )

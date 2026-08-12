@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
-import { OptionCard } from '@/components/option-card'
-import { BackButton } from '@/components/back-button'
+import { CartaoLink } from '@/components/cartao-link'
+import { Wizard, ListaEscolhas } from '@/components/wizard'
 import { SeletorIdade } from '@/components/seletor-idade'
 import { FormularioPedido } from './formulario-pedido'
 import {
@@ -18,23 +18,6 @@ import { HOUR_HEIGHT, paraMinutos } from '@/lib/horarios-grade'
 // Dias mostrados na grelha, da esquerda para a direita. Sem Domingo — a
 // escola não funciona nesse dia.
 const DIAS_GRADE = DIAS_SEMANA.slice(0, 6)
-
-// Mesma afinação visual do wizard autenticado (src/app/aluno/[alunoId]/pedido/page.tsx).
-const ICONE_PADDING: Record<string, string | undefined> = {
-  Guitarra: '14%',
-  'Baixo Elétrico': '14%',
-  Bateria: '14%',
-  Concertina: '18%',
-  'Teoria Musical': '18%',
-}
-
-const DANCA_ICONE_PADDING: Record<string, string> = {
-  'Ballet Clássico': '12%',
-  'Dança Moderna': '9%',
-  'Dança Contemporânea': '9%',
-  'Dança Moderna para Adultos': '5%',
-  'Estilos Urbanos': '5%',
-}
 
 // Versão pública do wizard de pedido (src/app/aluno/[alunoId]/pedido/page.tsx)
 // — navegável sem conta. Só ao "Enviar pedido" é que se pede para entrar ou
@@ -129,35 +112,19 @@ export default async function PedirAulaPage({
         }
         voltar="/"
       >
-        <div className="option-grid">
-          {ordenados.map((i, idx) =>
-            programa === 'danca' ? (
-              <OptionCard
-                key={i.id}
-                href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${i.id}`}
-                nome={i.titulo}
-                subtitulo={i.idade}
-                imagemUrl={i.imagem_url}
-                icone
-                iconePadding={DANCA_ICONE_PADDING[i.titulo] ?? '12%'}
-                tituloNegrito
-                index={idx}
-                bloqueado={!i.elegivel}
-              />
-            ) : (
-              <OptionCard
-                key={i.id}
-                href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${i.id}`}
-                nome={i.nome}
-                imagemUrl={i.imagem_url}
-                icone
-                iconePadding={ICONE_PADDING[i.nome]}
-                index={idx}
-                bloqueado={!i.elegivel}
-              />
-            )
-          )}
-        </div>
+        <ListaEscolhas>
+          {ordenados.map((i) => (
+            <CartaoLink
+              key={i.id}
+              href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${i.id}`}
+              nome={programa === 'danca' ? i.titulo : i.nome}
+              descricao={i.idade ?? undefined}
+              icone={i.imagem_url ?? undefined}
+              iconeTamanho={34}
+              bloqueado={!i.elegivel}
+            />
+          ))}
+        </ListaEscolhas>
       </Wizard>
     )
   }
@@ -171,7 +138,7 @@ export default async function PedirAulaPage({
   if (instrumentoAtual && !elegivelParaDisciplina(idadeNum, programa, instrumentoAtual.nome)) {
     return (
       <Wizard title="Não disponível para esta idade" voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}>
-        <p className="text-sm text-foreground/60">
+        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
           Esta disciplina não está disponível para a idade indicada.
         </p>
       </Wizard>
@@ -199,20 +166,23 @@ export default async function PedirAulaPage({
     return (
       <Wizard title="Escolhe o professor" voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}>
         {professores.length ? (
-          <div className="option-grid">
-            {professores.map((p, idx) => (
-              <OptionCard
+          <ListaEscolhas>
+            {professores.map((p) => (
+              <CartaoLink
                 key={p.professor_id}
                 href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}&professor=${p.professor_id}`}
                 nome={p.nome}
-                imagemUrl={p.foto_url}
-                subtitulo={p.especialidade}
-                index={idx}
+                descricao={p.especialidade ?? undefined}
+                icone={p.foto_url ?? undefined}
+                iconeTamanho={46}
+                iconeCobre
               />
             ))}
-          </div>
+          </ListaEscolhas>
         ) : (
-          <p className="text-sm text-foreground/60">Ainda não há professores para esta disciplina.</p>
+          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
+            Ainda não há professores para esta disciplina.
+          </p>
         )}
       </Wizard>
     )
@@ -265,25 +235,5 @@ export default async function PedirAulaPage({
         erroInicial={erro}
       />
     </Wizard>
-  )
-}
-
-function Wizard({
-  title,
-  voltar,
-  children,
-}: {
-  title?: string
-  voltar?: string
-  children: React.ReactNode
-}) {
-  return (
-    <main className="flex-1 flex items-start justify-center p-6">
-      <div className="w-full max-w-sm space-y-4">
-        {voltar && <BackButton href={voltar} />}
-        {title && <h1 className="text-xl font-semibold">{title}</h1>}
-        {children}
-      </div>
-    </main>
   )
 }

@@ -2,6 +2,9 @@
 
 import { useActionState, useEffect, useState } from 'react'
 import { PasswordInput } from '@/components/password-input'
+import { classesCampo } from '@/components/campo-formulario'
+import { MensagemErro } from '@/components/mensagem'
+import { BotaoPrimario } from '@/components/botao-primario'
 import {
   loginModal,
   registoModal,
@@ -59,10 +62,14 @@ export function ModalContaPedido({
       <div className="modal-caixa space-y-4" onClick={(e) => e.stopPropagation()}>
         {ecra === 'login' && (
           <>
-            <h1 className="text-xl font-semibold">Entrar na Conta CCG</h1>
+            <h1
+              className="text-[22px] font-semibold leading-[1.2]"
+              style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+            >Entrar na Conta CCG</h1>
             <form action={acaoLogin} className="space-y-3">
               <div className="space-y-1">
-                <label htmlFor="mcp-email" className="block text-sm font-medium">
+                <label htmlFor="mcp-email" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
                   Email
                 </label>
                 <input
@@ -70,30 +77,26 @@ export function ModalContaPedido({
                   name="email"
                   type="email"
                   required
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+                  className={classesCampo}
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="mcp-password" className="block text-sm font-medium">
+                <label htmlFor="mcp-password" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
                   Password
                 </label>
                 <PasswordInput
                   id="mcp-password"
                   name="password"
                   autoComplete="current-password"
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+                  className={classesCampo}
                 />
               </div>
-              {estadoLogin?.error && <p className="text-sm text-red-600">{estadoLogin.error}</p>}
-              <button
-                type="submit"
-                disabled={loginPendente}
-                className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-              >
-                {loginPendente ? 'A entrar...' : 'Entrar'}
-              </button>
+              {estadoLogin?.error && <MensagemErro>{estadoLogin.error}</MensagemErro>}
+              <BotaoPrimario disabled={loginPendente}>{loginPendente ? 'A entrar...' : 'Entrar'}
+              </BotaoPrimario>
             </form>
-            <p className="text-sm text-center">
+            <p className="text-center text-[14px]" style={{ color: 'var(--color-tinta-suave)' }}>
               Ainda não tens conta?{' '}
               <button type="button" className="underline" onClick={() => setEcra('registo')}>
                 Criar Conta CCG
@@ -104,21 +107,26 @@ export function ModalContaPedido({
 
         {ecra === 'registo' && (
           <>
-            <h1 className="text-xl font-semibold">Criar Conta CCG</h1>
+            <h1
+              className="text-[22px] font-semibold leading-[1.2]"
+              style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+            >Criar Conta CCG</h1>
             <form action={acaoRegisto} className="space-y-3">
               <div className="space-y-1">
-                <label htmlFor="mcp-nome" className="block text-sm font-medium">
+                <label htmlFor="mcp-nome" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
                   Nome
                 </label>
                 <input
                   id="mcp-nome"
                   name="nome"
                   required
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+                  className={classesCampo}
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="mcp-telefone" className="block text-sm font-medium">
+                <label htmlFor="mcp-telefone" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
                   Número de telemóvel
                 </label>
                 <input
@@ -127,11 +135,12 @@ export function ModalContaPedido({
                   type="tel"
                   autoComplete="tel"
                   required
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+                  className={classesCampo}
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="mcp-dataNascimento" className="block text-sm font-medium">
+                <label htmlFor="mcp-dataNascimento" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
                   A tua data de nascimento
                 </label>
                 <input
@@ -140,11 +149,12 @@ export function ModalContaPedido({
                   type="date"
                   required
                   max={hoje}
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+                  className={classesCampo}
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="mcp-registo-email" className="block text-sm font-medium">
+                <label htmlFor="mcp-registo-email" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
                   Email
                 </label>
                 <input
@@ -152,11 +162,12 @@ export function ModalContaPedido({
                   name="email"
                   type="email"
                   required
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+                  className={classesCampo}
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="mcp-registo-password" className="block text-sm font-medium">
+                <label htmlFor="mcp-registo-password" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
                   Password
                 </label>
                 <PasswordInput
@@ -164,21 +175,16 @@ export function ModalContaPedido({
                   name="password"
                   minLength={6}
                   autoComplete="new-password"
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+                  className={classesCampo}
                 />
               </div>
               {estadoRegisto?.error && (
-                <p className="text-sm text-red-600">{estadoRegisto.error}</p>
+                <MensagemErro>{estadoRegisto.error}</MensagemErro>
               )}
-              <button
-                type="submit"
-                disabled={registoPendente}
-                className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-              >
-                {registoPendente ? 'A criar conta...' : 'Criar conta'}
-              </button>
+              <BotaoPrimario disabled={registoPendente}>{registoPendente ? 'A criar conta...' : 'Criar conta'}
+              </BotaoPrimario>
             </form>
-            <p className="text-sm text-center">
+            <p className="text-center text-[14px]" style={{ color: 'var(--color-tinta-suave)' }}>
               Já tens conta?{' '}
               <button type="button" className="underline" onClick={() => setEcra('login')}>
                 Entrar
@@ -269,7 +275,10 @@ function EscolherAluno({
 
   return (
     <>
-      <h1 className="text-xl font-semibold">Para qual aluno é o pedido?</h1>
+      <h1
+              className="text-[22px] font-semibold leading-[1.2]"
+              style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+            >Para qual aluno é o pedido?</h1>
 
       {!aCriar && alunos.length > 0 && (
         <div className="space-y-2">
@@ -278,7 +287,7 @@ function EscolherAluno({
               key={a.id}
               type="button"
               onClick={() => onEscolher(a.id)}
-              className="block w-full rounded border border-foreground/20 px-4 py-2 text-left hover:bg-foreground/5"
+              className="block w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] py-[12px] text-left text-[15px] transition-colors hover:border-[var(--color-azul-logo)]"
             >
               {a.nome}
             </button>
@@ -286,7 +295,7 @@ function EscolherAluno({
           <button
             type="button"
             onClick={() => setACriar(true)}
-            className="block w-full rounded border border-dashed border-foreground/20 px-4 py-2 text-left text-foreground/60 hover:bg-foreground/5"
+            className="block w-full rounded-[13px] border border-dashed border-[var(--color-linha)] px-[14px] py-[12px] text-left text-[15px] text-[var(--color-tinta-suave)] transition-colors hover:border-[var(--color-azul-logo)]"
           >
             + Criar novo perfil de aluno
           </button>
@@ -296,35 +305,32 @@ function EscolherAluno({
       {aCriar && (
         <form action={acao} className="space-y-3">
           <div className="space-y-1">
-            <label htmlFor="mcp-aluno-nome" className="block text-sm font-medium">
+            <label htmlFor="mcp-aluno-nome" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
               Nome do aluno
             </label>
             <input
               id="mcp-aluno-nome"
               name="nome"
               required
-              className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+              className={classesCampo}
             />
           </div>
           <div className="space-y-1">
-            <label htmlFor="mcp-aluno-dataNascimento" className="block text-sm font-medium">
+            <label htmlFor="mcp-aluno-dataNascimento" className="block text-[12.5px] font-medium"
+                  style={{ color: 'var(--color-tinta-suave)' }}>
               Data de nascimento
             </label>
             <input
               id="mcp-aluno-dataNascimento"
               name="dataNascimento"
               type="date"
-              className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
+              className={classesCampo}
             />
           </div>
-          {estado?.error && <p className="text-sm text-red-600">{estado.error}</p>}
-          <button
-            type="submit"
-            disabled={pendente}
-            className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-          >
-            {pendente ? 'A criar...' : 'Continuar'}
-          </button>
+          {estado?.error && <MensagemErro>{estado.error}</MensagemErro>}
+          <BotaoPrimario disabled={pendente}>{pendente ? 'A criar...' : 'Continuar'}
+          </BotaoPrimario>
           {alunos.length > 0 && (
             <button
               type="button"
