@@ -41,6 +41,12 @@ yarn-error.log*
 # preferências locais do Claude Code (caminhos e permissões de cada máquina)
 .claude/settings.local.json
 
+# MCP servers pessoais (ex: MiniMax) — não partilhar entre colaboradores
+.mcp.json
+
+# Saída gerada pelo MiniMax MCP (imagem/áudio/vídeo)
+/minimax-output/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
