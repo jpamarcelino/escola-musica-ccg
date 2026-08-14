@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { ChevronRight } from 'lucide-react'
 import { Distintivo } from '@/components/distintivo'
 
 // Cartão navegável do DESIGN_SYSTEM.md (secção 6): linha horizontal com
@@ -42,7 +43,7 @@ export function CartaoLink({
   bloqueado?: boolean
 }) {
   const classesBase =
-    'group relative flex items-center gap-[14px] overflow-hidden rounded-[18px] border border-[var(--color-linha)] bg-white py-[15px] pl-[22px] pr-[16px]'
+    'entrada-esquerda group relative flex items-center gap-[14px] overflow-hidden rounded-[18px] border border-[var(--color-linha)] bg-white py-[15px] pl-[22px] pr-[16px]'
 
   const conteudo = (
     <>
@@ -82,7 +83,7 @@ export function CartaoLink({
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-[6px]">
           <span
-            className="whitespace-nowrap text-[16.5px] font-semibold leading-[1.2]"
+            className="min-w-0 text-[16.5px] font-semibold leading-[1.2]"
             style={{
               fontFamily: 'var(--font-fraunces)',
               color: 'var(--color-azul-fundo)',
@@ -109,19 +110,12 @@ export function CartaoLink({
 
       {/* Sem seta quando está bloqueado: não há para onde ir. */}
       {!bloqueado && (
-        <svg
+        <ChevronRight
           aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
           strokeWidth={1.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
           className="h-[20px] w-[20px] shrink-0"
           style={{ color: 'var(--color-azul)' }}
-        >
-          <path d="m9 6 6 6-6 6" />
-        </svg>
+        />
       )}
     </>
   )
@@ -137,7 +131,7 @@ export function CartaoLink({
   return (
     <Link
       href={href}
-      className={`${classesBase} transition duration-150 hover:-translate-y-px hover:border-[var(--color-azul-logo)]`}
+      className={`${classesBase} transition duration-150 hover:-translate-y-px hover:border-[var(--color-azul-logo)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-azul)] motion-reduce:transition-none motion-reduce:hover:translate-y-0`}
     >
       {conteudo}
     </Link>

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { Rotulo, classesCampo } from '@/components/campo-formulario'
+import { BotaoPrimario } from '@/components/botao-primario'
 
 const BPM_MIN = 5
 const BPM_MAX = 900
@@ -141,11 +143,9 @@ export function Metronomo() {
   }
 
   return (
-    <div className="space-y-6 max-w-xs">
-      <div className="space-y-1">
-        <label htmlFor="metronomo-bpm" className="block text-sm font-medium">
-          BPM ({BPM_MIN}–{BPM_MAX})
-        </label>
+    <div className="max-w-[380px] space-y-[22px]">
+      <div className="space-y-[6px]">
+        <Rotulo htmlFor="metronomo-bpm">BPM ({BPM_MIN}–{BPM_MAX})</Rotulo>
         <input
           id="metronomo-bpm"
           type="number"
@@ -155,14 +155,15 @@ export function Metronomo() {
           value={bpmTexto}
           onChange={(e) => aplicarBpm(e.target.value)}
           onBlur={normalizarBpm}
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-lg"
+          className={`${classesCampo} text-[17px]`}
         />
       </div>
 
-      <div className="space-y-1">
-        <span className="block text-sm font-medium">Compasso</span>
-        <div className="flex items-center gap-2">
+      <div className="space-y-[6px]">
+        <Rotulo htmlFor="metronomo-numerador">Compasso</Rotulo>
+        <div className="flex items-center gap-[10px]">
           <input
+            id="metronomo-numerador"
             aria-label="Número de batidas por compasso"
             type="number"
             inputMode="numeric"
@@ -171,19 +172,22 @@ export function Metronomo() {
             value={numeradorTexto}
             onChange={(e) => aplicarNumerador(e.target.value)}
             onBlur={normalizarNumerador}
-            className="w-16 rounded border border-foreground/20 bg-background px-2 py-2 text-center text-lg"
+            className={`${classesCampo} w-[64px] text-center text-[17px]`}
           />
-          <span className="text-lg text-foreground/60">/</span>
-          <div className="flex gap-1">
+          <span className="text-[17px]" style={{ color: 'var(--color-tinta-suave)' }}>
+            /
+          </span>
+          <div className="flex gap-[6px]">
             {DENOMINADORES.map((d) => (
               <button
                 key={d}
                 type="button"
                 onClick={() => setDenominador(d)}
-                className={
+                className="flex h-[44px] w-[44px] items-center justify-center rounded-[13px] border-[1.5px] text-[15px] font-semibold transition-colors"
+                style={
                   denominador === d
-                    ? 'rounded bg-brand px-3 py-2 text-white'
-                    : 'rounded border border-foreground/20 px-3 py-2 text-foreground/70'
+                    ? { borderColor: 'var(--color-azul-fundo)', backgroundColor: 'var(--color-azul-fundo)', color: '#fff' }
+                    : { borderColor: 'var(--color-linha)', color: 'var(--color-tinta-suave)' }
                 }
               >
                 {d}
@@ -196,38 +200,37 @@ export function Metronomo() {
       <button
         type="button"
         onClick={() => setAcentuar((v) => !v)}
-        className={
+        className="flex h-[44px] w-full items-center justify-center rounded-[13px] border-[1.5px] text-[14px] font-semibold transition-colors"
+        style={
           acentuar
-            ? 'w-full rounded border border-brand bg-brand/10 px-4 py-2 text-sm text-brand'
-            : 'w-full rounded border border-foreground/20 px-4 py-2 text-sm text-foreground/60'
+            ? { borderColor: 'var(--color-azul-fundo)', color: 'var(--color-azul-fundo)', backgroundColor: 'var(--color-papel-2)' }
+            : { borderColor: 'var(--color-linha)', color: 'var(--color-tinta-suave)' }
         }
       >
         Acentuar 1º tempo: {acentuar ? 'ligado' : 'desligado'}
       </button>
 
-      <div className="flex justify-center gap-1">
+      <div className="flex justify-center gap-[6px]">
         {Array.from({ length: numerador }, (_, i) => (
           <span
             key={i}
-            className={
-              'h-3 w-3 rounded-full ' +
-              (aTocar && batidaAtual === i
-                ? i === 0 && acentuar
-                  ? 'bg-brand'
-                  : 'bg-brand-light'
-                : 'bg-foreground/15')
-            }
+            aria-hidden="true"
+            className="h-[10px] w-[10px] rounded-full transition-colors"
+            style={{
+              backgroundColor:
+                aTocar && batidaAtual === i
+                  ? i === 0 && acentuar
+                    ? 'var(--color-azul-fundo)'
+                    : 'var(--color-azul-logo)'
+                  : 'var(--color-linha)',
+            }}
           />
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={aTocar ? parar : iniciar}
-        className="w-full rounded bg-brand text-white hover:bg-brand-hover py-3 text-lg font-semibold"
-      >
+      <BotaoPrimario onClick={aTocar ? parar : iniciar}>
         {aTocar ? 'Parar' : 'Iniciar'}
-      </button>
+      </BotaoPrimario>
     </div>
   )
 }

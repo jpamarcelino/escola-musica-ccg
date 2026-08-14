@@ -20,7 +20,7 @@ export function FundoPapel({
   const larga = largura === 'larga'
 
   return (
-    <main
+    <main id="conteudo-principal"
       className={`relative flex flex-1 flex-col px-[22px] py-[26px] ${
         larga ? 'items-center' : 'items-center justify-center'
       }`}

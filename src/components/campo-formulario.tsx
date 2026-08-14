@@ -8,7 +8,7 @@
 // tem o seu próprio botão de mostrar/ocultar. Assim o aspeto mantém-se num
 // só sítio, mesmo onde a marcação tem de ser diferente.
 export const classesCampo =
-  'h-[52px] w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] text-[15px] text-[var(--color-tinta)] outline-none transition-colors placeholder:text-[var(--color-tinta-suave)] focus:border-[var(--color-azul-logo)]'
+  'h-[52px] w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] text-[15px] text-[var(--color-tinta)] outline-none transition-colors placeholder:text-[var(--color-tinta-suave)] focus:border-[var(--color-azul-logo)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-azul)]'
 
 export function Rotulo({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (

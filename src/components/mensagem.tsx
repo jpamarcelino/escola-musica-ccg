@@ -26,7 +26,11 @@ export function MensagemErro({ children }: { children: React.ReactNode }) {
 }
 
 export function MensagemInfo({ children }: { children: React.ReactNode }) {
-  return <Barra cor={COR_INFO}>{children}</Barra>
+  return (
+    <Barra cor={COR_INFO}>
+      <span aria-live="polite">{children}</span>
+    </Barra>
+  )
 }
 
 // Contexto neutro — usada nos avisos de convite, que não são erro nem

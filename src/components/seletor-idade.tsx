@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { BottomSheet } from '@/components/bottom-sheet'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { classesCampo } from '@/components/campo-formulario'
 
@@ -26,16 +27,12 @@ export function SeletorIdade() {
     router.replace(`${pathname}?${params.toString()}`)
   }
 
+  // Sem onFechar: este passo não é dispensável — sem idade não há
+  // disciplinas para mostrar. Fechar equivaleria a um ecrã vazio.
   return (
-    <div className="modal-fundo">
-      <div className="modal-caixa space-y-[14px]">
-        <h1
-          className="text-[22px] font-semibold leading-[1.2]"
-          style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-        >
-          Que idade tem o futuro aluno?
-        </h1>
-        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
+    <BottomSheet titulo="Que idade tem o futuro aluno?">
+      <div className="space-y-[14px]">
+        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-text-secondary)' }}>
           Só para te mostrarmos as disciplinas certas para essa idade.
         </p>
         <select
@@ -52,6 +49,6 @@ export function SeletorIdade() {
         </select>
         <BotaoPrimario onClick={confirmar}>Continuar</BotaoPrimario>
       </div>
-    </div>
+    </BottomSheet>
   )
 }

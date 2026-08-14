@@ -1,17 +1,14 @@
 import Link from 'next/link'
 
-// Botão primário do DESIGN_SYSTEM.md (secção 6). A sombra é a única
-// permitida em toda a app, e só deve haver um destes por ecrã.
+// Botão primário v2 (DESIGN_SYSTEM_V2.md secção 10): pill, fundo
+// --color-ink, texto branco, 56px. Um só por ecrã.
 //
 // Com "href" é uma ligação; sem ele, um botão de submissão de formulário.
-// São o mesmo objeto visual, por isso partilham as classes em vez de haver
-// dois componentes a repetir a mesma afinação.
 const CLASSES =
-  'flex h-[52px] w-full items-center justify-center rounded-[13px] text-[15.5px] font-semibold text-white'
+  'flex h-[56px] w-full items-center justify-center rounded-[var(--radius-pill)] text-[15.5px] font-semibold text-white transition-[opacity,transform] hover:opacity-90 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)] motion-reduce:transition-none motion-reduce:active:scale-100'
 
 const ESTILO = {
-  backgroundColor: 'var(--color-azul-fundo)',
-  boxShadow: '0 7px 18px rgba(27,79,122,.26)',
+  backgroundColor: 'var(--color-ink)',
 }
 
 export function BotaoPrimario({

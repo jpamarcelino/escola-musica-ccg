@@ -4,14 +4,23 @@ import { useActionState } from 'react'
 import type { AuthState } from '@/lib/actions/auth'
 import { PasswordInput } from '@/components/password-input'
 import { SubmitButton } from '@/components/submit-button'
+import { Rotulo, classesCampo } from '@/components/campo-formulario'
+import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 
 type Action = (prevState: AuthState, formData: FormData) => Promise<AuthState>
+
+// Botão "Guardar" inline, ao lado do campo — a mesma linguagem visual do
+// BotaoSecundario (borda 1.5px azul-fundo), mas largura automática e 44px
+// de altura (mínimo de alvo de toque da secção 9), porque aqui vive dentro
+// de uma linha com o input em vez de ocupar o ecrã todo.
+const CLASSES_GUARDAR =
+  'inline-flex h-[44px] shrink-0 items-center justify-center rounded-[13px] border-[1.5px] border-[var(--color-azul-fundo)] px-4 text-[14px] font-semibold text-[var(--color-azul-fundo)] transition-colors disabled:opacity-50'
 
 function Mensagens({ state }: { state: AuthState }) {
   return (
     <>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.info && <p className="text-sm text-green-600">{state.info}</p>}
+      {state?.error && <MensagemErro>{state.error}</MensagemErro>}
+      {state?.info && <MensagemInfo>{state.info}</MensagemInfo>}
     </>
   )
 }
@@ -20,22 +29,17 @@ export function EditarNomeForm({ action, nomeAtual }: { action: Action; nomeAtua
   const [state, formAction] = useActionState(action, undefined)
 
   return (
-    <form action={formAction} className="space-y-2">
-      <label htmlFor="nome" className="block text-sm font-medium">
-        Nome
-      </label>
-      <div className="flex gap-2">
+    <form action={formAction} className="space-y-[6px]">
+      <Rotulo htmlFor="nome">Nome</Rotulo>
+      <div className="flex gap-[8px]">
         <input
           id="nome"
           name="nome"
           defaultValue={nomeAtual}
           required
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+          className={classesCampo}
         />
-        <SubmitButton
-          textoAGuardar="A guardar..."
-          className="shrink-0 rounded border border-foreground/20 px-3 py-2 text-sm"
-        >
+        <SubmitButton textoAGuardar="A guardar..." className={CLASSES_GUARDAR}>
           Guardar
         </SubmitButton>
       </div>
@@ -48,23 +52,18 @@ export function EditarEmailForm({ action, emailAtual }: { action: Action; emailA
   const [state, formAction] = useActionState(action, undefined)
 
   return (
-    <form action={formAction} className="space-y-2">
-      <label htmlFor="email" className="block text-sm font-medium">
-        Email
-      </label>
-      <div className="flex gap-2">
+    <form action={formAction} className="space-y-[6px]">
+      <Rotulo htmlFor="email">Email</Rotulo>
+      <div className="flex gap-[8px]">
         <input
           id="email"
           name="email"
           type="email"
           defaultValue={emailAtual}
           required
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+          className={classesCampo}
         />
-        <SubmitButton
-          textoAGuardar="A guardar..."
-          className="shrink-0 rounded border border-foreground/20 px-3 py-2 text-sm"
-        >
+        <SubmitButton textoAGuardar="A guardar..." className={CLASSES_GUARDAR}>
           Guardar
         </SubmitButton>
       </div>
@@ -77,44 +76,38 @@ export function AlterarPasswordForm({ action }: { action: Action }) {
   const [state, formAction] = useActionState(action, undefined)
 
   return (
-    <form action={formAction} className="space-y-3">
-      <div className="space-y-1">
-        <label htmlFor="passwordAtual" className="block text-sm font-medium">
-          Password atual
-        </label>
+    <form action={formAction} className="space-y-[14px]">
+      <div className="space-y-[6px]">
+        <Rotulo htmlFor="passwordAtual">Password atual</Rotulo>
         <PasswordInput
+          id="passwordAtual"
           name="passwordAtual"
           autoComplete="current-password"
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+          className={classesCampo}
         />
       </div>
-      <div className="space-y-1">
-        <label htmlFor="passwordNova" className="block text-sm font-medium">
-          Nova password
-        </label>
+      <div className="space-y-[6px]">
+        <Rotulo htmlFor="passwordNova">Nova password</Rotulo>
         <PasswordInput
+          id="passwordNova"
           name="passwordNova"
           minLength={6}
           autoComplete="new-password"
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+          className={classesCampo}
         />
       </div>
-      <div className="space-y-1">
-        <label htmlFor="passwordNovaRepetir" className="block text-sm font-medium">
-          Repetir nova password
-        </label>
+      <div className="space-y-[6px]">
+        <Rotulo htmlFor="passwordNovaRepetir">Repetir nova password</Rotulo>
         <PasswordInput
+          id="passwordNovaRepetir"
           name="passwordNovaRepetir"
           minLength={6}
           autoComplete="new-password"
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+          className={classesCampo}
         />
       </div>
       <Mensagens state={state} />
-      <SubmitButton
-        textoAGuardar="A guardar..."
-        className="rounded border border-foreground/20 px-3 py-2 text-sm"
-      >
+      <SubmitButton textoAGuardar="A guardar..." className={CLASSES_GUARDAR}>
         Alterar password
       </SubmitButton>
     </form>

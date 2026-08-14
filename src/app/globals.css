@@ -1,19 +1,29 @@
 @import "tailwindcss";
 
-/* A app usa sempre o visual claro em mármore, mesmo que o telemóvel esteja
+/* A app usa sempre o visual claro em papel, mesmo que o telemóvel esteja
    em modo escuro — é a identidade visual escolhida, não deve variar. */
 :root {
   color-scheme: light;
   --background: #ffffff;
-  --foreground: #171717;
-  --brand: #26619c;
-  --brand-hover: #1d4d7d;
-  --brand-light: #609fda;
-  --opal-1: #fbfdff;
-  --opal-2: #dbe9f5;
-  --opal-3: #b9d3e9;
-  --card-border: #aec8dd;
-  --ink-soft: #5c5644;
+  --foreground: #241f1c;
+  /* Aliases de compatibilidade: ecrãs ainda por migrar (ver Fase 3/4 do
+     redesign) continuam a usar --brand, --card-border e --ink-soft, mas
+     os valores já apontam para os tokens do DESIGN_SYSTEM.md (secção 2)
+     — acaba com as duas paletas de azul a conviver. Remover estes
+     aliases quando o último consumidor for migrado para os tokens
+     diretos. */
+  --brand: var(--color-azul-fundo);
+  --brand-hover: var(--color-azul);
+  --brand-light: var(--color-azul-logo);
+  --card-border: var(--color-linha);
+  --ink-soft: var(--color-tinta-suave);
+
+  /* Design System v2 — gradiente do hero, feito da rampa dos azuis do
+     logótipo. O tom mais claro NÃO é o #78AEDE original: com texto
+     branco por cima dava 2.36:1, muito abaixo do mínimo AA (4.5:1).
+     Foi escurecido até ao ponto em que o texto branco passa em todo o
+     gradiente — 4.51:1 no topo, 8.59:1 no fundo. */
+  --gradient-hero: linear-gradient(160deg, #467BA8 0%, #2E628E 45%, #1B4F7A 100%);
 }
 
 @theme inline {
@@ -47,148 +57,87 @@
   --radius-cartao: 18px;
   --radius-botao:  13px;
   --radius-icone:  12px;
+
+  /* Design System v2 (DESIGN_SYSTEM_V2.md) — pivot para direção "DailyMe":
+     hero em gradiente, superfícies em pill, preto para CTA/nav. Tokens
+     aditivos: os de cima continuam a servir as páginas ainda não
+     migradas para v2. */
+  --color-primary:        #1B4F7A;
+  --color-primary-light:  #78AEDE;
+  --color-primary-mid:    #3D7FB8;
+  --color-ink:            #241F1C;
+  --color-surface-raised: #F5F6F8;
+  --color-positive:       #4B8B6B;
+  --color-warning:        #A8763A;
+  --color-error:          #9A3B2E;
+
+  --radius-small: 12px;
+  --radius-medium: 18px;
+  --radius-large: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  --shadow-flutuante: 0 8px 24px rgba(27, 79, 122, 0.16);
+
+  --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Grão de papel (DESIGN_SYSTEM.md secção 7) — aplicado uma só vez aqui,
+   no body, para cobrir também os ecrãs que ainda não usam <FundoPapel />. */
 body {
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  background-image: url("/marmore-fundo.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  color: var(--color-tinta);
+  font-family: var(--font-inter), var(--font-sans), ui-sans-serif, sans-serif;
+  background-color: var(--color-papel);
   position: relative;
 }
 
-/* Cartões de opção — usados na home, na escolha de disciplina e de professor */
-.option-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
 }
 
-/* Cartões grandes empilhados, sem imagem — usados na escolha da escola */
-.option-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-width: 220px;
-  margin: 0 auto;
-}
 
-/* Cartões largos empilhados — usado no hub do professor (menu principal
-   após o login). Ao contrário de .option-stack, ocupa a largura toda do
-   ecrã disponível em vez de ficar limitado a 220px. */
-.hub-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-}
 
-.option-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  aspect-ratio: 3 / 4;
-  border-radius: 16px;
-  background:
-    radial-gradient(120% 90% at 15% 10%, rgba(255, 255, 255, 0.9), transparent 55%),
-    linear-gradient(150deg, var(--opal-1) 0%, var(--opal-2) 55%, var(--opal-3) 100%);
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(140, 165, 190, 0.3),
-    0 14px 26px -16px rgba(18, 58, 94, 0.32),
-    0 3px 8px -2px rgba(18, 58, 94, 0.14);
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  .option-card {
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-}
-
-/* Entrada suave: cada cartão desliza da esquerda, um pouco depois do anterior. */
-@keyframes option-card-in {
+/* Entrada suave em cascata: cada elemento aparece um pouco depois do
+   anterior (--card-index dá a ordem). Usado em listas e secções. */
+@keyframes entrada-suave {
   from {
     opacity: 0;
-    transform: translateX(-24px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .option-card {
-    animation: option-card-in 0.32s ease-out both;
-    animation-delay: calc(min(var(--card-index, 0), 8) * 55ms);
-  }
-}
-
-/* Mesma entrada, para elementos que não são cartões (ex: dashboard). */
 @media (prefers-reduced-motion: no-preference) {
   .entrada-esquerda {
-    animation: option-card-in 0.32s ease-out both;
+    animation: entrada-suave 0.3s var(--ease-suave) both;
     animation-delay: calc(min(var(--card-index, 0), 8) * 55ms);
   }
 }
 
-.option-card:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(140, 165, 190, 0.35),
-    0 22px 36px -18px rgba(18, 58, 94, 0.4),
-    0 6px 14px -4px rgba(18, 58, 94, 0.2);
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  .option-card:hover {
-    transform: translateY(-3px);
-  }
-}
 
-.option-card:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 3px;
-}
 
-/* Cartão bloqueado — disciplina fora da idade do aluno. Sem cor, sem
-   relevo, sem interação; pointer-events:none evita até o :hover disparar. */
-.option-card.locked {
-  filter: grayscale(1);
-  background: #e3e3e3;
-  box-shadow: none;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  opacity: 0.7;
-  cursor: not-allowed;
-  pointer-events: none;
-  animation: none;
-}
-
-.option-card.locked .option-card-label {
-  border-top-color: rgba(0, 0, 0, 0.12);
-}
-
-/* Botão de voltar — mesmo acabamento em opala dos cartões, em miniatura. */
+/* Botão de voltar — superfície plana, borda fina, como o resto do design system. */
 .back-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 54px;
   height: 22px;
-  border-radius: 8px;
-  background:
-    radial-gradient(120% 90% at 15% 10%, rgba(255, 255, 255, 0.9), transparent 55%),
-    linear-gradient(150deg, var(--opal-1) 0%, var(--opal-2) 55%, var(--opal-3) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(140, 165, 190, 0.3),
-    0 6px 14px -8px rgba(18, 58, 94, 0.32);
+  border-radius: var(--radius-botao);
+  background: #ffffff;
+  border: 1px solid var(--color-linha);
   color: var(--brand-hover);
   text-decoration: none;
 }
@@ -200,15 +149,12 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   .back-button {
-    transition: box-shadow 0.18s ease;
+    transition: border-color 0.18s ease;
   }
 }
 
 .back-button:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(140, 165, 190, 0.35),
-    0 8px 16px -8px rgba(18, 58, 94, 0.4);
+  border-color: var(--color-azul-logo);
 }
 
 .back-button:focus-visible {
@@ -218,44 +164,34 @@ body {
 
 /* Saudação do dashboard — "Bem-vindo" com destaque, nome em texto normal. */
 .saudacao {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-family: var(--font-fraunces), "Fraunces", ui-serif, serif;
   font-weight: 700;
   color: var(--brand-hover);
 }
 
-/* Botão principal em estilo de cartão (opala), para ações de destaque. */
+/* Botão principal em estilo de cartão, para ações de destaque. */
 .botao-cartao {
   display: block;
   width: 100%;
   padding: 14px;
-  border-radius: 14px;
+  border-radius: var(--radius-cartao);
   text-align: center;
   text-decoration: none;
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-family: var(--font-fraunces), "Fraunces", ui-serif, serif;
   font-size: 16px;
   color: var(--brand-hover);
-  background:
-    radial-gradient(120% 90% at 15% 10%, rgba(255, 255, 255, 0.9), transparent 55%),
-    linear-gradient(150deg, var(--opal-1) 0%, var(--opal-2) 55%, var(--opal-3) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(140, 165, 190, 0.3),
-    0 14px 26px -16px rgba(18, 58, 94, 0.32),
-    0 3px 8px -2px rgba(18, 58, 94, 0.14);
+  background: #ffffff;
+  border: 1px solid var(--color-linha);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .botao-cartao {
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    transition: transform 0.18s ease, border-color 0.18s ease;
   }
 }
 
 .botao-cartao:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(140, 165, 190, 0.35),
-    0 22px 36px -18px rgba(18, 58, 94, 0.4),
-    0 6px 14px -4px rgba(18, 58, 94, 0.2);
+  border-color: var(--color-azul-logo);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -269,146 +205,47 @@ body {
   outline-offset: 3px;
 }
 
-.option-card-media {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.option-card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
 
-/* Ícones de instrumento — símbolo pequeno e centrado, não a foto toda. */
-.option-card-media.icon img {
-  box-sizing: border-box;
-  object-fit: contain;
-  padding: 22%;
-}
 
-.option-card-initial {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
-  font-size: 30px;
-  color: var(--brand-hover);
-  opacity: 0.55;
-}
 
-.option-card-label {
-  padding: 10px 8px;
-  text-align: center;
-  border-top: 1px solid var(--card-border);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
 
-/* Reserva sempre o mesmo espaço para o texto, mesmo quando o nome é
-   curto e sobra espaço — usado nas modalidades de dança (nome +
-   faixa etária), para os cartões ficarem uniformes entre si. */
-.option-card-label.tall {
-  min-height: 80px;
-  justify-content: center;
-}
 
-.option-card.wide {
-  aspect-ratio: auto;
-  align-items: center;
-  justify-content: center;
-  /* Cartões largos nunca mostram imagem (media fica sempre escondida),
-     por isso não há nada a recortar — e assim a bolinha de notificação
-     pode ficar meia dentro, meia fora do canto do cartão. */
-  overflow: visible;
-}
 
-.option-card.wide .option-card-label {
-  border-top: none;
-  padding: 20px;
-}
 
-.option-card.wide .option-card-name {
-  font-size: 30px;
-  white-space: pre-line;
-  line-height: 1.3;
-}
 
-/* Versão compacta do cartão largo — usada em listas longas (alunos,
-   professores) onde só o nome interessa, sem gastar tanta altura.
-   Encostada à esquerda: numa lista comprida, o texto centrado dificulta
-   a leitura rápida de cima a baixo. */
-.option-card.wide.compacto {
-  justify-content: flex-start;
-  align-items: stretch;
-}
 
-.option-card.wide.compacto .option-card-label {
-  padding: 10px 16px;
-  text-align: left;
-  align-items: flex-start;
-}
 
-.option-card.wide.compacto .option-card-name {
-  font-size: 17px;
-}
 
-.hub-stack.compacto {
-  gap: 8px;
-}
 
-.option-card-name {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
-  font-size: 14.5px;
-  color: var(--brand-hover);
-  line-height: 1.25;
-}
 
-.option-card-name.negrito {
-  font-weight: 700;
-}
 
-.option-card-sub {
-  font-size: 11.5px;
-  color: var(--ink-soft);
-}
 
-/* Bolinha vermelha de notificação — meia dentro, meia fora do canto
-   superior direito do cartão. Só aparece quando há pedidos por responder. */
-.option-card-badge {
-  position: absolute;
-  top: -11px;
-  right: -11px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #e0392f;
-  color: #fff;
-  font-family: system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 0 2px #fff;
-}
 
 /* Grelha de horários (aluno a escolher horários de um professor) — dias
    no topo, horas na coluna esquerda, cada cartão de horário posicionado
    pela sua duração real, não pela linha da hora. Desliza para o lado
    quando os dias não cabem todos no ecrã. */
+/* Sombra nas bordas quando há mais colunas para o lado — sem isto, nada
+   sinaliza que a grelha desliza (scroll horizontal "escondido" é dos
+   problemas de mobile mais fáceis de não notar). Truque só de CSS:
+   background-attachment "local" acompanha o scroll do conteúdo, "scroll"
+   fica fixo ao viewport da grelha — a sombra só aparece quando o fundo
+   branco "local" já saiu do caminho. */
 .horarios-grade {
   display: flex;
   overflow-x: auto;
   border: 1px solid var(--color-linha);
   border-radius: 18px;
-  background: #ffffff;
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(to right, #ffffff 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 70%) 100% 0,
+    linear-gradient(to right, rgba(36, 31, 28, 0.12), rgba(36, 31, 28, 0)),
+    linear-gradient(to left, rgba(36, 31, 28, 0.12), rgba(36, 31, 28, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 34px 100%, 34px 100%, 12px 100%, 12px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .horarios-coluna-horas {
@@ -581,85 +418,68 @@ body {
   color: #b3261e;
 }
 
-/* Cartão de estatística (página de admin) — mesmo acabamento em opala
-   dos cartões de navegação, mas sem interação, só para exibir um número. */
-.stat-tile {
-  border-radius: 14px;
-  padding: 16px 10px;
-  text-align: center;
-  background:
-    radial-gradient(120% 90% at 15% 10%, rgba(255, 255, 255, 0.9), transparent 55%),
-    linear-gradient(150deg, var(--opal-1) 0%, var(--opal-2) 55%, var(--opal-3) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(140, 165, 190, 0.3),
-    0 10px 20px -14px rgba(18, 58, 94, 0.3);
-}
 
-.stat-tile-numero {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--brand-hover);
-  line-height: 1.1;
-}
 
-.stat-tile-legenda {
-  margin-top: 2px;
-  font-size: 11px;
-  color: var(--ink-soft);
-}
 
 /* Título de secção (Alunos / Professores / Administradores) — mesma
    família e cor dos nomes nos cartões, para ligar visualmente a página. */
+/* Estas três classes são o equivalente CSS dos componentes TituloSeccao e
+   LinhaLista (components/lista.tsx). Existem porque ainda são usadas por
+   ~20 páginas cujo JSX não vale a pena reescrever só por isto — os
+   valores são os mesmos dos componentes, para o resultado ser
+   indistinguível. Ao migrar uma dessas páginas para <LinhaLista>, o
+   aspeto não muda. */
 .secao-titulo {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
   font-weight: 700;
   font-size: 17px;
-  color: var(--brand-hover);
+  color: var(--color-text-primary);
 }
 
-/* Linha de lista (aluno / professor / admin) — acabamento em opala
-   suave, mais discreto que os cartões de navegação. */
 .lista-item {
-  border-radius: 12px;
-  padding: 10px 14px;
-  background: var(--opal-1);
-  border: 1px solid var(--card-border);
+  border-radius: var(--radius-medium);
+  padding: 14px 16px;
+  background: var(--color-surface-raised);
 }
 
 .lista-item-titulo {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
   font-weight: 600;
-  font-size: 14.5px;
-  color: var(--brand-hover);
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--color-text-primary);
 }
 
 .lista-item-sub {
   margin-top: 2px;
-  font-size: 12px;
-  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
 }
 
 .horario-bloco.bloqueado-selecionavel:has(input:checked) {
   filter: none;
   opacity: 1;
   border: none;
-  background: linear-gradient(150deg, var(--brand-light) 0%, var(--brand) 55%, var(--brand-hover) 100%);
+  background: var(--color-azul-fundo);
   color: #fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 10px 18px -8px rgba(18, 58, 94, 0.55),
-    0 2px 4px rgba(18, 58, 94, 0.3);
 }
 
 /* Tabela de histórico de mensalidades — de propósito fora do sistema de
-   cartões em opala: pediram "quase como se fosse um Excel", fundo branco
-   e amarelo nas colunas de fatura, para ler como uma folha de cálculo. */
+   cartões: pediram "quase como se fosse um Excel", fundo branco e destaque
+   nas colunas de fatura, para ler como uma folha de cálculo. Cores vêm dos
+   tokens do design system em vez de hex soltos. */
 .tabela-historico-wrap {
   overflow-x: auto;
-  border: 1px solid #c7c7c7;
-  border-radius: 4px;
+  border: 1px solid var(--color-linha);
+  border-radius: var(--radius-botao);
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(to right, #ffffff 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 70%) 100% 0,
+    linear-gradient(to right, rgba(36, 31, 28, 0.12), rgba(36, 31, 28, 0)),
+    linear-gradient(to left, rgba(36, 31, 28, 0.12), rgba(36, 31, 28, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 34px 100%, 34px 100%, 12px 100%, 12px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .tabela-historico {
@@ -670,20 +490,20 @@ body {
 
 .tabela-historico th,
 .tabela-historico td {
-  border: 1px solid #d5d5d5;
+  border: 1px solid var(--color-linha);
   padding: 3px 5px;
   white-space: nowrap;
 }
 
 .tabela-historico th {
-  background: #f2f2f2;
+  background: var(--color-papel-2);
   font-weight: 600;
   text-align: center;
 }
 
 .tabela-historico td.th-fatura,
 .tabela-historico th.th-fatura {
-  background: #fff5b8;
+  background: color-mix(in srgb, var(--color-dourado) 16%, white);
 }
 
 .tabela-historico th.th-aluno,
@@ -691,9 +511,9 @@ body {
   position: sticky;
   left: 0;
   z-index: 1;
-  background: #f2f2f2;
+  background: var(--color-papel-2);
   text-align: left;
-  border-right: 2px solid #b3b3b3;
+  border-right: 2px solid var(--color-linha);
   font-weight: 600;
 }
 
@@ -707,7 +527,7 @@ body {
   background: transparent;
   font-size: 12px;
   text-align: center;
-  color: #171717;
+  color: var(--color-tinta);
 }
 
 .tabela-historico input:focus {
@@ -716,7 +536,7 @@ body {
 }
 
 .tabela-historico input::placeholder {
-  color: #b0b0b0;
+  color: color-mix(in srgb, var(--color-tinta-suave) 55%, transparent);
 }
 
 .tabela-historico input.celula-desistencia {
@@ -757,7 +577,7 @@ body {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: var(--radius-botao);
   border: 1px solid var(--card-border);
   padding: 6px 12px;
   font-size: 14px;
@@ -777,6 +597,55 @@ body {
 .botao-foto.a-carregar {
   cursor: default;
   opacity: 0.7;
+}
+
+/* Bottom sheet (DESIGN_SYSTEM_V2) — sobe do fundo do ecrã com movimento
+   vertical natural, cantos superiores muito arredondados. */
+@keyframes sheet-subir {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheet-caixa {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 50;
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  background: #ffffff;
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  padding: 24px 24px 32px;
+  color: var(--color-tinta);
+  font-family: var(--font-inter);
+  box-shadow: var(--shadow-flutuante);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sheet-caixa {
+    animation: sheet-subir 0.3s var(--ease-suave) both;
+  }
+}
+
+/* Em ecrãs grandes o sheet vira um diálogo centrado — deslizar do fundo
+   de um monitor de 1440px deixa de fazer sentido. */
+@media (min-width: 768px) {
+  .sheet-caixa {
+    inset-inline: auto;
+    left: 50%;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 420px;
+    border-radius: var(--radius-large);
+    animation: none;
+  }
 }
 
 /* Popup do seletor de idade e do fluxo de conta em /pedir-aula — sobrepõe
@@ -803,7 +672,7 @@ body {
   overflow-y: auto;
   background: #ffffff;
   border: 1px solid var(--color-linha);
-  border-radius: 18px;
+  border-radius: var(--radius-cartao);
   padding: 22px;
   color: var(--color-tinta);
   font-family: var(--font-inter);

@@ -6,7 +6,8 @@ import Link from 'next/link'
 //
 // Com "href" é uma ligação; sem ele, um botão de submissão de formulário
 // (o "Sair" do hub, por exemplo), com o mesmo aspeto.
-const CLASSES = 'text-[14px] font-medium underline [text-underline-offset:3px]'
+const CLASSES =
+  'text-[14px] font-medium underline [text-underline-offset:3px] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-azul)] motion-reduce:transition-none rounded-[4px]'
 
 const ESTILO = { color: 'var(--color-tinta-suave)' }
 
