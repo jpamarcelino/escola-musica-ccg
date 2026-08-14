@@ -14,9 +14,14 @@ import { PageHeader } from '@/components/page-header'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
+import { BotaoApagarHorariosSelecionados } from '@/components/horarios-apagar-selecionados'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { Pencil } from 'lucide-react'
 import Link from 'next/link'
 import { EmptyState } from '@/components/empty-state'
+import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
+import { MensagemErro } from '@/components/mensagem'
+import { SubmitButton } from '@/components/submit-button'
 
 type HorarioProfessor = {
   id: number
@@ -53,32 +58,30 @@ export default async function HorariosPage({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('perfis_escola')
-    .select('tipo')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: horariosData }, { data: confirmadosData }] =
+    await Promise.all([
+      supabase.from('perfis_escola').select('tipo').eq('id', user.id).single(),
+      supabase
+        .from('horarios')
+        .select('id, dia_semana, hora_inicio, hora_fim, estado')
+        .eq('professor_id', user.id)
+        .order('dia_semana')
+        .order('hora_inicio'),
+      supabase
+        .from('matriculas')
+        .select(
+          'id, horario_final_id, instrumentos(nome), alunos(nome, encarregado:profiles!alunos_encarregado_id_fkey(telefone)), horarios(dia_semana, hora_inicio, hora_fim)'
+        )
+        .eq('professor_id', user.id)
+        .eq('estado', 'confirmado')
+        .order('criado_em'),
+    ])
 
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
   }
 
-  const { data: horariosData } = await supabase
-    .from('horarios')
-    .select('id, dia_semana, hora_inicio, hora_fim, estado')
-    .eq('professor_id', user.id)
-    .order('dia_semana')
-    .order('hora_inicio')
   const horarios = (horariosData ?? []) as unknown as HorarioProfessor[]
-
-  const { data: confirmadosData } = await supabase
-    .from('matriculas')
-    .select(
-      'id, horario_final_id, instrumentos(nome), alunos(nome, encarregado:profiles!alunos_encarregado_id_fkey(telefone)), horarios(dia_semana, hora_inicio, hora_fim)'
-    )
-    .eq('professor_id', user.id)
-    .eq('estado', 'confirmado')
-    .order('criado_em')
   const confirmados = (confirmadosData ?? []) as unknown as Confirmado[]
 
   const confirmadosPorHorario = new Map<number, string[]>()
@@ -128,17 +131,18 @@ export default async function HorariosPage({
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard" titulo="Gestão de Horários" />
+        <PageHeader
+          voltar="/dashboard"
+          titulo="Horários"
+          subtitulo={<>{horarios.length} {horarios.length === 1 ? 'horário definido' : 'horários definidos'} · {confirmados.length} {confirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}.</>}
+        />
 
         {erroHorarios && (
-          <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
-            {erroHorarios}
-          </p>
+          <MensagemErro>{erroHorarios}</MensagemErro>
         )}
 
         <section className="space-y-3">
-          <h2 className="font-semibold">Os teus horários</h2>
-          <form id="apagar-horarios-form" action={apagarHorarios} />
+          <TituloSeccao>Os teus horários</TituloSeccao>
           <form id="bloquear-horarios-form" action={bloquearHorarios} />
           <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
           {horarios.length === 0 ? (
@@ -148,11 +152,48 @@ export default async function HorariosPage({
             />
           ) : (
             <>
-              <p className="text-xs text-foreground/50">
+              <p className="text-[13px] leading-[1.5] text-foreground/60">
                 Seleciona um ou vários horários para os bloquear, desbloquear
                 ou apagar.
               </p>
-              <div className="horarios-grade">
+              <GrupoLista>
+                {DIAS_SEMANA.flatMap((dia) => horariosPorDia.get(dia) ?? []).map((h) => {
+                  const alunos = confirmadosPorHorario.get(h.id)
+                  return (
+                    <div key={h.id} className="flex min-h-[64px] items-center gap-[12px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[14px] py-[10px]">
+                      <label className="flex h-[44px] w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-[8px] hover:bg-black/5">
+                        <input
+                          type="checkbox"
+                          name="horarioIds"
+                          value={h.id}
+                          aria-label={`Selecionar ${h.dia_semana}, ${formatarHora(h.hora_inicio)}`}
+                          className="h-[22px] w-[22px] accent-[var(--color-azul-fundo)]"
+                        />
+                      </label>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[15px] font-semibold">{h.dia_semana} · {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}</span>
+                        <span className="block truncate text-[13px] text-foreground/60">{h.estado === 'bloqueado' ? 'Bloqueado' : alunos?.length ? alunos.join(', ') : 'Disponível'}</span>
+                      </span>
+                      <Link
+                        href={`/professor/horarios/${h.id}`}
+                        aria-label={`Editar horário de ${h.dia_semana} às ${formatarHora(h.hora_inicio)}`}
+                        className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-azul)]"
+                      >
+                        <Pencil size={18} strokeWidth={1.5} aria-hidden="true" />
+                      </Link>
+                    </div>
+                  )
+                })}
+              </GrupoLista>
+              <div className="flex flex-wrap gap-[8px]">
+                <BotaoSelecionarTodos />
+                <BotaoBloquearSelecionados />
+                <BotaoDesbloquearSelecionados />
+                <BotaoApagarHorariosSelecionados action={apagarHorarios} />
+              </div>
+              <details className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[14px] py-[12px]">
+                <summary className="min-h-[44px] cursor-pointer py-[11px] text-[14px] font-semibold">Ver grelha semanal</summary>
+              <div className="horarios-grade mt-[12px]">
                 <div className="horarios-coluna-horas">
                   <div className="horarios-coluna-horas-cabecalho" />
                   {horasGrade.map((hora) => (
@@ -189,53 +230,29 @@ export default async function HorariosPage({
                         } as CSSProperties
 
                         return (
-                          <label
+                          <div
                             key={h.id}
                             className={`horario-bloco entrada-esquerda${bloqueado ? ' bloqueado-selecionavel' : ''}`}
                             style={estilo}
                             title={alunos ? `Aluno(s): ${alunos}` : undefined}
                           >
-                            <input
-                              type="checkbox"
-                              name="horarioIds"
-                              value={h.id}
-                              form="apagar-horarios-form"
-                            />
                             <span>{formatarHora(h.hora_inicio)}</span>
                             <span>{formatarHora(h.hora_fim)}</span>
-                            <Link
-                              href={`/professor/horarios/${h.id}`}
-                              aria-label="Editar horário"
-                              title="Editar horário"
-                              className="absolute right-[2px] top-[2px] rounded-full p-[2px] opacity-60 hover:opacity-100"
-                            >
-                              <Pencil size={11} strokeWidth={1.5} />
-                            </Link>
-                          </label>
+                          </div>
                         )
                       })}
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-2">
-                <BotaoSelecionarTodos />
-                <button
-                  type="submit"
-                  form="apagar-horarios-form"
-                  className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
-                >
-                  Apagar selecionados
-                </button>
-                <BotaoBloquearSelecionados />
-                <BotaoDesbloquearSelecionados />
-              </div>
+              </details>
             </>
           )}
         </section>
 
-        <section className="space-y-3">
-          <h2 className="font-semibold">Criar horários</h2>
+        <details className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[16px] py-[14px]">
+          <summary className="min-h-[44px] cursor-pointer py-[11px] text-[15px] font-semibold">Criar horários</summary>
+          <section className="mt-[12px] space-y-3">
           <p className="text-xs text-foreground/50">
             Os horários não são específicos de uma disciplina — servem para
             qualquer uma das que ensinas. Preenche só os dias em que dás
@@ -243,18 +260,18 @@ export default async function HorariosPage({
           </p>
           <form
             action={criarHorarios}
-            className="space-y-3 rounded border border-foreground/15 p-4"
+            className="space-y-3"
           >
             <div className="space-y-2">
               {DIAS_SEMANA.map((dia, i) => (
-                <div key={dia} className="flex items-center gap-2">
+                <div key={dia} className="grid grid-cols-[64px_1fr_24px_1fr] items-center gap-2">
                   <span className="w-16 shrink-0 text-sm">{dia}</span>
                   <input
                     name={`inicio_${i}`}
                     type="time"
                     min="10:00"
                     max="22:00"
-                    className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                    className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-2 text-sm"
                   />
                   <span className="text-sm text-foreground/50">até</span>
                   <input
@@ -262,7 +279,7 @@ export default async function HorariosPage({
                     type="time"
                     min="10:00"
                     max="22:00"
-                    className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                    className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-2 text-sm"
                   />
                 </div>
               ))}
@@ -280,59 +297,45 @@ export default async function HorariosPage({
                 step={5}
                 defaultValue={50}
                 required
-                className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                inputMode="numeric"
+                className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-3 text-sm"
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full rounded bg-brand py-2 text-sm text-white hover:bg-brand-hover"
+            <SubmitButton
+              textoAGuardar="A criar..."
+              className="flex min-h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] bg-brand text-[15px] font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
             >
               Criar horários
-            </button>
+            </SubmitButton>
           </form>
-        </section>
+          </section>
+        </details>
 
         <section className="space-y-3">
-          <h2 className="font-semibold">Alunos confirmados</h2>
+          <TituloSeccao contagem={confirmados.length}>Alunos confirmados</TituloSeccao>
           {confirmados.length === 0 && (
             <EmptyState titulo="Ainda não tens alunos confirmados" />
           )}
-          {confirmados.map((c) => (
-            <div
-              key={c.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded border border-foreground/15 px-4 py-2 text-sm"
-            >
-              <div>
-                <p>
-                  <strong>{c.alunos?.nome}</strong> — {c.instrumentos?.nome}
-                  {c.horarios && (
-                    <>
-                      : {c.horarios.dia_semana}, {c.horarios.hora_inicio.slice(0, 5)}–
-                      {c.horarios.hora_fim.slice(0, 5)}
-                    </>
-                  )}
-                </p>
-                {c.alunos?.encarregado?.telefone && (
-                  <p className="text-xs text-foreground/60">
-                    Telemóvel:{' '}
-                    <a href={`tel:${c.alunos!.encarregado!.telefone}`} className="underline">
-                      {c.alunos!.encarregado!.telefone}
-                    </a>
-                  </p>
-                )}
-              </div>
-              <form action={cancelarMatricula}>
-                <input type="hidden" name="matriculaId" value={c.id} />
-                <button
-                  type="submit"
-                  className="rounded border border-red-600/40 px-3 py-1 text-sm text-red-600 hover:bg-red-600/5"
-                >
-                  Cancelar matrícula
-                </button>
-              </form>
-            </div>
-          ))}
+          <GrupoLista>
+            {confirmados.map((c) => (
+              <LinhaLista
+                key={c.id}
+                titulo={`${c.alunos?.nome} · ${c.instrumentos?.nome}`}
+                contexto={c.horarios ? `${c.horarios.dia_semana}, ${formatarHora(c.horarios.hora_inicio)}–${formatarHora(c.horarios.hora_fim)}` : 'Sem horário associado'}
+                direita={
+                  <BotaoAcaoDestruir
+                    label="Cancelar"
+                    titulo="Cancelar matrícula?"
+                    mensagem={`Esta ação remove ${c.alunos?.nome ?? 'o aluno'} deste horário.`}
+                    action={cancelarMatricula}
+                  >
+                    <input type="hidden" name="matriculaId" value={c.id} />
+                  </BotaoAcaoDestruir>
+                }
+              />
+            ))}
+          </GrupoLista>
         </section>
       </div>
     </main>

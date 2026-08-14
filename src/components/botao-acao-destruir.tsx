@@ -19,7 +19,7 @@ const COR_NEUTRO = 'var(--color-azul-fundo)'
 const CLASSES_FOCO =
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-azul)] motion-reduce:transition-none'
 
-const CLASSES_GATILHO_INLINE = `rounded-[var(--radius-pill)] border-[1.5px] px-3 py-[6px] text-[13px] font-semibold transition-colors disabled:opacity-50 ${CLASSES_FOCO}`
+const CLASSES_GATILHO_INLINE = `inline-flex min-h-[44px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] px-3 text-[13px] font-semibold transition-colors disabled:opacity-50 ${CLASSES_FOCO}`
 
 const CLASSES_GATILHO_BLOCO = `flex h-[44px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] text-[14px] font-semibold transition-colors disabled:opacity-50 ${CLASSES_FOCO}`
 

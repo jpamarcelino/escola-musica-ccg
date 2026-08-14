@@ -27,21 +27,19 @@ export default async function HistoricoPresencasPage() {
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('perfis_escola')
-    .select('tipo')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: matriculasData }] = await Promise.all([
+    supabase.from('perfis_escola').select('tipo').eq('id', user.id).single(),
+    supabase
+      .from('matriculas')
+      .select('id, aluno_id, alunos(nome)')
+      .eq('professor_id', user.id)
+      .eq('estado', 'confirmado'),
+  ])
 
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
   }
 
-  const { data: matriculasData } = await supabase
-    .from('matriculas')
-    .select('id, aluno_id, alunos(nome)')
-    .eq('professor_id', user.id)
-    .eq('estado', 'confirmado')
   const matriculas = (matriculasData ?? []) as unknown as MatriculaAluno[]
 
   const porAluno = new Map<string, AlunoResumo>()
@@ -75,7 +73,15 @@ export default async function HistoricoPresencasPage() {
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard/presencas" titulo="Histórico de Presenças" />
+        <PageHeader
+          voltar="/dashboard/presencas"
+          titulo="Histórico de presenças"
+          subtitulo={
+            alunos.length > 0
+              ? <>{alunos.length} {alunos.length === 1 ? 'aluno com matrícula confirmada' : 'alunos com matrícula confirmada'}.</>
+              : undefined
+          }
+        />
 
         {alunos.length === 0 ? (
           <EmptyState titulo="Ainda não tens alunos confirmados" />
@@ -86,6 +92,11 @@ export default async function HistoricoPresencasPage() {
                 key={a.alunoId}
                 href={`/dashboard/presencas/historico/${a.alunoId}`}
                 titulo={a.nome}
+                contexto={
+                  a.registos === 0
+                    ? 'Ainda sem registos'
+                    : `${a.registos} ${a.registos === 1 ? 'registo' : 'registos'}`
+                }
               />
             ))}
           </GrupoLista>

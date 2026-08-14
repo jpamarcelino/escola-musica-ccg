@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces, Inter } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
+import { NavigationFeedback } from "@/components/navigation-feedback";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -62,7 +63,7 @@ export default function RootLayout({
         </a>
         <header className="border-b border-[var(--color-linha)]">
           <div className="mx-auto flex max-w-3xl items-center gap-3 px-6 py-3">
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" className="flex min-h-[44px] items-center gap-3">
               <Image
                 src="/logo.png"
                 alt="Centro Cultural da Guarda"
@@ -86,6 +87,7 @@ export default function RootLayout({
           </div>
         </header>
         {children}
+        <NavigationFeedback />
       </body>
     </html>
   );

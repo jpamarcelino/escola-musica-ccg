@@ -32,11 +32,18 @@ export default async function NotificacoesPage() {
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard" titulo="Notificações" />
+        <PageHeader
+          voltar="/dashboard"
+          titulo="Avisos"
+          subtitulo={porLer > 0 ? <>{porLer} {porLer === 1 ? 'aviso novo' : 'avisos novos'}</> : <>Estás em dia.</>}
+        />
 
         {porLer > 0 && (
           <form action={marcarTodasNotificacoesLidas}>
-            <button type="submit" className="text-sm underline">
+            <button
+              type="submit"
+              className="min-h-[44px] rounded-[var(--radius-pill)] px-[14px] text-[14px] font-semibold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)]"
+            >
               Marcar todas como lidas
             </button>
           </form>
@@ -60,7 +67,10 @@ export default async function NotificacoesPage() {
                 {!n.lida && (
                   <form action={marcarNotificacaoLida}>
                     <input type="hidden" name="notificacaoId" value={n.id} />
-                    <button type="submit" className="text-xs whitespace-nowrap underline">
+                    <button
+                      type="submit"
+                      className="min-h-[44px] whitespace-nowrap rounded-[var(--radius-pill)] px-[10px] text-[13px] font-semibold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)]"
+                    >
                       Marcar como lida
                     </button>
                   </form>

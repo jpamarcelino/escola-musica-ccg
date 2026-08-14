@@ -13,10 +13,10 @@ export default async function AlunoLayout({
   const { alunoId } = await params
 
   const nav: ItemNav[] = [
-    { href: '/dashboard', label: 'Início', icone: 'inicio' },
-    { href: `/aluno/${alunoId}/horario`, label: 'Horário e Aulas', icone: 'calendario' },
-    { href: `/aluno/${alunoId}/pedido`, label: 'Pedir Aula', icone: 'mais', central: true },
-    { href: '/aluno/notificacoes', label: 'Notificações', icone: 'notificacoes' },
+    { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
+    { href: `/aluno/${alunoId}/horario`, label: 'Agenda', icone: 'calendario' },
+    { href: `/aluno/${alunoId}`, label: 'Aluno', icone: 'alunos', correspondencia: 'exata' },
+    { href: '/aluno/notificacoes', label: 'Avisos', icone: 'notificacoes' },
     { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
   ]
 

@@ -34,13 +34,13 @@ export function PasswordInput({
         required={required}
         minLength={minLength}
         autoComplete={autoComplete}
-        className={`${className ?? ''} pr-10`}
+        className={`${className ?? ''} pr-12`}
       />
       <button
         type="button"
         onClick={() => setVisivel((v) => !v)}
         aria-label={visivel ? 'Ocultar password' : 'Mostrar password'}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-[4px] p-[2px] opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-azul)]"
+        className="absolute right-0 top-1/2 flex h-[44px] w-[44px] -translate-y-1/2 items-center justify-center rounded-[8px] opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-azul)]"
         style={{ color: 'var(--color-tinta-suave)' }}
       >
         {visivel ? (

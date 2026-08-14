@@ -116,6 +116,7 @@ export async function confirmarHorario(formData: FormData) {
   revalidatePath('/dashboard/pedidos')
   revalidatePath('/dashboard/horarios')
   revalidatePath('/aluno/notificacoes')
+  redirect('/dashboard/pedidos?guardado=Pedido%20confirmado.')
 }
 
 export async function cancelarMatricula(formData: FormData) {
@@ -161,6 +162,7 @@ export async function recusarPedido(formData: FormData) {
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/pedidos')
+  redirect('/dashboard/pedidos?guardado=Pedido%20recusado.')
 }
 
 export async function alternarEstadoHorario(formData: FormData) {

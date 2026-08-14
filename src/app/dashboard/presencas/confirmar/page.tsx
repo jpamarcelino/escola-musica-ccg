@@ -1,11 +1,12 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
-import { datasDoDia, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
+import { agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
 import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
+import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
+import { MensagemInfo } from '@/components/mensagem'
 
 type Horario = {
   id: number
@@ -46,28 +47,26 @@ export default async function ConfirmarPresencasPage({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('perfis_escola')
-    .select('tipo')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: horariosData }, { data: matriculasData }] =
+    await Promise.all([
+      supabase.from('perfis_escola').select('tipo').eq('id', user.id).single(),
+      supabase
+        .from('horarios')
+        .select('id, dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero)')
+        .eq('professor_id', user.id),
+      supabase
+        .from('matriculas')
+        .select('id, horario_final_id')
+        .eq('professor_id', user.id)
+        .eq('estado', 'confirmado')
+        .not('horario_final_id', 'is', null),
+    ])
 
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
   }
 
-  const { data: horariosData } = await supabase
-    .from('horarios')
-    .select('id, dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero)')
-    .eq('professor_id', user.id)
   const horarios = (horariosData ?? []) as unknown as Horario[]
-
-  const { data: matriculasData } = await supabase
-    .from('matriculas')
-    .select('id, horario_final_id')
-    .eq('professor_id', user.id)
-    .eq('estado', 'confirmado')
-    .not('horario_final_id', 'is', null)
   const matriculas = (matriculasData ?? []) as unknown as MatriculaConfirmada[]
 
   const matriculaIdsPorHorario = new Map<number, number[]>()
@@ -90,12 +89,15 @@ export default async function ConfirmarPresencasPage({
   )
 
   const hoje = hojeISO()
+  const agora = agoraNaEscola()
+  const horaAtual = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`
   const pendentes: Pendente[] = []
   for (const horario of horarios) {
     const idsAlunos = matriculaIdsPorHorario.get(horario.id) ?? []
     if (idsAlunos.length === 0) continue
 
     for (const data of datasDoDia(horario.dia_semana, INICIO_PRESENCAS, hoje)) {
+      if (data === hoje && horario.hora_fim > horaAtual) continue
       const marcadosNesseDia = idsAlunos.filter((id) => marcadas.has(`${id}|${data}`)).length
       if (marcadosNesseDia < idsAlunos.length) {
         pendentes.push({
@@ -112,13 +114,19 @@ export default async function ConfirmarPresencasPage({
     }
   }
   pendentes.sort((a, b) => a.data.localeCompare(b.data) || a.hora_inicio.localeCompare(b.hora_inicio))
+  const atrasadas = pendentes.filter((p) => p.data < hoje)
+  const deHoje = pendentes.filter((p) => p.data === hoje)
 
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard/presencas" titulo="Presenças por Confirmar" />
+        <PageHeader
+          voltar="/dashboard/presencas"
+          titulo="Confirmar presenças"
+          subtitulo={pendentes.length > 0 ? <>Começa pelas aulas mais antigas.</> : <>Está tudo em dia.</>}
+        />
 
-        {guardado && <p className="text-sm text-green-700">Presenças guardadas.</p>}
+        {guardado && <MensagemInfo>Presenças guardadas.</MensagemInfo>}
 
         {pendentes.length === 0 ? (
           <EmptyState
@@ -126,23 +134,40 @@ export default async function ConfirmarPresencasPage({
             descricao="Está tudo em dia."
           />
         ) : (
-          <div className="space-y-2">
-            {pendentes.map((p) => (
-              <Link
-                key={`${p.horarioId}|${p.data}`}
-                href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
-                className="lista-item block"
-              >
-                <p className="lista-item-titulo">
-                  {p.data} — {p.dia_semana}, {formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}
-                </p>
-                <p className="lista-item-sub">
-                  {p.sala && `${p.sala} — `}
-                  {p.marcados}/{p.totalAlunos} aluno{p.totalAlunos === 1 ? '' : 's'} marcado{p.marcados === 1 ? '' : 's'}
-                </p>
-              </Link>
-            ))}
-          </div>
+          <>
+            {atrasadas.length > 0 && (
+              <section>
+                <TituloSeccao contagem={atrasadas.length}>Em atraso</TituloSeccao>
+                <GrupoLista>
+                  {atrasadas.map((p) => (
+                    <LinhaLista
+                      key={`${p.horarioId}|${p.data}`}
+                      href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
+                      titulo={`${formatarDataEscolar(p.data)} · ${p.dia_semana}`}
+                      contexto={`${formatarHora(p.hora_inicio)}–${formatarHora(p.hora_fim)}${p.sala ? ` · ${p.sala}` : ''}`}
+                      direita={<span className="text-[12px] font-semibold text-[var(--color-error)]">{p.totalAlunos - p.marcados} em falta</span>}
+                    />
+                  ))}
+                </GrupoLista>
+              </section>
+            )}
+            {deHoje.length > 0 && (
+              <section>
+                <TituloSeccao contagem={deHoje.length}>Hoje</TituloSeccao>
+                <GrupoLista>
+                  {deHoje.map((p) => (
+                    <LinhaLista
+                      key={`${p.horarioId}|${p.data}`}
+                      href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
+                      titulo={`${formatarHora(p.hora_inicio)}–${formatarHora(p.hora_fim)}`}
+                      contexto={p.sala ?? `${p.totalAlunos} ${p.totalAlunos === 1 ? 'aluno' : 'alunos'}`}
+                      direita={<span className="text-[12px] font-semibold">{p.totalAlunos - p.marcados} em falta</span>}
+                    />
+                  ))}
+                </GrupoLista>
+              </section>
+            )}
+          </>
         )}
       </div>
     </main>

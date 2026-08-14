@@ -4,9 +4,13 @@ import { confirmarHorario, recusarPedido } from '@/lib/actions/professor'
 import { PageHeader } from '@/components/page-header'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
+import { SubmitButton } from '@/components/submit-button'
+import { MensagemErro, MensagemInfo } from '@/components/mensagem'
+import { agoraNaEscola } from '@/lib/datas'
 
 type Pedido = {
   id: number
+  criado_em: string
   mensagem: string | null
   alunos: {
     nome: string
@@ -22,9 +26,9 @@ type Pedido = {
 export default async function PedidosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ erro?: string }>
+  searchParams: Promise<{ erro?: string; guardado?: string }>
 }) {
-  const { erro } = await searchParams
+  const { erro, guardado } = await searchParams
   const supabase = await createClient()
   const {
     data: { user },
@@ -47,7 +51,7 @@ export default async function PedidosPage({
   const { data: pedidosData } = await supabase
     .from('matriculas')
     .select(
-      'id, mensagem, alunos(nome, encarregado:profiles!alunos_encarregado_id_fkey(telefone)), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
+      'id, criado_em, mensagem, alunos(nome, encarregado:profiles!alunos_encarregado_id_fkey(telefone)), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'a_escolher')
@@ -57,9 +61,14 @@ export default async function PedidosPage({
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard" titulo="Pedidos de Aula" />
+        <PageHeader
+          voltar="/dashboard"
+          titulo="Pedidos"
+          subtitulo={pedidos.length > 0 ? <>{pedidos.length} {pedidos.length === 1 ? 'pedido aguarda' : 'pedidos aguardam'} resposta.</> : <>Está tudo em dia.</>}
+        />
 
-        {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
+        {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
+        {guardado && <MensagemInfo>{decodeURIComponent(guardado)}</MensagemInfo>}
 
         <section className="space-y-3">
           {pedidos.length === 0 && (
@@ -71,40 +80,56 @@ export default async function PedidosPage({
           {pedidos.map((pedido) => (
             <div
               key={pedido.id}
-              className="space-y-2 rounded border border-foreground/15 p-4"
+              className="space-y-[14px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] p-[16px]"
             >
-              <p className="text-sm">
-                <strong>{pedido.alunos?.nome}</strong> — {pedido.instrumentos?.nome}
-              </p>
+              <div className="flex items-start justify-between gap-[12px]">
+                <div>
+                  <p className="text-[16px] font-bold">{pedido.alunos?.nome}</p>
+                  <p className="mt-[2px] text-[13px] text-[var(--color-text-secondary)]">{pedido.instrumentos?.nome}</p>
+                </div>
+                <span className="shrink-0 rounded-[var(--radius-pill)] bg-white px-[10px] py-[5px] text-[12px] font-semibold text-[var(--color-warning)]">
+                  {Math.max(0, Math.floor((agoraNaEscola().getTime() - new Date(pedido.criado_em).getTime()) / 86_400_000)) === 0
+                    ? 'Hoje'
+                    : `Há ${Math.max(1, Math.floor((agoraNaEscola().getTime() - new Date(pedido.criado_em).getTime()) / 86_400_000))} dias`}
+                </span>
+              </div>
               {pedido.alunos?.encarregado?.telefone && (
-                <p className="text-xs text-foreground/60">
-                  Telemóvel:{' '}
-                  <a href={`tel:${pedido.alunos!.encarregado!.telefone}`} className="underline">
+                <p className="text-[13px] text-[var(--color-text-secondary)]">
+                  <a
+                    href={`tel:${pedido.alunos!.encarregado!.telefone}`}
+                    className="inline-flex min-h-[44px] items-center font-semibold underline underline-offset-4"
+                  >
+                    Ligar para{' '}
                     {pedido.alunos!.encarregado!.telefone}
                   </a>
                 </p>
               )}
               {pedido.mensagem && (
-                <p className="rounded bg-foreground/5 p-2 text-sm italic text-foreground/70">
+                <p className="border-l-2 border-[var(--color-linha)] pl-[12px] text-[14px] italic leading-[1.5] text-[var(--color-text-secondary)]">
                   “{pedido.mensagem}”
                 </p>
               )}
-              <div className="flex flex-wrap gap-2">
+              <div>
+                <p className="mb-[8px] text-[13px] font-semibold">Escolher horário</p>
+                <div className="flex flex-col gap-[8px] sm:flex-row sm:flex-wrap">
                 {pedido.disponibilidades_selecionadas.map((d) => {
                   const label = `${d.horarios?.dia_semana}, ${d.horarios?.hora_inicio.slice(0, 5)}–${d.horarios?.hora_fim.slice(0, 5)}`
                   return (
-                    <BotaoAcaoDestruir
-                      key={d.horario_id}
-                      label={label}
-                      tom="neutro"
-                      mensagem={`Confirmar a aula de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome}) — ${label}?`}
-                      action={confirmarHorario}
-                    >
+                    <form key={d.horario_id} action={confirmarHorario}>
                       <input type="hidden" name="matriculaId" value={pedido.id} />
                       <input type="hidden" name="horarioId" value={d.horario_id} />
-                    </BotaoAcaoDestruir>
+                      <SubmitButton
+                        textoAGuardar="A confirmar..."
+                        className="min-h-[48px] w-full rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-[16px] text-[14px] font-semibold transition-colors hover:bg-[var(--color-ink)] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)] disabled:opacity-50 sm:w-auto"
+                      >
+                        Confirmar {label}
+                      </SubmitButton>
+                    </form>
                   )
                 })}
+                </div>
+              </div>
+              <div className="border-t border-[var(--color-linha)] pt-[12px]">
                 <BotaoAcaoDestruir
                   label="Recusar"
                   mensagem={`Recusar o pedido de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome})? O pedido será apagado.`}

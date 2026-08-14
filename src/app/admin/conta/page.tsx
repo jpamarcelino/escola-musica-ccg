@@ -5,11 +5,13 @@ import {
   atualizarPasswordConta,
   apagarConta,
   apagarContaSuperAdmin,
+  logout,
 } from '@/lib/actions/auth'
 import { PageHeader } from '@/components/page-header'
 import { EditarNomeForm, AlterarPasswordForm } from '@/components/conta-forms'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 
 export default async function AdminContaPage({
   searchParams,
@@ -85,6 +87,12 @@ export default async function AdminContaPage({
         <section className="space-y-3">
           <h2 className="font-semibold">Alterar password</h2>
           <AlterarPasswordForm action={atualizarPasswordConta} />
+        </section>
+
+        <section className="border-t border-[var(--color-linha)] pt-6">
+          <form action={logout}>
+            <LigacaoTerciaria>Sair da conta</LigacaoTerciaria>
+          </form>
         </section>
 
         <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">

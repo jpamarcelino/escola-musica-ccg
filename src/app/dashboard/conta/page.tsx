@@ -7,6 +7,7 @@ import {
   atualizarPasswordConta,
   apagarConta,
   apagarContaSuperAdmin,
+  logout,
 } from '@/lib/actions/auth'
 import { PageHeader } from '@/components/page-header'
 import { SubmitButton } from '@/components/submit-button'
@@ -21,6 +22,7 @@ import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin
 import { EmptyState } from '@/components/empty-state'
 import { criarConviteMigracaoAluno, resgatarConvite } from '@/lib/actions/convites'
 import { GerarLinkMigracaoForm, ResgatarConviteForm } from '@/components/convite-forms'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 
 export default async function ContaPage({
   searchParams,
@@ -223,6 +225,12 @@ export default async function ContaPage({
             </section>
           </>
         )}
+
+        <section className="border-t border-[var(--color-linha)] pt-6">
+          <form action={logout}>
+            <LigacaoTerciaria>Sair da conta</LigacaoTerciaria>
+          </form>
+        </section>
 
         <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
           {profile.super_admin ? (

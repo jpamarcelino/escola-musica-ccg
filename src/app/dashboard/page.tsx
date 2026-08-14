@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { logout } from '@/lib/actions/auth'
 import { criarAlunoDependente } from '@/lib/actions/aluno'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { SubmitButton } from '@/components/submit-button'
@@ -10,8 +9,9 @@ import { TituloSeccao, LinhaLista, GrupoLista } from '@/components/lista'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { CampoTexto } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
-import { proximaOcorrenciaDoDia, hojeISO } from '@/lib/datas'
+import { agoraNaEscola, proximaOcorrenciaDeAula, hojeISO } from '@/lib/datas'
 import { formatarHora } from '@/lib/horarios-grade'
+import { formatarSala } from '@/lib/sala'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 
 type AulaConfirmada = {
@@ -19,7 +19,12 @@ type AulaConfirmada = {
   horario_final_id: number | null
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
-  horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+  horarios: {
+    dia_semana: string
+    hora_inicio: string
+    hora_fim: string
+    salas: { nome: string; piso: number | null; numero: number | null } | null
+  } | null
 }
 
 // "Hoje", "Amanhã", ou o dia da semana — para a lista de próximas aulas.
@@ -91,7 +96,7 @@ export default async function DashboardPage({
         supabase
           .from('matriculas')
           .select(
-            'id, horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim)'
+            'id, horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
           )
           .eq('professor_id', user.id)
           .eq('estado', 'confirmado')
@@ -123,7 +128,11 @@ export default async function DashboardPage({
     const proximas = confirmadas
       .filter((c) => c.horarios)
       .map((c) => {
-        const data = proximaOcorrenciaDoDia(c.horarios!.dia_semana)
+        const data = proximaOcorrenciaDeAula(
+          c.horarios!.dia_semana,
+          c.horarios!.hora_inicio,
+          c.horarios!.hora_fim
+        )
         return { ...c, data }
       })
       .sort((a, b) =>
@@ -132,6 +141,29 @@ export default async function DashboardPage({
           : a.data.localeCompare(b.data)
       )
       .slice(0, 3)
+
+    // A Home dá prioridade ao trabalho operacional: depois de uma aula
+    // terminar, as presenças em falta aparecem antes da restante agenda.
+    const agora = agoraNaEscola()
+    const diaHoje = DIAS_SEMANA[(agora.getDay() + 6) % 7]
+    const horaAtual = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`
+    const matriculasTerminadasHoje = confirmadas.filter(
+      (m) => m.horarios?.dia_semana === diaHoje && m.horarios.hora_fim <= horaAtual
+    )
+    const idsTerminadasHoje = matriculasTerminadasHoje.map((m) => m.id)
+    const { data: presencasHojeData } = idsTerminadasHoje.length
+      ? await supabase
+          .from('presencas')
+          .select('matricula_id')
+          .eq('data', hojeISO())
+          .in('matricula_id', idsTerminadasHoje)
+      : { data: [] }
+    const presencasMarcadasHoje = new Set(
+      (presencasHojeData ?? []).map((p) => p.matricula_id)
+    )
+    const presencasPorConfirmar = idsTerminadasHoje.filter(
+      (id) => !presencasMarcadasHoje.has(id)
+    ).length
 
     return (
       <PaginaComHero
@@ -148,23 +180,46 @@ export default async function DashboardPage({
                   }
                 />
               </div>
-              {ocupacao !== null ? (
-                <AnelProgresso
-                  valor={ocupacao}
-                  numero={`${ocupacao}%`}
-                  label="Ocupação da agenda"
-                  legenda={`${horariosOcupados.size} de ${horariosAtivos.length} horários`}
-                />
-              ) : (
+              {proximas[0] ? (
+                <div
+                  className="w-full rounded-[var(--radius-medium)] border border-white/30 bg-[rgba(27,79,122,.28)] p-[18px]"
+                >
+                  <p className="text-[12px] font-semibold uppercase tracking-[.12em]">
+                    Próxima aula
+                  </p>
+                  <p className="mt-[8px] text-[20px] font-bold leading-tight">
+                    {proximas[0].instrumentos?.nome} · {proximas[0].alunos?.nome}
+                  </p>
+                  <p className="mt-[4px] text-[15px] leading-[1.5]">
+                    {rotuloDoDia(proximas[0].data, proximas[0].horarios!.dia_semana)},{' '}
+                    {formatarHora(proximas[0].horarios!.hora_inicio)}–{formatarHora(proximas[0].horarios!.hora_fim)}
+                    {formatarSala(proximas[0].horarios!.salas) &&
+                      ` · ${formatarSala(proximas[0].horarios!.salas)}`}
+                  </p>
+                </div>
+              ) : ocupacao === null ? (
                 <p className="text-[15px]">
                   Ainda não tens horários definidos — cria-os para começares a
                   receber pedidos.
                 </p>
+              ) : (
+                <p className="text-[15px]">Hoje não tens mais aulas marcadas.</p>
               )}
             </div>
           }
         >
           <InstalarCallout />
+
+          {presencasPorConfirmar > 0 && (
+            <>
+              <TituloSeccao contagem={presencasPorConfirmar}>Requer atenção</TituloSeccao>
+              <LinhaLista
+                href="/dashboard/presencas/confirmar"
+                titulo="Confirmar presenças de hoje"
+                contexto="Começa pelas aulas que já terminaram"
+              />
+            </>
+          )}
 
           <TituloSeccao>Próximas aulas</TituloSeccao>
           {proximas.length === 0 ? (
@@ -178,7 +233,7 @@ export default async function DashboardPage({
                   key={aula.id}
                   href={`/dashboard/agenda/${aula.horario_final_id}`}
                   titulo={`${aula.instrumentos?.nome} — ${aula.alunos?.nome}`}
-                  contexto={`${rotuloDoDia(aula.data, aula.horarios!.dia_semana)}, ${formatarHora(aula.horarios!.hora_inicio)}–${formatarHora(aula.horarios!.hora_fim)}`}
+                  contexto={`${rotuloDoDia(aula.data, aula.horarios!.dia_semana)}, ${formatarHora(aula.horarios!.hora_inicio)}–${formatarHora(aula.horarios!.hora_fim)}${formatarSala(aula.horarios!.salas) ? ` · ${formatarSala(aula.horarios!.salas)}` : ''}`}
                 />
               ))}
             </GrupoLista>
@@ -201,12 +256,9 @@ export default async function DashboardPage({
           <GrupoLista>
             <LinhaLista href="/dashboard/presencas" titulo="Presenças" />
             <LinhaLista href="/dashboard/horarios" titulo="Gestão de Horários" />
-            <LinhaLista href="/dashboard/calendario" titulo="Calendário Escolar" />
+            <LinhaLista href="/dashboard/mensalidades" titulo="Mensalidades" />
           </GrupoLista>
 
-          <form action={logout} className="flex justify-center pt-[32px]">
-            <LigacaoTerciaria>Sair</LigacaoTerciaria>
-          </form>
       </PaginaComHero>
     )
   }
@@ -219,25 +271,39 @@ export default async function DashboardPage({
     aluno_id: string
     estado: string
     instrumentos: { nome: string } | null
-    horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    horarios: {
+      dia_semana: string
+      hora_inicio: string
+      hora_fim: string
+      salas: { nome: string; piso: number | null; numero: number | null } | null
+    } | null
+    alunos: { nome: string } | null
   }
 
   // As duas consultas correm em paralelo: as matrículas filtram-se pelo
   // encarregado através do join a "alunos" (!inner), em vez de esperar
   // pela lista de ids da primeira consulta. Poupa um ida-e-volta à base
   // de dados no carregamento da Home.
-  const [{ data: meusAlunosData }, { data: matriculasData }] = await Promise.all([
+  const [{ data: meusAlunosData }, { data: matriculasData }, { data: avisosData }] = await Promise.all([
     supabase.from('alunos').select('id, nome').eq('encarregado_id', user.id).order('criado_em'),
     supabase
       .from('matriculas')
       .select(
-        'id, aluno_id, estado, instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim), alunos!inner(encarregado_id)'
+        'id, aluno_id, estado, instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero)), alunos!inner(nome, encarregado_id)'
       )
       .eq('alunos.encarregado_id', user.id)
       .in('estado', ['a_escolher', 'confirmado']),
+    supabase
+      .from('notificacoes')
+      .select('id, mensagem, criado_em')
+      .eq('user_id', user.id)
+      .eq('lida', false)
+      .order('criado_em', { ascending: false })
+      .limit(1),
   ])
   const meusAlunos = meusAlunosData ?? []
   const matriculas = (matriculasData ?? []) as unknown as MatriculaFilho[]
+  const avisoMaisRecente = avisosData?.[0] ?? null
 
   const confirmadasFilhos = matriculas.filter((m) => m.estado === 'confirmado' && m.horarios)
 
@@ -247,12 +313,19 @@ export default async function DashboardPage({
   // outra métrica só para encher o círculo seria pior do que não o ter.
   // Isto usa apenas dados que o encarregado já vê (horários semanais) e é
   // uma proporção genuína, que avança ao longo da semana.
-  const indiceHoje = (new Date().getDay() + 6) % 7
+  const indiceHoje = (agoraNaEscola().getDay() + 6) % 7
 
   function resumoDoFilho(alunoId: string) {
     const doFilho = confirmadasFilhos
       .filter((m) => m.aluno_id === alunoId)
-      .map((m) => ({ ...m, data: proximaOcorrenciaDoDia(m.horarios!.dia_semana) }))
+      .map((m) => ({
+        ...m,
+        data: proximaOcorrenciaDeAula(
+          m.horarios!.dia_semana,
+          m.horarios!.hora_inicio,
+          m.horarios!.hora_fim
+        ),
+      }))
       .sort((a, b) =>
         a.data === b.data
           ? a.horarios!.hora_inicio.localeCompare(b.horarios!.hora_inicio)
@@ -280,10 +353,23 @@ export default async function DashboardPage({
     return { proxima, semana, pendentes }
   }
 
-  const totalAulasSemana = confirmadasFilhos.length
   const umSoFilho = meusAlunos.length === 1
   const filhoUnico = umSoFilho ? meusAlunos[0] : null
   const resumoUnico = filhoUnico ? resumoDoFilho(filhoUnico.id) : null
+  const proximaGlobal = confirmadasFilhos
+    .map((m) => ({
+      ...m,
+      data: proximaOcorrenciaDeAula(
+        m.horarios!.dia_semana,
+        m.horarios!.hora_inicio,
+        m.horarios!.hora_fim
+      ),
+    }))
+    .sort((a, b) =>
+      a.data === b.data
+        ? a.horarios!.hora_inicio.localeCompare(b.horarios!.hora_inicio)
+        : a.data.localeCompare(b.data)
+    )[0] ?? null
 
   return (
     <PaginaComHero
@@ -291,23 +377,42 @@ export default async function DashboardPage({
         hero={
           <div className="space-y-[20px]">
             <HeroSaudacao nome={primeiroNome} />
-            <div>
-              <p
-                className="text-[56px] font-bold leading-[1]"
-                style={{ fontFamily: 'var(--font-fraunces)' }}
-              >
-                {totalAulasSemana}
+            {proximaGlobal ? (
+              <div className="rounded-[var(--radius-medium)] border border-white/30 bg-[rgba(27,79,122,.28)] p-[18px]">
+                <p className="text-[12px] font-semibold uppercase tracking-[.12em]">Próxima aula</p>
+                <p className="mt-[8px] text-[20px] font-bold leading-tight">
+                  {proximaGlobal.instrumentos?.nome}
+                  {meusAlunos.length > 1 && ` · ${proximaGlobal.alunos?.nome}`}
+                </p>
+                <p className="mt-[4px] text-[15px] leading-[1.5]">
+                  {rotuloDoDia(proximaGlobal.data, proximaGlobal.horarios!.dia_semana)},{' '}
+                  {formatarHora(proximaGlobal.horarios!.hora_inicio)}–{formatarHora(proximaGlobal.horarios!.hora_fim)}
+                  {formatarSala(proximaGlobal.horarios!.salas) &&
+                    ` · ${formatarSala(proximaGlobal.horarios!.salas)}`}
+                </p>
+              </div>
+            ) : (
+              <p className="text-[15px] leading-[1.5]">
+                Ainda não há aulas confirmadas. Podes começar por pedir uma aula.
               </p>
-              <p className="mt-[4px] text-[15px]">
-                {totalAulasSemana === 1 ? 'aula esta semana' : 'aulas esta semana'}
-              </p>
-            </div>
+            )}
           </div>
         }
       >
         {erro && <MensagemErro>{erro}</MensagemErro>}
 
         <InstalarCallout />
+
+        {avisoMaisRecente && (
+          <>
+            <TituloSeccao>Requer atenção</TituloSeccao>
+            <LinhaLista
+              href="/aluno/notificacoes"
+              titulo="Novo aviso"
+              contexto={avisoMaisRecente.mensagem}
+            />
+          </>
+        )}
 
         {/* Um só filho: resumo direto na Home, sem passo intermédio. */}
         {filhoUnico && resumoUnico && (
@@ -324,7 +429,7 @@ export default async function DashboardPage({
                 <LinhaLista
                   href={`/aluno/${filhoUnico.id}/horario`}
                   titulo={`Próxima aula: ${resumoUnico.proxima.instrumentos?.nome}`}
-                  contexto={`${rotuloDoDia(resumoUnico.proxima.data, resumoUnico.proxima.horarios!.dia_semana)}, ${formatarHora(resumoUnico.proxima.horarios!.hora_inicio)}`}
+                  contexto={`${rotuloDoDia(resumoUnico.proxima.data, resumoUnico.proxima.horarios!.dia_semana)}, ${formatarHora(resumoUnico.proxima.horarios!.hora_inicio)}${formatarSala(resumoUnico.proxima.horarios!.salas) ? ` · ${formatarSala(resumoUnico.proxima.horarios!.salas)}` : ''}`}
                   direita={
                     resumoUnico.semana ? (
                       <AnelProgresso
@@ -368,7 +473,7 @@ export default async function DashboardPage({
                     titulo={aluno.nome}
                     contexto={
                       resumo.proxima
-                        ? `${resumo.proxima.instrumentos?.nome} — ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}`
+                        ? `${resumo.proxima.instrumentos?.nome} — ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}${formatarSala(resumo.proxima.horarios!.salas) ? ` · ${formatarSala(resumo.proxima.horarios!.salas)}` : ''}`
                         : resumo.pendentes > 0
                           ? `${resumo.pendentes} ${resumo.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}`
                           : 'Sem aulas marcadas'
@@ -390,27 +495,28 @@ export default async function DashboardPage({
           </>
         )}
 
-        <TituloSeccao>Adicionar aluno</TituloSeccao>
-        <form action={criarAlunoDependente} className="space-y-[14px]">
-          <CampoTexto id="nome" name="nome" label="Nome do aluno" />
-          <CampoTexto
-            id="dataNascimento"
-            name="dataNascimento"
-            label="Data de nascimento"
-            type="date"
-            required={false}
-          />
-          <SubmitButton
-            textoAGuardar="A adicionar..."
-            className="flex h-[56px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] text-[15.5px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
-          >
-            Adicionar Aluno
-          </SubmitButton>
-        </form>
+        <details className="mt-[24px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[16px] py-[14px]">
+          <summary className="cursor-pointer text-[15px] font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-primary-mid)]">
+            Adicionar aluno
+          </summary>
+          <form action={criarAlunoDependente} className="mt-[16px] space-y-[14px]">
+            <CampoTexto id="nome" name="nome" label="Nome do aluno" />
+            <CampoTexto
+              id="dataNascimento"
+              name="dataNascimento"
+              label="Data de nascimento"
+              type="date"
+              required={false}
+            />
+            <SubmitButton
+              textoAGuardar="A adicionar..."
+              className="flex h-[56px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] text-[15.5px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
+            >
+              Adicionar aluno
+            </SubmitButton>
+          </form>
+        </details>
 
-        <form action={logout} className="flex justify-center pt-[32px]">
-          <LigacaoTerciaria>Sair</LigacaoTerciaria>
-        </form>
     </PaginaComHero>
   )
 }

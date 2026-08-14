@@ -1,12 +1,11 @@
-import { SkeletonCabecalho, SkeletonLista } from '@/components/skeleton'
+import { EcraCarregamento } from '@/components/ecra-carregamento'
 
 export default function Loading() {
   return (
-    <main className="flex-1 flex justify-center p-6">
-      <div className="w-full max-w-[720px] space-y-[26px]">
-        <SkeletonCabecalho />
-        <SkeletonLista linhas={5} />
-      </div>
-    </main>
+    <EcraCarregamento
+      mensagem="A preparar a tua área…"
+      contexto="Estamos a carregar agenda, pedidos e presenças."
+      cobrirEcra
+    />
   )
 }

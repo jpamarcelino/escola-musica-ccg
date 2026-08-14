@@ -1,3 +1,5 @@
+import { agoraNaEscola } from '@/lib/datas'
+
 // Estrutura hero + content surface (DESIGN_SYSTEM_V2.md secção 7).
 //
 // O hero é a área em gradiente no topo — saudação, número dominante,
@@ -24,9 +26,9 @@ export function PaginaComHero({
       className="flex flex-1 flex-col"
       style={{ background: 'var(--gradient-hero)' }}
     >
-      <div className="px-[24px] pb-[32px] pt-[20px] text-white">{hero}</div>
+      <div className="px-[24px] pb-[32px] pt-[max(20px,env(safe-area-inset-top,0px))] text-white">{hero}</div>
       <div
-        className={`flex-1 bg-white px-[20px] pt-[24px] ${comBottomNav ? 'pb-[104px]' : 'pb-[32px]'}`}
+        className={`flex-1 bg-white px-[20px] pt-[24px] ${comBottomNav ? 'pb-[calc(112px+env(safe-area-inset-bottom,0px))]' : 'pb-[32px]'}`}
         style={{
           borderTopLeftRadius: 'var(--radius-large)',
           borderTopRightRadius: 'var(--radius-large)',
@@ -40,7 +42,7 @@ export function PaginaComHero({
 
 // Saudação do hero: "Bom dia, Francisco" com a hora certa do dia.
 export function saudacaoDoDia(): string {
-  const hora = new Date().getHours()
+  const hora = agoraNaEscola().getHours()
   if (hora < 6) return 'Boa noite'
   if (hora < 13) return 'Bom dia'
   if (hora < 20) return 'Boa tarde'

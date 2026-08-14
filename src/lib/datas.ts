@@ -1,5 +1,33 @@
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 
+const FUSO_HORARIO_ESCOLA = 'Europe/Lisbon'
+
+// Constrói uma data cujos componentes locais representam a hora da escola,
+// independentemente do fuso horário do servidor (por exemplo, UTC na Vercel).
+export function agoraNaEscola(instante = new Date()): Date {
+  const partes = new Intl.DateTimeFormat('en-GB', {
+    timeZone: FUSO_HORARIO_ESCOLA,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(instante)
+  const valor = (tipo: Intl.DateTimeFormatPartTypes) =>
+    Number(partes.find((parte) => parte.type === tipo)?.value ?? 0)
+
+  return new Date(
+    valor('year'),
+    valor('month') - 1,
+    valor('day'),
+    valor('hour'),
+    valor('minute'),
+    valor('second')
+  )
+}
+
 function indiceDoDia(diaSemana: string) {
   return DIAS_SEMANA.indexOf(diaSemana)
 }
@@ -31,7 +59,20 @@ export function dataEhFutura(data: string): boolean {
 }
 
 export function hojeISO(): string {
-  return paraISO(new Date())
+  return paraISO(agoraNaEscola())
+}
+
+// Formata datas ISO sem as converter para UTC. Usar `new Date('2026-08-12')`
+// pode mostrar o dia anterior nalguns fusos horários; o meio-dia local evita
+// essa alteração e mantém a data escolar intacta.
+export function formatarDataEscolar(
+  data: string,
+  opcoes: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' }
+): string {
+  const [ano, mes, dia] = data.split('-').map(Number)
+  return new Intl.DateTimeFormat('pt-PT', opcoes).format(
+    new Date(ano, mes - 1, dia, 12)
+  )
 }
 
 // Antes de existir um calendário do ano letivo, as presenças começam a
@@ -53,8 +94,30 @@ export function datasDoDia(diaSemana: string, desde: string, ate: string): strin
 
 // A próxima aula desse dia da semana a partir de hoje (hoje incluído) —
 // usada para mostrar a "próxima aula marcada" ao aluno.
-export function proximaOcorrenciaDoDia(diaSemana: string, referencia = new Date()): string {
+export function proximaOcorrenciaDoDia(
+  diaSemana: string,
+  referencia = agoraNaEscola()
+): string {
   return dataMaisRecenteDoDiaApartirDe(diaSemana, paraISO(referencia))
+}
+
+// Próxima ocorrência real de uma aula: quando a aula é hoje mas a hora já
+// passou, devolve a semana seguinte. A versão que considera apenas o dia é
+// útil para calendários; para cards "Próxima aula" esta é a função correta.
+export function proximaOcorrenciaDeAula(
+  diaSemana: string,
+  horaInicio: string,
+  horaFim?: string,
+  referencia = agoraNaEscola()
+): string {
+  const candidata = proximaOcorrenciaDoDia(diaSemana, referencia)
+  if (candidata !== paraISO(referencia)) return candidata
+
+  const [hora, minuto] = (horaFim ?? horaInicio).split(':').map(Number)
+  const limite = new Date(referencia)
+  limite.setHours(hora, minuto, 0, 0)
+
+  return limite > referencia ? candidata : somarDias(candidata, 7)
 }
 
 // A primeira ocorrência desse dia da semana a partir de (e incluindo) "desde".

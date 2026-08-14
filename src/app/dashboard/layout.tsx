@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { BottomNavigation, type ItemNav } from '@/components/bottom-navigation'
 
@@ -5,11 +6,7 @@ import { BottomNavigation, type ItemNav } from '@/components/bottom-navigation'
 // todas as páginas de /dashboard/* — não é um enfeite da Home. Os
 // destinos dependem do perfil (professor vs. encarregado), por isso o
 // layout resolve o tipo de conta uma vez e escolhe a nav certa.
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+async function DashboardNavigation() {
   const supabase = await createClient()
   const {
     data: { user },
@@ -26,10 +23,10 @@ export default async function DashboardLayout({
 
     if (perfil?.tipo === 'professor') {
       nav = [
-        { href: '/dashboard', label: 'Início', icone: 'inicio' },
-        { href: '/dashboard/agenda', label: 'Horários e Alunos', icone: 'calendario' },
-        { href: '/dashboard/pedidos', label: 'Pedidos de Aula', icone: 'mais', central: true },
-        { href: '/dashboard/mensalidades', label: 'Mensalidades', icone: 'carteira' },
+        { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
+        { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },
+        { href: '/dashboard/presencas', label: 'Presenças', icone: 'presencas' },
+        { href: '/dashboard/pedidos', label: 'Pedidos', icone: 'pedidos' },
         { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
       ]
     } else if (perfil?.tipo === 'aluno') {
@@ -42,30 +39,42 @@ export default async function DashboardLayout({
       const alunoId = alunos?.[0]?.id
 
       nav = [
-        { href: '/dashboard', label: 'Início', icone: 'inicio' },
+        { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
         {
           href: alunoId ? `/aluno/${alunoId}/horario` : '/dashboard',
-          label: 'Horário e Aulas',
+          label: 'Agenda',
           icone: 'calendario',
         },
         {
-          href: alunoId ? `/aluno/${alunoId}/pedido` : '/pedir-aula',
-          label: 'Pedir Aula',
-          icone: 'mais',
-          central: true,
+          href: alunoId ? `/aluno/${alunoId}` : '/dashboard',
+          label: 'Aluno',
+          icone: 'alunos',
         },
-        { href: '/aluno/notificacoes', label: 'Notificações', icone: 'notificacoes' },
+        { href: '/aluno/notificacoes', label: 'Avisos', icone: 'notificacoes' },
         { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
       ]
     }
   }
 
+  return nav ? <BottomNavigation itens={nav} /> : null
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   // Sem padding aqui: as páginas com hero já reservam espaço para a nav
   // (comBottomNav), e as interiores usam o seu próprio padding.
   return (
     <>
       {children}
-      {nav && <BottomNavigation itens={nav} />}
+      {/* A navegação depende do perfil, mas não deve bloquear o loading da
+          página. O Suspense permite enviar o fallback imediatamente enquanto
+          esta consulta decorre em paralelo com o conteúdo. */}
+      <Suspense fallback={null}>
+        <DashboardNavigation />
+      </Suspense>
     </>
   )
 }

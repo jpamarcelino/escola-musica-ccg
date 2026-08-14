@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
+import { GrupoLista, LinhaLista } from '@/components/lista'
+import { MensagemInfo } from '@/components/mensagem'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
 
 type MatriculaDoProfessor = {
@@ -55,34 +57,36 @@ export default async function MensalidadesProfessorPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('tipo, adere_recomendacao')
-    .eq('id', user.id)
-    .single()
-
-  if (perfilAtual?.tipo !== 'professor') {
-    redirect('/dashboard')
-  }
-
   const escolhido =
     MESES_ANO_LETIVO.find(
       (m) => String(m.ano) === anoParam && String(m.mes) === mesParam
     ) ?? mesPredefinido()
 
-  const { data: matriculasData } = await supabase
-    .from('matriculas')
-    .select('id, aluno_id, valor_mensal, alunos(nome), instrumentos(nome)')
-    .eq('professor_id', user.id)
-    .eq('estado', 'confirmado')
-  const matriculas = (matriculasData ?? []) as unknown as MatriculaDoProfessor[]
+  const [{ data: perfilAtual }, { data: matriculasData }, { data: mensalidadesData }] =
+    await Promise.all([
+      supabase
+        .from('perfis_escola')
+        .select('tipo, adere_recomendacao')
+        .eq('id', user.id)
+        .single(),
+      supabase
+        .from('matriculas')
+        .select('id, aluno_id, valor_mensal, alunos(nome), instrumentos(nome)')
+        .eq('professor_id', user.id)
+        .eq('estado', 'confirmado'),
+      supabase
+        .from('mensalidades')
+        .select('aluno_id, valor, pago, desistencia, beneficio_id, instrumento_nome')
+        .eq('professor_id', user.id)
+        .eq('ano', escolhido.ano)
+        .eq('mes', escolhido.mes),
+    ])
 
-  const { data: mensalidadesData } = await supabase
-    .from('mensalidades')
-    .select('aluno_id, valor, pago, desistencia, beneficio_id, instrumento_nome')
-    .eq('professor_id', user.id)
-    .eq('ano', escolhido.ano)
-    .eq('mes', escolhido.mes)
+  if (perfilAtual?.tipo !== 'professor') {
+    redirect('/dashboard')
+  }
+
+  const matriculas = (matriculasData ?? []) as unknown as MatriculaDoProfessor[]
   const mensalidades = (mensalidadesData ?? []) as MensalidadeDoMes[]
 
   // A identidade de uma mensalidade é (aluno, professor, ano, mês) desde
@@ -118,21 +122,25 @@ export default async function MensalidadesProfessorPage({
       <div className="w-full max-w-2xl space-y-6">
         <PageHeader voltar="/dashboard" titulo="Mensalidades" subtitulo={<>{escolhido.label} de {escolhido.ano}</>} />
 
-        <div className="flex flex-wrap gap-1">
+        <nav
+          aria-label="Escolher mês"
+          className="-mx-6 flex gap-[8px] overflow-x-auto px-6 pb-[4px] [scrollbar-width:none]"
+        >
           {MESES_ANO_LETIVO.map((m) => (
             <Link
               key={`${m.ano}-${m.mes}`}
               href={`/dashboard/mensalidades?ano=${m.ano}&mes=${m.mes}`}
               className={
                 m.ano === escolhido.ano && m.mes === escolhido.mes
-                  ? 'rounded bg-brand px-2 py-1 text-xs text-white'
-                  : 'rounded border border-foreground/20 px-2 py-1 text-xs'
+                  ? 'flex min-h-[44px] shrink-0 items-center rounded-[var(--radius-pill)] bg-brand px-[16px] text-[13px] font-semibold text-white'
+                  : 'flex min-h-[44px] shrink-0 items-center rounded-[var(--radius-pill)] border border-foreground/20 px-[16px] text-[13px] font-medium'
               }
+              aria-current={m.ano === escolhido.ano && m.mes === escolhido.mes ? 'page' : undefined}
             >
-              {m.label.slice(0, 3)}
+              {m.label.slice(0, 3)} {String(m.ano).slice(-2)}
             </Link>
           ))}
-        </div>
+        </nav>
 
         <section className="grid grid-cols-3 gap-3">
           <div className="stat-tile">
@@ -150,36 +158,32 @@ export default async function MensalidadesProfessorPage({
         </section>
 
         {naoDevidas.length > 0 && (
-          <p className="rounded border border-foreground/15 p-3 text-sm text-foreground/70">
+          <MensagemInfo>
             {naoDevidas.length === 1
               ? 'Uma das mensalidades deste mês está abrangida pelo Programa de Recomendação — não há pagamento a receber por ela'
               : `${naoDevidas.length} mensalidades deste mês estão abrangidas pelo Programa de Recomendação — não há pagamento a receber por elas`}
             , porque a tua parcela e a do CCG foram oferecidas ao aluno que trouxe um novo
             aluno para as tuas aulas.
-          </p>
+          </MensagemInfo>
         )}
 
         {linhas.length === 0 ? (
           <EmptyState titulo="Não tens alunos com matrícula confirmada" />
         ) : (
-          <div className="space-y-2">
+          <GrupoLista>
             {linhas.map((l) => (
-              <div key={l.chave} className="lista-item flex items-center justify-between gap-3">
-                <div>
-                  <p className="lista-item-titulo">{l.nome}</p>
-                  <p className="lista-item-sub">
-                    {l.disciplina}
-                    {l.estado === 'nao_devida'
-                      ? ' — 0.00€'
-                      : l.valor !== null && ` — ${l.valor.toFixed(2)}€`}
-                  </p>
-                </div>
-                <span className={`estado-pill ${ESTADO[l.estado].classe}`}>
-                  {ESTADO[l.estado].label}
-                </span>
-              </div>
+              <LinhaLista
+                key={l.chave}
+                titulo={l.nome}
+                contexto={`${l.disciplina}${l.estado === 'nao_devida' ? ' · 0,00 €' : l.valor !== null ? ` · ${l.valor.toFixed(2).replace('.', ',')} €` : ''}`}
+                direita={
+                  <span className={`estado-pill ${ESTADO[l.estado].classe}`}>
+                    {ESTADO[l.estado].label}
+                  </span>
+                }
+              />
             ))}
-          </div>
+          </GrupoLista>
         )}
 
         {!perfilAtual.adere_recomendacao && (

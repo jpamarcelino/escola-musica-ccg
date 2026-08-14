@@ -1,8 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { formatarDataEscolar } from '@/lib/datas'
 import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { EmptyState } from '@/components/empty-state'
+import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
 
 type Matricula = {
   id: number
@@ -22,6 +23,10 @@ const ESTADO_LABEL: Record<string, string> = {
   falta_sem_aviso: 'Falta s/ aviso',
 }
 
+function inicialMaiuscula(texto: string): string {
+  return texto.charAt(0).toLocaleUpperCase('pt-PT') + texto.slice(1)
+}
+
 export default async function HistoricoAlunoPage({
   params,
 }: {
@@ -38,32 +43,25 @@ export default async function HistoricoAlunoPage({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('perfis_escola')
-    .select('tipo')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: alunoData }, { data: matriculasData }] =
+    await Promise.all([
+      supabase.from('perfis_escola').select('tipo').eq('id', user.id).single(),
+      supabase.from('alunos').select('nome').eq('id', alunoId).maybeSingle(),
+      supabase
+        .from('matriculas')
+        .select('id, instrumentos(nome)')
+        .eq('professor_id', user.id)
+        .eq('aluno_id', alunoId)
+        .eq('estado', 'confirmado'),
+    ])
 
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
   }
 
-  const { data: alunoData } = await supabase
-    .from('alunos')
-    .select('nome')
-    .eq('id', alunoId)
-    .maybeSingle()
-
   if (!alunoData) {
     notFound()
   }
-
-  const { data: matriculasData } = await supabase
-    .from('matriculas')
-    .select('id, instrumentos(nome)')
-    .eq('professor_id', user.id)
-    .eq('aluno_id', alunoId)
-    .eq('estado', 'confirmado')
   const matriculas = (matriculasData ?? []) as unknown as Matricula[]
   const instrumentoPorMatricula = new Map(
     matriculas.map((m) => [m.id, m.instrumentos?.nome ?? null])
@@ -79,35 +77,59 @@ export default async function HistoricoAlunoPage({
           .order('data', { ascending: false })
       : { data: [] }
   const presencas = (presencasData ?? []) as unknown as Presenca[]
+  const presentes = presencas.filter((p) => p.estado === 'presente').length
+  const percentagemPresencas = presencas.length > 0
+    ? Math.round((presentes / presencas.length) * 100)
+    : null
+  const porMes = new Map<string, Presenca[]>()
+  for (const presenca of presencas) {
+    const chave = presenca.data.slice(0, 7)
+    porMes.set(chave, [...(porMes.get(chave) ?? []), presenca])
+  }
 
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: 'Presenças', href: '/dashboard/presencas' },
-            { label: 'Histórico', href: '/dashboard/presencas/historico' },
-            { label: alunoData.nome },
-          ]}
+        <PageHeader
+          voltar="/dashboard/presencas/historico"
+          titulo={alunoData.nome}
+          subtitulo={
+            percentagemPresencas !== null
+              ? <>{percentagemPresencas}% de presenças · {presencas.length} {presencas.length === 1 ? 'aula registada' : 'aulas registadas'}.</>
+              : undefined
+          }
         />
-        <PageHeader voltar="/dashboard/presencas/historico" titulo={alunoData.nome} />
 
         {presencas.length === 0 ? (
           <EmptyState titulo="Ainda não há presenças registadas para este aluno" />
         ) : (
-          <div className="space-y-2">
-            {presencas.map((p) => (
-              <div key={p.id} className="lista-item flex items-center justify-between gap-3">
-                <div>
-                  <p className="lista-item-titulo">{p.data}</p>
-                  {instrumentoPorMatricula.get(p.matricula_id) && (
-                    <p className="lista-item-sub">{instrumentoPorMatricula.get(p.matricula_id)}</p>
-                  )}
-                </div>
-                <span className={`estado-pill estado-${p.estado}`}>
-                  {ESTADO_LABEL[p.estado] ?? p.estado}
-                </span>
-              </div>
+          <div>
+            {[...porMes.entries()].map(([mes, registos]) => (
+              <section key={mes}>
+                <TituloSeccao contagem={registos.length}>
+                  {inicialMaiuscula(formatarDataEscolar(`${mes}-01`, { month: 'long', year: 'numeric' }))}
+                </TituloSeccao>
+                <GrupoLista>
+                  {registos.map((p) => (
+                    <LinhaLista
+                      key={p.id}
+                      titulo={inicialMaiuscula(
+                        formatarDataEscolar(p.data, {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                        })
+                      )}
+                      contexto={instrumentoPorMatricula.get(p.matricula_id) ?? undefined}
+                      direita={
+                        <span className={`estado-pill estado-${p.estado}`}>
+                          {ESTADO_LABEL[p.estado] ?? p.estado}
+                        </span>
+                      }
+                    />
+                  ))}
+                </GrupoLista>
+              </section>
             ))}
           </div>
         )}

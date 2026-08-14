@@ -25,28 +25,23 @@ export default async function PresencasPage() {
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('perfis_escola')
-    .select('tipo')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: horariosData }, { data: matriculasData }] =
+    await Promise.all([
+      supabase.from('perfis_escola').select('tipo').eq('id', user.id).single(),
+      supabase.from('horarios').select('id, dia_semana').eq('professor_id', user.id),
+      supabase
+        .from('matriculas')
+        .select('id, horario_final_id')
+        .eq('professor_id', user.id)
+        .eq('estado', 'confirmado')
+        .not('horario_final_id', 'is', null),
+    ])
 
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
   }
 
-  const { data: horariosData } = await supabase
-    .from('horarios')
-    .select('id, dia_semana')
-    .eq('professor_id', user.id)
   const horarios = (horariosData ?? []) as unknown as Horario[]
-
-  const { data: matriculasData } = await supabase
-    .from('matriculas')
-    .select('id, horario_final_id')
-    .eq('professor_id', user.id)
-    .eq('estado', 'confirmado')
-    .not('horario_final_id', 'is', null)
   const matriculas = (matriculasData ?? []) as unknown as MatriculaConfirmada[]
 
   const matriculaIdsPorHorario = new Map<number, number[]>()
@@ -85,10 +80,23 @@ export default async function PresencasPage() {
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard" titulo="Presenças" />
+        <PageHeader
+          voltar="/dashboard"
+          titulo="Presenças"
+          subtitulo={
+            porConfirmar > 0
+              ? <>{porConfirmar} {porConfirmar === 1 ? 'aula precisa' : 'aulas precisam'} de confirmação.</>
+              : <>Tudo confirmado até hoje.</>
+          }
+        />
 
         <GrupoLista>
-          <LinhaLista href="/dashboard/presencas/confirmar" titulo="Presenças por Confirmar" direita={porConfirmar > 0 ? <Distintivo>{porConfirmar}</Distintivo> : undefined} />
+          <LinhaLista
+            href="/dashboard/presencas/confirmar"
+            titulo={porConfirmar > 0 ? 'Confirmar presenças' : 'Presenças confirmadas'}
+            contexto={porConfirmar > 0 ? 'Começa pelas aulas mais antigas' : 'Não tens ações pendentes'}
+            direita={porConfirmar > 0 ? <Distintivo>{porConfirmar}</Distintivo> : undefined}
+          />
           <LinhaLista href="/dashboard/presencas/historico" titulo="Histórico de Presenças" />
         </GrupoLista>
       </div>

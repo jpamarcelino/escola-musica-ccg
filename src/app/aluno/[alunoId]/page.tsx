@@ -45,7 +45,6 @@ export default async function AlunoHubPage({
         <div className="flex flex-col gap-[11px] md:grid md:grid-cols-2 md:items-start">
           <CartaoLink href={`/aluno/${alunoId}/pedido`} nome="Pedir Aula" />
           <CartaoLink href={`/aluno/${alunoId}/horario`} nome="Horário e Aulas" />
-          <CartaoLink href="/aluno/calendario" nome="Calendário Escolar" />
           <CartaoLink href={`/aluno/${alunoId}/materiais`} nome="Materiais das Aulas" />
           <CartaoLink
             href="/aluno/notificacoes"

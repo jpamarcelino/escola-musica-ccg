@@ -1,12 +1,13 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { EmptyState } from '@/components/empty-state'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { dataMaisRecenteDoDia } from '@/lib/datas'
 import { marcarPresencas } from '@/lib/actions/presencas'
+import { SubmitButton } from '@/components/submit-button'
+import { MensagemErro } from '@/components/mensagem'
 
 type Aluno = {
   id: number
@@ -79,19 +80,10 @@ export default async function PresencasHorarioPage({
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: 'Presenças', href: '/dashboard/presencas' },
-            { label: 'Confirmar', href: '/dashboard/presencas/confirmar' },
-            {
-              label: `${horario.dia_semana}, ${formatarHora(horario.hora_inicio)}–${formatarHora(horario.hora_fim)}`,
-            },
-          ]}
-        />
         <PageHeader voltar="/dashboard/presencas/confirmar" titulo={horario.dia_semana} subtitulo={<>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
               {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}</>} />
 
-        <form method="get" className="flex items-center gap-2">
+        <form method="get" className="flex flex-wrap items-end gap-[8px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] p-[14px]">
           <label htmlFor="data" className="text-sm text-foreground/60">
             Data da aula
           </label>
@@ -100,14 +92,14 @@ export default async function PresencasHorarioPage({
             type="date"
             name="data"
             defaultValue={data}
-            className="rounded border border-foreground/20 px-2 py-1 text-sm"
+            className="h-[44px] rounded-[var(--radius-small)] border border-[var(--color-linha)] bg-white px-[12px] text-[14px]"
           />
-          <button type="submit" className="rounded border border-foreground/20 px-3 py-1 text-sm">
+          <button type="submit" className="h-[44px] rounded-[var(--radius-pill)] border border-[var(--color-ink)] px-[16px] text-[14px] font-semibold">
             Ver
           </button>
         </form>
 
-        {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
+        {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
 
         {alunos.length === 0 ? (
           <EmptyState titulo="Não há alunos confirmados neste horário" />
@@ -117,14 +109,14 @@ export default async function PresencasHorarioPage({
             <input type="hidden" name="data" value={data} />
             <div className="space-y-3">
               {alunos.map((aluno) => (
-                <div key={aluno.id} className="lista-item">
-                  <p className="lista-item-titulo">{aluno.alunos?.nome}</p>
+                <fieldset key={aluno.id} className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] p-[16px]">
+                  <legend className="px-[2px] text-[15px] font-semibold">{aluno.alunos?.nome}</legend>
                   {aluno.instrumentos?.nome && (
-                    <p className="lista-item-sub">{aluno.instrumentos.nome}</p>
+                    <p className="text-[13px] text-[var(--color-text-secondary)]">{aluno.instrumentos.nome}</p>
                   )}
-                  <div className="mt-2 flex flex-wrap gap-3">
+                  <div className="mt-[12px] grid gap-[8px] sm:grid-cols-3">
                     {ESTADOS.map((e) => (
-                      <label key={e.valor} className="flex items-center gap-1 text-sm">
+                      <label key={e.valor} className="flex min-h-[48px] cursor-pointer items-center gap-[8px] rounded-[var(--radius-small)] border border-[var(--color-linha)] bg-white px-[12px] text-[14px] has-[:checked]:border-[var(--color-primary)] has-[:checked]:bg-[rgba(27,79,122,.08)]">
                         <input
                           type="radio"
                           name={`estado_${aluno.id}`}
@@ -135,12 +127,15 @@ export default async function PresencasHorarioPage({
                       </label>
                     ))}
                   </div>
-                </div>
+                </fieldset>
               ))}
             </div>
-            <button type="submit" className="botao-cartao">
+            <SubmitButton
+              textoAGuardar="A guardar..."
+              className="flex min-h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-ink)] px-[20px] text-[15px] font-semibold text-white disabled:opacity-50"
+            >
               Guardar presenças
-            </button>
+            </SubmitButton>
           </form>
         )}
       </div>

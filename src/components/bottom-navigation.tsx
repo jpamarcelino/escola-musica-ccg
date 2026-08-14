@@ -5,18 +5,20 @@ import { usePathname } from 'next/navigation'
 import {
   Home,
   CalendarDays,
-  Plus,
   Wallet,
   User,
   Bell,
   GraduationCap,
   Users,
+  ClipboardCheck,
+  Inbox,
+  Menu,
   type LucideIcon,
 } from 'lucide-react'
 
-// Navegação inferior (DESIGN_SYSTEM_V2.md secção 11) — cápsula preta
-// flutuante, separada das bordas do ecrã, com o item central destacado
-// (fundo branco, maior) para a ação mais frequente daquele perfil.
+// Navegação inferior explícita: os destinos têm ícone e texto visível.
+// A versão anterior usava um "+" com três significados diferentes conforme
+// o perfil, obrigando a aprender a interface por tentativa e erro.
 //
 // Os ícones são referidos por nome (string) e resolvidos aqui dentro:
 // um Server Component não pode passar componentes/funções como prop a
@@ -24,19 +26,21 @@ import {
 const ICONES: Record<string, LucideIcon> = {
   inicio: Home,
   calendario: CalendarDays,
-  mais: Plus,
   carteira: Wallet,
   perfil: User,
   notificacoes: Bell,
   alunos: GraduationCap,
   professores: Users,
+  presencas: ClipboardCheck,
+  pedidos: Inbox,
+  mais: Menu,
 }
 
 export type ItemNav = {
   href: string
   label: string
   icone: keyof typeof ICONES
-  central?: boolean
+  correspondencia?: 'exata' | 'prefixo'
 }
 
 export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
@@ -45,40 +49,35 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-[16px] z-40 flex justify-center px-[16px]"
+      className="fixed inset-x-0 z-40 flex justify-center px-[12px]"
+      style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))' }}
     >
       <div
-        className="flex items-center gap-[4px] rounded-[var(--radius-pill)] px-[10px] py-[10px]"
+        className="flex w-full max-w-[430px] items-stretch gap-[2px] rounded-[var(--radius-pill)] px-[8px] py-[8px]"
         style={{ backgroundColor: 'var(--color-ink)', boxShadow: 'var(--shadow-flutuante)' }}
       >
         {itens.map((item) => {
           const Icone = ICONES[item.icone]
-          const ativo = pathname === item.href || pathname.startsWith(`${item.href}/`)
-
-          if (item.central) {
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-label={item.label}
-                aria-current={ativo ? 'page' : undefined}
-                className="mx-[4px] flex h-[48px] w-[48px] items-center justify-center rounded-full bg-white text-[var(--color-ink)] transition-transform motion-safe:active:scale-[0.94] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <Icone size={22} strokeWidth={2} aria-hidden="true" />
-              </Link>
-            )
-          }
+          const correspondencia = item.correspondencia ?? 'prefixo'
+          const ativo =
+            pathname === item.href ||
+            (correspondencia === 'prefixo' && pathname.startsWith(`${item.href}/`))
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              aria-label={item.label}
               aria-current={ativo ? 'page' : undefined}
-              className="flex h-[44px] w-[52px] flex-col items-center justify-center gap-[2px] rounded-[var(--radius-pill)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              style={{ color: ativo ? '#ffffff' : 'rgba(255,255,255,.5)' }}
+              className="flex min-h-[52px] min-w-0 flex-1 flex-col items-center justify-center gap-[3px] rounded-[var(--radius-pill)] px-[2px] transition-[color,background-color] motion-safe:active:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              style={{
+                color: ativo ? '#ffffff' : 'rgba(255,255,255,.68)',
+                backgroundColor: ativo ? 'rgba(255,255,255,.12)' : 'transparent',
+              }}
             >
               <Icone size={20} strokeWidth={ativo ? 2 : 1.5} aria-hidden="true" />
+              <span className="max-w-full truncate text-[12px] font-medium leading-none">
+                {item.label}
+              </span>
             </Link>
           )
         })}

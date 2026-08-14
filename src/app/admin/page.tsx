@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { logout } from '@/lib/actions/auth'
 import { PaginaComHero, HeroSaudacao } from '@/components/hero-section'
 import { TituloSeccao, LinhaLista, GrupoLista } from '@/components/lista'
-import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -109,9 +107,6 @@ export default async function AdminPage() {
         )}
       </GrupoLista>
 
-      <form action={logout} className="flex justify-center pt-[32px]">
-        <LigacaoTerciaria>Sair</LigacaoTerciaria>
-      </form>
     </PaginaComHero>
   )
 }
