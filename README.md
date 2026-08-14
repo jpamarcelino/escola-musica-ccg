@@ -72,16 +72,23 @@ src/
     *.ts               regras de domínio: idades, horários, ano letivo…
 supabase/
   migrations/          histórico do esquema, por ordem numérica
-  schema.sql           estado atual, para referência
+  schema.sql           estado INICIAL do projeto — desatualizado, ver abaixo
 ```
 
 ## Base de dados
 
 O esquema evolui por migrações numeradas em `supabase/migrations/`. **Cada
-alteração é um ficheiro novo** — nunca se edita um já aplicado.
+alteração é um ficheiro novo** — nunca se edita um já aplicado. São aplicadas à
+mão, no SQL Editor do Supabase; não há processo automático.
 
-As migrações são aplicadas à mão, no SQL Editor do Supabase. Não há ainda um
-processo automático: depois de aplicar, atualizar `supabase/schema.sql`.
+⚠️ **`schema.sql` não descreve a base de dados de hoje.** É o arranque de raiz
+(criar um projeto Supabase vazio do zero) e ficou parado no início do projeto —
+descreve, por exemplo, uma coluna `profiles.tipo` que a migração `0021` moveu
+para `perfis_escola`. Quem o ler à espera do estado atual escreve consultas que
+falham.
+
+**A verdade sobre o esquema está em `migrations/`, lidas por ordem** — ou, mais
+depressa, no Table Editor do Supabase.
 
 Boa parte da lógica de autorização vive em policies de RLS e em funções
 `security definer` (`eh_admin()`, `professores_publicos()`, …). Antes de assumir

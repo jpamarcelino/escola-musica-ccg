@@ -6,6 +6,14 @@
 -- Este ficheiro é o estado inicial (bootstrap num projeto Supabase vazio).
 -- Mudanças posteriores ao esquema em produção ficam em supabase/migrations/,
 -- por ordem — corre-as pela SQL Editor do Supabase, uma de cada vez.
+--
+-- ATENÇÃO: isto NÃO é o esquema atual, e a diferença já é grande.
+-- Exemplos do que aqui está e em produção não existe assim:
+--   * profiles.tipo/admin/programa  -> moveram para perfis_escola (0021)
+--   * matriculas.aluno_id           -> aponta para alunos(id), não profiles (0017)
+--   * instrumentos.programa         -> aceita também 'bebes' (0023)
+-- Para saber como a base está hoje: lê migrations/ por ordem, ou abre o
+-- Table Editor do Supabase. Não escrevas consultas a partir deste ficheiro.
 
 -- 1. Perfis de utilizador (aluno ou professor), ligados à conta de login do Supabase
 create table profiles (
