@@ -62,6 +62,28 @@ export function hojeISO(): string {
   return paraISO(agoraNaEscola())
 }
 
+export type EstadoTemporalAula = 'agora' | 'proxima' | 'futura'
+
+export function estadoTemporalAula(
+  data: string,
+  horaInicio: string,
+  horaFim: string,
+  referencia = agoraNaEscola()
+): EstadoTemporalAula {
+  const hoje = paraISO(referencia)
+  if (data !== hoje) return 'futura'
+
+  const horaAtual = `${String(referencia.getHours()).padStart(2, '0')}:${String(
+    referencia.getMinutes()
+  ).padStart(2, '0')}`
+
+  if (horaAtual >= horaInicio.slice(0, 5) && horaAtual < horaFim.slice(0, 5)) {
+    return 'agora'
+  }
+
+  return 'proxima'
+}
+
 // Formata datas ISO sem as converter para UTC. Usar `new Date('2026-08-12')`
 // pode mostrar o dia anterior nalguns fusos horários; o meio-dia local evita
 // essa alteração e mantém a data escolar intacta.

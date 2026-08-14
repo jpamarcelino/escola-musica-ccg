@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { SimboloCCG } from '@/components/simbolo-ccg'
 import {
   Home,
   CalendarDays,
@@ -49,11 +50,11 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 z-40 flex justify-center px-[12px]"
+      className="fixed inset-x-0 z-[80] flex justify-center px-[12px]"
       style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))' }}
     >
       <div
-        className="flex w-full max-w-[430px] items-stretch gap-[2px] rounded-[var(--radius-pill)] px-[8px] py-[8px]"
+        className="bottom-nav-bar relative flex w-full max-w-[430px] items-stretch gap-[2px] rounded-[var(--radius-pill)] px-[8px] py-[8px]"
         style={{ backgroundColor: 'var(--color-ink)', boxShadow: 'var(--shadow-flutuante)' }}
       >
         {itens.map((item) => {
@@ -68,19 +69,21 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
               key={item.href}
               href={item.href}
               aria-current={ativo ? 'page' : undefined}
-              className="flex min-h-[52px] min-w-0 flex-1 flex-col items-center justify-center gap-[3px] rounded-[var(--radius-pill)] px-[2px] transition-[color,background-color] motion-safe:active:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="bottom-nav-item relative flex min-h-[52px] min-w-0 flex-1 flex-col items-center justify-center gap-[3px] rounded-[var(--radius-pill)] px-[2px] motion-safe:active:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               style={{
                 color: ativo ? '#ffffff' : 'rgba(255,255,255,.68)',
-                backgroundColor: ativo ? 'rgba(255,255,255,.12)' : 'transparent',
+                backgroundColor: 'transparent',
               }}
             >
-              <Icone size={20} strokeWidth={ativo ? 2 : 1.5} aria-hidden="true" />
+              {ativo && <span className="bottom-nav-ativo" aria-hidden="true" />}
+              <Icone className="bottom-nav-icon" size={20} strokeWidth={ativo ? 2 : 1.5} aria-hidden="true" />
               <span className="max-w-full truncate text-[12px] font-medium leading-none">
                 {item.label}
               </span>
             </Link>
           )
         })}
+        <SimboloCCG className="bottom-nav-marca" aria-hidden="true" />
       </div>
     </nav>
   )

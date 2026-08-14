@@ -4,7 +4,7 @@ import LoginForm from './form'
 
 export default function LoginPage() {
   return (
-    <FundoPapel>
+    <FundoPapel className="auth-pagina">
       <Suspense>
         <LoginForm />
       </Suspense>

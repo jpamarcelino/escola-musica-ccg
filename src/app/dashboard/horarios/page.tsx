@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-context'
 import {
   cancelarMatricula,
   criarHorarios,
@@ -48,10 +48,7 @@ export default async function HorariosPage({
 }) {
   const { erroHorarios } = await searchParams
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthContext()
 
   if (!user) {
     redirect('/login')

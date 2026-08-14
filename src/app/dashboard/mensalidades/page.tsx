@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
@@ -46,10 +46,7 @@ export default async function MensalidadesProfessorPage({
 }) {
   const { ano: anoParam, mes: mesParam } = await searchParams
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthContext()
 
   if (!user) {
     redirect('/login')

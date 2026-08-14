@@ -43,7 +43,9 @@ export function MateriaisClient({ temMusica }: { temMusica: boolean }) {
         ))}
       </div>
 
-      {ativo === 'metronomo' && <Metronomo />}
+      <div key={ativo} className="motion-content-swap">
+        {ativo === 'metronomo' && <Metronomo />}
+      </div>
     </div>
   )
 }

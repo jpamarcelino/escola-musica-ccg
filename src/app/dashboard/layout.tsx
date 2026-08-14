@@ -1,35 +1,28 @@
 import { Suspense } from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { getSchoolProfileContext } from '@/lib/auth-context'
 import { BottomNavigation, type ItemNav } from '@/components/bottom-navigation'
+
+const NAV_PROFESSOR: ItemNav[] = [
+  { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
+  { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },
+  { href: '/dashboard/presencas', label: 'Presenças', icone: 'presencas' },
+  { href: '/dashboard/pedidos', label: 'Pedidos', icone: 'pedidos' },
+  { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
+]
 
 // A navegação inferior vive no layout para acompanhar o utilizador por
 // todas as páginas de /dashboard/* — não é um enfeite da Home. Os
 // destinos dependem do perfil (professor vs. encarregado), por isso o
 // layout resolve o tipo de conta uma vez e escolhe a nav certa.
 async function DashboardNavigation() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user, profile } = await getSchoolProfileContext()
 
   let nav: ItemNav[] | null = null
 
   if (user) {
-    const { data: perfil } = await supabase
-      .from('perfis_escola')
-      .select('tipo')
-      .eq('id', user.id)
-      .single()
-
-    if (perfil?.tipo === 'professor') {
-      nav = [
-        { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
-        { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },
-        { href: '/dashboard/presencas', label: 'Presenças', icone: 'presencas' },
-        { href: '/dashboard/pedidos', label: 'Pedidos', icone: 'pedidos' },
-        { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
-      ]
-    } else if (perfil?.tipo === 'aluno') {
+    if (profile?.tipo === 'professor') {
+      nav = NAV_PROFESSOR
+    } else if (profile?.tipo === 'aluno') {
       const { data: alunos } = await supabase
         .from('alunos')
         .select('id')
@@ -72,7 +65,7 @@ export default function DashboardLayout({
       {/* A navegação depende do perfil, mas não deve bloquear o loading da
           página. O Suspense permite enviar o fallback imediatamente enquanto
           esta consulta decorre em paralelo com o conteúdo. */}
-      <Suspense fallback={null}>
+      <Suspense fallback={<BottomNavigation itens={NAV_PROFESSOR} />}>
         <DashboardNavigation />
       </Suspense>
     </>

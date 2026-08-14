@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 import { LinhaLista, GrupoLista } from '@/components/lista'
 import { Distintivo } from '@/components/distintivo'
 import { EmptyState } from '@/components/empty-state'
@@ -88,14 +88,14 @@ export default async function ConfirmarMensalidadesPage() {
   }
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin/pagamentos" titulo="Mensalidades por Confirmar" />
+    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos" className="partitura-voltar" aria-label="Voltar a mensalidades">←</Link><div><p className="partitura-sobretitulo">Ação mensal</p><h1>Por confirmar</h1><p>{porConfirmarPorProfessor.size} {porConfirmarPorProfessor.size === 1 ? 'professor com pagamentos pendentes' : 'professores com pagamentos pendentes'}</p></div></header>
 
         {professores.length === 0 ? (
           <EmptyState titulo="Ainda não há professores registados" />
         ) : (
-          <GrupoLista>
+          <div className="admin-diretorio"><GrupoLista>
             {professores.map((professor) => {
               const porConfirmar = porConfirmarPorProfessor.get(professor.id) ?? 0
               return (
@@ -107,7 +107,7 @@ export default async function ConfirmarMensalidadesPage() {
                 />
               )
             })}
-          </GrupoLista>
+          </GrupoLista></div>
         )}
       </div>
     </main>

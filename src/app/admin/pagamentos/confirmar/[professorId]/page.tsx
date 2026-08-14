@@ -1,7 +1,6 @@
+import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { EmptyState } from '@/components/empty-state'
 import {
   definirValorMensal,
@@ -101,19 +100,11 @@ export default async function ConfirmarMensalidadesProfessorPage({
     .sort((a, b) => (a.aluno?.nome ?? '').localeCompare(b.aluno?.nome ?? ''))
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: 'Visão geral', href: '/admin' },
-            { label: 'Mensalidades', href: '/admin/pagamentos' },
-            { label: 'Confirmar', href: '/admin/pagamentos/confirmar' },
-            { label: professorData.nome },
-          ]}
-        />
-        <PageHeader voltar="/admin/pagamentos/confirmar" titulo={professorData.nome} subtitulo={<>Mês atual: {String(mes).padStart(2, '0')}/{ano}</>} />
+    <main id="conteudo-principal" className="partitura-pagina admin-cobranca-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos/confirmar" className="partitura-voltar" aria-label="Voltar à lista de confirmações">←</Link><div><p className="partitura-sobretitulo">Mensalidades · {String(mes).padStart(2, '0')}/{ano}</p><h1>{professorData.nome}</h1><p>{porConfirmar.length} {porConfirmar.length === 1 ? 'pagamento por confirmar' : 'pagamentos por confirmar'}</p></div></header>
 
-        {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
+        {erro && <p className="admin-alerta" role="alert">{decodeURIComponent(erro)}</p>}
 
         {porConfirmar.length === 0 ? (
           <EmptyState
@@ -121,11 +112,11 @@ export default async function ConfirmarMensalidadesProfessorPage({
             descricao="Está tudo em dia."
           />
         ) : (
-          <div className="space-y-2">
+          <section className="admin-cobrancas" aria-label="Pagamentos por confirmar">
             {porConfirmar.map((m) => {
               const numeroFatura = mensalidadePorMatricula.get(m.id)?.numero_fatura ?? ''
               return (
-                <div key={m.id} className="lista-item space-y-2">
+                <article key={m.id} className="admin-cobranca">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="lista-item-titulo">{m.aluno?.nome}</p>
@@ -200,10 +191,10 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       Guardar
                     </button>
                   </form>
-                </div>
+                </article>
               )
             })}
-          </div>
+          </section>
         )}
       </div>
     </main>

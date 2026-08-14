@@ -7,7 +7,6 @@ import {
   apagarContaSuperAdmin,
   logout,
 } from '@/lib/actions/auth'
-import { PageHeader } from '@/components/page-header'
 import { EditarNomeForm, AlterarPasswordForm } from '@/components/conta-forms'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
@@ -67,12 +66,12 @@ export default async function AdminContaPage({
   }))
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin" titulo="Conta" />
+    <main id="conteudo-principal" className="partitura-pagina admin-conta-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Definições pessoais</p><h1>Conta</h1><p>{user.email}</p></div></header>
 
         {erro && (
-          <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">{erro}</p>
+          <p className="admin-alerta" role="alert">{erro}</p>
         )}
 
         <section className="space-y-4">
@@ -110,3 +109,4 @@ export default async function AdminContaPage({
     </main>
   )
 }
+import Link from 'next/link'

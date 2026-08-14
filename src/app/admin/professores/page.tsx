@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { criarConviteProfessor } from '@/lib/actions/convites'
-import { PageHeader } from '@/components/page-header'
 import { ConvidarProfessorForm } from '@/components/convite-forms'
 import { EmptyState } from '@/components/empty-state'
 import { ListaComPesquisa } from '@/components/lista-com-pesquisa'
@@ -44,9 +44,9 @@ export default async function AdminProfessoresPage() {
   })) as Professor[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin" titulo="Professores" />
+    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Diretório escolar</p><h1>Professores</h1><p>{professores.length} {professores.length === 1 ? 'registo' : 'registos'}</p></div></header>
 
         <ConvidarProfessorForm action={criarConviteProfessor} />
 
@@ -56,11 +56,7 @@ export default async function AdminProfessoresPage() {
             descricao="Convida um professor no formulário acima — aparece aqui assim que aceitar o convite."
           />
         ) : (
-          <ListaComPesquisa
-            itens={professores}
-            hrefPrefix="/admin/professores/"
-            placeholder="Pesquisar professor por nome…"
-          />
+          <section className="admin-diretorio"><ListaComPesquisa itens={professores} hrefPrefix="/admin/professores/" placeholder="Pesquisar professor por nome…" /></section>
         )}
       </div>
     </main>

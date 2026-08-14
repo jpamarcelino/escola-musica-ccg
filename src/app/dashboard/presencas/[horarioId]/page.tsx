@@ -1,25 +1,19 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { dataMaisRecenteDoDia } from '@/lib/datas'
 import { marcarPresencas } from '@/lib/actions/presencas'
-import { SubmitButton } from '@/components/submit-button'
 import { MensagemErro } from '@/components/mensagem'
+import { PresencasChamadaForm } from '@/components/presencas-chamada-form'
 
 type Aluno = {
   id: number
   instrumentos: { nome: string } | null
   alunos: { nome: string } | null
 }
-
-const ESTADOS: { valor: string; label: string }[] = [
-  { valor: 'presente', label: 'Presente' },
-  { valor: 'falta_aviso', label: 'Falta c/ aviso' },
-  { valor: 'falta_sem_aviso', label: 'Falta s/ aviso' },
-]
 
 export default async function PresencasHorarioPage({
   params,
@@ -31,10 +25,7 @@ export default async function PresencasHorarioPage({
   const { horarioId } = await params
   const { data: dataParam, erro } = await searchParams
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthContext()
 
   if (!user) {
     redirect('/login')
@@ -106,36 +97,17 @@ export default async function PresencasHorarioPage({
         {alunos.length === 0 ? (
           <EmptyState titulo="Não há alunos confirmados neste horário" />
         ) : (
-          <form action={marcarPresencas} className="presencas-chamada">
-            <input type="hidden" name="horarioId" value={horarioId} />
-            <input type="hidden" name="data" value={data} />
-            <div className="presencas-chamada-lista">
-              {alunos.map((aluno) => (
-                <fieldset key={aluno.id} className="presencas-aluno-chamada">
-                  <legend><strong>{aluno.alunos?.nome}</strong>{aluno.instrumentos?.nome && <small>{aluno.instrumentos.nome}</small>}</legend>
-                  <div className="presencas-estados">
-                    {ESTADOS.map((e) => (
-                      <label key={e.valor} data-estado={e.valor}>
-                        <input
-                          type="radio"
-                          name={`estado_${aluno.id}`}
-                          value={e.valor}
-                          defaultChecked={estadoPorMatricula.get(aluno.id) === e.valor}
-                        />
-                        {e.label}
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-              ))}
-            </div>
-            <SubmitButton
-              textoAGuardar="A guardar..."
-              className="presencas-guardar"
-            >
-              Guardar presenças
-            </SubmitButton>
-          </form>
+          <PresencasChamadaForm
+            action={marcarPresencas}
+            horarioId={horarioId}
+            data={data}
+            alunos={alunos.map((aluno) => ({
+              id: aluno.id,
+              nome: aluno.alunos?.nome ?? 'Aluno',
+              instrumento: aluno.instrumentos?.nome ?? null,
+            }))}
+            estadosIniciais={Object.fromEntries(estadoPorMatricula)}
+          />
         )}
       </div>
     </main>

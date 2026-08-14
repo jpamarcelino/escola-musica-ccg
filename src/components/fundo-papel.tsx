@@ -5,19 +5,21 @@
 export function FundoPapel({
   children,
   largura = 'estreita',
+  className = '',
 }: {
   children: React.ReactNode
   // "estreita" centra vertical e horizontalmente, para formulários curtos.
   // "larga" alinha ao topo com a largura de conteúdo de 720px, que é o
   // que as listas dos hubs precisam.
   largura?: 'estreita' | 'larga'
+  className?: string
 }) {
   const larga = largura === 'larga'
 
   return (
     <main
       id="conteudo-principal"
-      className={`flex flex-1 flex-col px-[22px] py-[26px] ${
+      className={`flex flex-1 flex-col px-[22px] py-[26px] ${className} ${
         larga ? 'items-center' : 'items-center justify-center'
       }`}
       style={{

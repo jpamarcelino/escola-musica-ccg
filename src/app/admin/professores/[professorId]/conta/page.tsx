@@ -1,7 +1,5 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 
 type ProfessorPerfil = {
   nome: string
@@ -74,23 +72,11 @@ export default async function AdminProfessorContaPage({
   const instrumentos = (instrumentosData ?? []) as unknown as InstrumentoProfessor[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: 'Visão geral', href: '/admin' },
-            { label: 'Professores', href: '/admin/professores' },
-            { label: professor.nome, href: `/admin/professores/${professorId}` },
-            { label: 'Conta' },
-          ]}
-        />
-        <PageHeader
-          voltar={`/admin/professores/${professorId}`}
-          titulo={professor.nome}
-          subtitulo={professor.admin ? 'Administrador' : undefined}
-        />
+    <main id="conteudo-principal" className="partitura-pagina admin-subficha-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href={`/admin/professores/${professorId}`} className="partitura-voltar" aria-label="Voltar à ficha do professor">←</Link><div><p className="partitura-sobretitulo">Conta · {professor.admin ? 'Administrador' : 'Professor'}</p><h1>{professor.nome}</h1><p>Dados de contacto, escola e disciplinas.</p></div></header>
 
-        <div className="lista-item space-y-1">
+        <div className="admin-dados-registo">
           <p className="lista-item-sub">
             Escola:{' '}
             {professor.programa === 'musica'
@@ -115,3 +101,4 @@ export default async function AdminProfessorContaPage({
     </main>
   )
 }
+import Link from 'next/link'

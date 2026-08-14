@@ -1,11 +1,10 @@
 import type { CSSProperties } from 'react'
+import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
-import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { EmptyState } from '@/components/empty-state'
 
 type Confirmado = {
@@ -139,22 +138,14 @@ export default async function AdminProfessorHorarioPage({
   }
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: 'Visão geral', href: '/admin' },
-            { label: 'Professores', href: '/admin/professores' },
-            { label: professorData.nome, href: `/admin/professores/${professorId}` },
-            { label: 'Horário' },
-          ]}
-        />
-        <PageHeader voltar={`/admin/professores/${professorId}`} titulo={professorData.nome} />
+    <main id="conteudo-principal" className="partitura-pagina horarios-pagina admin-horario-professor">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href={`/admin/professores/${professorId}`} className="partitura-voltar" aria-label="Voltar à ficha do professor">←</Link><div><p className="partitura-sobretitulo">Horário semanal</p><h1>{professorData.nome}</h1><p>{blocos.length} {blocos.length === 1 ? 'aula confirmada' : 'aulas confirmadas'}</p></div></header>
 
         {blocos.length === 0 ? (
           <EmptyState titulo="Ainda não tem aulas confirmadas" />
         ) : (
-          <div className="horarios-grade">
+          <div className="horarios-grade partitura-grade">
             <div className="horarios-coluna-horas">
               <div className="horarios-coluna-horas-cabecalho" />
               {horasGrade.map((hora) => (

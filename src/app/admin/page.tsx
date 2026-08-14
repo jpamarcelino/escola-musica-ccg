@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PaginaComHero, HeroSaudacao } from '@/components/hero-section'
-import { TituloSeccao, LinhaLista, GrupoLista } from '@/components/lista'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -41,72 +40,35 @@ export default async function AdminPage() {
   const totalPendentes = (matriculasData ?? []).filter((m) => m.estado === 'a_escolher').length
 
   return (
-    <PaginaComHero
-      comBottomNav
-      hero={
-        <div className="space-y-[20px]">
-          <HeroSaudacao nome={primeiroNome} contexto="Visão geral da escola" />
-          <div>
-            <p
-              className="text-[56px] font-bold leading-[1]"
-              style={{ fontFamily: 'var(--font-fraunces)' }}
-            >
-              {totalPendentes}
-            </p>
-            <p className="mt-[4px] text-[15px]">
-              {totalPendentes === 1 ? 'pedido de aula por confirmar' : 'pedidos de aula por confirmar'}
-            </p>
-          </div>
-        </div>
-      }
-    >
-      <section className="grid grid-cols-3 gap-[8px]">
-        {[
-          { numero: alunos, legenda: 'Alunos' },
-          { numero: professores, legenda: 'Professores' },
-          { numero: totalConfirmadas, legenda: 'Aulas confirmadas' },
-        ].map((stat) => (
-          <div
-            key={stat.legenda}
-            className="rounded-[var(--radius-medium)] px-[10px] py-[16px] text-center"
-            style={{ backgroundColor: 'var(--color-surface-raised)' }}
-          >
-            <p
-              className="text-[26px] font-bold leading-[1.1]"
-              style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-primary)' }}
-            >
-              {stat.numero}
-            </p>
-            <p className="mt-[2px] text-[11px]" style={{ color: 'var(--color-text-secondary)' }}>
-              {stat.legenda}
-            </p>
-          </div>
-        ))}
-      </section>
+    <main id="conteudo-principal" className="partitura-pagina admin-pagina">
+      <div className="partitura-folha">
+        <header className="admin-cabecalho">
+          <div><p className="partitura-sobretitulo">Secretaria · visão geral</p><h1>Bom dia, {primeiroNome}.</h1><p>Estado operacional das Escolas Artísticas.</p></div>
+          <time>{new Intl.DateTimeFormat('pt-PT', { day: '2-digit', month: 'short' }).format(new Date()).replace('.', '')}</time>
+        </header>
 
-      <TituloSeccao>Financeiro e programa</TituloSeccao>
-      <GrupoLista>
-        <LinhaLista href="/admin/pagamentos" titulo="Mensalidades" />
-        <LinhaLista
-          href="/admin/recomendacoes"
-          titulo="Programa de Recomendação"
-          contexto={
-            (recomendacoesPorValidar ?? 0) > 0
-              ? `${recomendacoesPorValidar} por validar`
-              : undefined
-          }
-        />
-      </GrupoLista>
+        <section className="admin-prioridade" aria-labelledby="prioridade-titulo">
+          <span>{totalPendentes}</span>
+          <div><p className="partitura-indice">Prioridade</p><h2 id="prioridade-titulo">{totalPendentes === 1 ? 'Pedido de aula por confirmar' : 'Pedidos de aula por confirmar'}</h2><small>{totalPendentes > 0 ? 'Aguardam atribuição de professor e horário.' : 'Não existem pedidos pendentes.'}</small></div>
+          <Link href="/admin/alunos">Consultar alunos <i aria-hidden="true">→</i></Link>
+        </section>
 
-      <TituloSeccao>Pessoas</TituloSeccao>
-      <GrupoLista>
-        <LinhaLista href="/admin/alunos" titulo="Alunos" />
-        <LinhaLista href="/admin/professores" titulo="Professores" />
-        {perfilAtual.super_admin && (
-          <LinhaLista href="/admin/administradores" titulo="Administradores" />
-        )}
-      </GrupoLista>
+        <section className="admin-indicadores" aria-label="Dimensão da escola">
+          <header><p className="partitura-indice">01</p><h2>Escola em números</h2></header>
+          <dl><div><dt>Alunos</dt><dd>{alunos}</dd></div><div><dt>Professores</dt><dd>{professores}</dd></div><div><dt>Aulas confirmadas</dt><dd>{totalConfirmadas}</dd></div></dl>
+        </section>
 
-    </PaginaComHero>
+        <section className="admin-operacoes" aria-labelledby="operacoes-titulo">
+          <header><p className="partitura-indice">02</p><h2 id="operacoes-titulo">Operações</h2></header>
+          <nav>
+            <Link href="/admin/pagamentos"><strong>Mensalidades</strong><span>Confirmação e histórico financeiro</span><i aria-hidden="true">→</i></Link>
+            <Link href="/admin/recomendacoes"><strong>Programa de Recomendação</strong><span>{(recomendacoesPorValidar ?? 0) > 0 ? `${recomendacoesPorValidar} por validar` : 'Sem validações pendentes'}</span><i aria-hidden="true">→</i></Link>
+            <Link href="/admin/alunos"><strong>Alunos</strong><span>Inscrições, contactos e disciplinas</span><i aria-hidden="true">→</i></Link>
+            <Link href="/admin/professores"><strong>Professores</strong><span>Contas, horários e alunos</span><i aria-hidden="true">→</i></Link>
+            {perfilAtual.super_admin && <Link href="/admin/administradores"><strong>Administradores</strong><span>Acessos e permissões</span><i aria-hidden="true">→</i></Link>}
+          </nav>
+        </section>
+      </div>
+    </main>
   )
 }

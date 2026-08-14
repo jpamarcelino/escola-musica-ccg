@@ -1,9 +1,6 @@
 import Link from 'next/link'
-import type { CSSProperties } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { EmptyState } from '@/components/empty-state'
 import { formatarSala } from '@/lib/sala'
 import { calcularIdade } from '@/lib/idade'
@@ -173,21 +170,11 @@ export default async function AdminAlunoPage({
   const idade = calcularIdade(aluno.data_nascimento)
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-8 text-left">
-        <Breadcrumbs
-          items={[
-            { label: 'Visão geral', href: '/admin' },
-            { label: 'Alunos', href: '/admin/alunos' },
-            { label: aluno.nome },
-          ]}
-        />
-        <PageHeader voltar="/admin/alunos" titulo={aluno.nome} />
+    <main id="conteudo-principal" className="partitura-pagina admin-ficha-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/alunos" className="partitura-voltar" aria-label="Voltar ao diretório de alunos">←</Link><div><p className="partitura-sobretitulo">Ficha de aluno</p><h1>{aluno.nome}</h1><p>{idade !== null ? `${idade} anos · ` : ''}{matriculas.length} {matriculas.length === 1 ? 'matrícula' : 'matrículas'}</p></div></header>
 
-        <section
-          className="entrada-esquerda space-y-3"
-          style={{ '--card-index': 1 } as CSSProperties}
-        >
+        <div className="admin-ficha-grelha"><aside><section className="admin-ficha-seccao">
           <h2 className="secao-titulo">Encarregado de educação</h2>
           <div className="lista-item space-y-1">
             {aluno.encarregado?.email && (
@@ -203,10 +190,7 @@ export default async function AdminAlunoPage({
           </div>
         </section>
 
-        <section
-          className="entrada-esquerda space-y-3"
-          style={{ '--card-index': 2 } as CSSProperties}
-        >
+        <section className="admin-ficha-seccao">
           <h2 className="secao-titulo">Horário e professor</h2>
           {matriculas.length === 0 ? (
             <EmptyState titulo="Ainda não pediu nenhuma aula" />
@@ -231,12 +215,9 @@ export default async function AdminAlunoPage({
               ))}
             </div>
           )}
-        </section>
+        </section></aside><div>
 
-        <section
-          className="entrada-esquerda space-y-3"
-          style={{ '--card-index': 3 } as CSSProperties}
-        >
+        <section className="admin-ficha-seccao">
           <h2 className="secao-titulo">Presenças</h2>
           {presencas.length === 0 ? (
             <EmptyState
@@ -262,10 +243,7 @@ export default async function AdminAlunoPage({
           )}
         </section>
 
-        <section
-          className="entrada-esquerda space-y-3"
-          style={{ '--card-index': 4 } as CSSProperties}
-        >
+        <section className="admin-ficha-seccao">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="secao-titulo">Programa de Recomendação</h2>
             <Link
@@ -305,10 +283,7 @@ export default async function AdminAlunoPage({
           )}
         </section>
 
-        <section
-          className="entrada-esquerda space-y-3"
-          style={{ '--card-index': 5 } as CSSProperties}
-        >
+        <section className="admin-ficha-seccao">
           <h2 className="secao-titulo">Histórico de mensalidades</h2>
           {mensalidades.length === 0 ? (
             <EmptyState
@@ -337,7 +312,7 @@ export default async function AdminAlunoPage({
               })}
             </div>
           )}
-        </section>
+        </section></div></div>
       </div>
     </main>
   )

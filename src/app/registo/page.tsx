@@ -25,7 +25,7 @@ export default async function RegistoPage({
   }
 
   return (
-    <FundoPapel>
+    <FundoPapel className="auth-pagina auth-registo-pagina">
       <Suspense>
         <RegistoForm conviteCodigo={convite ?? null} conviteInfo={conviteInfo} />
       </Suspense>

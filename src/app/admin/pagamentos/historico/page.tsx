@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 import { LinhaLista, GrupoLista } from '@/components/lista'
 import { EmptyState } from '@/components/empty-state'
 
@@ -42,14 +42,14 @@ export default async function HistoricoPagamentosPage() {
   })) as Professor[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin/pagamentos" titulo="Histórico de Mensalidades" />
+    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos" className="partitura-voltar" aria-label="Voltar a mensalidades">←</Link><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>Histórico</h1><p>Seleciona um professor para consultar o registo mensal.</p></div></header>
 
         {professores.length === 0 ? (
           <EmptyState titulo="Ainda não há professores registados" />
         ) : (
-          <GrupoLista>
+          <div className="admin-diretorio"><GrupoLista>
             {professores.map((professor) => (
               <LinhaLista
                 key={professor.id}
@@ -57,7 +57,7 @@ export default async function HistoricoPagamentosPage() {
                 titulo={professor.nome}
               />
             ))}
-          </GrupoLista>
+          </GrupoLista></div>
         )}
       </div>
     </main>

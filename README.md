@@ -1,6 +1,6 @@
 # Escola de Música CCG — aplicação
 
-Aplicação de gestão da Escola de Música do Conservatório/Centro Cultural da
+Aplicação de gestão da Escola de Música do Centro Cultural da
 Guarda: pedidos de aula, matrículas, horários, presenças, mensalidades e
 recomendações de estudo. Três escolas — Música, Dança e Música para Bebés.
 

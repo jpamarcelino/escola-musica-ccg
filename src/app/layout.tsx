@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Fraunces, Inter } from "next/font/google";
-import Image from "next/image";
-import Link from "next/link";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { Suspense } from "react";
 import { NavigationFeedback } from "@/components/navigation-feedback";
+import { PageTransition } from "@/components/page-transition";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,12 +20,6 @@ const geistMono = Geist_Mono({
 // os ecrãs ainda por migrar não mudam de aspeto.
 const fraunces = Fraunces({
   variable: "--font-fraunces",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -53,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${inter.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <a
@@ -62,32 +55,9 @@ export default function RootLayout({
         >
           Saltar para o conteúdo
         </a>
-        <header className="border-b border-[var(--color-linha)]">
-          <div className="mx-auto flex max-w-3xl items-center gap-3 px-6 py-3">
-            <Link href="/" className="flex min-h-[44px] items-center gap-3">
-              <Image
-                src="/logo.png"
-                alt="Centro Cultural da Guarda"
-                width={32}
-                height={48}
-                className="h-9 w-auto"
-                priority
-              />
-              <span className="leading-tight">
-                <span className="block text-sm font-semibold" style={{ fontFamily: 'var(--font-fraunces)' }}>
-                  Centro Cultural da Guarda
-                </span>
-                <span
-                  className="mt-[2px] block text-[9.5px] font-medium uppercase tracking-[0.16em]"
-                  style={{ color: 'var(--color-tinta-suave)' }}
-                >
-                  Escolas Artísticas
-                </span>
-              </span>
-            </Link>
-          </div>
-        </header>
-        {children}
+        <Suspense fallback={children}>
+          <PageTransition>{children}</PageTransition>
+        </Suspense>
         <Suspense fallback={null}>
           <NavigationFeedback />
         </Suspense>

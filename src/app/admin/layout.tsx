@@ -13,7 +13,7 @@ const NAV: ItemNav[] = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {children}
+      <div className="admin-conteudo">{children}</div>
       <BottomNavigation itens={NAV} />
     </>
   )

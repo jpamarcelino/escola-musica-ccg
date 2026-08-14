@@ -1,11 +1,11 @@
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getSchoolProfileContext } from '@/lib/auth-context'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
-import { hojeISO, proximaOcorrenciaDeAula } from '@/lib/datas'
+import { agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula } from '@/lib/datas'
 import { EmptyState } from '@/components/empty-state'
 
 type Confirmado = {
@@ -59,20 +59,11 @@ function partesData(data: string) {
 }
 
 export default async function AgendaPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user, profile } = await getSchoolProfileContext()
 
   if (!user) {
     redirect('/login')
   }
-
-  const { data: profile } = await supabase
-    .from('perfis_escola')
-    .select('tipo, programa')
-    .eq('id', user.id)
-    .single()
 
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
@@ -108,6 +99,7 @@ export default async function AgendaPage() {
     blocosPorHorario.set(c.horario_final_id, bloco)
   }
   const blocos = [...blocosPorHorario.values()]
+  const agora = agoraNaEscola()
   const agendaTemporal = blocos
     .map((bloco) => ({
       ...bloco,
@@ -163,6 +155,13 @@ export default async function AgendaPage() {
     }
   }
 
+  const diaHoje = DIAS_SEMANA[(agora.getDay() + 6) % 7]
+  const minutosAgora = agora.getHours() * 60 + agora.getMinutes()
+  const mostrarLinhaAgora = blocos.length > 0
+    && minutosAgora >= horaInicioGrade * 60
+    && minutosAgora <= (horaInicioGrade * 60) + (alturaGrade / HOUR_HEIGHT) * 60
+  const topoLinhaAgora = ((minutosAgora - horaInicioGrade * 60) / 60) * HOUR_HEIGHT
+
   return (
     <main id="conteudo-principal" className="partitura-pagina partitura-agenda">
       <div className="partitura-folha">
@@ -189,22 +188,28 @@ export default async function AgendaPage() {
                   <span><strong>{rotuloData(data)}</strong><small>{partes.semana} · {partes.mes}</small></span>
                 </header>
                 <div className="partitura-linha-tempo">
-                  {aulas.map((aula) => (
+                  {aulas.map((aula, indice) => {
+                    const estadoTemporal = indice === 0
+                      ? estadoTemporalAula(aula.data, aula.hora_inicio, aula.hora_fim, agora)
+                      : 'futura'
+                    return (
                     <Link
                       key={aula.horarioId}
                       href={`/dashboard/agenda/${aula.horarioId}`}
-                      className="partitura-aula"
+                      className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : ''}`}
                     >
                       <time>{formatarHora(aula.hora_inicio)}</time>
                       <span className="partitura-marca" aria-hidden="true" />
                       <span className="partitura-aula-conteudo">
+                        {estadoTemporal === 'agora' && <small className="partitura-estado-temporal">Agora</small>}
                         <strong>{aula.alunos.join(', ')}</strong>
                         <span>{formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}{aula.sala ? ` · ${aula.sala}` : ''}</span>
                       </span>
                       <span className="partitura-alunos">{aula.alunos.length} {aula.alunos.length === 1 ? 'aluno' : 'alunos'}</span>
                       <span className="partitura-seta" aria-hidden="true">→</span>
                     </Link>
-                  ))}
+                    )
+                  })}
                 </div>
               </section>
                 )
@@ -241,6 +246,15 @@ export default async function AgendaPage() {
                       backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
                     }}
                   >
+                    {dia === diaHoje && mostrarLinhaAgora && (
+                      <div
+                        className="agenda-agora-linha"
+                        style={{ transform: `translateY(${topoLinhaAgora}px)` }}
+                        aria-label={`Agora, ${formatarHora(`${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`)}`}
+                      >
+                        <span aria-hidden="true" />
+                      </div>
+                    )}
                     {horariosPorDia.get(dia)?.map((b) => {
                       const inicioMin = paraMinutos(b.hora_inicio)
                       const fimMin = paraMinutos(b.hora_fim)

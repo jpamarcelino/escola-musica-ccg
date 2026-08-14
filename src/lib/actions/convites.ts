@@ -57,6 +57,8 @@ export async function criarConviteAdmin(
   _prevState: ConviteState,
   _formData: FormData
 ): Promise<ConviteState> {
+  void _prevState
+  void _formData
   const supabase = await createClient()
   const {
     data: { user },

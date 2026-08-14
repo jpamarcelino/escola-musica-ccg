@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-context'
 import { confirmarHorario, recusarPedido } from '@/lib/actions/professor'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
@@ -29,10 +29,7 @@ export default async function PedidosPage({
   searchParams: Promise<{ erro?: string; guardado?: string }>
 }) {
   const { erro, guardado } = await searchParams
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthContext()
 
   if (!user) {
     redirect('/login')

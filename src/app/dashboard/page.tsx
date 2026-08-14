@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getSchoolProfileContext } from '@/lib/auth-context'
 import { criarAlunoDependente } from '@/lib/actions/aluno'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { SubmitButton } from '@/components/submit-button'
 import { CampoTexto } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
-import { agoraNaEscola, proximaOcorrenciaDeAula, hojeISO } from '@/lib/datas'
+import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, hojeISO } from '@/lib/datas'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
@@ -52,34 +52,11 @@ export default async function DashboardPage({
 }) {
   const { erro } = await searchParams
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user, profile } = await getSchoolProfileContext()
 
   if (!user) {
     redirect('/login')
   }
-
-  const { data: profileRowData } = await supabase
-    .from('profiles')
-    .select('nome, perfis_escola(tipo, admin, programa)')
-    .eq('id', user.id)
-    .single()
-
-  const profileRow = profileRowData as {
-    nome: string
-    perfis_escola: { tipo: string; admin: boolean; programa: string | null } | null
-  } | null
-
-  const profile = profileRow
-    ? {
-        nome: profileRow.nome,
-        tipo: profileRow.perfis_escola?.tipo,
-        admin: profileRow.perfis_escola?.admin,
-        programa: profileRow.perfis_escola?.programa,
-      }
-    : null
 
   // Contas admin (direção/secretaria) vão direto para a Visão geral — só
   // se ainda tiverem acesso (um super admin pode ter revogado o "admin").
@@ -220,16 +197,24 @@ export default async function DashboardPage({
               <div className="partitura-linha-tempo">
                 {proximas.map((aula, indice) => {
                   const sala = formatarSala(aula.horarios!.salas)
+                  const estadoTemporal = indice === 0
+                    ? estadoTemporalAula(
+                        aula.data,
+                        aula.horarios!.hora_inicio,
+                        aula.horarios!.hora_fim,
+                        agora
+                      )
+                    : 'futura'
                   return (
                     <Link
                       key={aula.id}
                       href={`/dashboard/agenda/${aula.horario_final_id}`}
-                      className={`partitura-aula ${indice === 0 ? 'partitura-aula-atual' : ''}`}
+                      className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : indice === 0 ? 'partitura-aula-atual' : ''}`}
                     >
                       <time>{formatarHora(aula.horarios!.hora_inicio)}</time>
                       <span className="partitura-marca" aria-hidden="true" />
                       <span className="partitura-aula-conteudo">
-                        {indice === 0 && <small>A seguir</small>}
+                        {indice === 0 && <small className="partitura-estado-temporal">{estadoTemporal === 'agora' ? 'Agora' : 'A seguir'}</small>}
                         <strong>{aula.instrumentos?.nome}</strong>
                         <span>{aula.alunos?.nome}</span>
                         <span>{rotuloDoDia(aula.data, aula.horarios!.dia_semana)} · {formatarHora(aula.horarios!.hora_inicio)}–{formatarHora(aula.horarios!.hora_fim)}{sala ? ` · ${sala}` : ''}</span>

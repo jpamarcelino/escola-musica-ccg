@@ -93,11 +93,13 @@ export default function InstalarPage() {
           aplicações. Os passos são diferentes consoante o telemóvel.
         </p>
 
-        <div className="flex gap-[8px]">
+        <div className="motion-tabs flex gap-[8px]" role="tablist" aria-label="Sistema operativo">
           <button
             type="button"
             onClick={() => setSistema('ios')}
-            aria-pressed={sistema === 'ios'}
+            role="tab"
+            aria-selected={sistema === 'ios'}
+            aria-controls="passos-instalacao"
             className={classesSeparador(sistema === 'ios')}
           >
             iPhone / iPad
@@ -105,14 +107,16 @@ export default function InstalarPage() {
           <button
             type="button"
             onClick={() => setSistema('android')}
-            aria-pressed={sistema === 'android'}
+            role="tab"
+            aria-selected={sistema === 'android'}
+            aria-controls="passos-instalacao"
             className={classesSeparador(sistema === 'android')}
           >
             Android
           </button>
         </div>
 
-        <Cartao>
+        <div id="passos-instalacao" role="tabpanel" key={sistema} className="motion-content-swap"><Cartao>
           <ol className="space-y-[14px]">
             {PASSOS[sistema].map((passo, idx) => (
               <li key={idx} className="flex items-center gap-[12px]">
@@ -140,7 +144,7 @@ export default function InstalarPage() {
               </li>
             ))}
           </ol>
-        </Cartao>
+        </Cartao></div>
 
         <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
           Não encontras estas opções? Confirma que estás a usar o Safari (no

@@ -1,6 +1,6 @@
+import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 import { LinhaLista, GrupoLista } from '@/components/lista'
 import { SubmitButton } from '@/components/submit-button'
 import { definirAdesaoRecomendacao } from '@/lib/actions/recomendacoes'
@@ -51,17 +51,17 @@ export default async function AdminProfessorPage({
   const professorData = { nome: professorPerfil.profiles?.nome ?? '' }
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin/professores" titulo={professorData.nome} />
+    <main id="conteudo-principal" className="partitura-pagina admin-professor-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/professores" className="partitura-voltar" aria-label="Voltar ao diretório de professores">←</Link><div><p className="partitura-sobretitulo">Ficha de professor</p><h1>{professorData.nome}</h1><p>{professorPerfil.adere_recomendacao ? 'Aderente ao Programa de Recomendação' : 'Gestão de conta e atividade letiva'}</p></div></header>
 
-        <GrupoLista>
+        <div className="admin-professor-atalhos"><GrupoLista>
           <LinhaLista href={`/admin/professores/${professorId}/conta`} titulo="Conta" />
           <LinhaLista href={`/admin/professores/${professorId}/alunos`} titulo="Alunos" />
           <LinhaLista href={`/admin/professores/${professorId}/horario`} titulo="Horário" />
-        </GrupoLista>
+        </GrupoLista></div>
 
-        <section className="space-y-3">
+        <section className="admin-professor-programa">
           <h2 className="secao-titulo">Programa de Recomendação</h2>
           <div className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3">
             <p className="text-sm text-foreground/70">

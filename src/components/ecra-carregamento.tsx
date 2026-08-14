@@ -28,6 +28,7 @@ export function EcraCarregamento({
   mensagem = 'A carregar…',
   contexto,
   cobrirEcra = false,
+  manterNavegacao = false,
 }: {
   // Dizer o que está a acontecer, não só que algo acontece.
   mensagem?: string
@@ -37,12 +38,16 @@ export function EcraCarregamento({
   // Sobreposto a tudo (transições de rota, submissões) em vez de
   // ocupar apenas o espaço do seu contentor.
   cobrirEcra?: boolean
+  // Mantém a barra inferior utilizável e visível durante transições de rota.
+  manterNavegacao?: boolean
 }) {
   return (
     <div
       className={
         'ecra-carregamento flex flex-col items-center justify-center gap-[26px] px-[24px] ' +
-        (cobrirEcra ? 'fixed inset-0 z-50' : 'min-h-[60vh] w-full flex-1')
+        (cobrirEcra
+          ? `fixed inset-0 ${manterNavegacao ? 'z-30 pb-[104px]' : 'z-50'}`
+          : 'min-h-[60vh] w-full flex-1')
       }
       style={{ backgroundColor: '#ffffff' }}
       role="status"

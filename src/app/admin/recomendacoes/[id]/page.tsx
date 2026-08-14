@@ -1,7 +1,6 @@
+import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { SubmitButton } from '@/components/submit-button'
 import {
   validarRecomendacao,
@@ -95,26 +94,19 @@ export default async function RecomendacaoPage({
   const beneficios = (beneficiosData ?? []) as Beneficio[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-8">
-        <Breadcrumbs
-          items={[
-            { label: 'Visão geral', href: '/admin' },
-            { label: 'Programa de Recomendação', href: '/admin/recomendacoes' },
-            { label: `${recomendacao.recomendador_nome} → ${recomendacao.novo_aluno_nome}` },
-          ]}
-        />
-        <PageHeader voltar="/admin/recomendacoes" titulo={<>{recomendacao.recomendador_nome} → {recomendacao.novo_aluno_nome}</>} subtitulo={<>{recomendacao.professor_nome}
-              {recomendacao.modalidade && ` — ${recomendacao.modalidade}`}</>} />
+    <main id="conteudo-principal" className="partitura-pagina recomendacao-detalhe-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/recomendacoes" className="partitura-voltar" aria-label="Voltar às recomendações">←</Link><div><p className="partitura-sobretitulo">{recomendacao.professor_nome}{recomendacao.modalidade && ` · ${recomendacao.modalidade}`}</p><h1>{recomendacao.recomendador_nome} <span aria-hidden="true">→</span> {recomendacao.novo_aluno_nome}</h1><p>Registada em {new Intl.DateTimeFormat('pt-PT').format(new Date(recomendacao.criado_em))}</p></div></header>
 
         {erro && (
-          <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
+          <p className="admin-alerta" role="alert">
             {decodeURIComponent(erro)}
           </p>
         )}
 
-        <section className="space-y-3">
-          <h2 className="secao-titulo">Estado</h2>
+        <div className="recomendacao-detalhe-grelha"><div>
+        <section className="recomendacao-seccao recomendacao-estado">
+          <h2>Estado</h2>
           {recomendacao.estado === 'registada' && (
             <div className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3">
               <p className="text-sm text-foreground/70">
@@ -145,8 +137,8 @@ export default async function RecomendacaoPage({
           )}
         </section>
 
-        <section className="space-y-3">
-          <h2 className="secao-titulo">Mensalidade gratuita</h2>
+        <section className="recomendacao-seccao">
+          <h2>Mensalidade gratuita</h2>
           {beneficios.length === 0 ? (
             <p className="text-[13px] text-[var(--color-tinta-suave)]">
               Ainda não existe — só nasce quando a recomendação for validada.
@@ -176,8 +168,9 @@ export default async function RecomendacaoPage({
           )}
         </section>
 
-        <section className="space-y-3">
-          <h2 className="secao-titulo">Dados administrativos</h2>
+        </div><div>
+        <section className="recomendacao-seccao">
+          <h2>Dados administrativos</h2>
           <form
             action={atualizarDadosRecomendacao}
             className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3"
@@ -271,8 +264,8 @@ export default async function RecomendacaoPage({
         </section>
 
         {recomendacao.estado !== 'anulada' && (
-          <section className="space-y-3">
-            <h2 className="secao-titulo">Anular</h2>
+          <section className="recomendacao-seccao recomendacao-perigo">
+            <h2>Anular</h2>
             <p className="text-[13px] text-[var(--color-tinta-suave)]">
               Para erros administrativos (Art. 23.º), saída do professor (Art. 17.º) ou
               utilização abusiva (Art. 24.º). Uma mensalidade já usada não é revertida.
@@ -301,7 +294,7 @@ export default async function RecomendacaoPage({
               </SubmitButton>
             </form>
           </section>
-        )}
+        )}</div></div>
       </div>
     </main>
   )

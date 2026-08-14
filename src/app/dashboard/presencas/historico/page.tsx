@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 
 type MatriculaAluno = {
@@ -17,10 +17,7 @@ type AlunoResumo = {
 }
 
 export default async function HistoricoPresencasPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthContext()
 
   if (!user) {
     redirect('/login')

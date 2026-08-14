@@ -1,7 +1,5 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ListaComPesquisa } from '@/components/lista-com-pesquisa'
 
 type Matricula = {
@@ -65,30 +63,23 @@ export default async function AdminProfessorAlunosPage({
     .sort((a, b) => a.nome.localeCompare(b.nome))
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: 'Visão geral', href: '/admin' },
-            { label: 'Professores', href: '/admin/professores' },
-            { label: professorData.nome, href: `/admin/professores/${professorId}` },
-            { label: 'Alunos' },
-          ]}
-        />
-        <PageHeader voltar={`/admin/professores/${professorId}`} titulo={professorData.nome} />
+    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href={`/admin/professores/${professorId}`} className="partitura-voltar" aria-label="Voltar à ficha do professor">←</Link><div><p className="partitura-sobretitulo">Alunos do professor</p><h1>{professorData.nome}</h1><p>{alunos.length} {alunos.length === 1 ? 'aluno' : 'alunos'}</p></div></header>
 
         {alunos.length === 0 ? (
           <p className="text-[13px]" style={{ color: 'var(--color-tinta-suave)' }}>
             Ainda não tem alunos.
           </p>
         ) : (
-          <ListaComPesquisa
+          <div className="admin-diretorio"><ListaComPesquisa
             itens={alunos}
             hrefPrefix="/admin/alunos/"
             placeholder="Pesquisar aluno por nome…"
-          />
+          /></div>
         )}
       </div>
     </main>
   )
 }
+import Link from 'next/link'

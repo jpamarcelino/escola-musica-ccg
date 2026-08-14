@@ -1,8 +1,6 @@
 import Link from 'next/link'
-import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 
 type RecomendacaoLinha = {
   id: number
@@ -70,71 +68,41 @@ export default async function RecomendacoesPage({
   const usados = beneficios.filter((b) => b.estado === 'usado').length
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin" titulo="Programa de Recomendação" subtitulo="Projeto-piloto — ano letivo 2026/2027." />
+    <main id="conteudo-principal" className="partitura-pagina recomendacoes-admin-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Projeto-piloto · 2026/2027</p><h1>Recomendações</h1><p>Acompanhar validações e benefícios atribuídos.</p></div></header>
 
-        {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
+        {erro && <p className="admin-alerta" role="alert">{decodeURIComponent(erro)}</p>}
 
-        <section
-          className="entrada-esquerda grid grid-cols-2 gap-3 sm:grid-cols-4"
-          style={{ '--card-index': 1 } as CSSProperties}
-        >
-          <div className="stat-tile">
-            <p className="stat-tile-numero">{porValidar}</p>
-            <p className="stat-tile-legenda">Por validar</p>
-          </div>
-          <div className="stat-tile">
-            <p className="stat-tile-numero">{validadas}</p>
-            <p className="stat-tile-legenda">Validadas</p>
-          </div>
-          <div className="stat-tile">
-            <p className="stat-tile-numero">{pendentes}</p>
-            <p className="stat-tile-legenda">Meses por usar</p>
-          </div>
-          <div className="stat-tile">
-            <p className="stat-tile-numero">{usados}</p>
-            <p className="stat-tile-legenda">Meses já dados</p>
-          </div>
+        <section className="recomendacoes-balanco" aria-label="Balanço do programa">
+          <div className="recomendacoes-prioridade"><span>{porValidar}</span><p>Por validar</p></div>
+          <dl><div><dt>Validadas</dt><dd>{validadas}</dd></div><div><dt>Meses por usar</dt><dd>{pendentes}</dd></div><div><dt>Meses já dados</dt><dd>{usados}</dd></div></dl>
         </section>
 
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/admin/recomendacoes/nova"
-            className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
-          >
-            Registar recomendação
-          </Link>
-          <Link
-            href="/admin/recomendacoes/estudo"
-            className="rounded-[13px] border border-[var(--color-linha)] px-4 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
-          >
-            Dados para o estudo
-          </Link>
-        </div>
+        <nav className="recomendacoes-acoes" aria-label="Ações do programa"><Link href="/admin/recomendacoes/nova">Registar recomendação <i aria-hidden="true">＋</i></Link><Link href="/admin/recomendacoes/estudo">Dados para o estudo <i aria-hidden="true">→</i></Link></nav>
 
-        <section className="space-y-3">
-          <h2 className="secao-titulo">Todas as recomendações</h2>
+        <section className="recomendacoes-registos">
+          <header><p className="partitura-indice">01</p><h2>Todas as recomendações</h2></header>
           {recomendacoes.length === 0 ? (
-            <p className="text-sm text-foreground/60">
+            <p className="recomendacoes-vazio">
               Ainda não há recomendações registadas.
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="recomendacoes-lista">
               {recomendacoes.map((r) => (
                 <Link
                   key={r.id}
                   href={`/admin/recomendacoes/${r.id}`}
-                  className="lista-item flex items-center justify-between gap-3"
+                  className="recomendacao-linha"
                 >
-                  <div>
-                    <p className="lista-item-titulo">
+                  <div className="recomendacao-nomes">
+                    <p>
                       {r.recomendador_nome} → {r.novo_aluno_nome}
                     </p>
-                    <p className="lista-item-sub">
+                    <small>
                       {r.professor_nome}
                       {r.modalidade && ` — ${r.modalidade}`}
-                    </p>
+                    </small>
                   </div>
                   <span className={`estado-pill ${ESTADO_CLASSE[r.estado] ?? ''}`}>
                     {ESTADO_LABEL[r.estado] ?? r.estado}

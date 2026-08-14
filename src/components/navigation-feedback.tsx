@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { EcraCarregamento } from '@/components/ecra-carregamento'
 
 // O App Router mantém a página anterior visível enquanto algumas rotas de
 // servidor carregam. Sem feedback, sobretudo numa ligação lenta ao Supabase,
@@ -57,7 +58,7 @@ export function NavigationFeedback() {
   // Evita que uma falha de rede deixe a interface coberta indefinidamente.
   useEffect(() => {
     if (!aNavegar) return
-    const atraso = window.setTimeout(() => setMostrar(true), 220)
+    const atraso = window.setTimeout(() => setMostrar(true), 120)
     const limite = window.setTimeout(() => setANavegar(false), 12_000)
     return () => {
       window.clearTimeout(atraso)
@@ -68,8 +69,11 @@ export function NavigationFeedback() {
   if (!aNavegar || !mostrar) return null
 
   return (
-    <div className="navegacao-progresso" role="status" aria-label="A abrir a próxima página">
-      <span />
-    </div>
+    <EcraCarregamento
+      mensagem="A abrir a próxima página…"
+      contexto="A preparar o teu espaço CCG"
+      cobrirEcra
+      manterNavegacao
+    />
   )
 }

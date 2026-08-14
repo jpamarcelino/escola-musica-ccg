@@ -28,7 +28,7 @@ export function ListaComPesquisa({
     termoLimpo === '' ? itens : itens.filter((i) => i.nome.toLowerCase().includes(termoLimpo))
 
   return (
-    <div className="space-y-[14px]">
+    <div className="lista-pesquisa space-y-[14px]">
       {itens.length > 6 && (
         <div className="relative">
           <Search
@@ -49,6 +49,8 @@ export function ListaComPesquisa({
         </div>
       )}
 
+      <p className="sr-only" aria-live="polite">{filtrados.length} {filtrados.length === 1 ? 'resultado' : 'resultados'}</p>
+      <div key={termoLimpo} className="motion-results">
       {filtrados.length === 0 ? (
         <EmptyState
           titulo="Sem resultados"
@@ -64,7 +66,7 @@ export function ListaComPesquisa({
             />
           ))}
         </GrupoLista>
-      )}
+      )}</div>
     </div>
   )
 }

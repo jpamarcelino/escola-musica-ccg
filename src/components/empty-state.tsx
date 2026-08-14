@@ -12,22 +12,18 @@ export function EmptyState({
   acao?: React.ReactNode
 }) {
   return (
-    <div
-      className="rounded-[var(--radius-cartao)] border px-[22px] py-[32px] text-center"
-      style={{ borderColor: 'var(--color-linha)', backgroundColor: 'var(--color-papel-2)' }}
-    >
+    <div className="empty-editorial" role="status">
       <p
-        className="text-[14.5px] font-semibold"
-        style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
+        className="empty-editorial-titulo"
       >
         {titulo}
       </p>
       {descricao && (
-        <p className="mt-[6px] text-[13px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
+        <p className="empty-editorial-descricao">
           {descricao}
         </p>
       )}
-      {acao && <div className="mt-[16px] flex justify-center">{acao}</div>}
+      {acao && <div className="empty-editorial-acao">{acao}</div>}
     </div>
   )
 }

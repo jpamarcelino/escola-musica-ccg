@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-context'
 import { atualizarInstrumentos, atualizarFoto } from '@/lib/actions/professor'
 import {
   atualizarNomeConta,
@@ -31,10 +31,7 @@ export default async function ContaPage({
 }) {
   const { erroHorarios, erro } = await searchParams
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthContext()
 
   if (!user) {
     redirect('/login')
@@ -70,13 +67,52 @@ export default async function ContaPage({
   }
   const ehProfessor = profile.tipo === 'professor'
 
-  const { data: outrosAdminsData } = profile.super_admin
-    ? await supabase
+  const outrosAdminsQuery = profile.super_admin
+    ? supabase
         .from('perfis_escola')
         .select('id, profiles(nome)')
         .eq('admin', true)
         .neq('id', user.id)
-    : { data: [] }
+    : Promise.resolve({ data: [] })
+
+  const meusAlunosQuery = !ehProfessor
+    ? supabase
+        .from('alunos')
+        .select('id, nome, propria_conta_id')
+        .eq('encarregado_id', user.id)
+        .order('criado_em')
+    : Promise.resolve({ data: [] })
+
+  const instrumentosQuery = ehProfessor
+    ? supabase
+        .from('instrumentos')
+        .select('id, nome')
+        .eq('programa', profile.programa)
+        .order('nome')
+    : Promise.resolve({ data: [] })
+
+  const meusInstrumentosQuery = ehProfessor
+    ? supabase
+        .from('professor_instrumentos')
+        .select('especialidade, instrumentos(id, nome)')
+        .eq('professor_id', user.id)
+    : Promise.resolve({ data: [] })
+
+  // Depois de resolver identidade e permissões, estes dados são independentes.
+  // Em paralelo, a página paga apenas a latência da consulta mais lenta em vez
+  // de acumular até quatro viagens consecutivas ao Supabase.
+  const [
+    { data: outrosAdminsData },
+    { data: meusAlunosData },
+    { data: instrumentosData },
+    { data: meusInstrumentosData },
+  ] = await Promise.all([
+    outrosAdminsQuery,
+    meusAlunosQuery,
+    instrumentosQuery,
+    meusInstrumentosQuery,
+  ])
+
   const outrosAdmins = (
     (outrosAdminsData ?? []) as unknown as { id: string; profiles: { nome: string } | null }[]
   ).map((p) => ({
@@ -84,30 +120,10 @@ export default async function ContaPage({
     nome: p.profiles?.nome ?? '',
   }))
 
-  const { data: meusAlunosData } = !ehProfessor
-    ? await supabase
-        .from('alunos')
-        .select('id, nome, propria_conta_id')
-        .eq('encarregado_id', user.id)
-        .order('criado_em')
-    : { data: [] }
   const meusAlunos = meusAlunosData ?? []
 
-  const { data: instrumentosData } = ehProfessor
-    ? await supabase
-        .from('instrumentos')
-        .select('id, nome')
-        .eq('programa', profile.programa)
-        .order('nome')
-    : { data: [] }
   const todosInstrumentos = instrumentosData ?? []
 
-  const { data: meusInstrumentosData } = ehProfessor
-    ? await supabase
-        .from('professor_instrumentos')
-        .select('especialidade, instrumentos(id, nome)')
-        .eq('professor_id', user.id)
-    : { data: [] }
   const meusInstrumentos = (
     (meusInstrumentosData ?? []) as unknown as {
       especialidade: string | null

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-context'
 import { datasDoDia, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
 
 type Horario = {
@@ -14,10 +14,7 @@ type MatriculaConfirmada = {
 }
 
 export default async function PresencasPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthContext()
 
   if (!user) {
     redirect('/login')

@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarAdministradores } from '@/lib/actions/admin'
 import { criarConviteAdmin } from '@/lib/actions/convites'
-import { PageHeader } from '@/components/page-header'
 import { ConvidarAdminForm } from '@/components/convite-forms'
 
 type Professor = {
@@ -52,9 +51,9 @@ export default async function AdminAdministradoresPage() {
   })) as Professor[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin" titulo="Administradores" />
+    <main id="conteudo-principal" className="partitura-pagina admin-permissoes-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Super administração</p><h1>Administradores</h1><p>Acessos à gestão integral da escola.</p></div></header>
 
         <ConvidarAdminForm action={criarConviteAdmin} />
 
@@ -63,7 +62,7 @@ export default async function AdminAdministradoresPage() {
           desmarcar a ti próprio, para nunca ficares sem acesso.
         </p>
 
-        <form action={atualizarAdministradores} className="space-y-3">
+        <form action={atualizarAdministradores} className="admin-permissoes-form">
           <div className="space-y-2">
             {professores.map((professor) => {
               const souEu = professor.id === user.id
@@ -95,3 +94,4 @@ export default async function AdminAdministradoresPage() {
     </main>
   )
 }
+import Link from 'next/link'

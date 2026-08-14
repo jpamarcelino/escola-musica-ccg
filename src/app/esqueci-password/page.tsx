@@ -11,10 +11,10 @@ export default function EsqueciPasswordPage() {
   )
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex items-center justify-center p-6">
+    <main id="conteudo-principal" className="auth-pagina flex-1 flex items-center justify-center p-6">
       <form
         action={action}
-        className="w-full max-w-sm space-y-4 border border-foreground/15 rounded-lg p-6"
+        className="auth-cartao w-full max-w-sm space-y-4"
       >
         <h1 className="text-xl font-semibold">Recuperar password</h1>
         <p className="text-sm text-foreground/60">
@@ -35,8 +35,8 @@ export default function EsqueciPasswordPage() {
           />
         </div>
 
-        {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-        {state?.info && <p className="text-sm text-green-600">{state.info}</p>}
+        {state?.error && <p className="text-sm text-red-600" role="alert">{state.error}</p>}
+        {state?.info && <p className="text-sm text-green-600" role="status">{state.info}</p>}
 
         <button
           type="submit"

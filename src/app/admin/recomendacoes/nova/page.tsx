@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 import { SubmitButton } from '@/components/submit-button'
 import { registarRecomendacao } from '@/lib/actions/recomendacoes'
 
@@ -80,17 +79,17 @@ export default async function NovaRecomendacaoPage({
     [...lista.entries()].sort((a, b) => a[1].localeCompare(b[1]))
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/admin/recomendacoes" titulo="Registar recomendação" />
+    <main id="conteudo-principal" className="partitura-pagina recomendacao-nova-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/recomendacoes" className="partitura-voltar" aria-label="Voltar às recomendações">←</Link><div><p className="partitura-sobretitulo">Novo registo</p><h1>Registar recomendação</h1><p>Professor, alunos e confirmação administrativa.</p></div></header>
 
         {erro && (
-          <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
+          <p className="admin-alerta" role="alert">
             {decodeURIComponent(erro)}
           </p>
         )}
 
-        <section className="space-y-3">
+        <section className="recomendacao-passo recomendacao-passo-professor">
           <h2 className="secao-titulo">1. Professor</h2>
           {professores.length === 0 ? (
             <p className="rounded-[13px] border border-[var(--color-linha)] p-3 text-[13px] text-[var(--color-tinta-suave)]">
@@ -118,17 +117,18 @@ export default async function NovaRecomendacaoPage({
         </section>
 
         {professorId && (
-          <form action={registarRecomendacao} className="space-y-6">
+          <form action={registarRecomendacao} className="recomendacao-form">
             <input type="hidden" name="professorId" value={professorId} />
 
-            <section className="space-y-3">
+            <section className="recomendacao-passo">
               <h2 className="secao-titulo">2. Quem recomendou</h2>
               {alunosConfirmados.size === 0 ? (
                 <p className="text-[13px] text-[var(--color-tinta-suave)]">
                   Este professor não tem alunos com matrícula confirmada.
                 </p>
               ) : (
-                <select
+                <><label htmlFor="recomendadorId" className="recomendacao-label">Aluno que recomendou</label><select
+                  id="recomendadorId"
                   name="recomendadorId"
                   required
                   defaultValue=""
@@ -142,13 +142,14 @@ export default async function NovaRecomendacaoPage({
                       {nome}
                     </option>
                   ))}
-                </select>
+                </select></>
               )}
             </section>
 
-            <section className="space-y-3">
+            <section className="recomendacao-passo">
               <h2 className="secao-titulo">3. Novo aluno</h2>
-              <select
+              <label htmlFor="novoAlunoId" className="recomendacao-label">Aluno recomendado</label><select
+                id="novoAlunoId"
                 name="novoAlunoId"
                 defaultValue=""
                 className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
@@ -160,7 +161,8 @@ export default async function NovaRecomendacaoPage({
                   </option>
                 ))}
               </select>
-              <input
+              <label htmlFor="novoAlunoNomeLivre" className="recomendacao-label">Nome, caso ainda não exista na aplicação</label><input
+                id="novoAlunoNomeLivre"
                 type="text"
                 name="novoAlunoNomeLivre"
                 placeholder="Nome do novo aluno (só se não estiver na lista)"
@@ -168,7 +170,7 @@ export default async function NovaRecomendacaoPage({
               />
             </section>
 
-            <section className="space-y-3">
+            <section className="recomendacao-passo">
               <h2 className="secao-titulo">4. Confirmação administrativa</h2>
               <p className="text-[13px] text-[var(--color-tinta-suave)]">
                 O Art. 11.º só valida a recomendação depois de a secretaria confirmar a
@@ -257,7 +259,7 @@ export default async function NovaRecomendacaoPage({
 
             <SubmitButton
               textoAGuardar="A registar..."
-              className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
+              className="recomendacao-submeter"
             >
               Registar
             </SubmitButton>
