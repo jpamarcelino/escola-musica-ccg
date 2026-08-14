@@ -6,9 +6,9 @@ import {
   apagarConta,
   apagarContaSuperAdmin,
 } from '@/lib/actions/auth'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { EditarNomeForm, AlterarPasswordForm } from '@/components/conta-forms'
-import { BotaoApagarConta } from '@/components/apagar-conta-botao'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
 
 export default async function AdminContaPage({
@@ -65,12 +65,9 @@ export default async function AdminContaPage({
   }))
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin" />
-          <h1 className="text-2xl font-semibold text-foreground">Conta</h1>
-        </div>
+        <PageHeader voltar="/admin" titulo="Conta" />
 
         {erro && (
           <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">{erro}</p>
@@ -90,11 +87,15 @@ export default async function AdminContaPage({
           <AlterarPasswordForm action={atualizarPasswordConta} />
         </section>
 
-        <section className="space-y-3 border-t border-foreground/10 pt-6">
+        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
           {profile.super_admin ? (
             <ApagarContaSuperAdminForm action={apagarContaSuperAdmin} outrosAdmins={outrosAdmins} />
           ) : (
-            <BotaoApagarConta action={apagarConta} />
+            <BotaoAcaoDestruir
+              label="Apagar conta"
+              mensagem="Tens a certeza que queres apagar a tua conta? Esta ação é irreversível — perdes o acesso e todos os teus dados de conta são apagados. (O histórico de presenças e mensalidades mantém-se.)"
+              action={apagarConta}
+            />
           )}
         </section>
       </div>

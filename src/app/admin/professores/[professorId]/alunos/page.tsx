@@ -1,7 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { ListaComPesquisa } from '@/components/lista-com-pesquisa'
 
 type Matricula = {
   aluno_id: string
@@ -64,28 +65,28 @@ export default async function AdminProfessorAlunosPage({
     .sort((a, b) => a.nome.localeCompare(b.nome))
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href={`/admin/professores/${professorId}`} />
-          <h1 className="text-2xl font-semibold text-foreground">{professorData.nome}</h1>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Visão geral', href: '/admin' },
+            { label: 'Professores', href: '/admin/professores' },
+            { label: professorData.nome, href: `/admin/professores/${professorId}` },
+            { label: 'Alunos' },
+          ]}
+        />
+        <PageHeader voltar={`/admin/professores/${professorId}`} titulo={professorData.nome} />
 
         {alunos.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não tem alunos.</p>
+          <p className="text-[13px]" style={{ color: 'var(--color-tinta-suave)' }}>
+            Ainda não tem alunos.
+          </p>
         ) : (
-          <div className="hub-stack compacto">
-            {alunos.map((aluno, idx) => (
-              <OptionCard
-                key={aluno.id}
-                href={`/admin/alunos/${aluno.id}`}
-                nome={aluno.nome}
-                wide
-                compacto
-                index={idx + 1}
-              />
-            ))}
-          </div>
+          <ListaComPesquisa
+            itens={alunos}
+            hrefPrefix="/admin/alunos/"
+            placeholder="Pesquisar aluno por nome…"
+          />
         )}
       </div>
     </main>

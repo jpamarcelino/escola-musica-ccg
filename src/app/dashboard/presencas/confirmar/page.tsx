@@ -4,7 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { datasDoDia, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { EmptyState } from '@/components/empty-state'
 
 type Horario = {
   id: number
@@ -113,19 +114,17 @@ export default async function ConfirmarPresencasPage({
   pendentes.sort((a, b) => a.data.localeCompare(b.data) || a.hora_inicio.localeCompare(b.hora_inicio))
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard/presencas" />
-          <h1 className="text-2xl font-semibold text-foreground">Presenças por Confirmar</h1>
-        </div>
+        <PageHeader voltar="/dashboard/presencas" titulo="Presenças por Confirmar" />
 
         {guardado && <p className="text-sm text-green-700">Presenças guardadas.</p>}
 
         {pendentes.length === 0 ? (
-          <p className="text-sm text-foreground/60">
-            Não há aulas por confirmar — está tudo em dia.
-          </p>
+          <EmptyState
+            titulo="Não há aulas por confirmar"
+            descricao="Está tudo em dia."
+          />
         ) : (
           <div className="space-y-2">
             {pendentes.map((p) => (

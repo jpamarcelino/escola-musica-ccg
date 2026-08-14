@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 
 type RecomendacaoLinha = {
   id: number
@@ -70,18 +70,9 @@ export default async function RecomendacoesPage({
   const usados = beneficios.filter((b) => b.estado === 'usado').length
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div
-          className="entrada-esquerda flex items-center gap-3"
-          style={{ '--card-index': 0 } as CSSProperties}
-        >
-          <BackButton href="/admin" />
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Programa de Recomendação</h1>
-            <p className="text-sm text-foreground/60">Projeto-piloto — ano letivo 2026/2027.</p>
-          </div>
-        </div>
+        <PageHeader voltar="/admin" titulo="Programa de Recomendação" subtitulo="Projeto-piloto — ano letivo 2026/2027." />
 
         {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
 
@@ -110,13 +101,13 @@ export default async function RecomendacoesPage({
         <div className="flex flex-wrap gap-2">
           <Link
             href="/admin/recomendacoes/nova"
-            className="rounded bg-brand px-4 py-2 text-sm font-medium text-white"
+            className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
           >
             Registar recomendação
           </Link>
           <Link
             href="/admin/recomendacoes/estudo"
-            className="rounded border border-foreground/20 px-4 py-2 text-sm"
+            className="rounded-[13px] border border-[var(--color-linha)] px-4 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
           >
             Dados para o estudo
           </Link>

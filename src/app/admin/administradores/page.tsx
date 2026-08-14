@@ -1,9 +1,8 @@
-import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarAdministradores } from '@/lib/actions/admin'
 import { criarConviteAdmin } from '@/lib/actions/convites'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { ConvidarAdminForm } from '@/components/convite-forms'
 
 type Professor = {
@@ -53,15 +52,9 @@ export default async function AdminAdministradoresPage() {
   })) as Professor[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div
-          className="entrada-esquerda flex items-center gap-3"
-          style={{ '--card-index': 0 } as CSSProperties}
-        >
-          <BackButton href="/admin" />
-          <h1 className="text-2xl font-semibold text-foreground">Administradores</h1>
-        </div>
+        <PageHeader voltar="/admin" titulo="Administradores" />
 
         <ConvidarAdminForm action={criarConviteAdmin} />
 

@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { CartaoLink } from '@/components/cartao-link'
 import { FundoPapel } from '@/components/fundo-papel'
 
@@ -40,17 +40,9 @@ export default async function AlunoHubPage({
   return (
     <FundoPapel largura="larga">
       <div className="space-y-[26px]">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <h1
-            className="text-[22px] font-semibold leading-[1.2]"
-            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-          >
-            {aluno.nome}
-          </h1>
-        </div>
+        <PageHeader voltar="/dashboard" titulo={aluno.nome} />
 
-        <div className="flex flex-col gap-[11px]">
+        <div className="flex flex-col gap-[11px] md:grid md:grid-cols-2 md:items-start">
           <CartaoLink href={`/aluno/${alunoId}/pedido`} nome="Pedir Aula" />
           <CartaoLink href={`/aluno/${alunoId}/horario`} nome="Horário e Aulas" />
           <CartaoLink href="/aluno/calendario" nome="Calendário Escolar" />

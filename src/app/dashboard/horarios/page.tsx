@@ -10,10 +10,13 @@ import {
 } from '@/lib/actions/professor'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
+import { Pencil } from 'lucide-react'
+import Link from 'next/link'
+import { EmptyState } from '@/components/empty-state'
 
 type HorarioProfessor = {
   id: number
@@ -123,12 +126,9 @@ export default async function HorariosPage({
   }
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <h1 className="text-2xl font-semibold text-foreground">Gestão de Horários</h1>
-        </div>
+        <PageHeader voltar="/dashboard" titulo="Gestão de Horários" />
 
         {erroHorarios && (
           <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
@@ -142,9 +142,10 @@ export default async function HorariosPage({
           <form id="bloquear-horarios-form" action={bloquearHorarios} />
           <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
           {horarios.length === 0 ? (
-            <p className="text-sm text-foreground/60">
-              Ainda não tens horários definidos.
-            </p>
+            <EmptyState
+              titulo="Ainda não tens horários definidos"
+              descricao="Cria os teus horários disponíveis mais abaixo, em “Criar horários”."
+            />
           ) : (
             <>
               <p className="text-xs text-foreground/50">
@@ -202,6 +203,14 @@ export default async function HorariosPage({
                             />
                             <span>{formatarHora(h.hora_inicio)}</span>
                             <span>{formatarHora(h.hora_fim)}</span>
+                            <Link
+                              href={`/professor/horarios/${h.id}`}
+                              aria-label="Editar horário"
+                              title="Editar horário"
+                              className="absolute right-[2px] top-[2px] rounded-full p-[2px] opacity-60 hover:opacity-100"
+                            >
+                              <Pencil size={11} strokeWidth={1.5} />
+                            </Link>
                           </label>
                         )
                       })}
@@ -287,9 +296,7 @@ export default async function HorariosPage({
         <section className="space-y-3">
           <h2 className="font-semibold">Alunos confirmados</h2>
           {confirmados.length === 0 && (
-            <p className="text-sm text-foreground/60">
-              Ainda não tens alunos confirmados.
-            </p>
+            <EmptyState titulo="Ainda não tens alunos confirmados" />
           )}
           {confirmados.map((c) => (
             <div

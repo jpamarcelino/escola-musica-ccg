@@ -8,7 +8,7 @@ import {
   apagarConta,
   apagarContaSuperAdmin,
 } from '@/lib/actions/auth'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { SubmitButton } from '@/components/submit-button'
 import { FotoConta } from '@/components/foto-conta'
 import {
@@ -16,8 +16,9 @@ import {
   EditarEmailForm,
   AlterarPasswordForm,
 } from '@/components/conta-forms'
-import { BotaoApagarConta } from '@/components/apagar-conta-botao'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
+import { EmptyState } from '@/components/empty-state'
 import { criarConviteMigracaoAluno, resgatarConvite } from '@/lib/actions/convites'
 import { GerarLinkMigracaoForm, ResgatarConviteForm } from '@/components/convite-forms'
 
@@ -115,12 +116,9 @@ export default async function ContaPage({
     .map((r) => ({ ...r.instrumentos!, especialidade: r.especialidade }))
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <h1 className="text-2xl font-semibold text-foreground">Conta</h1>
-        </div>
+        <PageHeader voltar="/dashboard" titulo="Conta" />
 
         {(erroHorarios || erro) && (
           <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
@@ -151,7 +149,7 @@ export default async function ContaPage({
           <section className="space-y-4">
             <h2 className="font-semibold">Perfis de aluno que geres</h2>
             {meusAlunos.length === 0 ? (
-              <p className="text-sm text-foreground/60">Nenhum perfil de aluno.</p>
+              <EmptyState titulo="Nenhum perfil de aluno" />
             ) : (
               <div className="space-y-3">
                 {meusAlunos.map((a) => (
@@ -226,11 +224,15 @@ export default async function ContaPage({
           </>
         )}
 
-        <section className="space-y-3 border-t border-foreground/10 pt-6">
+        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
           {profile.super_admin ? (
             <ApagarContaSuperAdminForm action={apagarContaSuperAdmin} outrosAdmins={outrosAdmins} />
           ) : (
-            <BotaoApagarConta action={apagarConta} />
+            <BotaoAcaoDestruir
+              label="Apagar conta"
+              mensagem="Tens a certeza que queres apagar a tua conta? Esta ação é irreversível — perdes o acesso e todos os teus dados de conta são apagados. (O histórico de presenças e mensalidades mantém-se.)"
+              action={apagarConta}
+            />
           )}
         </section>
       </div>

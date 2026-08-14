@@ -1,6 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { EmptyState } from '@/components/empty-state'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { dataMaisRecenteDoDia } from '@/lib/datas'
@@ -75,18 +77,19 @@ export default async function PresencasHorarioPage({
   )
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard/presencas/confirmar" />
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">{horario.dia_semana}</h1>
-            <p className="text-sm text-foreground/60">
-              {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
-              {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}
-            </p>
-          </div>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Presenças', href: '/dashboard/presencas' },
+            { label: 'Confirmar', href: '/dashboard/presencas/confirmar' },
+            {
+              label: `${horario.dia_semana}, ${formatarHora(horario.hora_inicio)}–${formatarHora(horario.hora_fim)}`,
+            },
+          ]}
+        />
+        <PageHeader voltar="/dashboard/presencas/confirmar" titulo={horario.dia_semana} subtitulo={<>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
+              {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}</>} />
 
         <form method="get" className="flex items-center gap-2">
           <label htmlFor="data" className="text-sm text-foreground/60">
@@ -107,7 +110,7 @@ export default async function PresencasHorarioPage({
         {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
 
         {alunos.length === 0 ? (
-          <p className="text-sm text-foreground/60">Não há alunos confirmados neste horário.</p>
+          <EmptyState titulo="Não há alunos confirmados neste horário" />
         ) : (
           <form action={marcarPresencas} className="space-y-4">
             <input type="hidden" name="horarioId" value={horarioId} />

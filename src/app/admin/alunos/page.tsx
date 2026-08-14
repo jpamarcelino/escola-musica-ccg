@@ -1,8 +1,8 @@
-import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
+import { EmptyState } from '@/components/empty-state'
+import { ListaComPesquisa } from '@/components/lista-com-pesquisa'
 
 type Aluno = {
   id: string
@@ -36,31 +36,21 @@ export default async function AdminAlunosPage() {
   const alunos = (alunosData ?? []) as Aluno[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div
-          className="entrada-esquerda flex items-center gap-3"
-          style={{ '--card-index': 0 } as CSSProperties}
-        >
-          <BackButton href="/admin" />
-          <h1 className="text-2xl font-semibold text-foreground">Alunos</h1>
-        </div>
+        <PageHeader voltar="/admin" titulo="Alunos" />
 
         {alunos.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não há alunos registados.</p>
+          <EmptyState
+            titulo="Ainda não há alunos registados"
+            descricao="Os alunos aparecem aqui assim que alguém pede uma aula ou cria conta em pedir-aula."
+          />
         ) : (
-          <div className="hub-stack compacto">
-            {alunos.map((aluno, idx) => (
-              <OptionCard
-                key={aluno.id}
-                href={`/admin/alunos/${aluno.id}`}
-                nome={aluno.nome}
-                wide
-                compacto
-                index={idx + 1}
-              />
-            ))}
-          </div>
+          <ListaComPesquisa
+            itens={alunos}
+            hrefPrefix="/admin/alunos/"
+            placeholder="Pesquisar aluno por nome…"
+          />
         )}
       </div>
     </main>

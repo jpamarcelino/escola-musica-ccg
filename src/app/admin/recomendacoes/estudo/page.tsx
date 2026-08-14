@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { EmptyState } from '@/components/empty-state'
 import { recolherDadosEstudo } from '@/lib/estudo-recomendacoes'
 
 function euros(valor: number) {
@@ -45,20 +45,9 @@ export default async function EstudoRecomendacoesPage() {
   const naoAderentes = linhas.filter((l) => !l.professorAderente)
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-4xl space-y-8">
-        <div
-          className="entrada-esquerda flex items-center gap-3"
-          style={{ '--card-index': 0 } as CSSProperties}
-        >
-          <BackButton href="/admin/recomendacoes" />
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Dados para o estudo</h1>
-            <p className="text-sm text-foreground/60">
-              Art. 30.º do Regulamento — base do relatório final do ano letivo.
-            </p>
-          </div>
-        </div>
+        <PageHeader voltar="/admin/recomendacoes" titulo="Dados para o estudo" subtitulo="Art. 30.º do Regulamento — base do relatório final do ano letivo." />
 
         <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="stat-tile">
@@ -145,19 +134,19 @@ export default async function EstudoRecomendacoesPage() {
             <Link
               href="/admin/recomendacoes/estudo/csv"
               prefetch={false}
-              className="rounded border border-foreground/20 px-3 py-2 text-sm"
+              className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
             >
               Descarregar CSV
             </Link>
           </div>
 
           {linhas.length === 0 ? (
-            <p className="text-sm text-foreground/60">Ainda não há dados.</p>
+            <EmptyState titulo="Ainda não há dados" />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-foreground/15 text-xs text-foreground/60">
+                  <tr className="border-b border-[var(--color-linha)] text-xs text-foreground/60">
                     <th className="p-2">Recomendador</th>
                     <th className="p-2">Novo aluno</th>
                     <th className="p-2">Professor</th>
@@ -171,7 +160,7 @@ export default async function EstudoRecomendacoesPage() {
                 </thead>
                 <tbody>
                   {linhas.map((l) => (
-                    <tr key={l.id} className="border-b border-foreground/10">
+                    <tr key={l.id} className="border-b border-[var(--color-linha)]">
                       <td className="p-2">{l.recomendadorNome}</td>
                       <td className="p-2">
                         {l.novoAlunoNome}

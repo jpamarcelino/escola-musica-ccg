@@ -1,7 +1,9 @@
 import { Fragment } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { EmptyState } from '@/components/empty-state'
 import { atualizarHistoricoMensalidades } from '@/lib/actions/pagamentos'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
 
@@ -105,15 +107,20 @@ export default async function HistoricoPagamentosProfessorPage({
   }
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-6xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin/pagamentos/historico" />
-          <h1 className="text-2xl font-semibold text-foreground">{professorData.nome}</h1>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Visão geral', href: '/admin' },
+            { label: 'Mensalidades', href: '/admin/pagamentos' },
+            { label: 'Histórico', href: '/admin/pagamentos/historico' },
+            { label: professorData.nome },
+          ]}
+        />
+        <PageHeader voltar="/admin/pagamentos/historico" titulo={professorData.nome} />
 
         {alunos.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não há histórico de mensalidades.</p>
+          <EmptyState titulo="Ainda não há histórico de mensalidades" />
         ) : (
           <form action={atualizarHistoricoMensalidades} className="space-y-3">
             <input type="hidden" name="professorId" value={professorId} />
@@ -121,7 +128,7 @@ export default async function HistoricoPagamentosProfessorPage({
               <input key={a.id} type="hidden" name="alunoIds" value={a.id} />
             ))}
 
-            <button type="submit" className="rounded border border-foreground/20 px-3 py-1 text-sm">
+            <button type="submit" className="rounded-[13px] border border-[var(--color-linha)] px-3 py-[6px] text-[13px] font-medium text-[var(--color-azul-fundo)]">
               Guardar alterações
             </button>
 
@@ -201,7 +208,7 @@ export default async function HistoricoPagamentosProfessorPage({
               </table>
             </div>
 
-            <button type="submit" className="rounded border border-foreground/20 px-3 py-1 text-sm">
+            <button type="submit" className="rounded-[13px] border border-[var(--color-linha)] px-3 py-[6px] text-[13px] font-medium text-[var(--color-azul-fundo)]">
               Guardar alterações
             </button>
           </form>

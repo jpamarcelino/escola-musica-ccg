@@ -1,8 +1,12 @@
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarHorario, apagarHorario } from '@/lib/actions/professor'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { PageHeader } from '@/components/page-header'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
+import { SubmitButton } from '@/components/submit-button'
+import { Rotulo, classesCampo } from '@/components/campo-formulario'
+import { MensagemErro } from '@/components/mensagem'
 
 export default async function EditarHorarioPage({
   params,
@@ -48,26 +52,23 @@ export default async function EditarHorarioPage({
     .filter((nome): nome is string => Boolean(nome))
 
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
-      <div className="w-full max-w-sm space-y-6">
-        <form
-          action={atualizarHorario}
-          className="space-y-4 rounded-lg border border-foreground/15 p-6"
-        >
-          <h1 className="text-xl font-semibold">Editar horário</h1>
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
+      <div className="w-full max-w-sm space-y-[26px]">
+        <PageHeader voltar="/dashboard/horarios" titulo="Editar horário" />
 
+        {erro && <MensagemErro>{erro}</MensagemErro>}
+
+        <form action={atualizarHorario} className="space-y-[14px]">
           <input type="hidden" name="horarioId" value={horario.id} />
 
-          <div className="space-y-1">
-            <label htmlFor="diaSemana" className="block text-sm font-medium">
-              Dia da semana
-            </label>
+          <div className="space-y-[6px]">
+            <Rotulo htmlFor="diaSemana">Dia da semana</Rotulo>
             <select
               id="diaSemana"
               name="diaSemana"
               required
               defaultValue={horario.dia_semana}
-              className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+              className={classesCampo}
             >
               {DIAS_SEMANA.map((dia) => (
                 <option key={dia} value={dia}>
@@ -77,11 +78,9 @@ export default async function EditarHorarioPage({
             </select>
           </div>
 
-          <div className="flex gap-3">
-            <div className="flex-1 space-y-1">
-              <label htmlFor="horaInicio" className="block text-sm font-medium">
-                Das
-              </label>
+          <div className="flex gap-[10px]">
+            <div className="flex-1 space-y-[6px]">
+              <Rotulo htmlFor="horaInicio">Das</Rotulo>
               <input
                 id="horaInicio"
                 name="horaInicio"
@@ -90,13 +89,11 @@ export default async function EditarHorarioPage({
                 min="10:00"
                 max="22:00"
                 defaultValue={horario.hora_inicio.slice(0, 5)}
-                className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                className={classesCampo}
               />
             </div>
-            <div className="flex-1 space-y-1">
-              <label htmlFor="horaFim" className="block text-sm font-medium">
-                Até
-              </label>
+            <div className="flex-1 space-y-[6px]">
+              <Rotulo htmlFor="horaFim">Até</Rotulo>
               <input
                 id="horaFim"
                 name="horaFim"
@@ -105,40 +102,37 @@ export default async function EditarHorarioPage({
                 min="10:00"
                 max="22:00"
                 defaultValue={horario.hora_fim.slice(0, 5)}
-                className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                className={classesCampo}
               />
             </div>
           </div>
 
           {alunosConfirmados.length > 0 && (
-            <p className="text-xs text-foreground/50">
+            <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
               Alunos confirmados neste horário: {alunosConfirmados.join(', ')}
             </p>
           )}
 
-          {erro && <p className="text-sm text-red-600">{erro}</p>}
-
-          <button
-            type="submit"
-            className="w-full rounded bg-brand py-2 text-sm text-white hover:bg-brand-hover"
+          <SubmitButton
+            textoAGuardar="A guardar..."
+            className="flex h-[52px] w-full items-center justify-center rounded-[13px] bg-[var(--color-azul-fundo)] text-[15.5px] font-semibold text-white shadow-[0_7px_18px_rgba(27,79,122,.26)] disabled:opacity-50"
           >
             Guardar alterações
-          </button>
+          </SubmitButton>
         </form>
 
-        <form action={apagarHorario}>
+        <BotaoAcaoDestruir
+          label="Apagar horário"
+          variante="bloco"
+          mensagem={
+            alunosConfirmados.length > 0
+              ? 'Tens a certeza que queres apagar este horário? Já tens alunos confirmados nele — considera bloqueá-lo em vez de apagar.'
+              : 'Tens a certeza que queres apagar este horário? Esta ação é irreversível.'
+          }
+          action={apagarHorario}
+        >
           <input type="hidden" name="horarioId" value={horario.id} />
-          <button
-            type="submit"
-            className="w-full rounded border border-red-600/40 py-2 text-sm text-red-600 hover:bg-red-600/5"
-          >
-            Apagar horário
-          </button>
-        </form>
-
-        <Link href="/dashboard" className="block text-center text-sm underline">
-          Voltar
-        </Link>
+        </BotaoAcaoDestruir>
       </div>
     </main>
   )

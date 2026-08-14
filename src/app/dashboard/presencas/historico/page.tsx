@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
+import { LinhaLista, GrupoLista } from '@/components/lista'
+import { EmptyState } from '@/components/empty-state'
 
 type MatriculaAluno = {
   id: number
@@ -72,28 +73,22 @@ export default async function HistoricoPresencasPage() {
   const alunos = [...porAluno.values()].sort((a, b) => a.nome.localeCompare(b.nome))
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard/presencas" />
-          <h1 className="text-2xl font-semibold text-foreground">Histórico de Presenças</h1>
-        </div>
+        <PageHeader voltar="/dashboard/presencas" titulo="Histórico de Presenças" />
 
         {alunos.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não tens alunos confirmados.</p>
+          <EmptyState titulo="Ainda não tens alunos confirmados" />
         ) : (
-          <div className="hub-stack compacto">
-            {alunos.map((a, idx) => (
-              <OptionCard
+          <GrupoLista>
+            {alunos.map((a) => (
+              <LinhaLista
                 key={a.alunoId}
                 href={`/dashboard/presencas/historico/${a.alunoId}`}
-                nome={a.nome}
-                wide
-                compacto
-                index={idx + 1}
+                titulo={a.nome}
               />
             ))}
-          </div>
+          </GrupoLista>
         )}
       </div>
     </main>

@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
+import { LinhaLista, GrupoLista } from '@/components/lista'
+import { EmptyState } from '@/components/empty-state'
 
 type Professor = {
   id: string
@@ -41,29 +42,22 @@ export default async function HistoricoPagamentosPage() {
   })) as Professor[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin/pagamentos" />
-          <h1 className="text-2xl font-semibold text-foreground">
-            Histórico de Mensalidades
-          </h1>
-        </div>
+        <PageHeader voltar="/admin/pagamentos" titulo="Histórico de Mensalidades" />
 
         {professores.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não há professores registados.</p>
+          <EmptyState titulo="Ainda não há professores registados" />
         ) : (
-          <div className="hub-stack">
-            {professores.map((professor, idx) => (
-              <OptionCard
+          <GrupoLista>
+            {professores.map((professor) => (
+              <LinhaLista
                 key={professor.id}
                 href={`/admin/pagamentos/historico/${professor.id}`}
-                nome={professor.nome}
-                wide
-                index={idx + 1}
+                titulo={professor.nome}
               />
             ))}
-          </div>
+          </GrupoLista>
         )}
       </div>
     </main>

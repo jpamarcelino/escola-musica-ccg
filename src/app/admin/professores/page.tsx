@@ -1,10 +1,10 @@
-import type { CSSProperties } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { criarConviteProfessor } from '@/lib/actions/convites'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
 import { ConvidarProfessorForm } from '@/components/convite-forms'
+import { EmptyState } from '@/components/empty-state'
+import { ListaComPesquisa } from '@/components/lista-com-pesquisa'
 
 type Professor = {
   id: string
@@ -44,33 +44,23 @@ export default async function AdminProfessoresPage() {
   })) as Professor[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div
-          className="entrada-esquerda flex items-center gap-3"
-          style={{ '--card-index': 0 } as CSSProperties}
-        >
-          <BackButton href="/admin" />
-          <h1 className="text-2xl font-semibold text-foreground">Professores</h1>
-        </div>
+        <PageHeader voltar="/admin" titulo="Professores" />
 
         <ConvidarProfessorForm action={criarConviteProfessor} />
 
         {professores.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não há professores registados.</p>
+          <EmptyState
+            titulo="Ainda não há professores registados"
+            descricao="Convida um professor no formulário acima — aparece aqui assim que aceitar o convite."
+          />
         ) : (
-          <div className="hub-stack compacto">
-            {professores.map((professor, idx) => (
-              <OptionCard
-                key={professor.id}
-                href={`/admin/professores/${professor.id}`}
-                nome={professor.nome}
-                wide
-                compacto
-                index={idx + 1}
-              />
-            ))}
-          </div>
+          <ListaComPesquisa
+            itens={professores}
+            hrefPrefix="/admin/professores/"
+            placeholder="Pesquisar professor por nome…"
+          />
         )}
       </div>
     </main>

@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
+import { LinhaLista, GrupoLista } from '@/components/lista'
+import { Distintivo } from '@/components/distintivo'
+import { EmptyState } from '@/components/empty-state'
 
 type Professor = {
   id: string
@@ -86,30 +88,26 @@ export default async function ConfirmarMensalidadesPage() {
   }
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin/pagamentos" />
-          <h1 className="text-2xl font-semibold text-foreground">
-            Mensalidades por Confirmar
-          </h1>
-        </div>
+        <PageHeader voltar="/admin/pagamentos" titulo="Mensalidades por Confirmar" />
 
         {professores.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não há professores registados.</p>
+          <EmptyState titulo="Ainda não há professores registados" />
         ) : (
-          <div className="hub-stack">
-            {professores.map((professor, idx) => (
-              <OptionCard
-                key={professor.id}
-                href={`/admin/pagamentos/confirmar/${professor.id}`}
-                nome={professor.nome}
-                wide
-                index={idx + 1}
-                badge={porConfirmarPorProfessor.get(professor.id) ?? 0}
-              />
-            ))}
-          </div>
+          <GrupoLista>
+            {professores.map((professor) => {
+              const porConfirmar = porConfirmarPorProfessor.get(professor.id) ?? 0
+              return (
+                <LinhaLista
+                  key={professor.id}
+                  href={`/admin/pagamentos/confirmar/${professor.id}`}
+                  titulo={professor.nome}
+                  direita={porConfirmar > 0 ? <Distintivo>{porConfirmar}</Distintivo> : undefined}
+                />
+              )
+            })}
+          </GrupoLista>
         )}
       </div>
     </main>

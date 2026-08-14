@@ -1,6 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 import { SubmitButton } from '@/components/submit-button'
 import {
   validarRecomendacao,
@@ -94,20 +95,17 @@ export default async function RecomendacaoPage({
   const beneficios = (beneficiosData ?? []) as Beneficio[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-8">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin/recomendacoes" />
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              {recomendacao.recomendador_nome} → {recomendacao.novo_aluno_nome}
-            </h1>
-            <p className="text-sm text-foreground/60">
-              {recomendacao.professor_nome}
-              {recomendacao.modalidade && ` — ${recomendacao.modalidade}`}
-            </p>
-          </div>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Visão geral', href: '/admin' },
+            { label: 'Programa de Recomendação', href: '/admin/recomendacoes' },
+            { label: `${recomendacao.recomendador_nome} → ${recomendacao.novo_aluno_nome}` },
+          ]}
+        />
+        <PageHeader voltar="/admin/recomendacoes" titulo={<>{recomendacao.recomendador_nome} → {recomendacao.novo_aluno_nome}</>} subtitulo={<>{recomendacao.professor_nome}
+              {recomendacao.modalidade && ` — ${recomendacao.modalidade}`}</>} />
 
         {erro && (
           <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
@@ -118,7 +116,7 @@ export default async function RecomendacaoPage({
         <section className="space-y-3">
           <h2 className="secao-titulo">Estado</h2>
           {recomendacao.estado === 'registada' && (
-            <div className="space-y-3 rounded border border-foreground/15 p-3">
+            <div className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3">
               <p className="text-sm text-foreground/70">
                 Por validar. Assim que for validada, o aluno{' '}
                 <strong>{recomendacao.recomendador_nome}</strong> ganha uma mensalidade
@@ -128,7 +126,7 @@ export default async function RecomendacaoPage({
                 <input type="hidden" name="id" value={recomendacao.id} />
                 <SubmitButton
                   textoAGuardar="A validar..."
-                  className="rounded bg-brand px-4 py-2 text-sm font-medium text-white"
+                  className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
                 >
                   Validar e atribuir mês grátis
                 </SubmitButton>
@@ -136,7 +134,7 @@ export default async function RecomendacaoPage({
             </div>
           )}
           {recomendacao.estado === 'validada' && (
-            <p className="rounded border border-foreground/15 p-3 text-sm text-foreground/70">
+            <p className="rounded-[13px] border border-[var(--color-linha)] p-3 text-[13px] text-[var(--color-tinta-suave)]">
               Validada em {recomendacao.data_validacao}.
             </p>
           )}
@@ -150,7 +148,7 @@ export default async function RecomendacaoPage({
         <section className="space-y-3">
           <h2 className="secao-titulo">Mensalidade gratuita</h2>
           {beneficios.length === 0 ? (
-            <p className="text-sm text-foreground/60">
+            <p className="text-[13px] text-[var(--color-tinta-suave)]">
               Ainda não existe — só nasce quando a recomendação for validada.
             </p>
           ) : (
@@ -182,14 +180,14 @@ export default async function RecomendacaoPage({
           <h2 className="secao-titulo">Dados administrativos</h2>
           <form
             action={atualizarDadosRecomendacao}
-            className="space-y-3 rounded border border-foreground/15 p-3"
+            className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3"
           >
             <input type="hidden" name="id" value={recomendacao.id} />
             <div className="flex flex-wrap gap-4">
               <div className="space-y-1">
                 <label
                   htmlFor="dataInscricao"
-                  className="block text-xs font-medium text-foreground/60"
+                  className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                 >
                   Data de inscrição
                 </label>
@@ -198,13 +196,13 @@ export default async function RecomendacaoPage({
                   name="dataInscricao"
                   type="date"
                   defaultValue={recomendacao.data_inscricao ?? ''}
-                  className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  className="rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 />
               </div>
               <div className="space-y-1">
                 <label
                   htmlFor="dataPrimeiroPagamento"
-                  className="block text-xs font-medium text-foreground/60"
+                  className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                 >
                   Data do 1.º pagamento
                 </label>
@@ -213,13 +211,13 @@ export default async function RecomendacaoPage({
                   name="dataPrimeiroPagamento"
                   type="date"
                   defaultValue={recomendacao.data_primeiro_pagamento ?? ''}
-                  className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  className="rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 />
               </div>
               <div className="space-y-1">
                 <label
                   htmlFor="valorInscricao"
-                  className="block text-xs font-medium text-foreground/60"
+                  className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                 >
                   Valor da inscrição (€)
                 </label>
@@ -230,14 +228,14 @@ export default async function RecomendacaoPage({
                   step="0.01"
                   min="0"
                   defaultValue={recomendacao.valor_inscricao ?? ''}
-                  className="w-28 rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  className="w-28 rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 />
               </div>
             </div>
             <div className="space-y-1">
               <label
                 htmlFor="modalidade"
-                className="block text-xs font-medium text-foreground/60"
+                className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
               >
                 Modalidade
               </label>
@@ -245,13 +243,13 @@ export default async function RecomendacaoPage({
                 id="modalidade"
                 name="modalidade"
                 defaultValue={recomendacao.modalidade ?? ''}
-                className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
               />
             </div>
             <div className="space-y-1">
               <label
                 htmlFor="observacoes"
-                className="block text-xs font-medium text-foreground/60"
+                className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
               >
                 Observações
               </label>
@@ -260,12 +258,12 @@ export default async function RecomendacaoPage({
                 name="observacoes"
                 rows={2}
                 defaultValue={recomendacao.observacoes ?? ''}
-                className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
               />
             </div>
             <SubmitButton
               textoAGuardar="A guardar..."
-              className="rounded border border-foreground/20 px-3 py-2 text-sm"
+              className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
             >
               Guardar correções
             </SubmitButton>
@@ -275,24 +273,24 @@ export default async function RecomendacaoPage({
         {recomendacao.estado !== 'anulada' && (
           <section className="space-y-3">
             <h2 className="secao-titulo">Anular</h2>
-            <p className="text-sm text-foreground/60">
+            <p className="text-[13px] text-[var(--color-tinta-suave)]">
               Para erros administrativos (Art. 23.º), saída do professor (Art. 17.º) ou
               utilização abusiva (Art. 24.º). Uma mensalidade já usada não é revertida.
             </p>
             <form
               action={anularRecomendacao}
-              className="flex flex-wrap items-end gap-2 rounded border border-foreground/15 p-3"
+              className="flex flex-wrap items-end gap-2 rounded-[13px] border border-[var(--color-linha)] p-3"
             >
               <input type="hidden" name="id" value={recomendacao.id} />
               <div className="flex-1 space-y-1">
-                <label htmlFor="motivo" className="block text-xs font-medium text-foreground/60">
+                <label htmlFor="motivo" className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]">
                   Motivo
                 </label>
                 <input
                   id="motivo"
                   name="motivo"
                   required
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 />
               </div>
               <SubmitButton

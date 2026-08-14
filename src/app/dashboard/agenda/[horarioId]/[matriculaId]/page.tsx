@@ -2,8 +2,10 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { calcularIdade } from '@/lib/idade'
 import { desmatricularAluno } from '@/lib/actions/professor'
-import { BackButton } from '@/components/back-button'
-import { BotaoDesmatricular } from '@/components/desmatricular-botao'
+import { PageHeader } from '@/components/page-header'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { formatarHora } from '@/lib/horarios-grade'
 
 type Matricula = {
   id: number
@@ -59,15 +61,26 @@ export default async function AlunoDaAulaPage({
 
   const idade = calcularIdade(matricula.alunos?.data_nascimento)
 
+  const { data: horarioData } = await supabase
+    .from('horarios')
+    .select('dia_semana, hora_inicio, hora_fim')
+    .eq('id', Number(horarioId))
+    .maybeSingle()
+  const labelHorario = horarioData
+    ? `${horarioData.dia_semana}, ${formatarHora(horarioData.hora_inicio)}–${formatarHora(horarioData.hora_fim)}`
+    : 'Horário'
+
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href={`/dashboard/agenda/${horarioId}`} />
-          <h1 className="text-2xl font-semibold text-foreground">
-            {matricula.alunos?.nome}
-          </h1>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Horários e Alunos', href: '/dashboard/agenda' },
+            { label: labelHorario, href: `/dashboard/agenda/${horarioId}` },
+            { label: matricula.alunos?.nome ?? '' },
+          ]}
+        />
+        <PageHeader voltar={`/dashboard/agenda/${horarioId}`} titulo={matricula.alunos?.nome} />
 
         <section className="space-y-2 text-sm">
           <p>
@@ -98,14 +111,16 @@ export default async function AlunoDaAulaPage({
           )}
         </section>
 
-        <section className="border-t border-foreground/10 pt-6">
-          <form action={desmatricularAluno}>
+        <section className="border-t border-[var(--color-linha)] pt-6">
+          <BotaoAcaoDestruir
+            label="Desmatricular aluno"
+            variante="bloco"
+            mensagem={`Tens a certeza que queres desmatricular ${matricula.alunos?.nome} (${matricula.instrumentos?.nome})? Esta ação é irreversível.`}
+            action={desmatricularAluno}
+          >
             <input type="hidden" name="matriculaId" value={matricula.id} />
             <input type="hidden" name="horarioId" value={horarioId} />
-            <BotaoDesmatricular
-              mensagemConfirmacao={`Tens a certeza que queres desmatricular ${matricula.alunos?.nome} (${matricula.instrumentos?.nome})? Esta ação é irreversível.`}
-            />
-          </form>
+          </BotaoAcaoDestruir>
         </section>
       </div>
     </main>

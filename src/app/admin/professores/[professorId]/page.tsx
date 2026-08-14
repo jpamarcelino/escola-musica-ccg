@@ -1,7 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
+import { LinhaLista, GrupoLista } from '@/components/lista'
 import { SubmitButton } from '@/components/submit-button'
 import { definirAdesaoRecomendacao } from '@/lib/actions/recomendacoes'
 
@@ -51,37 +51,19 @@ export default async function AdminProfessorPage({
   const professorData = { nome: professorPerfil.profiles?.nome ?? '' }
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin/professores" />
-          <h1 className="text-2xl font-semibold text-foreground">{professorData.nome}</h1>
-        </div>
+        <PageHeader voltar="/admin/professores" titulo={professorData.nome} />
 
-        <div className="hub-stack">
-          <OptionCard
-            href={`/admin/professores/${professorId}/conta`}
-            nome="Conta"
-            wide
-            index={1}
-          />
-          <OptionCard
-            href={`/admin/professores/${professorId}/alunos`}
-            nome="Alunos"
-            wide
-            index={2}
-          />
-          <OptionCard
-            href={`/admin/professores/${professorId}/horario`}
-            nome="Horário"
-            wide
-            index={3}
-          />
-        </div>
+        <GrupoLista>
+          <LinhaLista href={`/admin/professores/${professorId}/conta`} titulo="Conta" />
+          <LinhaLista href={`/admin/professores/${professorId}/alunos`} titulo="Alunos" />
+          <LinhaLista href={`/admin/professores/${professorId}/horario`} titulo="Horário" />
+        </GrupoLista>
 
         <section className="space-y-3">
           <h2 className="secao-titulo">Programa de Recomendação</h2>
-          <div className="space-y-3 rounded border border-foreground/15 p-3">
+          <div className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3">
             <p className="text-sm text-foreground/70">
               {professorPerfil.adere_recomendacao ? (
                 <>
@@ -107,7 +89,7 @@ export default async function AdminProfessorPage({
               />
               <SubmitButton
                 textoAGuardar="A guardar..."
-                className="rounded border border-foreground/20 px-3 py-2 text-sm"
+                className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
               >
                 {professorPerfil.adere_recomendacao ? 'Retirar adesão' : 'Marcar como aderente'}
               </SubmitButton>

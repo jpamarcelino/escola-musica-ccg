@@ -1,6 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 
 type ProfessorPerfil = {
   nome: string
@@ -73,15 +74,21 @@ export default async function AdminProfessorContaPage({
   const instrumentos = (instrumentosData ?? []) as unknown as InstrumentoProfessor[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href={`/admin/professores/${professorId}`} />
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">{professor.nome}</h1>
-            {professor.admin && <p className="text-xs text-foreground/50">Administrador</p>}
-          </div>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Visão geral', href: '/admin' },
+            { label: 'Professores', href: '/admin/professores' },
+            { label: professor.nome, href: `/admin/professores/${professorId}` },
+            { label: 'Conta' },
+          ]}
+        />
+        <PageHeader
+          voltar={`/admin/professores/${professorId}`}
+          titulo={professor.nome}
+          subtitulo={professor.admin ? 'Administrador' : undefined}
+        />
 
         <div className="lista-item space-y-1">
           <p className="lista-item-sub">

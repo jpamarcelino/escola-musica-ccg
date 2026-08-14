@@ -4,7 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { EmptyState } from '@/components/empty-state'
 
 type Confirmado = {
   id: number
@@ -137,15 +139,20 @@ export default async function AdminProfessorHorarioPage({
   }
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href={`/admin/professores/${professorId}`} />
-          <h1 className="text-2xl font-semibold text-foreground">{professorData.nome}</h1>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Visão geral', href: '/admin' },
+            { label: 'Professores', href: '/admin/professores' },
+            { label: professorData.nome, href: `/admin/professores/${professorId}` },
+            { label: 'Horário' },
+          ]}
+        />
+        <PageHeader voltar={`/admin/professores/${professorId}`} titulo={professorData.nome} />
 
         {blocos.length === 0 ? (
-          <p className="text-sm text-foreground/60">Ainda não tem aulas confirmadas.</p>
+          <EmptyState titulo="Ainda não tem aulas confirmadas" />
         ) : (
           <div className="horarios-grade">
             <div className="horarios-coluna-horas">

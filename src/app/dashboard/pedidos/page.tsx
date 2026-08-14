@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { confirmarHorario, recusarPedido } from '@/lib/actions/professor'
-import { BackButton } from '@/components/back-button'
-import { BotaoConfirmarHorario } from '@/components/confirmar-horario-botao'
-import { BotaoRecusarPedido } from '@/components/recusar-pedido-botao'
+import { PageHeader } from '@/components/page-header'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
+import { EmptyState } from '@/components/empty-state'
 
 type Pedido = {
   id: number
@@ -55,18 +55,18 @@ export default async function PedidosPage({
   const pedidos = (pedidosData ?? []) as unknown as Pedido[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <h1 className="text-2xl font-semibold text-foreground">Pedidos de Aula</h1>
-        </div>
+        <PageHeader voltar="/dashboard" titulo="Pedidos de Aula" />
 
         {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
 
         <section className="space-y-3">
           {pedidos.length === 0 && (
-            <p className="text-sm text-foreground/60">Não há pedidos pendentes.</p>
+            <EmptyState
+              titulo="Não há pedidos pendentes"
+              descricao="Está tudo em dia — os novos pedidos de aula aparecem aqui."
+            />
           )}
           {pedidos.map((pedido) => (
             <div
@@ -93,22 +93,25 @@ export default async function PedidosPage({
                 {pedido.disponibilidades_selecionadas.map((d) => {
                   const label = `${d.horarios?.dia_semana}, ${d.horarios?.hora_inicio.slice(0, 5)}–${d.horarios?.hora_fim.slice(0, 5)}`
                   return (
-                    <form key={d.horario_id} action={confirmarHorario}>
+                    <BotaoAcaoDestruir
+                      key={d.horario_id}
+                      label={label}
+                      tom="neutro"
+                      mensagem={`Confirmar a aula de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome}) — ${label}?`}
+                      action={confirmarHorario}
+                    >
                       <input type="hidden" name="matriculaId" value={pedido.id} />
                       <input type="hidden" name="horarioId" value={d.horario_id} />
-                      <BotaoConfirmarHorario
-                        label={label}
-                        mensagemConfirmacao={`Confirmar a aula de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome}) — ${label}? Tens a certeza?`}
-                      />
-                    </form>
+                    </BotaoAcaoDestruir>
                   )
                 })}
-                <form action={recusarPedido}>
+                <BotaoAcaoDestruir
+                  label="Recusar"
+                  mensagem={`Recusar o pedido de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome})? O pedido será apagado.`}
+                  action={recusarPedido}
+                >
                   <input type="hidden" name="matriculaId" value={pedido.id} />
-                  <BotaoRecusarPedido
-                    mensagemConfirmacao={`Recusar o pedido de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome})? O pedido será apagado.`}
-                  />
-                </form>
+                </BotaoAcaoDestruir>
               </div>
             </div>
           ))}

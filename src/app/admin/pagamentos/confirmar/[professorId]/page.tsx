@@ -1,6 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { EmptyState } from '@/components/empty-state'
 import {
   definirValorMensal,
   marcarMensalidadePaga,
@@ -99,24 +101,25 @@ export default async function ConfirmarMensalidadesProfessorPage({
     .sort((a, b) => (a.aluno?.nome ?? '').localeCompare(b.aluno?.nome ?? ''))
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin/pagamentos/confirmar" />
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">{professorData.nome}</h1>
-            <p className="text-sm text-foreground/60">
-              Mês atual: {String(mes).padStart(2, '0')}/{ano}
-            </p>
-          </div>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Visão geral', href: '/admin' },
+            { label: 'Mensalidades', href: '/admin/pagamentos' },
+            { label: 'Confirmar', href: '/admin/pagamentos/confirmar' },
+            { label: professorData.nome },
+          ]}
+        />
+        <PageHeader voltar="/admin/pagamentos/confirmar" titulo={professorData.nome} subtitulo={<>Mês atual: {String(mes).padStart(2, '0')}/{ano}</>} />
 
         {erro && <p className="text-sm text-red-600">{decodeURIComponent(erro)}</p>}
 
         {porConfirmar.length === 0 ? (
-          <p className="text-sm text-foreground/60">
-            Não há mensalidades por confirmar este mês.
-          </p>
+          <EmptyState
+            titulo="Não há mensalidades por confirmar este mês"
+            descricao="Está tudo em dia."
+          />
         ) : (
           <div className="space-y-2">
             {porConfirmar.map((m) => {
@@ -145,7 +148,7 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       <button
                         type="submit"
                         disabled={m.valor_mensal === null}
-                        className="rounded border border-foreground/20 px-3 py-1 text-sm text-foreground"
+                        className="rounded-[13px] border border-[var(--color-linha)] px-3 py-[6px] text-[13px] font-medium text-[var(--color-tinta)]"
                       >
                         Marcar como pago
                       </button>
@@ -160,11 +163,11 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       min="0"
                       name="valor"
                       defaultValue={m.valor_mensal ?? ''}
-                      className="w-24 rounded border border-foreground/20 px-2 py-1 text-sm"
+                      className="w-24 rounded-[10px] border border-[var(--color-linha)] px-2 py-1 text-[13px] text-[var(--color-tinta)]"
                     />
                     <button
                       type="submit"
-                      className="rounded border border-foreground/20 px-2 py-1 text-xs"
+                      className="rounded-[10px] border border-[var(--color-linha)] px-2 py-1 text-[11px] font-medium text-[var(--color-azul-fundo)]"
                     >
                       Guardar
                     </button>
@@ -188,11 +191,11 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       name="numeroFatura"
                       defaultValue={numeroFatura}
                       placeholder="ex: FT 2026/123"
-                      className="w-32 rounded border border-foreground/20 px-2 py-1 text-sm"
+                      className="w-32 rounded-[10px] border border-[var(--color-linha)] px-2 py-1 text-[13px] text-[var(--color-tinta)]"
                     />
                     <button
                       type="submit"
-                      className="rounded border border-foreground/20 px-2 py-1 text-xs"
+                      className="rounded-[10px] border border-[var(--color-linha)] px-2 py-1 text-[11px] font-medium text-[var(--color-azul-fundo)]"
                     >
                       Guardar
                     </button>

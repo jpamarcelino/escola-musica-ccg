@@ -13,7 +13,7 @@ export default async function RedefinirPasswordPage() {
   }
 
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex items-center justify-center p-6">
       <RedefinirPasswordForm />
     </main>
   )

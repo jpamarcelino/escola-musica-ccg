@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { EmptyState } from '@/components/empty-state'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
 
 type MatriculaDoProfessor = {
@@ -113,17 +114,9 @@ export default async function MensalidadesProfessorPage({
   const pagas = linhas.filter((l) => l.estado === 'paga')
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Mensalidades</h1>
-            <p className="text-sm text-foreground/60">
-              {escolhido.label} de {escolhido.ano}
-            </p>
-          </div>
-        </div>
+        <PageHeader voltar="/dashboard" titulo="Mensalidades" subtitulo={<>{escolhido.label} de {escolhido.ano}</>} />
 
         <div className="flex flex-wrap gap-1">
           {MESES_ANO_LETIVO.map((m) => (
@@ -167,7 +160,7 @@ export default async function MensalidadesProfessorPage({
         )}
 
         {linhas.length === 0 ? (
-          <p className="text-sm text-foreground/60">Não tens alunos com matrícula confirmada.</p>
+          <EmptyState titulo="Não tens alunos com matrícula confirmada" />
         ) : (
           <div className="space-y-2">
             {linhas.map((l) => (

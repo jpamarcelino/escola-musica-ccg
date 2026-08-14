@@ -1,6 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { EmptyState } from '@/components/empty-state'
 
 type Matricula = {
   id: number
@@ -79,17 +81,19 @@ export default async function HistoricoAlunoPage({
   const presencas = (presencasData ?? []) as unknown as Presenca[]
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard/presencas/historico" />
-          <h1 className="text-2xl font-semibold text-foreground">{alunoData.nome}</h1>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Presenças', href: '/dashboard/presencas' },
+            { label: 'Histórico', href: '/dashboard/presencas/historico' },
+            { label: alunoData.nome },
+          ]}
+        />
+        <PageHeader voltar="/dashboard/presencas/historico" titulo={alunoData.nome} />
 
         {presencas.length === 0 ? (
-          <p className="text-sm text-foreground/60">
-            Ainda não há presenças registadas para este aluno.
-          </p>
+          <EmptyState titulo="Ainda não há presenças registadas para este aluno" />
         ) : (
           <div className="space-y-2">
             {presencas.map((p) => (

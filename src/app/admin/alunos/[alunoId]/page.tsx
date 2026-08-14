@@ -2,7 +2,9 @@ import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { EmptyState } from '@/components/empty-state'
 import { formatarSala } from '@/lib/sala'
 import { calcularIdade } from '@/lib/idade'
 
@@ -171,15 +173,16 @@ export default async function AdminAlunoPage({
   const idade = calcularIdade(aluno.data_nascimento)
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-8 text-left">
-        <div
-          className="entrada-esquerda flex items-center gap-3"
-          style={{ '--card-index': 0 } as CSSProperties}
-        >
-          <BackButton href="/admin/alunos" />
-          <h1 className="text-2xl font-semibold text-foreground">{aluno.nome}</h1>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Visão geral', href: '/admin' },
+            { label: 'Alunos', href: '/admin/alunos' },
+            { label: aluno.nome },
+          ]}
+        />
+        <PageHeader voltar="/admin/alunos" titulo={aluno.nome} />
 
         <section
           className="entrada-esquerda space-y-3"
@@ -206,7 +209,7 @@ export default async function AdminAlunoPage({
         >
           <h2 className="secao-titulo">Horário e professor</h2>
           {matriculas.length === 0 ? (
-            <p className="text-sm text-foreground/60">Ainda não pediu nenhuma aula.</p>
+            <EmptyState titulo="Ainda não pediu nenhuma aula" />
           ) : (
             <div className="space-y-2">
               {matriculas.map((m) => (
@@ -236,7 +239,10 @@ export default async function AdminAlunoPage({
         >
           <h2 className="secao-titulo">Presenças</h2>
           {presencas.length === 0 ? (
-            <p className="text-sm text-foreground/60">Ainda não há presenças registadas.</p>
+            <EmptyState
+              titulo="Ainda não há presenças registadas"
+              descricao="Aparecem aqui depois da primeira aula confirmada com o professor."
+            />
           ) : (
             <div className="space-y-2">
               {presencas.map((p) => (
@@ -264,15 +270,13 @@ export default async function AdminAlunoPage({
             <h2 className="secao-titulo">Programa de Recomendação</h2>
             <Link
               href="/admin/recomendacoes/nova"
-              className="rounded border border-foreground/20 px-3 py-1 text-sm"
+              className="rounded-[13px] border border-[var(--color-linha)] px-3 py-[6px] text-[13px] font-medium text-[var(--color-azul-fundo)]"
             >
               Registar recomendação
             </Link>
           </div>
           {beneficios.length === 0 ? (
-            <p className="text-sm text-foreground/60">
-              Este aluno ainda não recomendou ninguém.
-            </p>
+            <EmptyState titulo="Este aluno ainda não recomendou ninguém" />
           ) : (
             <div className="space-y-2">
               {beneficios.map((b) => (
@@ -307,7 +311,10 @@ export default async function AdminAlunoPage({
         >
           <h2 className="secao-titulo">Histórico de mensalidades</h2>
           {mensalidades.length === 0 ? (
-            <p className="text-sm text-foreground/60">Ainda não há mensalidades registadas.</p>
+            <EmptyState
+              titulo="Ainda não há mensalidades registadas"
+              descricao="Aparecem aqui assim que a primeira mensalidade for lançada."
+            />
           ) : (
             <div className="space-y-2">
               {mensalidades.map((men) => {

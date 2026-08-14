@@ -4,8 +4,9 @@ import { cancelarPedido, cancelarMatricula } from '@/lib/actions/aluno'
 import { formatarSala } from '@/lib/sala'
 import { formatarHora } from '@/lib/horarios-grade'
 import { proximaOcorrenciaDoDia } from '@/lib/datas'
-import { BackButton } from '@/components/back-button'
-import { BotaoCancelarMatricula } from '@/components/cancelar-matricula-botao'
+import { PageHeader } from '@/components/page-header'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
+import { EmptyState } from '@/components/empty-state'
 
 type Matricula = {
   id: number
@@ -61,17 +62,14 @@ export default async function ConsultarHorarioPage({
   const confirmadas = matriculas.filter((m) => m.estado === 'confirmado' && m.horarios)
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href={`/aluno/${alunoId}`} />
-          <h1 className="text-2xl font-semibold text-foreground">Horário e Aulas</h1>
-        </div>
+        <PageHeader voltar={`/aluno/${alunoId}`} titulo="Horário e Aulas" />
 
         <section className="space-y-3">
           <h2 className="secao-titulo">Pedidos pendentes</h2>
           {pendentes.length === 0 ? (
-            <p className="text-sm text-foreground/60">Não há pedidos por confirmar.</p>
+            <EmptyState titulo="Não há pedidos por confirmar" />
           ) : (
             <div className="space-y-2">
               {pendentes.map((m) => (
@@ -80,15 +78,14 @@ export default async function ConsultarHorarioPage({
                     {m.instrumentos?.nome} — {m.profiles?.nome}
                   </p>
                   <p className="lista-item-sub">A aguardar que o professor escolha o horário final.</p>
-                  <form action={cancelarPedido}>
+                  <BotaoAcaoDestruir
+                    label="Cancelar pedido"
+                    variante="bloco"
+                    mensagem={`Tens a certeza que queres cancelar o pedido de ${m.instrumentos?.nome} com ${m.profiles?.nome}?`}
+                    action={cancelarPedido}
+                  >
                     <input type="hidden" name="matriculaId" value={m.id} />
-                    <button
-                      type="submit"
-                      className="w-full rounded border border-red-600/40 py-2 text-sm text-red-600 hover:bg-red-600/5"
-                    >
-                      Cancelar pedido
-                    </button>
-                  </form>
+                  </BotaoAcaoDestruir>
                 </div>
               ))}
             </div>
@@ -98,7 +95,7 @@ export default async function ConsultarHorarioPage({
         <section className="space-y-3">
           <h2 className="secao-titulo">Próximas aulas</h2>
           {confirmadas.length === 0 ? (
-            <p className="text-sm text-foreground/60">Ainda não há aulas confirmadas.</p>
+            <EmptyState titulo="Ainda não há aulas confirmadas" />
           ) : (
             <div className="space-y-2">
               {confirmadas.map((m) => {
@@ -114,12 +111,14 @@ export default async function ConsultarHorarioPage({
                       {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
                       {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}
                     </p>
-                    <form action={cancelarMatricula}>
+                    <BotaoAcaoDestruir
+                      label="Cancelar matrícula"
+                      variante="bloco"
+                      mensagem={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} com ${m.profiles?.nome}? Esta ação é irreversível.`}
+                      action={cancelarMatricula}
+                    >
                       <input type="hidden" name="matriculaId" value={m.id} />
-                      <BotaoCancelarMatricula
-                        mensagemConfirmacao={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} com ${m.profiles?.nome}? Esta ação é irreversível.`}
-                      />
-                    </form>
+                    </BotaoAcaoDestruir>
                   </div>
                 )
               })}

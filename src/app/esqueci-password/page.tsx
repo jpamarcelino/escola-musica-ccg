@@ -11,7 +11,7 @@ export default function EsqueciPasswordPage() {
   )
 
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex items-center justify-center p-6">
       <form
         action={action}
         className="w-full max-w-sm space-y-4 border border-foreground/15 rounded-lg p-6"

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { SubmitButton } from '@/components/submit-button'
 import { registarRecomendacao } from '@/lib/actions/recomendacoes'
 
@@ -80,12 +80,9 @@ export default async function NovaRecomendacaoPage({
     [...lista.entries()].sort((a, b) => a[1].localeCompare(b[1]))
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/admin/recomendacoes" />
-          <h1 className="text-2xl font-semibold text-foreground">Registar recomendação</h1>
-        </div>
+        <PageHeader voltar="/admin/recomendacoes" titulo="Registar recomendação" />
 
         {erro && (
           <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
@@ -96,7 +93,7 @@ export default async function NovaRecomendacaoPage({
         <section className="space-y-3">
           <h2 className="secao-titulo">1. Professor</h2>
           {professores.length === 0 ? (
-            <p className="rounded border border-foreground/15 p-3 text-sm text-foreground/60">
+            <p className="rounded-[13px] border border-[var(--color-linha)] p-3 text-[13px] text-[var(--color-tinta-suave)]">
               Nenhum professor aderiu ao Programa. A adesão marca-se na ficha de cada
               professor, em <strong>Professores</strong>. Sem adesão não pode haver
               recomendações — é o professor que suporta metade do benefício (Art. 5.º).
@@ -109,8 +106,8 @@ export default async function NovaRecomendacaoPage({
                   href={`/admin/recomendacoes/nova?professor=${p.id}`}
                   className={
                     professorId === p.id
-                      ? 'rounded bg-brand px-3 py-2 text-sm text-white'
-                      : 'rounded border border-foreground/20 px-3 py-2 text-sm'
+                      ? 'rounded-[13px] border-[1.5px] border-[var(--color-azul-fundo)] bg-[var(--color-azul-fundo)] px-3 py-2 text-[14px] font-medium text-white'
+                      : 'rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]'
                   }
                 >
                   {p.profiles?.nome}
@@ -127,7 +124,7 @@ export default async function NovaRecomendacaoPage({
             <section className="space-y-3">
               <h2 className="secao-titulo">2. Quem recomendou</h2>
               {alunosConfirmados.size === 0 ? (
-                <p className="text-sm text-foreground/60">
+                <p className="text-[13px] text-[var(--color-tinta-suave)]">
                   Este professor não tem alunos com matrícula confirmada.
                 </p>
               ) : (
@@ -135,7 +132,7 @@ export default async function NovaRecomendacaoPage({
                   name="recomendadorId"
                   required
                   defaultValue=""
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 >
                   <option value="" disabled>
                     Escolhe o aluno…
@@ -154,7 +151,7 @@ export default async function NovaRecomendacaoPage({
               <select
                 name="novoAlunoId"
                 defaultValue=""
-                className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
               >
                 <option value="">Ainda não está na app — escrevo o nome</option>
                 {ordenarPorNome(todosOsAlunos).map(([id, nome]) => (
@@ -167,13 +164,13 @@ export default async function NovaRecomendacaoPage({
                 type="text"
                 name="novoAlunoNomeLivre"
                 placeholder="Nome do novo aluno (só se não estiver na lista)"
-                className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
               />
             </section>
 
             <section className="space-y-3">
               <h2 className="secao-titulo">4. Confirmação administrativa</h2>
-              <p className="text-sm text-foreground/60">
+              <p className="text-[13px] text-[var(--color-tinta-suave)]">
                 O Art. 11.º só valida a recomendação depois de a secretaria confirmar a
                 inscrição e o pagamento da inscrição e da primeira mensalidade. Sem estas
                 datas, a recomendação fica registada e pode ser validada mais tarde.
@@ -182,7 +179,7 @@ export default async function NovaRecomendacaoPage({
                 <div className="space-y-1">
                   <label
                     htmlFor="dataInscricao"
-                    className="block text-xs font-medium text-foreground/60"
+                    className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                   >
                     Data de inscrição
                   </label>
@@ -190,13 +187,13 @@ export default async function NovaRecomendacaoPage({
                     id="dataInscricao"
                     name="dataInscricao"
                     type="date"
-                    className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                    className="rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                   />
                 </div>
                 <div className="space-y-1">
                   <label
                     htmlFor="dataPrimeiroPagamento"
-                    className="block text-xs font-medium text-foreground/60"
+                    className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                   >
                     Data do 1.º pagamento
                   </label>
@@ -204,13 +201,13 @@ export default async function NovaRecomendacaoPage({
                     id="dataPrimeiroPagamento"
                     name="dataPrimeiroPagamento"
                     type="date"
-                    className="rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                    className="rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                   />
                 </div>
                 <div className="space-y-1">
                   <label
                     htmlFor="valorInscricao"
-                    className="block text-xs font-medium text-foreground/60"
+                    className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                   >
                     Valor da inscrição (€)
                   </label>
@@ -221,27 +218,27 @@ export default async function NovaRecomendacaoPage({
                     step="0.01"
                     min="0"
                     placeholder="10.00"
-                    className="w-28 rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                    className="w-28 rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                   />
                 </div>
               </div>
               <div className="space-y-1">
                 <label
                   htmlFor="modalidade"
-                  className="block text-xs font-medium text-foreground/60"
+                  className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                 >
                   Modalidade do novo aluno (deixa vazio para usar a da matrícula)
                 </label>
                 <input
                   id="modalidade"
                   name="modalidade"
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 />
               </div>
               <div className="space-y-1">
                 <label
                   htmlFor="observacoes"
-                  className="block text-xs font-medium text-foreground/60"
+                  className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
                 >
                   Observações
                 </label>
@@ -249,7 +246,7 @@ export default async function NovaRecomendacaoPage({
                   id="observacoes"
                   name="observacoes"
                   rows={2}
-                  className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 />
               </div>
               <label className="flex items-center gap-2 text-sm">
@@ -260,7 +257,7 @@ export default async function NovaRecomendacaoPage({
 
             <SubmitButton
               textoAGuardar="A registar..."
-              className="rounded bg-brand px-4 py-2 text-sm font-medium text-white"
+              className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
             >
               Registar
             </SubmitButton>

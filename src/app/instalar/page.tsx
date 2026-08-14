@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { FundoPapel } from '@/components/fundo-papel'
 import { Cartao } from '@/components/cartao'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
@@ -82,15 +82,7 @@ export default function InstalarPage() {
   return (
     <FundoPapel>
       <div className="space-y-[22px]">
-        <div className="flex items-center gap-3">
-          <BackButton href="/login" />
-          <h1
-            className="text-[22px] font-semibold leading-[1.2]"
-            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-          >
-            Instalar a app
-          </h1>
-        </div>
+        <PageHeader voltar="/login" titulo="Instalar a app" />
 
         <p
           className="text-[15px] leading-[1.6]"

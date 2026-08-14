@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { datasDoDia, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
-import { BackButton } from '@/components/back-button'
-import { OptionCard } from '@/components/option-card'
+import { PageHeader } from '@/components/page-header'
+import { LinhaLista, GrupoLista } from '@/components/lista'
+import { Distintivo } from '@/components/distintivo'
 
 type Horario = {
   id: number
@@ -82,28 +83,14 @@ export default async function PresencasPage() {
   }
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <h1 className="text-2xl font-semibold text-foreground">Presenças</h1>
-        </div>
+        <PageHeader voltar="/dashboard" titulo="Presenças" />
 
-        <div className="hub-stack">
-          <OptionCard
-            href="/dashboard/presencas/confirmar"
-            nome="Presenças por Confirmar"
-            wide
-            index={1}
-            badge={porConfirmar}
-          />
-          <OptionCard
-            href="/dashboard/presencas/historico"
-            nome="Histórico de Presenças"
-            wide
-            index={2}
-          />
-        </div>
+        <GrupoLista>
+          <LinhaLista href="/dashboard/presencas/confirmar" titulo="Presenças por Confirmar" direita={porConfirmar > 0 ? <Distintivo>{porConfirmar}</Distintivo> : undefined} />
+          <LinhaLista href="/dashboard/presencas/historico" titulo="Histórico de Presenças" />
+        </GrupoLista>
       </div>
     </main>
   )

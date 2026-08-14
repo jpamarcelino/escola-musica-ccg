@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BackButton } from '@/components/back-button'
+import { PageHeader } from '@/components/page-header'
 import { MateriaisClient } from './materiais-client'
 
 export default async function MateriaisPage({
@@ -43,12 +43,9 @@ export default async function MateriaisPage({
   )
 
   return (
-    <main className="flex-1 flex justify-center p-6">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton href={`/aluno/${alunoId}`} />
-          <h1 className="text-2xl font-semibold text-foreground">Materiais das Aulas</h1>
-        </div>
+        <PageHeader voltar={`/aluno/${alunoId}`} titulo="Materiais das Aulas" />
         <MateriaisClient temMusica={temMusica} />
       </div>
     </main>

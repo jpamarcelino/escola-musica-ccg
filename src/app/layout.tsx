@@ -54,6 +54,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <a
+          href="#conteudo-principal"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-[var(--radius-botao)] focus:bg-[var(--color-azul-fundo)] focus:px-4 focus:py-2 focus:text-white focus:no-underline"
+        >
+          Saltar para o conteúdo
+        </a>
         <header className="border-b border-[var(--color-linha)]">
           <div className="mx-auto flex max-w-3xl items-center gap-3 px-6 py-3">
             <Link href="/" className="flex items-center gap-3">
@@ -66,7 +72,7 @@ export default function RootLayout({
                 priority
               />
               <span className="leading-tight">
-                <span className="block text-sm font-semibold">
+                <span className="block text-sm font-semibold" style={{ fontFamily: 'var(--font-fraunces)' }}>
                   Centro Cultural da Guarda
                 </span>
                 <span
