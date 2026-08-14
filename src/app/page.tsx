@@ -5,8 +5,9 @@ import { BotaoPrimario } from '@/components/botao-primario'
 import { PaginaComHero } from '@/components/hero-section'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 
-// As três escolas. A cor é a barra de 3px que as identifica; o href entra
-// no wizard já com a escola escolhida, pelo que o passo de escolher escola
+// As três escolas. A cor tinge o fundo da caixa de ícone do cartão (na
+// v1 era uma barra de 3px ao lado, que ninguém lia); o href entra no
+// wizard já com a escola escolhida, pelo que o passo de escolher escola
 // é saltado — a idade é pedida logo a seguir, em pop-up.
 const ESCOLAS = [
   {

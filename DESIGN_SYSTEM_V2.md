@@ -271,6 +271,59 @@ em vários componentes — manter o padrão).
 
 ---
 
+## 12b. Cores da marca institucional (≠ cores da UI)
+
+Retiradas do **Manual de Normas Gráficas do CCG (2026)**, secção "Cores /
+Pantones". Os hex são os do próprio ficheiro vetorial do manual, não
+conversões aproximadas de Pantone:
+
+```
+--marca-ciano     #00C4DF   Pantone 311 C    o ciano da pincelada
+--marca-vermelho  #DC291E   Pantone 485 C    o acento sobre "cultural"
+--marca-preto     #231F20   Pantone Black
+```
+
+**Estas cores não são cores de interface.** Servem a marca — ecrã de
+carregamento, splash, favicon. O ciano institucional é vibrante de mais
+para texto corrido e não passa contraste AA sobre branco; a UI continua
+na paleta da secção 2 (`--color-primary` e companhia).
+
+Tipografia da identidade: **Frutiger** (45 Light / 55 Roman / 65 Bold /
+95 Ultra Bold). Não está em uso na app — não há licença web — e a
+secção 3 mantém-se como está. Fica registado para materiais impressos.
+
+## 12c. Ecrã de carregamento
+
+`EcraCarregamento` / `EcraCarregamentoAdiado` (`ecra-carregamento.tsx`),
+com o símbolo em `simbolo-ccg.tsx` — o vetor original do manual, inline
+para poder herdar `currentColor` e para não depender da rede justamente
+quando a rede está lenta.
+
+A animação não é decorativa: sai da frase do manual sobre o símbolo, que
+diz que a sua representação em efeito espelho *"simboliza a ideia de que
+a cultura reflete a identidade de uma região, funcionando como o seu
+espelho e expressão viva"*. Daí a sequência:
+
+```
+0–450ms    a pincelada abre a partir do ponto onde o pincel tocou
+400–900ms  o reflexo responde-lhe, e não antes
+900ms+     os dois respiram em contratempo (2.8s)
+sempre     barra indeterminada — o sinal honesto de "ainda a trabalhar"
+```
+
+**Quando usar qual.** Onde se sabe a forma do que vem a caminho
+(`/dashboard`, `/admin`, `/aluno`, `/pedir-aula`), o **esqueleto**
+continua a ser melhor: mostrar o layout a formar-se faz a espera parecer
+mais curta do que escondê-la atrás de um splash. O ecrã da marca serve o
+caso oposto — `app/loading.tsx` na raiz, onde ainda não se sabe sequer
+que página vai aparecer.
+
+`EcraCarregamentoAdiado` só aparece ao fim de 400ms. Um splash que pisca
+durante 120ms deixa o produto pior: vê-se o clarão sem o conseguir ler e
+fica a sensação de que a app estremeceu.
+
+---
+
 ## 13. Componentes a construir/refatorar
 
 Reaproveitar o que já existe desta sessão sempre que possível, só

@@ -214,14 +214,6 @@ export default async function DashboardPage({
   /* ------------------------------------------------------------------ */
   /* ENCARREGADO / ALUNO                                                 */
   /* ------------------------------------------------------------------ */
-  const { data: meusAlunosData } = await supabase
-    .from('alunos')
-    .select('id, nome')
-    .eq('encarregado_id', user.id)
-    .order('criado_em')
-  const meusAlunos = meusAlunosData ?? []
-  const alunoIds = meusAlunos.map((a) => a.id)
-
   type MatriculaFilho = {
     id: number
     aluno_id: string
@@ -230,14 +222,21 @@ export default async function DashboardPage({
     horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
   }
 
-  const { data: matriculasData } =
-    alunoIds.length > 0
-      ? await supabase
-          .from('matriculas')
-          .select('id, aluno_id, estado, instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim)')
-          .in('aluno_id', alunoIds)
-          .in('estado', ['a_escolher', 'confirmado'])
-      : { data: [] }
+  // As duas consultas correm em paralelo: as matrículas filtram-se pelo
+  // encarregado através do join a "alunos" (!inner), em vez de esperar
+  // pela lista de ids da primeira consulta. Poupa um ida-e-volta à base
+  // de dados no carregamento da Home.
+  const [{ data: meusAlunosData }, { data: matriculasData }] = await Promise.all([
+    supabase.from('alunos').select('id, nome').eq('encarregado_id', user.id).order('criado_em'),
+    supabase
+      .from('matriculas')
+      .select(
+        'id, aluno_id, estado, instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim), alunos!inner(encarregado_id)'
+      )
+      .eq('alunos.encarregado_id', user.id)
+      .in('estado', ['a_escolher', 'confirmado']),
+  ])
+  const meusAlunos = meusAlunosData ?? []
   const matriculas = (matriculasData ?? []) as unknown as MatriculaFilho[]
 
   const confirmadasFilhos = matriculas.filter((m) => m.estado === 'confirmado' && m.horarios)

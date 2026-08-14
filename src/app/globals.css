@@ -80,26 +80,34 @@
   --shadow-flutuante: 0 8px 24px rgba(27, 79, 122, 0.16);
 
   --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Cores da identidade institucional, retiradas do Manual de Normas
+     Gráficas do Centro Cultural da Guarda (2026), página "Cores /
+     Pantones". Os valores são os do próprio ficheiro vetorial, não
+     conversões aproximadas de Pantone.
+
+       Pantone 311 C   #00C4DF   o ciano do símbolo
+       Pantone 485 C   #DC291E   o acento vermelho sobre "cultural"
+       Pantone Black   #231F20
+
+     Servem a marca — ecrã de carregamento, splash, favicon —, não a
+     interface. A UI continua na paleta v2 (--color-primary etc.): o
+     ciano institucional é vibrante de mais para texto corrido e não
+     passa contraste AA sobre branco. */
+  --marca-ciano: #00C4DF;
+  --marca-vermelho: #DC291E;
+  --marca-preto: #231F20;
 }
 
-/* Grão de papel (DESIGN_SYSTEM.md secção 7) — aplicado uma só vez aqui,
-   no body, para cobrir também os ecrãs que ainda não usam <FundoPapel />. */
+/* O grão de papel da v1 foi removido: era um filtro SVG feTurbulence a
+   cobrir o ecrã inteiro, em position:fixed e com mix-blend-mode, o que
+   obrigava o browser a recompor a página inteira em cada scroll ou
+   repaint — em todas as páginas. Além do custo, deixou de fazer sentido:
+   a textura artesanal pertencia à direção "papel" da v1, não à v2. */
 body {
-  color: var(--color-tinta);
+  color: var(--color-text-primary);
   font-family: var(--font-inter), var(--font-sans), ui-sans-serif, sans-serif;
-  background-color: var(--color-papel);
-  position: relative;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.16;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  background-color: #ffffff;
 }
 
 
@@ -122,6 +130,140 @@ body::before {
   .entrada-esquerda {
     animation: entrada-suave 0.3s var(--ease-suave) both;
     animation-delay: calc(min(var(--card-index, 0), 8) * 55ms);
+  }
+}
+
+
+/* ── Ecrã de carregamento ────────────────────────────────────────────
+   O símbolo do CCG é uma pincelada — um "C" que é também o "G" de
+   Guarda, desenhada de forma livre. O manual de normas diz que a sua
+   representação em efeito espelho "simboliza a ideia de que a cultura
+   reflete a identidade de uma região". A animação vive dessa frase: a
+   pincelada chega, e o reflexo responde-lhe.
+
+   Todas as propriedades animadas aqui (opacity, transform, clip-path)
+   correm no compositor. Um ecrã de espera não pode ser ele próprio
+   uma causa de lentidão. */
+
+/* A tinta abre a partir do ponto onde o pincel tocou (canto superior
+   esquerdo), na direção do gesto. */
+@keyframes pincelada-chegar {
+  from {
+    opacity: 0;
+    clip-path: circle(0% at 22% 18%);
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    clip-path: circle(150% at 22% 18%);
+    transform: scale(1);
+  }
+}
+
+/* O reflexo só aparece depois de haver pincelada para refletir. Sem
+   isto via-se o reflexo inteiro por baixo de um símbolo ainda a meio de
+   ser pintado, o que desfaz a ideia toda. */
+@keyframes reflexo-chegar {
+  from { opacity: 0; }
+  to   { opacity: 0.10; }
+}
+
+/* O reflexo respira em contratempo com a pincelada: nunca estão os dois
+   no mesmo ponto do ciclo, que é o que dá a sensação de espelho de água
+   em vez de duplicado. */
+@keyframes reflexo-respirar {
+  0%, 100% { opacity: 0.10; transform: scaleY(-1) scaleX(1); }
+  50%      { opacity: 0.24; transform: scaleY(-1.07) scaleX(1.02); }
+}
+
+@keyframes simbolo-respirar {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.035); }
+}
+
+/* Barra indeterminada: percorre, sai, volta a entrar. É o sinal honesto
+   de "ainda a trabalhar" — a respiração sozinha não o dá. */
+@keyframes barra-percorrer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+/* O ecrã só se mostra se a espera se arrastar.
+
+   Um splash que pisca durante 120ms deixa o produto pior, não melhor: o
+   utilizador vê um clarão sem o conseguir ler e fica com a sensação de
+   que a app estremeceu. Daí os 400ms de atraso, com `backwards` a
+   segurar a opacidade a zero antes disso — se a página chegar primeiro,
+   o ecrã é desmontado sem nunca ter sido visto.
+
+   Isto esteve em JS (useState + setTimeout) e estava errado: um
+   componente de cliente devolve null no render do servidor, por isso o
+   ecrã nunca entrava no HTML transmitido em streaming — que é
+   precisamente o caso do arranque da app. Em CSS funciona nos dois
+   lados, e o componente deixou de precisar de JavaScript nenhum. */
+@keyframes ecra-carregar-entrar {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.ecra-carregamento {
+  animation: ecra-carregar-entrar 0.35s var(--ease-suave) 0.4s backwards;
+}
+
+/* Easing próprio, e não o --ease-suave da app: aquele é quase todo
+   movimento no primeiro terço, o que faz a pincelada saltar para o ecrã
+   já feita (o clip fechava aos ~150ms de 750). Aqui quer-se o
+   contrário — que o gesto se leia. */
+.ecra-carregamento-simbolo {
+  animation: pincelada-chegar 0.9s cubic-bezier(0.35, 0.12, 0.28, 1) both;
+}
+
+.ecra-carregamento-reflexo {
+  transform: scaleY(-1);
+  opacity: 0.10;
+  /* Esbate-se à medida que se afasta da pincelada, como um reflexo que
+     se perde na água.
+
+     O gradiente aponta para baixo, e não para cima como seria de
+     esperar: a máscara é aplicada no espaço local do elemento, antes de
+     o transform o virar ao contrário. Depois do scaleY(-1) fica opaco
+     junto à pincelada e transparente na ponta — que é o que se quer. */
+  mask-image: linear-gradient(to bottom, transparent 4%, black 86%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 4%, black 86%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Os atrasos igualam a duração da chegada, para a respiração começar
+     quando a pincelada acaba de assentar e não por cima dela. */
+  .ecra-carregamento-simbolo-vivo {
+    animation: simbolo-respirar 2.8s var(--ease-suave) 0.9s infinite;
+  }
+  /* Duas animações em sequência: a chegada segura o reflexo a zero
+     (backwards) até a pincelada ir a meio, e entrega-o à respiração no
+     instante exato em que acaba. */
+  .ecra-carregamento-reflexo {
+    animation:
+      reflexo-chegar 0.5s var(--ease-suave) 0.4s backwards,
+      reflexo-respirar 2.8s var(--ease-suave) 0.9s infinite;
+  }
+  .ecra-carregamento-barra {
+    animation: barra-percorrer 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+}
+
+/* Sem movimento: fica a pincelada, o reflexo parado e o texto. Continua
+   a ler-se como um ecrã de espera — só não se mexe.
+
+   .ecra-carregamento fica de fora desta lista de propósito: a sua
+   animação é só opacidade, e é ela que segura os 400ms de atraso. Tirá-la
+   traria de volta o clarão nas esperas curtas, precisamente a quem pediu
+   menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  .ecra-carregamento-simbolo {
+    animation: none;
+  }
+  .ecra-carregamento-barra {
+    opacity: 0.55;
   }
 }
 

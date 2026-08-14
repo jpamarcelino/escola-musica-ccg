@@ -3,13 +3,14 @@ import Image from 'next/image'
 import { ChevronRight } from 'lucide-react'
 import { Distintivo } from '@/components/distintivo'
 
-// Cartão navegável do DESIGN_SYSTEM.md (secção 6): linha horizontal com
-// caixa de ícone → texto → seta.
+// Cartão navegável grande (DESIGN_SYSTEM_V2 secção 8) — escolha de
+// escola, de disciplina, de professor.
 //
-// Nasceu como cartão de escola na página inicial e passou a servir também
-// os hubs, por isso tudo o que é específico das escolas — o ícone, a barra
-// de 3px com a cor da escola e a descrição — é opcional. Sem esses, fica
-// a linha simples que os hubs precisam: nome, contagem e seta.
+// Ao contrário da v1, não tem borda nem barra colorida de 3px: a
+// separação vem da superfície (--color-surface-raised) e do espaço. A
+// cor da escola sobrevive como fundo da caixa de ícone, que é onde
+// realmente ajuda a distinguir — uma barra fina ao lado era decoração
+// que ninguém lia.
 export function CartaoLink({
   href,
   nome,
@@ -25,54 +26,56 @@ export function CartaoLink({
   href: string
   nome: string
   descricao?: string
-  // Caminho de imagem (as escolas) ou um SVG de linha já pronto (o convite
-  // para instalar a app). A caixa de 46px é a mesma nos dois casos.
+  // Caminho de imagem (as escolas) ou um SVG de linha já pronto (o
+  // convite para instalar a app).
   icone?: string | React.ReactNode
   iconeTamanho?: number
   // Retratos preenchem a caixa toda, recortados; ícones de disciplina
   // ficam inteiros, com folga à volta.
   iconeCobre?: boolean
+  // Cor da escola — tinge o fundo da caixa de ícone.
   cor?: string
   novidade?: boolean
   // Distintivo numérico (pedidos por responder, notificações por ler).
   // Escondido a zero, para não haver um "0" a pedir atenção sem motivo.
   contagem?: number
-  // Visível mas fora de alcance — as disciplinas que não servem à idade do
-  // aluno. Deixa de ser um destino navegável: nem para o rato, nem para o
-  // teclado, nem para um leitor de ecrã.
+  // Visível mas fora de alcance — as disciplinas que não servem à idade
+  // do aluno. Deixa de ser um destino navegável: nem para o rato, nem
+  // para o teclado, nem para um leitor de ecrã.
   bloqueado?: boolean
 }) {
   const classesBase =
-    'entrada-esquerda group relative flex items-center gap-[14px] overflow-hidden rounded-[18px] border border-[var(--color-linha)] bg-white py-[15px] pl-[22px] pr-[16px]'
+    'entrada-esquerda group flex items-center gap-[16px] rounded-[var(--radius-large)] px-[18px] py-[18px]'
 
   const conteudo = (
     <>
-      {/* Barra de 3px que identifica a escola (secção 6). */}
-      {cor && (
-        <span
-          aria-hidden="true"
-          className="absolute inset-y-0 left-0 w-[3px]"
-          style={{ backgroundColor: cor }}
-        />
-      )}
-
       {icone && (
         <span
           aria-hidden="true"
           className={
-            'flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[12px]' +
+            'flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-[var(--radius-medium)]' +
             (iconeCobre ? ' overflow-hidden' : '')
           }
-          style={{ backgroundColor: 'var(--color-papel-2)' }}
+          style={{
+            // A cor da escola entra esbatida: forte o suficiente para
+            // identificar, discreta o suficiente para o ícone respirar.
+            backgroundColor: cor
+              ? `color-mix(in srgb, ${cor} 22%, white)`
+              : 'var(--color-surface-raised)',
+          }}
         >
           {typeof icone === 'string' ? (
             <Image
               src={icone}
               alt=""
-              width={iconeTamanho}
-              height={iconeTamanho}
+              width={iconeTamanho ?? 32}
+              height={iconeTamanho ?? 32}
               className={iconeCobre ? 'h-full w-full object-cover' : 'object-contain'}
-              style={iconeCobre ? undefined : { width: iconeTamanho, height: iconeTamanho }}
+              style={
+                iconeCobre
+                  ? undefined
+                  : { width: iconeTamanho ?? 32, height: iconeTamanho ?? 32 }
+              }
             />
           ) : (
             icone
@@ -81,13 +84,10 @@ export function CartaoLink({
       )}
 
       <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-[6px]">
+        <span className="flex flex-wrap items-center gap-[8px]">
           <span
-            className="min-w-0 text-[16.5px] font-semibold leading-[1.2]"
-            style={{
-              fontFamily: 'var(--font-fraunces)',
-              color: 'var(--color-azul-fundo)',
-            }}
+            className="text-[17px] font-semibold leading-[1.25]"
+            style={{ color: 'var(--color-text-primary)' }}
           >
             {nome}
           </span>
@@ -100,8 +100,8 @@ export function CartaoLink({
         </span>
         {descricao && (
           <span
-            className="mt-[2px] block text-[12.5px] leading-[1.35]"
-            style={{ color: 'var(--color-tinta-suave)' }}
+            className="mt-[3px] block text-[13.5px] leading-[1.45]"
+            style={{ color: 'var(--color-text-secondary)' }}
           >
             {descricao}
           </span>
@@ -114,7 +114,7 @@ export function CartaoLink({
           aria-hidden="true"
           strokeWidth={1.5}
           className="h-[20px] w-[20px] shrink-0"
-          style={{ color: 'var(--color-azul)' }}
+          style={{ color: 'var(--color-text-secondary)' }}
         />
       )}
     </>
@@ -122,7 +122,11 @@ export function CartaoLink({
 
   if (bloqueado) {
     return (
-      <div className={`${classesBase} opacity-45 grayscale`} aria-disabled="true">
+      <div
+        className={`${classesBase} opacity-45 grayscale`}
+        style={{ backgroundColor: 'var(--color-surface-raised)' }}
+        aria-disabled="true"
+      >
         {conteudo}
       </div>
     )
@@ -131,7 +135,8 @@ export function CartaoLink({
   return (
     <Link
       href={href}
-      className={`${classesBase} transition duration-150 hover:-translate-y-px hover:border-[var(--color-azul-logo)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-azul)] motion-reduce:transition-none motion-reduce:hover:translate-y-0`}
+      className={`${classesBase} transition-[transform,background-color] duration-150 hover:bg-[#EDEFF3] motion-safe:active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)] motion-reduce:transition-none`}
+      style={{ backgroundColor: 'var(--color-surface-raised)' }}
     >
       {conteudo}
     </Link>
