@@ -1,9 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatarDataEscolar } from '@/lib/datas'
-import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
-import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
 
 type Matricula = {
   id: number
@@ -88,47 +87,35 @@ export default async function HistoricoAlunoPage({
   }
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader
-          voltar="/dashboard/presencas/historico"
-          titulo={alunoData.nome}
-          subtitulo={
-            percentagemPresencas !== null
-              ? <>{percentagemPresencas}% de presenças · {presencas.length} {presencas.length === 1 ? 'aula registada' : 'aulas registadas'}.</>
-              : undefined
-          }
-        />
+    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard/presencas/historico" className="partitura-voltar" aria-label="Voltar ao histórico">←</Link>
+          <div><p className="partitura-sobretitulo">Histórico individual</p><h1>{alunoData.nome}</h1>{percentagemPresencas !== null && <p>{percentagemPresencas}% de presenças · {presencas.length} {presencas.length === 1 ? 'aula registada' : 'aulas registadas'}</p>}</div>
+        </header>
 
         {presencas.length === 0 ? (
           <EmptyState titulo="Ainda não há presenças registadas para este aluno" />
         ) : (
-          <div>
+          <div className="presencas-historico">
             {[...porMes.entries()].map(([mes, registos]) => (
               <section key={mes}>
-                <TituloSeccao contagem={registos.length}>
-                  {inicialMaiuscula(formatarDataEscolar(`${mes}-01`, { month: 'long', year: 'numeric' }))}
-                </TituloSeccao>
-                <GrupoLista>
+                <header><h2>{inicialMaiuscula(formatarDataEscolar(`${mes}-01`, { month: 'long', year: 'numeric' }))}</h2><span>{registos.length}</span></header>
+                <div>
                   {registos.map((p) => (
-                    <LinhaLista
-                      key={p.id}
-                      titulo={inicialMaiuscula(
+                    <article key={p.id}>
+                      <time>{inicialMaiuscula(
                         formatarDataEscolar(p.data, {
                           weekday: 'long',
                           day: 'numeric',
                           month: 'long',
                         })
-                      )}
-                      contexto={instrumentoPorMatricula.get(p.matricula_id) ?? undefined}
-                      direita={
-                        <span className={`estado-pill estado-${p.estado}`}>
-                          {ESTADO_LABEL[p.estado] ?? p.estado}
-                        </span>
-                      }
-                    />
+                      )}</time>
+                      <span>{instrumentoPorMatricula.get(p.matricula_id)}</span>
+                      <strong data-estado={p.estado}>{ESTADO_LABEL[p.estado] ?? p.estado}</strong>
+                    </article>
                   ))}
-                </GrupoLista>
+                </div>
               </section>
             ))}
           </div>

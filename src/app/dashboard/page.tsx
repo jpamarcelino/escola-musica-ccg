@@ -1,12 +1,9 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { criarAlunoDependente } from '@/lib/actions/aluno'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { SubmitButton } from '@/components/submit-button'
-import { PaginaComHero, HeroSaudacao } from '@/components/hero-section'
-import { AnelProgresso } from '@/components/anel-progresso'
-import { TituloSeccao, LinhaLista, GrupoLista } from '@/components/lista'
-import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { CampoTexto } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
 import { agoraNaEscola, proximaOcorrenciaDeAula, hojeISO } from '@/lib/datas'
@@ -36,6 +33,16 @@ function rotuloDoDia(dataISO: string, diaSemana: string): string {
   const amanhaISO = `${amanha.getFullYear()}-${String(amanha.getMonth() + 1).padStart(2, '0')}-${String(amanha.getDate()).padStart(2, '0')}`
   if (dataISO === amanhaISO) return 'Amanhã'
   return diaSemana
+}
+
+function dataEditorial(dataISO: string) {
+  const [ano, mes, dia] = dataISO.split('-').map(Number)
+  const data = new Date(ano, mes - 1, dia)
+  return {
+    dia: String(dia).padStart(2, '0'),
+    semana: new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(data),
+    mes: new Intl.DateTimeFormat('pt-PT', { month: 'short' }).format(data).replace('.', ''),
+  }
 }
 
 export default async function DashboardPage({
@@ -165,101 +172,93 @@ export default async function DashboardPage({
       (id) => !presencasMarcadasHoje.has(id)
     ).length
 
+    const hojeEditorial = dataEditorial(hojeISO())
+
     return (
-      <PaginaComHero
-          comBottomNav
-          hero={
-            <div className="flex flex-col items-center gap-[24px]">
-              <div className="w-full">
-                <HeroSaudacao
-                  nome={primeiroNome}
-                  contexto={
-                    profile.programa
-                      ? `Escola de ${profile.programa === 'musica' ? 'Música' : 'Dança'}`
-                      : undefined
-                  }
-                />
-              </div>
-              {proximas[0] ? (
-                <div
-                  className="w-full rounded-[var(--radius-medium)] border border-white/30 bg-[rgba(27,79,122,.28)] p-[18px]"
-                >
-                  <p className="text-[12px] font-semibold uppercase tracking-[.12em]">
-                    Próxima aula
-                  </p>
-                  <p className="mt-[8px] text-[20px] font-bold leading-tight">
-                    {proximas[0].instrumentos?.nome} · {proximas[0].alunos?.nome}
-                  </p>
-                  <p className="mt-[4px] text-[15px] leading-[1.5]">
-                    {rotuloDoDia(proximas[0].data, proximas[0].horarios!.dia_semana)},{' '}
-                    {formatarHora(proximas[0].horarios!.hora_inicio)}–{formatarHora(proximas[0].horarios!.hora_fim)}
-                    {formatarSala(proximas[0].horarios!.salas) &&
-                      ` · ${formatarSala(proximas[0].horarios!.salas)}`}
-                  </p>
-                </div>
-              ) : ocupacao === null ? (
-                <p className="text-[15px]">
-                  Ainda não tens horários definidos — cria-os para começares a
-                  receber pedidos.
-                </p>
-              ) : (
-                <p className="text-[15px]">Hoje não tens mais aulas marcadas.</p>
-              )}
+      <main id="conteudo-principal" className="partitura-pagina">
+        <div className="partitura-folha">
+          <header className="partitura-cabecalho">
+            <div className="partitura-data" aria-label={`${hojeEditorial.dia} de ${hojeEditorial.mes}`}>
+              <span>{hojeEditorial.dia}</span>
+              <span>{hojeEditorial.mes}</span>
             </div>
-          }
-        >
-          <InstalarCallout />
+            <div>
+              <p className="partitura-sobretitulo">{hojeEditorial.semana} · o teu dia</p>
+              <h1>Olá, {primeiroNome}.</h1>
+              <p className="partitura-contexto">
+                {profile.programa
+                  ? `Escola de ${profile.programa === 'musica' ? 'Música' : 'Dança'}`
+                  : 'Centro Cultural da Guarda'}
+              </p>
+            </div>
+          </header>
 
           {presencasPorConfirmar > 0 && (
-            <>
-              <TituloSeccao contagem={presencasPorConfirmar}>Requer atenção</TituloSeccao>
-              <LinhaLista
-                href="/dashboard/presencas/confirmar"
-                titulo="Confirmar presenças de hoje"
-                contexto="Começa pelas aulas que já terminaram"
-              />
-            </>
+            <Link href="/dashboard/presencas/confirmar" className="partitura-alerta">
+              <span className="partitura-alerta-numero">{presencasPorConfirmar}</span>
+              <span><strong>Presenças por confirmar</strong><small>de aulas que já terminaram hoje</small></span>
+              <span aria-hidden="true">→</span>
+            </Link>
           )}
 
-          <TituloSeccao>Próximas aulas</TituloSeccao>
-          {proximas.length === 0 ? (
-            <p className="text-[14px]" style={{ color: 'var(--color-text-secondary)' }}>
-              Sem aulas confirmadas por agora.
-            </p>
-          ) : (
-            <GrupoLista>
-              {proximas.map((aula) => (
-                <LinhaLista
-                  key={aula.id}
-                  href={`/dashboard/agenda/${aula.horario_final_id}`}
-                  titulo={`${aula.instrumentos?.nome} — ${aula.alunos?.nome}`}
-                  contexto={`${rotuloDoDia(aula.data, aula.horarios!.dia_semana)}, ${formatarHora(aula.horarios!.hora_inicio)}–${formatarHora(aula.horarios!.hora_fim)}${formatarSala(aula.horarios!.salas) ? ` · ${formatarSala(aula.horarios!.salas)}` : ''}`}
-                />
-              ))}
-            </GrupoLista>
-          )}
+          <section className="partitura-seccao" aria-labelledby="titulo-proximas">
+            <div className="partitura-seccao-cabecalho">
+              <div>
+                <p className="partitura-indice">01</p>
+                <h2 id="titulo-proximas">Próximas aulas</h2>
+              </div>
+              <Link href="/dashboard/agenda">Agenda completa</Link>
+            </div>
 
-          {(pedidosPendentes ?? 0) > 0 && (
-            <>
-              <TituloSeccao contagem={pedidosPendentes ?? 0}>
-                Pedidos por responder
-              </TituloSeccao>
-              <LinhaLista
-                href="/dashboard/pedidos"
-                titulo="Ver os pedidos de aula"
-                contexto="Novos alunos à espera de horário"
-              />
-            </>
-          )}
+            {proximas.length === 0 ? (
+              <p className="partitura-vazio">
+                {ocupacao === null
+                  ? 'Ainda não tens horários definidos.'
+                  : 'Hoje não tens mais aulas marcadas.'}
+              </p>
+            ) : (
+              <div className="partitura-linha-tempo">
+                {proximas.map((aula, indice) => {
+                  const sala = formatarSala(aula.horarios!.salas)
+                  return (
+                    <Link
+                      key={aula.id}
+                      href={`/dashboard/agenda/${aula.horario_final_id}`}
+                      className={`partitura-aula ${indice === 0 ? 'partitura-aula-atual' : ''}`}
+                    >
+                      <time>{formatarHora(aula.horarios!.hora_inicio)}</time>
+                      <span className="partitura-marca" aria-hidden="true" />
+                      <span className="partitura-aula-conteudo">
+                        {indice === 0 && <small>A seguir</small>}
+                        <strong>{aula.instrumentos?.nome}</strong>
+                        <span>{aula.alunos?.nome}</span>
+                        <span>{rotuloDoDia(aula.data, aula.horarios!.dia_semana)} · {formatarHora(aula.horarios!.hora_inicio)}–{formatarHora(aula.horarios!.hora_fim)}{sala ? ` · ${sala}` : ''}</span>
+                      </span>
+                      <span className="partitura-seta" aria-hidden="true">→</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </section>
 
-          <TituloSeccao>Gestão</TituloSeccao>
-          <GrupoLista>
-            <LinhaLista href="/dashboard/presencas" titulo="Presenças" />
-            <LinhaLista href="/dashboard/horarios" titulo="Gestão de Horários" />
-            <LinhaLista href="/dashboard/mensalidades" titulo="Mensalidades" />
-          </GrupoLista>
+          <section className="partitura-seccao" aria-labelledby="titulo-gestao">
+            <div className="partitura-seccao-cabecalho">
+              <div><p className="partitura-indice">02</p><h2 id="titulo-gestao">Gestão</h2></div>
+            </div>
+            <nav className="partitura-links" aria-label="Ferramentas de gestão">
+              <Link href="/dashboard/presencas"><span>Presenças</span><small>Registar e consultar</small><b aria-hidden="true">→</b></Link>
+              <Link href="/dashboard/horarios"><span>Horários</span><small>Disponibilidade semanal</small><b aria-hidden="true">→</b></Link>
+              <Link href="/dashboard/mensalidades"><span>Mensalidades</span><small>Estado dos pagamentos</small><b aria-hidden="true">→</b></Link>
+              {(pedidosPendentes ?? 0) > 0 && (
+                <Link href="/dashboard/pedidos"><span>Pedidos</span><small>{pedidosPendentes} por responder</small><b aria-hidden="true">→</b></Link>
+              )}
+            </nav>
+          </section>
 
-      </PaginaComHero>
+          <div className="partitura-instalacao"><InstalarCallout /></div>
+        </div>
+      </main>
     )
   }
 
@@ -307,14 +306,6 @@ export default async function DashboardPage({
 
   const confirmadasFilhos = matriculas.filter((m) => m.estado === 'confirmado' && m.horarios)
 
-  // O anel de cada filho mostra o progresso da semana — quantas das aulas
-  // desta semana já decorreram. Não é assiduidade: a RLS das presenças
-  // (migração 0002) esconde-as deliberadamente do encarregado, e inventar
-  // outra métrica só para encher o círculo seria pior do que não o ter.
-  // Isto usa apenas dados que o encarregado já vê (horários semanais) e é
-  // uma proporção genuína, que avança ao longo da semana.
-  const indiceHoje = (agoraNaEscola().getDay() + 6) % 7
-
   function resumoDoFilho(alunoId: string) {
     const doFilho = confirmadasFilhos
       .filter((m) => m.aluno_id === alunoId)
@@ -333,29 +324,12 @@ export default async function DashboardPage({
       )
     const proxima = doFilho[0] ?? null
 
-    const aulasSemana = confirmadasFilhos.filter((m) => m.aluno_id === alunoId)
-    const jaDecorridas = aulasSemana.filter(
-      (m) => DIAS_SEMANA.indexOf(m.horarios!.dia_semana) < indiceHoje
-    ).length
-    const semana =
-      aulasSemana.length > 0
-        ? {
-            decorridas: jaDecorridas,
-            total: aulasSemana.length,
-            percentagem: Math.round((jaDecorridas / aulasSemana.length) * 100),
-          }
-        : null
-
     const pendentes = matriculas.filter(
       (m) => m.aluno_id === alunoId && m.estado === 'a_escolher'
     ).length
 
-    return { proxima, semana, pendentes }
+    return { proxima, pendentes }
   }
-
-  const umSoFilho = meusAlunos.length === 1
-  const filhoUnico = umSoFilho ? meusAlunos[0] : null
-  const resumoUnico = filhoUnico ? resumoDoFilho(filhoUnico.id) : null
   const proximaGlobal = confirmadasFilhos
     .map((m) => ({
       ...m,
@@ -371,134 +345,44 @@ export default async function DashboardPage({
         : a.data.localeCompare(b.data)
     )[0] ?? null
 
+  const hojeEditorialAluno = dataEditorial(hojeISO())
+
   return (
-    <PaginaComHero
-        comBottomNav
-        hero={
-          <div className="space-y-[20px]">
-            <HeroSaudacao nome={primeiroNome} />
-            {proximaGlobal ? (
-              <div className="rounded-[var(--radius-medium)] border border-white/30 bg-[rgba(27,79,122,.28)] p-[18px]">
-                <p className="text-[12px] font-semibold uppercase tracking-[.12em]">Próxima aula</p>
-                <p className="mt-[8px] text-[20px] font-bold leading-tight">
-                  {proximaGlobal.instrumentos?.nome}
-                  {meusAlunos.length > 1 && ` · ${proximaGlobal.alunos?.nome}`}
-                </p>
-                <p className="mt-[4px] text-[15px] leading-[1.5]">
-                  {rotuloDoDia(proximaGlobal.data, proximaGlobal.horarios!.dia_semana)},{' '}
-                  {formatarHora(proximaGlobal.horarios!.hora_inicio)}–{formatarHora(proximaGlobal.horarios!.hora_fim)}
-                  {formatarSala(proximaGlobal.horarios!.salas) &&
-                    ` · ${formatarSala(proximaGlobal.horarios!.salas)}`}
-                </p>
-              </div>
-            ) : (
-              <p className="text-[15px] leading-[1.5]">
-                Ainda não há aulas confirmadas. Podes começar por pedir uma aula.
-              </p>
-            )}
-          </div>
-        }
-      >
+    <main id="conteudo-principal" className="partitura-pagina familia-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-cabecalho">
+          <div className="partitura-data" aria-label={`${hojeEditorialAluno.dia} de ${hojeEditorialAluno.mes}`}><span>{hojeEditorialAluno.dia}</span><span>{hojeEditorialAluno.mes}</span></div>
+          <div><p className="partitura-sobretitulo">{hojeEditorialAluno.semana} · em família</p><h1>Olá, {primeiroNome}.</h1><p className="partitura-contexto">Escolas Artísticas do CCG</p></div>
+        </header>
+
         {erro && <MensagemErro>{erro}</MensagemErro>}
 
-        <InstalarCallout />
-
         {avisoMaisRecente && (
-          <>
-            <TituloSeccao>Requer atenção</TituloSeccao>
-            <LinhaLista
-              href="/aluno/notificacoes"
-              titulo="Novo aviso"
-              contexto={avisoMaisRecente.mensagem}
-            />
-          </>
+          <Link href="/aluno/notificacoes" className="familia-aviso"><span>Novo aviso</span><strong>{avisoMaisRecente.mensagem}</strong><i aria-hidden="true">→</i></Link>
         )}
 
-        {/* Um só filho: resumo direto na Home, sem passo intermédio. */}
-        {filhoUnico && resumoUnico && (
-          <>
-            <TituloSeccao
-              acao={
-                <LigacaoTerciaria href={`/aluno/${filhoUnico.id}`}>Ver tudo</LigacaoTerciaria>
-              }
-            >
-              {filhoUnico.nome}
-            </TituloSeccao>
-            <GrupoLista>
-              {resumoUnico.proxima ? (
-                <LinhaLista
-                  href={`/aluno/${filhoUnico.id}/horario`}
-                  titulo={`Próxima aula: ${resumoUnico.proxima.instrumentos?.nome}`}
-                  contexto={`${rotuloDoDia(resumoUnico.proxima.data, resumoUnico.proxima.horarios!.dia_semana)}, ${formatarHora(resumoUnico.proxima.horarios!.hora_inicio)}${formatarSala(resumoUnico.proxima.horarios!.salas) ? ` · ${formatarSala(resumoUnico.proxima.horarios!.salas)}` : ''}`}
-                  direita={
-                    resumoUnico.semana ? (
-                      <AnelProgresso
-                        tamanho="pequeno"
-                        valor={resumoUnico.semana.percentagem}
-                        numero={`${resumoUnico.semana.decorridas}/${resumoUnico.semana.total}`}
-                        label="Aulas desta semana já dadas"
-                      />
-                    ) : undefined
-                  }
-                />
-              ) : (
-                <LinhaLista
-                  href={`/aluno/${filhoUnico.id}/pedido`}
-                  titulo="Ainda sem aulas confirmadas"
-                  contexto="Pede a primeira aula aqui"
-                />
-              )}
-              {resumoUnico.pendentes > 0 && (
-                <LinhaLista
-                  href={`/aluno/${filhoUnico.id}/horario`}
-                  titulo={`${resumoUnico.pendentes} ${resumoUnico.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}`}
-                  contexto="A aguardar confirmação do professor"
-                />
-              )}
-            </GrupoLista>
-          </>
-        )}
+        <section className="familia-proxima" aria-labelledby="proxima-familia-titulo">
+          <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">01</p><h2 id="proxima-familia-titulo">A seguir</h2></div></div>
+          {proximaGlobal ? (
+            <Link href={`/aluno/${proximaGlobal.aluno_id}/horario`}>
+              <time>{formatarHora(proximaGlobal.horarios!.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" />
+              <span><small>{rotuloDoDia(proximaGlobal.data, proximaGlobal.horarios!.dia_semana)}</small><strong>{proximaGlobal.instrumentos?.nome}</strong><b>{proximaGlobal.alunos?.nome}{formatarSala(proximaGlobal.horarios!.salas) ? ` · ${formatarSala(proximaGlobal.horarios!.salas)}` : ''}</b></span><i aria-hidden="true">→</i>
+            </Link>
+          ) : <p className="partitura-vazio">Ainda não há aulas confirmadas.</p>}
+        </section>
 
-        {/* Vários filhos: um cartão por filho, cada um com o seu anel. */}
-        {!umSoFilho && meusAlunos.length > 0 && (
-          <>
-            <TituloSeccao>Os teus alunos</TituloSeccao>
-            <GrupoLista>
-              {meusAlunos.map((aluno) => {
-                const resumo = resumoDoFilho(aluno.id)
-                return (
-                  <LinhaLista
-                    key={aluno.id}
-                    href={`/aluno/${aluno.id}`}
-                    titulo={aluno.nome}
-                    contexto={
-                      resumo.proxima
-                        ? `${resumo.proxima.instrumentos?.nome} — ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}${formatarSala(resumo.proxima.horarios!.salas) ? ` · ${formatarSala(resumo.proxima.horarios!.salas)}` : ''}`
-                        : resumo.pendentes > 0
-                          ? `${resumo.pendentes} ${resumo.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}`
-                          : 'Sem aulas marcadas'
-                    }
-                    direita={
-                      resumo.semana ? (
-                        <AnelProgresso
-                          tamanho="pequeno"
-                          valor={resumo.semana.percentagem}
-                          numero={`${resumo.semana.decorridas}/${resumo.semana.total}`}
-                          label="Aulas desta semana já dadas"
-                        />
-                      ) : undefined
-                    }
-                  />
-                )
-              })}
-            </GrupoLista>
-          </>
-        )}
+        <section className="familia-alunos" aria-labelledby="familia-alunos-titulo">
+          <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">02</p><h2 id="familia-alunos-titulo">{meusAlunos.length === 1 ? 'O teu aluno' : 'Os teus alunos'}</h2></div></div>
+          <div>
+            {meusAlunos.map((aluno) => {
+              const resumo = resumoDoFilho(aluno.id)
+              return <Link key={aluno.id} href={`/aluno/${aluno.id}`}><strong>{aluno.nome}</strong><span>{resumo.proxima ? `${resumo.proxima.instrumentos?.nome} · ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}` : resumo.pendentes > 0 ? `${resumo.pendentes} ${resumo.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'Sem aulas marcadas'}</span>{resumo.pendentes > 0 && <small>A aguardar professor</small>}<i aria-hidden="true">→</i></Link>
+            })}
+          </div>
+        </section>
 
-        <details className="mt-[24px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[16px] py-[14px]">
-          <summary className="cursor-pointer text-[15px] font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-primary-mid)]">
-            Adicionar aluno
-          </summary>
+        <details className="familia-adicionar">
+          <summary>Adicionar aluno</summary>
           <form action={criarAlunoDependente} className="mt-[16px] space-y-[14px]">
             <CampoTexto id="nome" name="nome" label="Nome do aluno" />
             <CampoTexto
@@ -510,13 +394,14 @@ export default async function DashboardPage({
             />
             <SubmitButton
               textoAGuardar="A adicionar..."
-              className="flex h-[56px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] text-[15.5px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
+              className="familia-adicionar-botao"
             >
               Adicionar aluno
             </SubmitButton>
           </form>
         </details>
-
-    </PaginaComHero>
+        <div className="partitura-instalacao"><InstalarCallout /></div>
+      </div>
+    </main>
   )
 }

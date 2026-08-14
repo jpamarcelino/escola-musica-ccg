@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
-import { EcraCarregamento } from '@/components/ecra-carregamento'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 // O App Router mantém a página anterior visível enquanto algumas rotas de
 // servidor carregam. Sem feedback, sobretudo numa ligação lenta ao Supabase,
@@ -10,11 +9,15 @@ import { EcraCarregamento } from '@/components/ecra-carregamento'
 // internas, não apenas a navegação inferior.
 export function NavigationFeedback() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const pesquisa = searchParams.toString()
   const [aNavegar, setANavegar] = useState(false)
+  const [mostrar, setMostrar] = useState(false)
 
   useEffect(() => {
     setANavegar(false)
-  }, [pathname])
+    setMostrar(false)
+  }, [pathname, pesquisa])
 
   useEffect(() => {
     function aoClicar(event: MouseEvent) {
@@ -54,17 +57,19 @@ export function NavigationFeedback() {
   // Evita que uma falha de rede deixe a interface coberta indefinidamente.
   useEffect(() => {
     if (!aNavegar) return
+    const atraso = window.setTimeout(() => setMostrar(true), 220)
     const limite = window.setTimeout(() => setANavegar(false), 12_000)
-    return () => window.clearTimeout(limite)
+    return () => {
+      window.clearTimeout(atraso)
+      window.clearTimeout(limite)
+    }
   }, [aNavegar])
 
-  if (!aNavegar) return null
+  if (!aNavegar || !mostrar) return null
 
   return (
-    <EcraCarregamento
-      mensagem="A abrir…"
-      contexto="Estamos a preparar a próxima página."
-      cobrirEcra
-    />
+    <div className="navegacao-progresso" role="status" aria-label="A abrir a próxima página">
+      <span />
+    </div>
   )
 }

@@ -6,9 +6,7 @@ import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { hojeISO, proximaOcorrenciaDeAula } from '@/lib/datas'
-import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
-import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
 
 type Confirmado = {
   id: number
@@ -48,6 +46,16 @@ function rotuloData(data: string): string {
     month: 'long',
   }).format(new Date(ano, mes - 1, dia))
   return formatado.charAt(0).toUpperCase() + formatado.slice(1)
+}
+
+function partesData(data: string) {
+  const [ano, mes, dia] = data.split('-').map(Number)
+  const objeto = new Date(ano, mes - 1, dia)
+  return {
+    dia: String(dia).padStart(2, '0'),
+    semana: new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(objeto),
+    mes: new Intl.DateTimeFormat('pt-PT', { month: 'long' }).format(objeto),
+  }
 }
 
 export default async function AgendaPage() {
@@ -156,48 +164,58 @@ export default async function AgendaPage() {
   }
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader
-          voltar="/dashboard"
-          titulo="Agenda"
-          subtitulo={
-            agendaTemporal[0]
-              ? <>A próxima aula é {rotuloData(agendaTemporal[0].data).toLowerCase()}, às {formatarHora(agendaTemporal[0].hora_inicio)}.</>
-              : undefined
-          }
-        />
+    <main id="conteudo-principal" className="partitura-pagina partitura-agenda">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+          <div>
+            <p className="partitura-sobretitulo">O teu tempo</p>
+            <h1>Agenda</h1>
+            {agendaTemporal[0] && <p>A próxima aula começa às {formatarHora(agendaTemporal[0].hora_inicio)}.</p>}
+          </div>
+        </header>
 
         {blocos.length === 0 ? (
           <EmptyState titulo="Ainda não tens aulas confirmadas" />
         ) : (
           <>
-            {[...porData.entries()].map(([data, aulas]) => (
-              <section key={data}>
-                <TituloSeccao>{rotuloData(data)}</TituloSeccao>
-                <GrupoLista>
+            <div className="partitura-dias">
+              {[...porData.entries()].map(([data, aulas]) => {
+                const partes = partesData(data)
+                return (
+              <section key={data} className="partitura-dia">
+                <header>
+                  <span className="partitura-dia-numero">{partes.dia}</span>
+                  <span><strong>{rotuloData(data)}</strong><small>{partes.semana} · {partes.mes}</small></span>
+                </header>
+                <div className="partitura-linha-tempo">
                   {aulas.map((aula) => (
-                    <LinhaLista
+                    <Link
                       key={aula.horarioId}
                       href={`/dashboard/agenda/${aula.horarioId}`}
-                      titulo={aula.alunos.join(', ')}
-                      contexto={`${formatarHora(aula.hora_inicio)}–${formatarHora(aula.hora_fim)}${aula.sala ? ` · ${aula.sala}` : ''}`}
-                      direita={
-                        <span className="text-[13px] font-semibold tabular-nums">
-                          {aula.alunos.length} {aula.alunos.length === 1 ? 'aluno' : 'alunos'}
-                        </span>
-                      }
-                    />
+                      className="partitura-aula"
+                    >
+                      <time>{formatarHora(aula.hora_inicio)}</time>
+                      <span className="partitura-marca" aria-hidden="true" />
+                      <span className="partitura-aula-conteudo">
+                        <strong>{aula.alunos.join(', ')}</strong>
+                        <span>{formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}{aula.sala ? ` · ${aula.sala}` : ''}</span>
+                      </span>
+                      <span className="partitura-alunos">{aula.alunos.length} {aula.alunos.length === 1 ? 'aluno' : 'alunos'}</span>
+                      <span className="partitura-seta" aria-hidden="true">→</span>
+                    </Link>
                   ))}
-                </GrupoLista>
+                </div>
               </section>
-            ))}
+                )
+              })}
+            </div>
 
-            <details className="mt-[32px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[16px] py-[14px]">
-              <summary className="flex min-h-[44px] cursor-pointer items-center text-[15px] font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-primary-mid)]">
+            <details className="partitura-grelha">
+              <summary>
                 Ver grelha semanal
               </summary>
-              <p className="mb-[14px] mt-[10px] text-[13px] leading-[1.5] text-[var(--color-text-secondary)]">
+              <p>
                 A grelha ajuda a comparar horários. Para o uso diário, a lista acima é mais rápida.
               </p>
               <div className="horarios-grade" aria-label="Grelha semanal de aulas">

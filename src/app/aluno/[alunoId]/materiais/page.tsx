@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 import { MateriaisClient } from './materiais-client'
 
 export default async function MateriaisPage({
@@ -43,9 +43,12 @@ export default async function MateriaisPage({
   )
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar={`/aluno/${alunoId}`} titulo="Materiais das Aulas" />
+    <main id="conteudo-principal" className="partitura-pagina materiais-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href={`/aluno/${alunoId}`} className="partitura-voltar" aria-label={`Voltar à área de ${aluno.nome}`}>←</Link>
+          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Materiais</h1><p>Ferramentas para acompanhar a prática.</p></div>
+        </header>
         <MateriaisClient temMusica={temMusica} />
       </div>
     </main>

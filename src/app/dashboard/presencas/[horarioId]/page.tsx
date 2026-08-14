@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
@@ -78,12 +78,14 @@ export default async function PresencasHorarioPage({
   )
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard/presencas/confirmar" titulo={horario.dia_semana} subtitulo={<>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
-              {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}</>} />
+    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard/presencas/confirmar" className="partitura-voltar" aria-label="Voltar às aulas por confirmar">←</Link>
+          <div><p className="partitura-sobretitulo">Chamada · {data}</p><h1>{horario.dia_semana}</h1><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
+        </header>
 
-        <form method="get" className="flex flex-wrap items-end gap-[8px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] p-[14px]">
+        <form method="get" className="presencas-data-form">
           <label htmlFor="data" className="text-sm text-foreground/60">
             Data da aula
           </label>
@@ -92,9 +94,9 @@ export default async function PresencasHorarioPage({
             type="date"
             name="data"
             defaultValue={data}
-            className="h-[44px] rounded-[var(--radius-small)] border border-[var(--color-linha)] bg-white px-[12px] text-[14px]"
+            className="h-[44px] border border-[var(--color-linha)] bg-white px-[12px] text-[14px]"
           />
-          <button type="submit" className="h-[44px] rounded-[var(--radius-pill)] border border-[var(--color-ink)] px-[16px] text-[14px] font-semibold">
+          <button type="submit" className="h-[44px] border border-[var(--color-ink)] px-[16px] text-[14px] font-semibold">
             Ver
           </button>
         </form>
@@ -104,19 +106,16 @@ export default async function PresencasHorarioPage({
         {alunos.length === 0 ? (
           <EmptyState titulo="Não há alunos confirmados neste horário" />
         ) : (
-          <form action={marcarPresencas} className="space-y-4">
+          <form action={marcarPresencas} className="presencas-chamada">
             <input type="hidden" name="horarioId" value={horarioId} />
             <input type="hidden" name="data" value={data} />
-            <div className="space-y-3">
+            <div className="presencas-chamada-lista">
               {alunos.map((aluno) => (
-                <fieldset key={aluno.id} className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] p-[16px]">
-                  <legend className="px-[2px] text-[15px] font-semibold">{aluno.alunos?.nome}</legend>
-                  {aluno.instrumentos?.nome && (
-                    <p className="text-[13px] text-[var(--color-text-secondary)]">{aluno.instrumentos.nome}</p>
-                  )}
-                  <div className="mt-[12px] grid gap-[8px] sm:grid-cols-3">
+                <fieldset key={aluno.id} className="presencas-aluno-chamada">
+                  <legend><strong>{aluno.alunos?.nome}</strong>{aluno.instrumentos?.nome && <small>{aluno.instrumentos.nome}</small>}</legend>
+                  <div className="presencas-estados">
                     {ESTADOS.map((e) => (
-                      <label key={e.valor} className="flex min-h-[48px] cursor-pointer items-center gap-[8px] rounded-[var(--radius-small)] border border-[var(--color-linha)] bg-white px-[12px] text-[14px] has-[:checked]:border-[var(--color-primary)] has-[:checked]:bg-[rgba(27,79,122,.08)]">
+                      <label key={e.valor} data-estado={e.valor}>
                         <input
                           type="radio"
                           name={`estado_${aluno.id}`}
@@ -132,7 +131,7 @@ export default async function PresencasHorarioPage({
             </div>
             <SubmitButton
               textoAGuardar="A guardar..."
-              className="flex min-h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-ink)] px-[20px] text-[15px] font-semibold text-white disabled:opacity-50"
+              className="presencas-guardar"
             >
               Guardar presenças
             </SubmitButton>

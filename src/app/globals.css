@@ -821,3 +821,1185 @@ body {
   font-family: var(--font-inter);
   box-shadow: 0 10px 40px rgba(36, 31, 28, 0.22);
 }
+
+/* Partitura do Dia — linguagem própria dos ecrãs operacionais do professor.
+   O eixo temporal substitui cartões repetidos; a margem ciano liga data,
+   hora e ação sem transformar a música em decoração literal. */
+.partitura-pagina {
+  min-height: 100dvh;
+  padding: 0 20px calc(116px + env(safe-area-inset-bottom, 0px));
+  background:
+    linear-gradient(90deg, transparent 0 31px, color-mix(in srgb, var(--marca-ciano) 20%, transparent) 31px 32px, transparent 32px),
+    var(--color-papel);
+}
+
+.partitura-folha {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 34px 0 56px;
+}
+
+.partitura-cabecalho {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 24px;
+  align-items: end;
+  padding-bottom: 34px;
+  border-bottom: 1px solid var(--color-linha);
+}
+
+.partitura-data {
+  display: flex;
+  flex-direction: column;
+  border-top: 3px solid var(--marca-ciano);
+  padding-top: 8px;
+  color: var(--color-azul-fundo);
+  font-variant-numeric: tabular-nums;
+}
+
+.partitura-data span:first-child {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 44px;
+  font-weight: 650;
+  line-height: .9;
+}
+
+.partitura-data span:last-child,
+.partitura-sobretitulo,
+.partitura-indice {
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+
+.partitura-cabecalho h1,
+.partitura-agenda-cabecalho h1 {
+  margin-top: 5px;
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: clamp(32px, 7vw, 48px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -.035em;
+  color: var(--color-azul-fundo);
+}
+
+.partitura-contexto,
+.partitura-agenda-cabecalho p:last-child {
+  margin-top: 9px;
+  font-size: 14px;
+  color: var(--color-tinta-suave);
+}
+
+.partitura-alerta {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 64px;
+  margin-top: 24px;
+  padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-warning) 45%, var(--color-linha));
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+
+.partitura-alerta-numero {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 30px;
+  color: var(--color-warning);
+}
+
+.partitura-alerta span:nth-child(2) { display: flex; flex-direction: column; }
+.partitura-alerta strong { font-size: 14px; }
+.partitura-alerta small { margin-top: 2px; font-size: 12px; color: var(--color-tinta-suave); }
+
+.partitura-seccao { margin-top: 42px; }
+.partitura-seccao-cabecalho {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.partitura-seccao-cabecalho h2 {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 24px;
+  font-weight: 650;
+  color: var(--color-azul-fundo);
+}
+.partitura-seccao-cabecalho > a {
+  padding-block: 8px;
+  border-bottom: 1px solid var(--color-azul-logo);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-azul-fundo);
+  text-decoration: none;
+}
+
+.partitura-linha-tempo { position: relative; }
+.partitura-linha-tempo::before {
+  content: '';
+  position: absolute;
+  top: 25px;
+  bottom: 25px;
+  left: 63px;
+  width: 1px;
+  background: var(--color-linha);
+}
+.partitura-aula {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 8px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 88px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.partitura-aula time {
+  align-self: start;
+  padding-top: 7px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-azul-fundo);
+  font-variant-numeric: tabular-nums;
+}
+.partitura-marca {
+  position: relative;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--color-papel);
+  border-radius: 50%;
+  background: var(--color-azul-logo);
+  outline: 1px solid var(--color-azul-logo);
+}
+.partitura-aula-atual .partitura-marca { background: var(--marca-ciano); outline-color: var(--marca-ciano); }
+.partitura-aula-atual::after {
+  content: '';
+  position: absolute;
+  left: 68px;
+  right: 0;
+  top: 8px;
+  height: 2px;
+  background: var(--marca-ciano);
+  transform-origin: left;
+  animation: partitura-traco .55s var(--ease-suave) both;
+}
+@keyframes partitura-traco { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.partitura-aula-conteudo { display: flex; min-width: 0; flex-direction: column; }
+.partitura-aula-conteudo small {
+  margin-bottom: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-azul);
+}
+.partitura-aula-conteudo strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; color: var(--color-tinta); }
+.partitura-aula-conteudo span { margin-top: 3px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; color: var(--color-tinta-suave); }
+.partitura-aula-conteudo strong + span { font-weight: 600; color: var(--color-tinta); }
+.partitura-seta { padding: 12px 2px 12px 10px; color: var(--color-azul); }
+.partitura-alunos { font-size: 12px; color: var(--color-tinta-suave); white-space: nowrap; }
+.partitura-vazio { padding: 24px 0; border-block: 1px solid var(--color-linha); color: var(--color-tinta-suave); }
+
+.partitura-links { border-top: 1px solid var(--color-linha); }
+.partitura-links a {
+  display: grid;
+  grid-template-columns: minmax(110px, .7fr) 1fr auto;
+  gap: 16px;
+  align-items: center;
+  min-height: 62px;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.partitura-links span { font-family: var(--font-fraunces), ui-serif, serif; font-size: 17px; font-weight: 650; }
+.partitura-links small { color: var(--color-tinta-suave); }
+.partitura-links b { font-weight: 500; color: var(--color-azul); }
+.partitura-instalacao { margin-top: 38px; }
+
+.partitura-agenda-cabecalho {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 18px;
+  align-items: start;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.partitura-voltar {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--color-linha);
+  color: var(--color-azul-fundo);
+  text-decoration: none;
+}
+.partitura-dias { margin-top: 36px; }
+.partitura-dia + .partitura-dia { margin-top: 46px; }
+.partitura-dia > header {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.partitura-dia-numero { font-family: var(--font-fraunces), ui-serif, serif; font-size: 38px; line-height: 1; color: var(--color-azul-fundo); }
+.partitura-dia header > span:last-child { display: flex; flex-direction: column; }
+.partitura-dia header strong { font-size: 14px; text-transform: capitalize; }
+.partitura-dia header small { margin-top: 2px; font-size: 11px; text-transform: capitalize; color: var(--color-tinta-suave); }
+.partitura-grelha { margin-top: 48px; border-block: 1px solid var(--color-linha); padding: 10px 0 18px; }
+.partitura-grelha summary { min-height: 44px; padding: 12px 0; cursor: pointer; font-weight: 650; color: var(--color-azul-fundo); }
+.partitura-grelha > p { margin: 2px 0 16px; max-width: 60ch; font-size: 13px; line-height: 1.5; color: var(--color-tinta-suave); }
+
+.partitura-aula:hover,
+.partitura-links a:hover { background: color-mix(in srgb, var(--color-azul-logo) 7%, transparent); }
+.partitura-aula:focus-visible,
+.partitura-links a:focus-visible,
+.partitura-alerta:focus-visible,
+.partitura-voltar:focus-visible,
+.partitura-seccao-cabecalho a:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+
+@media (max-width: 520px) {
+  .partitura-pagina { padding-inline: 20px; background-position-x: -12px; }
+  .partitura-folha { padding-top: 24px; }
+  .partitura-cabecalho { grid-template-columns: 60px 1fr; gap: 16px; }
+  .partitura-data span:first-child { font-size: 38px; }
+  .partitura-aula { grid-template-columns: 43px 8px minmax(0, 1fr) auto; gap: 9px; }
+  .partitura-linha-tempo::before { left: 56px; }
+  .partitura-aula-atual::after { left: 61px; }
+  .partitura-alunos { display: none; }
+  .partitura-links a { grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 9px; }
+  .partitura-links small { grid-column: 1; }
+  .partitura-links b { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* Perfil familiar — partilha o eixo temporal com o professor, mas usa uma
+   linguagem de caderno: pessoas primeiro, tarefas administrativas depois. */
+.familia-pagina .partitura-folha,
+.aluno-hub-pagina .partitura-folha,
+.aluno-agenda-pagina .partitura-folha { max-width: 760px; }
+.familia-aviso {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  min-height: 62px;
+  margin-top: 24px;
+  border-bottom: 1px solid var(--color-warning);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.familia-aviso span { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--color-warning); }
+.familia-aviso strong { font-size: 13px; }
+.familia-aviso i { font-style: normal; color: var(--color-azul); }
+.familia-proxima,
+.familia-alunos { margin-top: 40px; }
+.familia-proxima > a {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 8px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 98px;
+  border-block: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.familia-proxima > a::before { content: ''; position: absolute; top: 10px; bottom: 10px; left: 63px; width: 1px; background: var(--color-linha); }
+.familia-proxima time { font-size: 16px; font-weight: 800; color: var(--color-azul-fundo); }
+.familia-proxima a > span:nth-of-type(2) { display: flex; flex-direction: column; }
+.familia-proxima small { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--color-azul); }
+.familia-proxima strong { margin-top: 4px; font-family: var(--font-fraunces), ui-serif, serif; font-size: 20px; }
+.familia-proxima b { margin-top: 3px; font-size: 12px; font-weight: 500; color: var(--color-tinta-suave); }
+.familia-proxima i { font-style: normal; color: var(--color-azul); }
+.familia-alunos > div:last-child { border-top: 1px solid var(--color-linha); }
+.familia-alunos a {
+  display: grid;
+  grid-template-columns: minmax(140px, .6fr) 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 68px;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.familia-alunos strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
+.familia-alunos a > span { font-size: 13px; color: var(--color-tinta-suave); }
+.familia-alunos a > small { padding-left: 10px; border-left: 3px solid var(--color-warning); font-size: 11px; color: var(--color-warning); }
+.familia-alunos i { font-style: normal; color: var(--color-azul); }
+.familia-adicionar { margin-top: 34px; border-block: 1px solid var(--color-linha); }
+.familia-adicionar > summary { min-height: 56px; padding: 18px 0; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--color-azul-fundo); }
+.familia-adicionar form { padding-bottom: 20px; }
+.familia-adicionar-botao {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-azul-fundo);
+  border-radius: 4px;
+  color: var(--color-azul-fundo);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.aluno-hub-links { margin-top: 36px; border-top: 1px solid var(--color-linha); }
+.aluno-hub-links a {
+  display: grid;
+  grid-template-columns: minmax(180px, .7fr) 1fr auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 76px;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.aluno-hub-links a > span { display: flex; align-items: center; gap: 14px; }
+.aluno-hub-links b { font-size: 10px; letter-spacing: .14em; color: var(--color-tinta-suave); }
+.aluno-hub-links strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 19px; }
+.aluno-hub-links small { color: var(--color-tinta-suave); }
+.aluno-hub-links i { font-style: normal; color: var(--color-azul); }
+
+.aluno-pedidos-curso,
+.aluno-proximas-aulas { margin-top: 38px; }
+.aluno-pedidos-curso > header,
+.aluno-proximas-aulas > header {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.aluno-pedidos-curso h2,
+.aluno-proximas-aulas h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 23px; color: var(--color-azul-fundo); }
+.aluno-pedidos-curso > header span { font-size: 12px; color: var(--color-tinta-suave); }
+.aluno-pedidos-curso > div { border-top: 1px solid var(--color-linha); }
+.aluno-pedidos-curso details { border-bottom: 1px solid var(--color-linha); }
+.aluno-pedidos-curso summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 66px;
+  cursor: pointer;
+  list-style: none;
+}
+.aluno-pedidos-curso summary > span { display: flex; flex-direction: column; }
+.aluno-pedidos-curso summary strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 17px; }
+.aluno-pedidos-curso summary small { margin-top: 3px; color: var(--color-tinta-suave); }
+.aluno-pedidos-curso summary i { font-style: normal; color: var(--color-azul); }
+.aluno-pedidos-curso details > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 0 14px; }
+.aluno-pedidos-curso details > div p { font-size: 12px; color: var(--color-tinta-suave); }
+
+.aluno-aula-registo { border-bottom: 1px solid var(--color-linha); }
+.aluno-aula-registo > summary {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 8px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 92px;
+  cursor: pointer;
+  list-style: none;
+}
+.aluno-aula-registo > summary time { align-self: start; padding-top: 28px; font-weight: 800; color: var(--color-azul-fundo); }
+.aluno-aula-registo > summary > span:nth-of-type(2) { display: flex; flex-direction: column; }
+.aluno-aula-registo small { font-size: 10px; font-weight: 750; text-transform: uppercase; color: var(--color-azul); }
+.aluno-aula-registo strong { margin-top: 4px; font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
+.aluno-aula-registo b { margin-top: 3px; font-size: 12px; font-weight: 500; color: var(--color-tinta-suave); }
+.aluno-aula-registo summary i { font-style: normal; color: var(--color-azul); }
+.aluno-aula-registo > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 0 16px 68px; }
+.aluno-aula-registo > div p { font-size: 12px; color: var(--color-tinta-suave); }
+.aluno-pedir-mais {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  margin-top: 38px;
+  padding: 18px 0;
+  border-block: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.aluno-pedir-mais > span { display: flex; flex-direction: column; }
+.aluno-pedir-mais strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
+.aluno-pedir-mais small { margin-top: 4px; color: var(--color-tinta-suave); }
+.aluno-pedir-mais i { font-style: normal; color: var(--color-azul); }
+
+@media (max-width: 560px) {
+  .familia-alunos a { grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 10px; }
+  .familia-alunos a > span { grid-column: 1; }
+  .familia-alunos a > small { grid-column: 1; margin-top: 4px; }
+  .familia-alunos i { grid-column: 2; grid-row: 1 / span 3; }
+  .aluno-hub-links a { grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 12px; }
+  .aluno-hub-links small { grid-column: 1; }
+  .aluno-hub-links i { grid-column: 2; grid-row: 1 / span 2; }
+  .aluno-pedidos-curso details > div,
+  .aluno-aula-registo > div { align-items: flex-start; flex-direction: column; padding-left: 0; }
+}
+
+/* Segunda fase do aluno: wizard, materiais e arquivo de avisos. */
+.wizard-partitura .partitura-folha,
+.materiais-pagina .partitura-folha,
+.avisos-pagina .partitura-folha { max-width: 760px; }
+.wizard-partitura-conteudo { margin-top: 34px; }
+.wizard-escolhas { border-top: 1px solid var(--color-linha); }
+.wizard-escolhas > .entrada-esquerda {
+  min-height: 74px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-linha);
+  padding: 10px 0;
+  background: transparent !important;
+}
+.wizard-escolhas > .entrada-esquerda > span:first-child {
+  border-radius: 4px;
+}
+.wizard-escolhas > .entrada-esquerda span[class*="text-[17px]"] {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 18px;
+}
+.wizard-partitura form input,
+.wizard-partitura form textarea { border-radius: 4px; }
+.wizard-partitura form > button:last-child,
+.wizard-partitura form > a:last-child { border-radius: 4px; background: var(--color-azul-fundo) !important; }
+.wizard-partitura .horarios-grade { border-radius: 0; }
+.wizard-partitura .horario-bloco { border-radius: 3px; }
+
+.materiais-conteudo { margin-top: 34px; }
+.materiais-separadores { display: flex; border-bottom: 1px solid var(--color-linha); }
+.materiais-separador {
+  min-height: 48px;
+  border-bottom: 3px solid transparent;
+  padding: 10px 2px;
+  font-size: 13px;
+  font-weight: 750;
+}
+.materiais-pagina .materiais-conteudo > div:last-child { margin-top: 28px; }
+.materiais-pagina input,
+.materiais-pagina button { border-radius: 4px !important; }
+.materiais-pagina .rounded-full { border-radius: 50% !important; }
+
+.avisos-marcar-todos {
+  min-height: 44px;
+  margin-top: 22px;
+  padding: 0;
+  border-bottom: 1px solid var(--color-azul-logo);
+  color: var(--color-azul-fundo);
+  font-size: 13px;
+  font-weight: 700;
+}
+.avisos-lista { margin-top: 30px; border-top: 1px solid var(--color-linha); }
+.avisos-lista article {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  min-height: 72px;
+  padding: 16px 0 16px 14px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.avisos-lista article::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20px;
+  width: 3px;
+  height: 20px;
+  background: var(--marca-ciano);
+}
+.avisos-lista article[data-lida="true"]::before { background: var(--color-linha); }
+.avisos-lista time { padding-top: 3px; font-size: 11px; font-weight: 700; color: var(--color-tinta-suave); font-variant-numeric: tabular-nums; }
+.avisos-lista p { font-size: 14px; line-height: 1.5; color: var(--color-tinta); }
+.avisos-lista article[data-lida="true"] p { color: var(--color-tinta-suave); }
+.avisos-marcar-um {
+  min-height: 40px;
+  padding-inline: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-azul-fundo);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+.avisos-marcar-todos:focus-visible,
+.avisos-marcar-um:focus-visible,
+.materiais-separador:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+
+@media (max-width: 540px) {
+  .avisos-lista article { grid-template-columns: 1fr auto; gap: 5px 12px; }
+  .avisos-lista time { grid-column: 1; }
+  .avisos-lista p { grid-column: 1; }
+  .avisos-lista form { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* Detalhes do professor — prolongam a hierarquia temporal até às rotas
+   profundas, sem voltar ao padrão genérico de cabeçalho + cartões. */
+.detalhe-aula-pagina .partitura-folha,
+.detalhe-aluno-pagina .partitura-folha,
+.editar-horario-pagina .partitura-folha { max-width: 720px; }
+.detalhe-aula-alunos,
+.detalhe-aluno-ficha { margin-top: 38px; }
+.detalhe-aula-alunos > header,
+.detalhe-aluno-ficha > header {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.detalhe-aula-alunos h2,
+.detalhe-aluno-ficha h2 {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 23px;
+  color: var(--color-azul-fundo);
+}
+.detalhe-aula-alunos > header > span { font-size: 12px; color: var(--color-tinta-suave); }
+.detalhe-aula-alunos > div { border-top: 1px solid var(--color-linha); }
+.detalhe-aula-alunos a {
+  display: grid;
+  grid-template-columns: 1fr minmax(100px, .7fr) auto;
+  gap: 16px;
+  align-items: center;
+  min-height: 66px;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.detalhe-aula-alunos a strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
+.detalhe-aula-alunos a span { font-size: 13px; color: var(--color-tinta-suave); }
+.detalhe-aula-alunos a i { font-style: normal; color: var(--color-azul); }
+
+.detalhe-aluno-ficha dl { border-top: 1px solid var(--color-linha); }
+.detalhe-aluno-ficha dl > div {
+  display: grid;
+  grid-template-columns: minmax(150px, .7fr) 1fr;
+  gap: 20px;
+  min-height: 58px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-linha);
+}
+.detalhe-aluno-ficha dt { font-size: 12px; color: var(--color-tinta-suave); }
+.detalhe-aluno-ficha dd { font-size: 14px; font-weight: 650; }
+.detalhe-aluno-ficha a { color: var(--color-azul-fundo); text-decoration: underline; text-underline-offset: 4px; }
+.detalhe-zona-perigo {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+  margin-top: 48px;
+  padding: 18px 0;
+  border-block: 1px solid color-mix(in srgb, var(--color-error) 35%, var(--color-linha));
+}
+.detalhe-zona-perigo > div { display: flex; flex-direction: column; }
+.detalhe-zona-perigo strong { font-size: 14px; color: var(--color-error); }
+.detalhe-zona-perigo small { margin-top: 4px; color: var(--color-tinta-suave); }
+
+.editar-horario-form { margin-top: 36px; }
+.editar-horario-campo + .editar-horario-horas,
+.editar-horario-horas + aside,
+.editar-horario-form aside + button,
+.editar-horario-horas + button { margin-top: 18px; }
+.editar-horario-campo { display: flex; flex-direction: column; gap: 7px; }
+.editar-horario-horas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.editar-horario-form select,
+.editar-horario-form input[type="time"] {
+  border-radius: 4px;
+  background: white;
+  box-shadow: none;
+}
+.editar-horario-form aside {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 0;
+  border-block: 1px solid var(--color-linha);
+}
+.editar-horario-form aside strong { font-size: 12px; color: var(--color-azul-fundo); }
+.editar-horario-form aside span { margin-top: 4px; font-size: 13px; color: var(--color-tinta-suave); }
+.editar-horario-guardar {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: var(--color-azul-fundo);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .detalhe-aula-alunos a { grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 10px; }
+  .detalhe-aula-alunos a span { grid-column: 1; }
+  .detalhe-aula-alunos a i { grid-column: 2; grid-row: 1 / span 2; }
+  .detalhe-aluno-ficha dl > div { display: block; padding-block: 11px; }
+  .detalhe-aluno-ficha dd { margin-top: 4px; overflow-wrap: anywhere; }
+  .detalhe-zona-perigo { grid-template-columns: 1fr; }
+}
+
+/* Navegação rápida: mantém a página atual legível. O indicador só aparece
+   após 220ms (ver navigation-feedback.tsx), evitando flashes nas rotas já
+   em cache e o custo perceptivo de cobrir o ecrã inteiro. */
+.navegacao-progresso {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 100;
+  height: 3px;
+  overflow: hidden;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--marca-ciano) 14%, transparent);
+}
+.navegacao-progresso span {
+  display: block;
+  width: 42%;
+  height: 100%;
+  background: var(--marca-ciano);
+  animation: navegacao-avancar 1s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+@keyframes navegacao-avancar {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(340%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navegacao-progresso span { animation: none; }
+}
+
+/* Presenças — livro de chamada contínuo, sem cartões nem badges em cápsula. */
+.presencas-pagina .partitura-folha { max-width: 760px; }
+.presencas-estado {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 20px;
+  align-items: center;
+  margin-top: 38px;
+  padding-bottom: 28px;
+  border-bottom: 3px solid var(--color-error);
+}
+.presencas-estado > span {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 72px;
+  font-weight: 650;
+  line-height: .8;
+  color: var(--color-error);
+}
+.presencas-estado > div { display: flex; flex-direction: column; }
+.presencas-estado strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 21px; color: var(--color-tinta); }
+.presencas-estado small { margin-top: 5px; color: var(--color-tinta-suave); }
+.presencas-estado-ok { border-color: var(--color-positive); }
+.presencas-estado-ok > span { color: var(--color-positive); }
+.presencas-destinos { margin-top: 32px; border-top: 1px solid var(--color-linha); }
+.presencas-destinos a {
+  display: grid;
+  grid-template-columns: minmax(180px, .8fr) 1fr auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 78px;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.presencas-destinos a > span { display: flex; align-items: center; gap: 14px; }
+.presencas-destinos b { font-size: 10px; letter-spacing: .14em; color: var(--color-tinta-suave); }
+.presencas-destinos strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 19px; }
+.presencas-destinos small { color: var(--color-tinta-suave); }
+.presencas-destinos i { font-style: normal; color: var(--color-azul); }
+
+.presencas-grupo { margin-top: 40px; }
+.presencas-grupo > header,
+.presencas-historico section > header {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.presencas-grupo > header > span { font-size: 10px; font-weight: 700; letter-spacing: .14em; color: var(--color-tinta-suave); }
+.presencas-grupo h2,
+.presencas-historico h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 22px; color: var(--color-azul-fundo); }
+.presencas-grupo header small,
+.presencas-historico header span { font-size: 12px; color: var(--color-tinta-suave); }
+.presencas-registos { border-top: 1px solid var(--color-linha); }
+.presencas-registos a {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 72px;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.presencas-registos time { font-size: 13px; font-weight: 700; text-transform: capitalize; color: var(--color-azul-fundo); }
+.presencas-registos a > span { display: flex; min-width: 0; flex-direction: column; }
+.presencas-registos a strong { font-size: 14px; }
+.presencas-registos a small { margin-top: 3px; color: var(--color-tinta-suave); }
+.presencas-registos em { font-size: 12px; font-style: normal; font-weight: 700; white-space: nowrap; }
+.presencas-registos-atrasados em { color: var(--color-error); }
+.presencas-registos i { font-style: normal; color: var(--color-azul); }
+
+.presencas-alunos { margin-top: 36px; border-top: 1px solid var(--color-linha); }
+.presencas-alunos a {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 68px;
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+.presencas-alunos strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
+.presencas-alunos span { font-size: 13px; color: var(--color-tinta-suave); }
+.presencas-alunos i { font-style: normal; color: var(--color-azul); }
+
+.presencas-data-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 9px;
+  margin: 28px 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.presencas-data-form label { width: 100%; font-size: 12px; font-weight: 700; color: var(--color-tinta-suave); }
+.presencas-chamada-lista { border-top: 1px solid var(--color-linha); }
+.presencas-aluno-chamada {
+  display: grid;
+  grid-template-columns: minmax(150px, .8fr) 1.5fr;
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--color-linha);
+}
+.presencas-aluno-chamada legend { display: contents; }
+.presencas-aluno-chamada legend strong,
+.presencas-aluno-chamada legend small { grid-column: 1; }
+.presencas-aluno-chamada legend strong { align-self: end; font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
+.presencas-aluno-chamada legend small { align-self: start; margin-top: 25px; color: var(--color-tinta-suave); }
+.presencas-estados { grid-column: 2; grid-row: 1 / span 2; display: grid; grid-template-columns: repeat(3, 1fr); }
+.presencas-estados label {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--color-linha);
+  border-right: 0;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+}
+.presencas-estados label:last-child { border-right: 1px solid var(--color-linha); }
+.presencas-estados label:has(:checked) { background: color-mix(in srgb, var(--color-azul-logo) 13%, white); border-color: var(--color-azul); }
+.presencas-estados label[data-estado="falta_aviso"]:has(:checked) { background: #fdf4e3; border-color: var(--color-warning); }
+.presencas-estados label[data-estado="falta_sem_aviso"]:has(:checked) { background: #fbe9e7; border-color: var(--color-error); }
+.presencas-guardar {
+  display: flex;
+  width: 100%;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  border-radius: 4px;
+  background: var(--color-azul-fundo);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.presencas-historico { margin-top: 38px; }
+.presencas-historico section + section { margin-top: 38px; }
+.presencas-historico section > header { grid-template-columns: 1fr auto; }
+.presencas-historico section > div { border-top: 1px solid var(--color-linha); }
+.presencas-historico article {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) .7fr auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 60px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.presencas-historico time { font-size: 13px; font-weight: 650; text-transform: capitalize; }
+.presencas-historico article > span { font-size: 13px; color: var(--color-tinta-suave); }
+.presencas-historico article > strong { padding-left: 12px; border-left: 3px solid var(--color-positive); font-size: 12px; }
+.presencas-historico article > strong[data-estado="falta_aviso"] { border-color: var(--color-warning); }
+.presencas-historico article > strong[data-estado="falta_sem_aviso"] { border-color: var(--color-error); }
+
+@media (max-width: 600px) {
+  .presencas-destinos a { grid-template-columns: 1fr auto; gap: 5px 12px; padding-block: 12px; }
+  .presencas-destinos small { grid-column: 1; }
+  .presencas-destinos i { grid-column: 2; grid-row: 1 / span 2; }
+  .presencas-registos a { grid-template-columns: 72px minmax(0, 1fr) auto; gap: 9px; }
+  .presencas-registos em { grid-column: 2; }
+  .presencas-registos i { grid-column: 3; grid-row: 1 / span 2; }
+  .presencas-aluno-chamada { display: block; }
+  .presencas-aluno-chamada legend { display: flex; flex-direction: column; margin-bottom: 12px; }
+  .presencas-aluno-chamada legend small { margin-top: 3px; }
+  .presencas-estados { display: grid; }
+  .presencas-historico article { grid-template-columns: 1fr auto; padding-block: 10px; }
+  .presencas-historico article > span { grid-column: 1; }
+  .presencas-historico article > strong { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* Mensalidades — extrato financeiro, com um só número dominante e meses
+   tratados como índice cronológico em vez de uma nuvem de filtros. */
+.mensalidades-pagina .partitura-folha { max-width: 760px; }
+.mensalidades-meses {
+  display: flex;
+  margin: 28px 0 0;
+  overflow-x: auto;
+  border-block: 1px solid var(--color-linha);
+  scrollbar-width: none;
+}
+.mensalidades-meses a {
+  position: relative;
+  display: flex;
+  min-width: 68px;
+  min-height: 52px;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-tinta-suave);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.mensalidades-meses a::after {
+  content: '';
+  position: absolute;
+  inset-inline: 8px;
+  bottom: -1px;
+  height: 3px;
+  background: transparent;
+}
+.mensalidades-meses a.ativo { color: var(--color-azul-fundo); font-weight: 800; }
+.mensalidades-meses a.ativo::after { background: var(--marca-ciano); }
+.mensalidades-meses a:focus-visible { outline: 2px solid var(--color-azul); outline-offset: -4px; }
+
+.mensalidades-resumo {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.4fr) 1fr;
+  gap: 42px;
+  align-items: end;
+  padding: 42px 0 34px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.mensalidades-total { display: flex; flex-direction: column; }
+.mensalidades-total p { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--color-tinta-suave); }
+.mensalidades-total strong {
+  margin-top: 9px;
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: clamp(44px, 9vw, 66px);
+  font-weight: 650;
+  line-height: .95;
+  letter-spacing: -.04em;
+  color: var(--color-azul-fundo);
+  font-variant-numeric: tabular-nums;
+}
+.mensalidades-total small { margin-top: 10px; color: var(--color-tinta-suave); }
+.mensalidades-resumo dl { border-top: 1px solid var(--color-linha); }
+.mensalidades-resumo dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-linha);
+  font-size: 12px;
+}
+.mensalidades-resumo dt { color: var(--color-tinta-suave); }
+.mensalidades-resumo dd { font-weight: 800; color: var(--color-tinta); }
+
+.mensalidades-extrato { margin-top: 40px; }
+.mensalidades-extrato > header { margin-bottom: 12px; }
+.mensalidades-extrato h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 24px; color: var(--color-azul-fundo); }
+.mensalidades-extrato > div { border-top: 1px solid var(--color-linha); }
+.mensalidades-extrato article {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 92px minmax(120px, auto);
+  gap: 18px;
+  align-items: center;
+  min-height: 68px;
+  padding-left: 14px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.mensalidades-extrato article::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 3px;
+  height: 22px;
+  background: var(--color-tinta-suave);
+}
+.mensalidades-extrato article[data-estado="paga"]::before { background: var(--color-positive); }
+.mensalidades-extrato article[data-estado="por_pagar"]::before { background: var(--color-error); }
+.mensalidades-extrato article[data-estado="nao_devida"]::before { background: var(--color-warning); }
+.mensalidades-extrato article > span { display: flex; min-width: 0; flex-direction: column; }
+.mensalidades-extrato strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 17px; }
+.mensalidades-extrato small { margin-top: 3px; color: var(--color-tinta-suave); }
+.mensalidades-extrato b { font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; }
+.mensalidades-extrato em { font-size: 12px; font-style: normal; font-weight: 650; text-align: right; color: var(--color-tinta-suave); }
+.mensalidades-extrato article[data-estado="por_pagar"] em { color: var(--color-error); }
+.mensalidades-extrato article[data-estado="paga"] em { color: var(--color-positive); }
+
+@media (max-width: 560px) {
+  .mensalidades-resumo { display: block; padding-block: 32px; }
+  .mensalidades-resumo dl { margin-top: 28px; }
+  .mensalidades-extrato article { grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; padding-block: 10px; }
+  .mensalidades-extrato b { grid-column: 2; grid-row: 1; }
+  .mensalidades-extrato em { grid-column: 1 / span 2; text-align: left; }
+}
+
+/* Pedidos — fila ordenada de decisões, com antiguidade e disponibilidade
+   integradas na leitura, sem um cartão isolado para cada pedido. */
+.pedidos-pagina .partitura-folha { max-width: 760px; }
+.pedidos-fila { margin-top: 34px; }
+.pedido-registo {
+  padding: 30px 0 36px;
+  border-top: 1px solid var(--color-linha);
+}
+.pedido-registo:last-child { border-bottom: 1px solid var(--color-linha); }
+.pedido-registo > header {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+.pedido-indice {
+  padding-top: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  color: var(--color-tinta-suave);
+}
+.pedido-registo h2 {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 25px;
+  font-weight: 650;
+  line-height: 1.05;
+  color: var(--color-azul-fundo);
+}
+.pedido-registo header p { margin-top: 5px; font-size: 13px; color: var(--color-tinta-suave); }
+.pedido-registo header time {
+  padding-left: 12px;
+  border-left: 3px solid var(--color-warning);
+  font-size: 12px;
+  font-weight: 750;
+  color: var(--color-warning);
+  white-space: nowrap;
+}
+.pedido-contacto { margin: 14px 0 0 56px; font-size: 13px; color: var(--color-tinta-suave); }
+.pedido-contacto a { color: var(--color-azul-fundo); }
+.pedido-registo blockquote {
+  max-width: 58ch;
+  margin: 14px 0 0 56px;
+  padding: 3px 0 3px 14px;
+  border-left: 2px solid var(--marca-ciano);
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--color-tinta-suave);
+}
+.pedido-disponibilidade { margin: 22px 0 0 56px; }
+.pedido-disponibilidade > p {
+  margin-bottom: 9px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+.pedido-disponibilidade > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.pedido-horario-botao {
+  min-height: 48px;
+  border: 1px solid var(--color-azul-fundo);
+  border-radius: 4px;
+  padding: 0 15px;
+  background: transparent;
+  color: var(--color-azul-fundo);
+  font-size: 13px;
+  font-weight: 700;
+}
+.pedido-horario-botao:hover { background: var(--color-azul-fundo); color: white; }
+.pedido-horario-botao:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+.pedido-registo footer {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0 0 56px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-linha);
+}
+
+@media (max-width: 520px) {
+  .pedido-registo > header { grid-template-columns: 30px 1fr; gap: 10px; }
+  .pedido-registo header time { grid-column: 2; margin-top: 6px; }
+  .pedido-contacto,
+  .pedido-registo blockquote,
+  .pedido-disponibilidade,
+  .pedido-registo footer { margin-left: 40px; }
+  .pedido-disponibilidade > div { display: grid; }
+  .pedido-horario-botao { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partitura-aula-atual::after { animation: none; }
+}
+
+/* Horários — a semana é a superfície principal; formulários e operações
+   em lote aparecem como ferramentas, não como conteúdo permanente. */
+.horarios-pagina .partitura-folha { max-width: 900px; }
+.partitura-grade {
+  border-radius: 0;
+  border-inline: 0;
+  border-color: var(--color-linha);
+  background-color: transparent;
+  background-image: none;
+}
+.partitura-grade .horarios-coluna-horas,
+.partitura-grade .horarios-coluna-dia { background: transparent; }
+.partitura-grade .horarios-coluna-dia { width: 116px; }
+.partitura-grade .horarios-coluna-dia-cabecalho {
+  justify-content: flex-start;
+  padding-left: 8px;
+  color: var(--color-azul-fundo);
+  font-size: 10px;
+  font-weight: 700;
+}
+.partitura-grade .horario-bloco {
+  align-items: flex-start;
+  border: 0;
+  border-left: 3px solid var(--marca-ciano);
+  border-radius: 2px;
+  padding: 5px 6px;
+  background: color-mix(in srgb, var(--color-azul-logo) 12%, var(--color-papel));
+  color: var(--color-azul-fundo);
+}
+.partitura-grade .horario-bloco.bloqueado-selecionavel {
+  border-left-color: var(--color-tinta-suave);
+  background: color-mix(in srgb, var(--color-tinta-suave) 9%, var(--color-papel));
+  color: var(--color-tinta-suave);
+}
+
+.horarios-edicao,
+.horarios-criar {
+  margin-top: 28px;
+  border-block: 1px solid var(--color-linha);
+}
+.horarios-edicao > summary,
+.horarios-criar > summary {
+  min-height: 58px;
+  padding: 18px 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-azul-fundo);
+}
+.horarios-edicao > p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--color-tinta-suave);
+}
+.horarios-selecionar-todos { margin-bottom: 6px; }
+.horarios-lista-edicao { border-top: 1px solid var(--color-linha); }
+.horarios-linha-edicao {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+  min-height: 64px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.horarios-checkbox,
+.horarios-editar-link {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  cursor: pointer;
+  color: var(--color-azul-fundo);
+}
+.horarios-linha-texto { display: flex; min-width: 0; flex-direction: column; }
+.horarios-linha-texto strong { font-size: 14px; color: var(--color-tinta); }
+.horarios-linha-texto small { margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-tinta-suave); }
+.horarios-toolbar {
+  min-height: 60px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-linha);
+}
+.horarios-toolbar > p { padding: 8px 0; font-size: 13px; color: var(--color-tinta-suave); }
+.horarios-toolbar > strong { display: block; margin-bottom: 9px; font-size: 12px; color: var(--color-azul-fundo); }
+.horarios-toolbar > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.horarios-acao {
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--color-linha);
+  border-radius: 4px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--color-azul-fundo);
+}
+.horarios-acao-principal { border-color: var(--color-azul-fundo); background: var(--color-azul-fundo); color: white; }
+.horarios-acao-perigo { border-color: color-mix(in srgb, var(--color-error) 50%, var(--color-linha)); color: var(--color-error); }
+.horarios-acao:focus-visible,
+.horarios-editar-link:focus-visible,
+.horarios-edicao summary:focus-visible,
+.horarios-criar summary:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+
+.horarios-criar > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  list-style-position: outside;
+}
+.horarios-criar summary span { display: inline-flex; align-items: center; gap: 14px; }
+.horarios-criar summary b { font-size: 11px; letter-spacing: .14em; color: var(--color-tinta-suave); }
+.horarios-criar summary strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 21px; }
+.horarios-criar summary small { font-size: 12px; font-weight: 500; color: var(--color-tinta-suave); }
+.horarios-criar-corpo { padding: 10px 0 24px; }
+.horarios-criar-botao {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: var(--color-azul-fundo);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+}
+.horarios-contagem { margin-left: 6px; font-family: var(--font-inter), sans-serif; font-size: 13px; color: var(--color-tinta-suave); }
+.horarios-alunos { border-top: 1px solid var(--color-linha); }
+.horarios-aluno {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  min-height: 68px;
+  border-bottom: 1px solid var(--color-linha);
+}
+.horarios-aluno > span:first-child { display: flex; min-width: 0; flex-direction: column; }
+.horarios-aluno strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 17px; }
+.horarios-aluno small { margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-tinta-suave); }
+
+@media (max-width: 520px) {
+  .partitura-grade .horarios-coluna-dia { width: 92px; }
+  .horarios-criar > summary { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .horarios-criar form .grid { grid-template-columns: 58px 1fr 20px 1fr; gap: 5px; }
+  .horarios-criar form input[type="time"] { padding-inline: 4px; font-size: 12px; }
+}

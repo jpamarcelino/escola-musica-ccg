@@ -50,3 +50,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# servidor local iniciado pelo Codex
+.codex-dev-*.log

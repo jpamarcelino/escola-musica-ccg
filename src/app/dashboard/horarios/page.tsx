@@ -10,7 +10,6 @@ import {
 } from '@/lib/actions/professor'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
-import { PageHeader } from '@/components/page-header'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
@@ -19,9 +18,9 @@ import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { Pencil } from 'lucide-react'
 import Link from 'next/link'
 import { EmptyState } from '@/components/empty-state'
-import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
 import { MensagemErro } from '@/components/mensagem'
 import { SubmitButton } from '@/components/submit-button'
+import { HorariosToolbar } from '@/components/horarios-toolbar'
 
 type HorarioProfessor = {
   id: number
@@ -129,20 +128,25 @@ export default async function HorariosPage({
   }
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader
-          voltar="/dashboard"
-          titulo="Horários"
-          subtitulo={<>{horarios.length} {horarios.length === 1 ? 'horário definido' : 'horários definidos'} · {confirmados.length} {confirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}.</>}
-        />
+    <main id="conteudo-principal" className="partitura-pagina horarios-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+          <div>
+            <p className="partitura-sobretitulo">A tua semana</p>
+            <h1>Horários</h1>
+            <p>{horarios.length} {horarios.length === 1 ? 'horário definido' : 'horários definidos'} · {confirmados.length} {confirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}</p>
+          </div>
+        </header>
 
         {erroHorarios && (
           <MensagemErro>{erroHorarios}</MensagemErro>
         )}
 
-        <section className="space-y-3">
-          <TituloSeccao>Os teus horários</TituloSeccao>
+        <section className="partitura-seccao" aria-labelledby="semana-titulo">
+          <div className="partitura-seccao-cabecalho">
+            <div><p className="partitura-indice">01</p><h2 id="semana-titulo">Grelha semanal</h2></div>
+          </div>
           <form id="bloquear-horarios-form" action={bloquearHorarios} />
           <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
           {horarios.length === 0 ? (
@@ -152,16 +156,38 @@ export default async function HorariosPage({
             />
           ) : (
             <>
-              <p className="text-[13px] leading-[1.5] text-foreground/60">
-                Seleciona um ou vários horários para os bloquear, desbloquear
-                ou apagar.
-              </p>
-              <GrupoLista>
+              <div className="horarios-grade partitura-grade" aria-label="Grelha semanal dos horários">
+                <div className="horarios-coluna-horas">
+                  <div className="horarios-coluna-horas-cabecalho" />
+                  {horasGrade.map((hora) => <div key={hora} className="horarios-hora-label" style={{ height: HOUR_HEIGHT }}>{hora}h</div>)}
+                </div>
+                {DIAS_SEMANA.map((dia) => (
+                  <div key={dia} className="horarios-coluna-dia">
+                    <div className="horarios-coluna-dia-cabecalho">{dia.slice(0, 3)}</div>
+                    <div className="horarios-coluna-dia-corpo" style={{ height: alturaGrade, backgroundImage: `repeating-linear-gradient(to bottom, rgba(27,79,122,.11) 0, rgba(27,79,122,.11) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)` }}>
+                      {horariosPorDia.get(dia)?.map((h) => {
+                        const inicioMin = paraMinutos(h.hora_inicio)
+                        const fimMin = paraMinutos(h.hora_fim)
+                        const bloqueado = h.estado === 'bloqueado'
+                        const alunos = confirmadosPorHorario.get(h.id)?.join(', ')
+                        const estilo = { top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT, height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT, '--card-index': indicePorHorario.get(h.id) ?? 0 } as CSSProperties
+                        return <Link key={h.id} href={`/professor/horarios/${h.id}`} className={`horario-bloco entrada-esquerda${bloqueado ? ' bloqueado-selecionavel' : ''}`} style={estilo} title={alunos || (bloqueado ? 'Bloqueado' : 'Disponível')}><span>{formatarHora(h.hora_inicio)}</span>{alunos && <span className="horario-bloco-alunos">{alunos}</span>}</Link>
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <details className="horarios-edicao">
+                <summary>Editar horários individualmente</summary>
+                <p>Seleciona os horários que queres alterar ou abre um deles para editar a hora.</p>
+              <div className="horarios-selecionar-todos"><BotaoSelecionarTodos /></div>
+              <div className="horarios-lista-edicao">
                 {DIAS_SEMANA.flatMap((dia) => horariosPorDia.get(dia) ?? []).map((h) => {
                   const alunos = confirmadosPorHorario.get(h.id)
                   return (
-                    <div key={h.id} className="flex min-h-[64px] items-center gap-[12px] rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[14px] py-[10px]">
-                      <label className="flex h-[44px] w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-[8px] hover:bg-black/5">
+                    <div key={h.id} className="horarios-linha-edicao">
+                      <label className="horarios-checkbox">
                         <input
                           type="checkbox"
                           name="horarioIds"
@@ -170,89 +196,34 @@ export default async function HorariosPage({
                           className="h-[22px] w-[22px] accent-[var(--color-azul-fundo)]"
                         />
                       </label>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[15px] font-semibold">{h.dia_semana} · {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}</span>
-                        <span className="block truncate text-[13px] text-foreground/60">{h.estado === 'bloqueado' ? 'Bloqueado' : alunos?.length ? alunos.join(', ') : 'Disponível'}</span>
+                      <span className="horarios-linha-texto">
+                        <strong>{h.dia_semana} · {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}</strong>
+                        <small>{h.estado === 'bloqueado' ? 'Bloqueado' : alunos?.length ? alunos.join(', ') : 'Disponível'}</small>
                       </span>
                       <Link
                         href={`/professor/horarios/${h.id}`}
                         aria-label={`Editar horário de ${h.dia_semana} às ${formatarHora(h.hora_inicio)}`}
-                        className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-azul)]"
+                        className="horarios-editar-link"
                       >
                         <Pencil size={18} strokeWidth={1.5} aria-hidden="true" />
                       </Link>
                     </div>
                   )
                 })}
-              </GrupoLista>
-              <div className="flex flex-wrap gap-[8px]">
-                <BotaoSelecionarTodos />
+              </div>
+              <HorariosToolbar>
                 <BotaoBloquearSelecionados />
                 <BotaoDesbloquearSelecionados />
                 <BotaoApagarHorariosSelecionados action={apagarHorarios} />
-              </div>
-              <details className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[14px] py-[12px]">
-                <summary className="min-h-[44px] cursor-pointer py-[11px] text-[14px] font-semibold">Ver grelha semanal</summary>
-              <div className="horarios-grade mt-[12px]">
-                <div className="horarios-coluna-horas">
-                  <div className="horarios-coluna-horas-cabecalho" />
-                  {horasGrade.map((hora) => (
-                    <div
-                      key={hora}
-                      className="horarios-hora-label"
-                      style={{ height: HOUR_HEIGHT }}
-                    >
-                      {hora}h
-                    </div>
-                  ))}
-                </div>
-                {DIAS_SEMANA.map((dia) => (
-                  <div key={dia} className="horarios-coluna-dia">
-                    <div className="horarios-coluna-dia-cabecalho">
-                      {dia.slice(0, 3)}
-                    </div>
-                    <div
-                      className="horarios-coluna-dia-corpo"
-                      style={{
-                        height: alturaGrade,
-                        backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
-                      }}
-                    >
-                      {horariosPorDia.get(dia)?.map((h) => {
-                        const inicioMin = paraMinutos(h.hora_inicio)
-                        const fimMin = paraMinutos(h.hora_fim)
-                        const bloqueado = h.estado === 'bloqueado'
-                        const alunos = confirmadosPorHorario.get(h.id)?.join(', ')
-                        const estilo = {
-                          top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
-                          height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
-                          '--card-index': indicePorHorario.get(h.id) ?? 0,
-                        } as CSSProperties
-
-                        return (
-                          <div
-                            key={h.id}
-                            className={`horario-bloco entrada-esquerda${bloqueado ? ' bloqueado-selecionavel' : ''}`}
-                            style={estilo}
-                            title={alunos ? `Aluno(s): ${alunos}` : undefined}
-                          >
-                            <span>{formatarHora(h.hora_inicio)}</span>
-                            <span>{formatarHora(h.hora_fim)}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              </HorariosToolbar>
               </details>
             </>
           )}
         </section>
 
-        <details className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[16px] py-[14px]">
-          <summary className="min-h-[44px] cursor-pointer py-[11px] text-[15px] font-semibold">Criar horários</summary>
-          <section className="mt-[12px] space-y-3">
+        <details className="horarios-criar">
+          <summary><span><b>02</b><strong>Criar horários</strong></span><small>Adicionar disponibilidade à semana</small></summary>
+          <section className="horarios-criar-corpo">
           <p className="text-xs text-foreground/50">
             Os horários não são específicos de uma disciplina — servem para
             qualquer uma das que ensinas. Preenche só os dias em que dás
@@ -304,7 +275,7 @@ export default async function HorariosPage({
 
             <SubmitButton
               textoAGuardar="A criar..."
-              className="flex min-h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] bg-brand text-[15px] font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+              className="horarios-criar-botao"
             >
               Criar horários
             </SubmitButton>
@@ -312,18 +283,16 @@ export default async function HorariosPage({
           </section>
         </details>
 
-        <section className="space-y-3">
-          <TituloSeccao contagem={confirmados.length}>Alunos confirmados</TituloSeccao>
+        <section className="partitura-seccao" aria-labelledby="alunos-titulo">
+          <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">03</p><h2 id="alunos-titulo">Alunos confirmados <span className="horarios-contagem">{confirmados.length}</span></h2></div></div>
           {confirmados.length === 0 && (
             <EmptyState titulo="Ainda não tens alunos confirmados" />
           )}
-          <GrupoLista>
+          <div className="horarios-alunos">
             {confirmados.map((c) => (
-              <LinhaLista
-                key={c.id}
-                titulo={`${c.alunos?.nome} · ${c.instrumentos?.nome}`}
-                contexto={c.horarios ? `${c.horarios.dia_semana}, ${formatarHora(c.horarios.hora_inicio)}–${formatarHora(c.horarios.hora_fim)}` : 'Sem horário associado'}
-                direita={
+              <div key={c.id} className="horarios-aluno">
+                <span><strong>{c.alunos?.nome}</strong><small>{c.instrumentos?.nome} · {c.horarios ? `${c.horarios.dia_semana}, ${formatarHora(c.horarios.hora_inicio)}–${formatarHora(c.horarios.hora_fim)}` : 'Sem horário associado'}</small></span>
+                <span>
                   <BotaoAcaoDestruir
                     label="Cancelar"
                     titulo="Cancelar matrícula?"
@@ -332,10 +301,10 @@ export default async function HorariosPage({
                   >
                     <input type="hidden" name="matriculaId" value={c.id} />
                   </BotaoAcaoDestruir>
-                }
-              />
+                </span>
+              </div>
             ))}
-          </GrupoLista>
+          </div>
         </section>
       </div>
     </main>

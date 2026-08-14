@@ -24,14 +24,14 @@ export function MateriaisClient({ temMusica }: { temMusica: boolean }) {
   }
 
   return (
-    <div className="space-y-[22px]">
-      <div className="flex gap-[8px] border-b" style={{ borderColor: 'var(--color-linha)' }}>
+    <div className="materiais-conteudo">
+      <div className="materiais-separadores">
         {separadores.map((s) => (
           <button
             key={s.id}
             type="button"
             onClick={() => setAtivo(s.id)}
-            className="px-[12px] py-[10px] text-[14px] font-semibold border-b-2 transition-colors"
+            className="materiais-separador"
             style={
               ativo === s.id
                 ? { borderColor: 'var(--color-azul-fundo)', color: 'var(--color-azul-fundo)' }

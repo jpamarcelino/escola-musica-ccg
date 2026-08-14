@@ -1,9 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
-import { GrupoLista, LinhaLista } from '@/components/lista'
 import { MensagemInfo } from '@/components/mensagem'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
 
@@ -26,12 +24,12 @@ type MensalidadeDoMes = {
 
 type EstadoLinha = 'nao_devida' | 'paga' | 'por_pagar' | 'por_gerar' | 'desistencia'
 
-const ESTADO: Record<EstadoLinha, { label: string; classe: string }> = {
-  nao_devida: { label: 'Não devida — Programa de Recomendação', classe: 'estado-falta_aviso' },
-  paga: { label: 'Paga', classe: 'estado-presente' },
-  por_pagar: { label: 'Por pagar', classe: 'estado-falta_sem_aviso' },
-  por_gerar: { label: 'Ainda não gerada', classe: '' },
-  desistencia: { label: 'Desistiu', classe: '' },
+const ESTADO: Record<EstadoLinha, { label: string }> = {
+  nao_devida: { label: 'Não devida · Recomendação' },
+  paga: { label: 'Paga' },
+  por_pagar: { label: 'Por pagar' },
+  por_gerar: { label: 'Ainda não gerada' },
+  desistencia: { label: 'Desistiu' },
 }
 
 function mesPredefinido() {
@@ -116,25 +114,28 @@ export default async function MensalidadesProfessorPage({
   const naoDevidas = linhas.filter((l) => l.estado === 'nao_devida')
   const porPagar = linhas.filter((l) => l.estado === 'por_pagar')
   const pagas = linhas.filter((l) => l.estado === 'paga')
+  const totalPorReceber = porPagar.reduce((total, linha) => total + (linha.valor ?? 0), 0)
+  const totalDoMes = linhas
+    .filter((linha) => linha.estado !== 'nao_devida' && linha.estado !== 'desistencia')
+    .reduce((total, linha) => total + (linha.valor ?? 0), 0)
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard" titulo="Mensalidades" subtitulo={<>{escolhido.label} de {escolhido.ano}</>} />
+    <main id="conteudo-principal" className="partitura-pagina mensalidades-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+          <div><p className="partitura-sobretitulo">Extrato mensal</p><h1>Mensalidades</h1><p>{escolhido.label} de {escolhido.ano}</p></div>
+        </header>
 
         <nav
           aria-label="Escolher mês"
-          className="-mx-6 flex gap-[8px] overflow-x-auto px-6 pb-[4px] [scrollbar-width:none]"
+          className="mensalidades-meses"
         >
           {MESES_ANO_LETIVO.map((m) => (
             <Link
               key={`${m.ano}-${m.mes}`}
               href={`/dashboard/mensalidades?ano=${m.ano}&mes=${m.mes}`}
-              className={
-                m.ano === escolhido.ano && m.mes === escolhido.mes
-                  ? 'flex min-h-[44px] shrink-0 items-center rounded-[var(--radius-pill)] bg-brand px-[16px] text-[13px] font-semibold text-white'
-                  : 'flex min-h-[44px] shrink-0 items-center rounded-[var(--radius-pill)] border border-foreground/20 px-[16px] text-[13px] font-medium'
-              }
+              className={m.ano === escolhido.ano && m.mes === escolhido.mes ? 'ativo' : undefined}
               aria-current={m.ano === escolhido.ano && m.mes === escolhido.mes ? 'page' : undefined}
             >
               {m.label.slice(0, 3)} {String(m.ano).slice(-2)}
@@ -142,19 +143,17 @@ export default async function MensalidadesProfessorPage({
           ))}
         </nav>
 
-        <section className="grid grid-cols-3 gap-3">
-          <div className="stat-tile">
-            <p className="stat-tile-numero">{pagas.length}</p>
-            <p className="stat-tile-legenda">Pagas</p>
+        <section className="mensalidades-resumo" aria-label="Resumo do mês">
+          <div className="mensalidades-total">
+            <p>Por receber</p>
+            <strong>{totalPorReceber.toFixed(2).replace('.', ',')} €</strong>
+            <small>de {totalDoMes.toFixed(2).replace('.', ',')} € previstos</small>
           </div>
-          <div className="stat-tile">
-            <p className="stat-tile-numero">{porPagar.length}</p>
-            <p className="stat-tile-legenda">Por pagar</p>
-          </div>
-          <div className="stat-tile">
-            <p className="stat-tile-numero">{naoDevidas.length}</p>
-            <p className="stat-tile-legenda">Não devidas</p>
-          </div>
+          <dl>
+            <div><dt>Pagas</dt><dd>{pagas.length}</dd></div>
+            <div><dt>Por pagar</dt><dd>{porPagar.length}</dd></div>
+            <div><dt>Não devidas</dt><dd>{naoDevidas.length}</dd></div>
+          </dl>
         </section>
 
         {naoDevidas.length > 0 && (
@@ -170,20 +169,18 @@ export default async function MensalidadesProfessorPage({
         {linhas.length === 0 ? (
           <EmptyState titulo="Não tens alunos com matrícula confirmada" />
         ) : (
-          <GrupoLista>
+          <section className="mensalidades-extrato" aria-labelledby="extrato-titulo">
+            <header><p className="partitura-indice">01</p><h2 id="extrato-titulo">Movimentos do mês</h2></header>
+            <div>
             {linhas.map((l) => (
-              <LinhaLista
-                key={l.chave}
-                titulo={l.nome}
-                contexto={`${l.disciplina}${l.estado === 'nao_devida' ? ' · 0,00 €' : l.valor !== null ? ` · ${l.valor.toFixed(2).replace('.', ',')} €` : ''}`}
-                direita={
-                  <span className={`estado-pill ${ESTADO[l.estado].classe}`}>
-                    {ESTADO[l.estado].label}
-                  </span>
-                }
-              />
+              <article key={l.chave} data-estado={l.estado}>
+                <span><strong>{l.nome}</strong><small>{l.disciplina}</small></span>
+                <b>{l.estado === 'nao_devida' ? '0,00 €' : l.valor !== null ? `${l.valor.toFixed(2).replace('.', ',')} €` : '—'}</b>
+                <em>{ESTADO[l.estado].label}</em>
+              </article>
             ))}
-          </GrupoLista>
+            </div>
+          </section>
         )}
 
         {!perfilAtual.adere_recomendacao && (

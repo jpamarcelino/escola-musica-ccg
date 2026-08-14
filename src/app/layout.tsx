@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces, Inter } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { NavigationFeedback } from "@/components/navigation-feedback";
 import "./globals.css";
 
@@ -87,7 +88,9 @@ export default function RootLayout({
           </div>
         </header>
         {children}
-        <NavigationFeedback />
+        <Suspense fallback={null}>
+          <NavigationFeedback />
+        </Suspense>
       </body>
     </html>
   );

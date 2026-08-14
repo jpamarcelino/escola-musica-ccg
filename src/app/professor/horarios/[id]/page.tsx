@@ -1,8 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarHorario, apagarHorario } from '@/lib/actions/professor'
 import { DIAS_SEMANA } from '@/lib/dias-semana'
-import { PageHeader } from '@/components/page-header'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { SubmitButton } from '@/components/submit-button'
 import { Rotulo, classesCampo } from '@/components/campo-formulario'
@@ -52,16 +52,19 @@ export default async function EditarHorarioPage({
     .filter((nome): nome is string => Boolean(nome))
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-sm space-y-[26px]">
-        <PageHeader voltar="/dashboard/horarios" titulo="Editar horário" />
+    <main id="conteudo-principal" className="partitura-pagina editar-horario-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard/horarios" className="partitura-voltar" aria-label="Voltar aos horários">←</Link>
+          <div><p className="partitura-sobretitulo">Disponibilidade semanal</p><h1>Editar horário</h1><p>{horario.dia_semana} · {horario.hora_inicio.slice(0, 5)}–{horario.hora_fim.slice(0, 5)}</p></div>
+        </header>
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
 
-        <form action={atualizarHorario} className="space-y-[14px]">
+        <form action={atualizarHorario} className="editar-horario-form">
           <input type="hidden" name="horarioId" value={horario.id} />
 
-          <div className="space-y-[6px]">
+          <div className="editar-horario-campo">
             <Rotulo htmlFor="diaSemana">Dia da semana</Rotulo>
             <select
               id="diaSemana"
@@ -78,8 +81,8 @@ export default async function EditarHorarioPage({
             </select>
           </div>
 
-          <div className="flex gap-[10px]">
-            <div className="flex-1 space-y-[6px]">
+          <div className="editar-horario-horas">
+            <div className="editar-horario-campo">
               <Rotulo htmlFor="horaInicio">Das</Rotulo>
               <input
                 id="horaInicio"
@@ -92,7 +95,7 @@ export default async function EditarHorarioPage({
                 className={classesCampo}
               />
             </div>
-            <div className="flex-1 space-y-[6px]">
+            <div className="editar-horario-campo">
               <Rotulo htmlFor="horaFim">Até</Rotulo>
               <input
                 id="horaFim"
@@ -108,31 +111,23 @@ export default async function EditarHorarioPage({
           </div>
 
           {alunosConfirmados.length > 0 && (
-            <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
-              Alunos confirmados neste horário: {alunosConfirmados.join(', ')}
-            </p>
+            <aside><strong>{alunosConfirmados.length} {alunosConfirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}</strong><span>{alunosConfirmados.join(', ')}</span></aside>
           )}
 
           <SubmitButton
             textoAGuardar="A guardar..."
-            className="flex h-[52px] w-full items-center justify-center rounded-[13px] bg-[var(--color-azul-fundo)] text-[15.5px] font-semibold text-white shadow-[0_7px_18px_rgba(27,79,122,.26)] disabled:opacity-50"
+            className="editar-horario-guardar"
           >
             Guardar alterações
           </SubmitButton>
         </form>
 
-        <BotaoAcaoDestruir
-          label="Apagar horário"
-          variante="bloco"
-          mensagem={
-            alunosConfirmados.length > 0
-              ? 'Tens a certeza que queres apagar este horário? Já tens alunos confirmados nele — considera bloqueá-lo em vez de apagar.'
-              : 'Tens a certeza que queres apagar este horário? Esta ação é irreversível.'
-          }
-          action={apagarHorario}
-        >
-          <input type="hidden" name="horarioId" value={horario.id} />
-        </BotaoAcaoDestruir>
+        <section className="detalhe-zona-perigo">
+          <div><strong>Apagar horário</strong><small>{alunosConfirmados.length > 0 ? 'Já existem alunos confirmados; considera bloqueá-lo.' : 'Esta ação não pode ser anulada.'}</small></div>
+          <BotaoAcaoDestruir label="Apagar horário" variante="editorial" mensagem={alunosConfirmados.length > 0 ? 'Tens a certeza que queres apagar este horário? Já tens alunos confirmados nele — considera bloqueá-lo em vez de apagar.' : 'Tens a certeza que queres apagar este horário? Esta ação é irreversível.'} action={apagarHorario}>
+            <input type="hidden" name="horarioId" value={horario.id} />
+          </BotaoAcaoDestruir>
+        </section>
       </div>
     </main>
   )

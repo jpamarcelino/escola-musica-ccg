@@ -1,13 +1,12 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { cancelarPedido, cancelarMatricula } from '@/lib/actions/aluno'
 import { formatarSala } from '@/lib/sala'
 import { formatarHora } from '@/lib/horarios-grade'
 import { proximaOcorrenciaDeAula } from '@/lib/datas'
-import { PageHeader } from '@/components/page-header'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
-import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
 
 type Matricula = {
   id: number
@@ -77,30 +76,23 @@ export default async function ConsultarHorarioPage({
     )
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader
-          voltar={`/aluno/${alunoId}`}
-          titulo="Agenda"
-          subtitulo={confirmadas[0] ? <>Próxima aula: {confirmadas[0].proxima}, às {formatarHora(confirmadas[0].horarios!.hora_inicio)}.</> : undefined}
-        />
+    <main id="conteudo-principal" className="partitura-pagina aluno-agenda-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href={`/aluno/${alunoId}`} className="partitura-voltar" aria-label={`Voltar à área de ${aluno.nome}`}>←</Link>
+          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Agenda</h1><p>{confirmadas[0] ? `A próxima aula é ${confirmadas[0].proxima}, às ${formatarHora(confirmadas[0].horarios!.hora_inicio)}.` : 'Ainda não há aulas confirmadas.'}</p></div>
+        </header>
 
         {pendentes.length > 0 && (
-          <section>
-            <TituloSeccao contagem={pendentes.length}>Pedidos em curso</TituloSeccao>
-            <div className="space-y-[8px]">
+          <section className="aluno-pedidos-curso">
+            <header><p className="partitura-indice">01</p><h2>Pedidos em curso</h2><span>{pendentes.length}</span></header>
+            <div>
               {pendentes.map((m) => (
-                <details key={m.id} className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[16px] py-[14px]">
-                  <summary className="cursor-pointer list-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-primary-mid)]">
-                    <span className="block text-[15px] font-semibold">{m.instrumentos?.nome} · {m.profiles?.nome}</span>
-                    <span className="mt-[3px] block text-[13px] text-[var(--color-text-secondary)]">A aguardar escolha do horário</span>
-                  </summary>
-                  <div className="mt-[14px] border-t border-[var(--color-linha)] pt-[14px]">
-                    <BotaoAcaoDestruir
-                      label="Cancelar pedido"
-                      mensagem={`Tens a certeza que queres cancelar o pedido de ${m.instrumentos?.nome} com ${m.profiles?.nome}?`}
-                      action={cancelarPedido}
-                    >
+                <details key={m.id}>
+                  <summary><span><strong>{m.instrumentos?.nome}</strong><small>{m.profiles?.nome} · A aguardar horário</small></span><i aria-hidden="true">+</i></summary>
+                  <div>
+                    <p>O professor irá escolher uma das disponibilidades indicadas.</p>
+                    <BotaoAcaoDestruir label="Cancelar pedido" variante="editorial" mensagem={`Tens a certeza que queres cancelar o pedido de ${m.instrumentos?.nome} com ${m.profiles?.nome}?`} action={cancelarPedido}>
                       <input type="hidden" name="matriculaId" value={m.id} />
                     </BotaoAcaoDestruir>
                   </div>
@@ -110,35 +102,21 @@ export default async function ConsultarHorarioPage({
           </section>
         )}
 
-        <section>
-          <TituloSeccao>Próximas aulas</TituloSeccao>
+        <section className="aluno-proximas-aulas">
+          <header><p className="partitura-indice">02</p><h2>Próximas aulas</h2></header>
           {confirmadas.length === 0 ? (
             <EmptyState
               titulo="Ainda não há aulas confirmadas"
               descricao="Quando um professor confirmar o horário, a próxima aula aparece aqui."
             />
           ) : (
-            <div className="space-y-[8px]">
+            <div className="partitura-linha-tempo">
               {confirmadas.map((m) => {
                 const horario = m.horarios!
                 return (
-                  <details key={m.id} className="rounded-[var(--radius-medium)] bg-[var(--color-surface-raised)] px-[16px] py-[14px]">
-                    <summary className="cursor-pointer list-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-primary-mid)]">
-                      <span className="block text-[15px] font-semibold">{m.instrumentos?.nome} · {m.profiles?.nome}</span>
-                      <span className="mt-[3px] block text-[13px] leading-[1.5] text-[var(--color-text-secondary)]">
-                        {m.proxima} · {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
-                        {formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}
-                      </span>
-                    </summary>
-                    <div className="mt-[14px] border-t border-[var(--color-linha)] pt-[14px]">
-                      <BotaoAcaoDestruir
-                        label="Cancelar matrícula"
-                        mensagem={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} com ${m.profiles?.nome}? Esta ação é irreversível.`}
-                        action={cancelarMatricula}
-                      >
-                        <input type="hidden" name="matriculaId" value={m.id} />
-                      </BotaoAcaoDestruir>
-                    </div>
+                  <details key={m.id} className="aluno-aula-registo">
+                    <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" /><span><small>{m.proxima}</small><strong>{m.instrumentos?.nome}</strong><b>{m.profiles?.nome}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</b></span><i aria-hidden="true">+</i></summary>
+                    <div><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula semanal</p><BotaoAcaoDestruir label="Cancelar matrícula" variante="editorial" mensagem={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} com ${m.profiles?.nome}? Esta ação é irreversível.`} action={cancelarMatricula}><input type="hidden" name="matriculaId" value={m.id} /></BotaoAcaoDestruir></div>
                   </details>
                 )
               })}
@@ -146,16 +124,7 @@ export default async function ConsultarHorarioPage({
           )}
         </section>
 
-        <section>
-          <TituloSeccao>Mais</TituloSeccao>
-          <GrupoLista>
-            <LinhaLista
-              href={`/aluno/${alunoId}/pedido`}
-              titulo="Pedir outra aula"
-              contexto="Escolhe disciplina, professor e disponibilidade"
-            />
-          </GrupoLista>
-        </section>
+        <Link href={`/aluno/${alunoId}/pedido`} className="aluno-pedir-mais"><span><strong>Pedir outra aula</strong><small>Escolher disciplina, professor e disponibilidade</small></span><i aria-hidden="true">→</i></Link>
       </div>
     </main>
   )

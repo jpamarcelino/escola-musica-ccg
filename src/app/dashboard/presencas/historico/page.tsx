@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { LinhaLista, GrupoLista } from '@/components/lista'
 import { EmptyState } from '@/components/empty-state'
 
 type MatriculaAluno = {
@@ -71,35 +70,24 @@ export default async function HistoricoPresencasPage() {
   const alunos = [...porAluno.values()].sort((a, b) => a.nome.localeCompare(b.nome))
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader
-          voltar="/dashboard/presencas"
-          titulo="Histórico de presenças"
-          subtitulo={
-            alunos.length > 0
-              ? <>{alunos.length} {alunos.length === 1 ? 'aluno com matrícula confirmada' : 'alunos com matrícula confirmada'}.</>
-              : undefined
-          }
-        />
+    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard/presencas" className="partitura-voltar" aria-label="Voltar a presenças">←</Link>
+          <div><p className="partitura-sobretitulo">Arquivo por aluno</p><h1>Histórico</h1>{alunos.length > 0 && <p>{alunos.length} {alunos.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}</p>}</div>
+        </header>
 
         {alunos.length === 0 ? (
           <EmptyState titulo="Ainda não tens alunos confirmados" />
         ) : (
-          <GrupoLista>
+          <div className="presencas-alunos">
             {alunos.map((a) => (
-              <LinhaLista
+              <Link
                 key={a.alunoId}
                 href={`/dashboard/presencas/historico/${a.alunoId}`}
-                titulo={a.nome}
-                contexto={
-                  a.registos === 0
-                    ? 'Ainda sem registos'
-                    : `${a.registos} ${a.registos === 1 ? 'registo' : 'registos'}`
-                }
-              />
+              ><strong>{a.nome}</strong><span>{a.registos === 0 ? 'Ainda sem registos' : `${a.registos} ${a.registos === 1 ? 'registo' : 'registos'}`}</span><i aria-hidden="true">→</i></Link>
             ))}
-          </GrupoLista>
+          </div>
         )}
       </div>
     </main>

@@ -33,7 +33,7 @@ export function BotaoApagarHorariosSelecionados({
       <button
         type="button"
         onClick={preparar}
-        className="min-h-[44px] rounded-[var(--radius-pill)] border border-[#9A3B2E66] px-[14px] text-[14px] font-semibold text-[#9A3B2E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-azul)]"
+        className="horarios-acao horarios-acao-perigo"
       >
         Apagar
       </button>

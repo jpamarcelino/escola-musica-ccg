@@ -1,7 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { LinhaLista, GrupoLista } from '@/components/lista'
 import { EmptyState } from '@/components/empty-state'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
@@ -65,24 +64,27 @@ export default async function AgendaHorarioPage({
   const alunos = (alunosData ?? []) as unknown as Aluno[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard/agenda" titulo={horario.dia_semana} subtitulo={<>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
-              {formatarSala(horario.salas) && ` — ${formatarSala(horario.salas)}`}</>} />
+    <main id="conteudo-principal" className="partitura-pagina detalhe-aula-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard/agenda" className="partitura-voltar" aria-label="Voltar à agenda">←</Link>
+          <div><p className="partitura-sobretitulo">Aula semanal</p><h1>{horario.dia_semana}</h1><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
+        </header>
 
         {alunos.length === 0 ? (
           <EmptyState titulo="Não há alunos confirmados neste horário" />
         ) : (
-          <GrupoLista>
+          <section className="detalhe-aula-alunos" aria-labelledby="alunos-aula-titulo">
+            <header><p className="partitura-indice">01</p><h2 id="alunos-aula-titulo">Alunos nesta aula</h2><span>{alunos.length}</span></header>
+            <div>
             {alunos.map((aluno) => (
-              <LinhaLista
+              <Link
                 key={aluno.id}
                 href={`/dashboard/agenda/${horarioId}/${aluno.id}`}
-                titulo={aluno.alunos?.nome ?? ''}
-                contexto={aluno.instrumentos?.nome}
-              />
+              ><strong>{aluno.alunos?.nome}</strong><span>{aluno.instrumentos?.nome}</span><i aria-hidden="true">→</i></Link>
             ))}
-          </GrupoLista>
+            </div>
+          </section>
         )}
       </div>
     </main>

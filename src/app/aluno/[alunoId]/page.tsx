@@ -1,8 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PageHeader } from '@/components/page-header'
-import { CartaoLink } from '@/components/cartao-link'
-import { FundoPapel } from '@/components/fundo-papel'
 
 export default async function AlunoHubPage({
   params,
@@ -38,21 +36,20 @@ export default async function AlunoHubPage({
     .eq('lida', false)
 
   return (
-    <FundoPapel largura="larga">
-      <div className="space-y-[26px]">
-        <PageHeader voltar="/dashboard" titulo={aluno.nome} />
+    <main id="conteudo-principal" className="partitura-pagina aluno-hub-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+          <div><p className="partitura-sobretitulo">Caderno do aluno</p><h1>{aluno.nome}</h1><p>Aulas, pedidos e materiais num só lugar.</p></div>
+        </header>
 
-        <div className="flex flex-col gap-[11px] md:grid md:grid-cols-2 md:items-start">
-          <CartaoLink href={`/aluno/${alunoId}/pedido`} nome="Pedir Aula" />
-          <CartaoLink href={`/aluno/${alunoId}/horario`} nome="Horário e Aulas" />
-          <CartaoLink href={`/aluno/${alunoId}/materiais`} nome="Materiais das Aulas" />
-          <CartaoLink
-            href="/aluno/notificacoes"
-            nome="Notificações"
-            contagem={notificacoesPorLer ?? 0}
-          />
-        </div>
+        <nav className="aluno-hub-links" aria-label={`Área de ${aluno.nome}`}>
+          <Link href={`/aluno/${alunoId}/horario`}><span><b>01</b><strong>Agenda</strong></span><small>Próximas aulas e pedidos em curso</small><i aria-hidden="true">→</i></Link>
+          <Link href={`/aluno/${alunoId}/materiais`}><span><b>02</b><strong>Materiais</strong></span><small>Ferramentas para acompanhar as aulas</small><i aria-hidden="true">→</i></Link>
+          <Link href={`/aluno/${alunoId}/pedido`}><span><b>03</b><strong>Pedir aula</strong></span><small>Escolher escola, disciplina e professor</small><i aria-hidden="true">→</i></Link>
+          <Link href="/aluno/notificacoes"><span><b>04</b><strong>Avisos</strong></span><small>{(notificacoesPorLer ?? 0) > 0 ? `${notificacoesPorLer} por ler` : 'Tudo lido'}</small><i aria-hidden="true">→</i></Link>
+        </nav>
       </div>
-    </FundoPapel>
+    </main>
   )
 }

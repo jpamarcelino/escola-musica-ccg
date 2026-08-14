@@ -22,6 +22,7 @@ const CLASSES_FOCO =
 const CLASSES_GATILHO_INLINE = `inline-flex min-h-[44px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] px-3 text-[13px] font-semibold transition-colors disabled:opacity-50 ${CLASSES_FOCO}`
 
 const CLASSES_GATILHO_BLOCO = `flex h-[44px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] text-[14px] font-semibold transition-colors disabled:opacity-50 ${CLASSES_FOCO}`
+const CLASSES_GATILHO_EDITORIAL = `inline-flex min-h-[44px] items-center justify-center rounded-[4px] border px-3 text-[13px] font-semibold transition-colors disabled:opacity-50 ${CLASSES_FOCO}`
 
 export function BotaoAcaoDestruir({
   label,
@@ -38,7 +39,7 @@ export function BotaoAcaoDestruir({
   action: (formData: FormData) => void | Promise<void>
   // "inline" — botão pequeno, ao lado de outro conteúdo (ex: linha de um pedido).
   // "bloco" — ocupa a largura toda, alvo de toque de 44px (ex: fundo de página).
-  variante?: 'inline' | 'bloco'
+  variante?: 'inline' | 'bloco' | 'editorial'
   tom?: 'perigo' | 'neutro'
   // Inputs escondidos com os dados que a Server Action precisa (ex: id).
   children?: React.ReactNode
@@ -54,7 +55,7 @@ export function BotaoAcaoDestruir({
       <AlertDialog.Trigger asChild>
         <button
           type="button"
-          className={`${variante === 'bloco' ? CLASSES_GATILHO_BLOCO : CLASSES_GATILHO_INLINE} hover:bg-[color-mix(in_srgb,currentColor_8%,transparent)]`}
+          className={`${variante === 'bloco' ? CLASSES_GATILHO_BLOCO : variante === 'editorial' ? CLASSES_GATILHO_EDITORIAL : CLASSES_GATILHO_INLINE} hover:bg-[color-mix(in_srgb,currentColor_8%,transparent)]`}
           style={estiloGatilho}
         >
           {label}

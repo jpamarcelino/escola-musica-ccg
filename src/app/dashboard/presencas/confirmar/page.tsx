@@ -1,11 +1,10 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
-import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
-import { GrupoLista, LinhaLista, TituloSeccao } from '@/components/lista'
 import { MensagemInfo } from '@/components/mensagem'
 
 type Horario = {
@@ -118,13 +117,12 @@ export default async function ConfirmarPresencasPage({
   const deHoje = pendentes.filter((p) => p.data === hoje)
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader
-          voltar="/dashboard/presencas"
-          titulo="Confirmar presenças"
-          subtitulo={pendentes.length > 0 ? <>Começa pelas aulas mais antigas.</> : <>Está tudo em dia.</>}
-        />
+    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard/presencas" className="partitura-voltar" aria-label="Voltar a presenças">←</Link>
+          <div><p className="partitura-sobretitulo">Livro de chamada</p><h1>Por confirmar</h1><p>{pendentes.length > 0 ? 'Começa pelas aulas mais antigas.' : 'Está tudo em dia.'}</p></div>
+        </header>
 
         {guardado && <MensagemInfo>Presenças guardadas.</MensagemInfo>}
 
@@ -136,35 +134,29 @@ export default async function ConfirmarPresencasPage({
         ) : (
           <>
             {atrasadas.length > 0 && (
-              <section>
-                <TituloSeccao contagem={atrasadas.length}>Em atraso</TituloSeccao>
-                <GrupoLista>
+              <section className="presencas-grupo">
+                <header><span>01</span><h2>Em atraso</h2><small>{atrasadas.length}</small></header>
+                <div className="presencas-registos presencas-registos-atrasados">
                   {atrasadas.map((p) => (
-                    <LinhaLista
+                    <Link
                       key={`${p.horarioId}|${p.data}`}
                       href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
-                      titulo={`${formatarDataEscolar(p.data)} · ${p.dia_semana}`}
-                      contexto={`${formatarHora(p.hora_inicio)}–${formatarHora(p.hora_fim)}${p.sala ? ` · ${p.sala}` : ''}`}
-                      direita={<span className="text-[12px] font-semibold text-[var(--color-error)]">{p.totalAlunos - p.marcados} em falta</span>}
-                    />
+                    ><time>{formatarDataEscolar(p.data)}</time><span><strong>{p.dia_semana} · {formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? `${p.totalAlunos} alunos`}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
                   ))}
-                </GrupoLista>
+                </div>
               </section>
             )}
             {deHoje.length > 0 && (
-              <section>
-                <TituloSeccao contagem={deHoje.length}>Hoje</TituloSeccao>
-                <GrupoLista>
+              <section className="presencas-grupo">
+                <header><span>02</span><h2>Hoje</h2><small>{deHoje.length}</small></header>
+                <div className="presencas-registos">
                   {deHoje.map((p) => (
-                    <LinhaLista
+                    <Link
                       key={`${p.horarioId}|${p.data}`}
                       href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
-                      titulo={`${formatarHora(p.hora_inicio)}–${formatarHora(p.hora_fim)}`}
-                      contexto={p.sala ?? `${p.totalAlunos} ${p.totalAlunos === 1 ? 'aluno' : 'alunos'}`}
-                      direita={<span className="text-[12px] font-semibold">{p.totalAlunos - p.marcados} em falta</span>}
-                    />
+                    ><time>{formatarHora(p.hora_inicio)}</time><span><strong>{formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? `${p.totalAlunos} alunos`}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
                   ))}
-                </GrupoLista>
+                </div>
               </section>
             )}
           </>

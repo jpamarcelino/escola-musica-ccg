@@ -1,10 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { calcularIdade } from '@/lib/idade'
 import { desmatricularAluno } from '@/lib/actions/professor'
-import { PageHeader } from '@/components/page-header'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
-import { Breadcrumbs } from '@/components/breadcrumbs'
 import { formatarHora } from '@/lib/horarios-grade'
 
 type Matricula = {
@@ -71,50 +70,34 @@ export default async function AlunoDaAulaPage({
     : 'Horário'
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: 'Horários e Alunos', href: '/dashboard/agenda' },
-            { label: labelHorario, href: `/dashboard/agenda/${horarioId}` },
-            { label: matricula.alunos?.nome ?? '' },
-          ]}
-        />
-        <PageHeader voltar={`/dashboard/agenda/${horarioId}`} titulo={matricula.alunos?.nome} />
+    <main id="conteudo-principal" className="partitura-pagina detalhe-aluno-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href={`/dashboard/agenda/${horarioId}`} className="partitura-voltar" aria-label="Voltar à aula">←</Link>
+          <div><p className="partitura-sobretitulo">{labelHorario}</p><h1>{matricula.alunos?.nome}</h1><p>{matricula.instrumentos?.nome}</p></div>
+        </header>
 
-        <section className="space-y-2 text-sm">
-          <p>
-            <span className="text-foreground/60">Disciplina: </span>
-            {matricula.instrumentos?.nome}
-          </p>
+        <section className="detalhe-aluno-ficha" aria-labelledby="ficha-titulo">
+          <header><p className="partitura-indice">01</p><h2 id="ficha-titulo">Ficha do aluno</h2></header>
+          <dl>
+          <div><dt>Disciplina</dt><dd>{matricula.instrumentos?.nome}</dd></div>
           {idade !== null && (
-            <p>
-              <span className="text-foreground/60">Idade: </span>
-              {idade} anos
-            </p>
+            <div><dt>Idade</dt><dd>{idade} anos</dd></div>
           )}
           {matricula.alunos?.encarregado?.email && (
-            <p>
-              <span className="text-foreground/60">Email do encarregado: </span>
-              <a href={`mailto:${matricula.alunos.encarregado.email}`} className="underline">
-                {matricula.alunos.encarregado.email}
-              </a>
-            </p>
+            <div><dt>Email do encarregado</dt><dd><a href={`mailto:${matricula.alunos.encarregado.email}`}>{matricula.alunos.encarregado.email}</a></dd></div>
           )}
           {matricula.alunos?.encarregado?.telefone && (
-            <p>
-              <span className="text-foreground/60">Telemóvel do encarregado: </span>
-              <a href={`tel:${matricula.alunos.encarregado.telefone}`} className="underline">
-                {matricula.alunos.encarregado.telefone}
-              </a>
-            </p>
+            <div><dt>Telemóvel do encarregado</dt><dd><a href={`tel:${matricula.alunos.encarregado.telefone}`}>{matricula.alunos.encarregado.telefone}</a></dd></div>
           )}
+          </dl>
         </section>
 
-        <section className="border-t border-[var(--color-linha)] pt-6">
+        <section className="detalhe-zona-perigo">
+          <div><strong>Remover desta aula</strong><small>A matrícula deixa de estar associada ao professor e horário.</small></div>
           <BotaoAcaoDestruir
             label="Desmatricular aluno"
-            variante="bloco"
+            variante="editorial"
             mensagem={`Tens a certeza que queres desmatricular ${matricula.alunos?.nome} (${matricula.instrumentos?.nome})? Esta ação é irreversível.`}
             action={desmatricularAluno}
           >

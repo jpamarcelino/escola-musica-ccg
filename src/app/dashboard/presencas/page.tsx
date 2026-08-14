@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { datasDoDia, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
-import { PageHeader } from '@/components/page-header'
-import { LinhaLista, GrupoLista } from '@/components/lista'
-import { Distintivo } from '@/components/distintivo'
 
 type Horario = {
   id: number
@@ -78,27 +76,22 @@ export default async function PresencasPage() {
   }
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader
-          voltar="/dashboard"
-          titulo="Presenças"
-          subtitulo={
-            porConfirmar > 0
-              ? <>{porConfirmar} {porConfirmar === 1 ? 'aula precisa' : 'aulas precisam'} de confirmação.</>
-              : <>Tudo confirmado até hoje.</>
-          }
-        />
+    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
+      <div className="partitura-folha">
+        <header className="partitura-agenda-cabecalho">
+          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+          <div><p className="partitura-sobretitulo">Livro de chamada</p><h1>Presenças</h1><p>{porConfirmar > 0 ? 'Há registos que precisam da tua atenção.' : 'Tudo confirmado até hoje.'}</p></div>
+        </header>
 
-        <GrupoLista>
-          <LinhaLista
-            href="/dashboard/presencas/confirmar"
-            titulo={porConfirmar > 0 ? 'Confirmar presenças' : 'Presenças confirmadas'}
-            contexto={porConfirmar > 0 ? 'Começa pelas aulas mais antigas' : 'Não tens ações pendentes'}
-            direita={porConfirmar > 0 ? <Distintivo>{porConfirmar}</Distintivo> : undefined}
-          />
-          <LinhaLista href="/dashboard/presencas/historico" titulo="Histórico de Presenças" />
-        </GrupoLista>
+        <section className={`presencas-estado ${porConfirmar === 0 ? 'presencas-estado-ok' : ''}`}>
+          <span>{porConfirmar}</span>
+          <div><strong>{porConfirmar === 1 ? 'aula por confirmar' : 'aulas por confirmar'}</strong><small>{porConfirmar > 0 ? 'Começa pela ocorrência mais antiga' : 'O livro de chamada está atualizado'}</small></div>
+        </section>
+
+        <nav className="presencas-destinos" aria-label="Ações de presenças">
+          <Link href="/dashboard/presencas/confirmar"><span><b>01</b><strong>{porConfirmar > 0 ? 'Confirmar agora' : 'Consultar confirmações'}</strong></span><small>Registar presente ou falta por aula</small><i aria-hidden="true">→</i></Link>
+          <Link href="/dashboard/presencas/historico"><span><b>02</b><strong>Histórico</strong></span><small>Consultar o percurso de cada aluno</small><i aria-hidden="true">→</i></Link>
+        </nav>
       </div>
     </main>
   )
