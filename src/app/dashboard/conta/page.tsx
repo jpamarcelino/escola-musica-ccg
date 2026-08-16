@@ -10,6 +10,7 @@ import {
   logout,
 } from '@/lib/actions/auth'
 import { PageHeader } from '@/components/page-header'
+import { classesCampo } from '@/components/campo-formulario'
 import { SubmitButton } from '@/components/submit-button'
 import { FotoConta } from '@/components/foto-conta'
 import {
@@ -205,18 +206,28 @@ export default async function ContaPage({
                 clássico&quot; vs. &quot;Piano jazz/rock&quot;). Aparece por baixo
                 do teu nome quando um aluno escolher essa disciplina.
               </p>
-              <form action={atualizarInstrumentos} className="space-y-3">
-                <div className="space-y-2">
+              {/* Esta secção tinha ficado fora da migração para o design
+                  system: os campos eram Tailwind cru com py-1 (30px de
+                  altura) e a etiqueta do visto tinha um alvo de toque de
+                  20px — metade do mínimo recomendado. Passa a usar
+                  classesCampo, e em ecrã estreito cada disciplina empilha
+                  em vez de espremer nome e especialidade na mesma linha. */}
+              <form action={atualizarInstrumentos} className="space-y-4">
+                <div className="space-y-3">
                   {todosInstrumentos.map((i) => {
                     const meu = meusInstrumentos.find((m) => m.id === i.id)
                     return (
-                      <div key={i.id} className="flex items-center gap-2 text-sm">
-                        <label className="flex w-40 shrink-0 items-center gap-2">
+                      <div
+                        key={i.id}
+                        className="flex flex-col gap-[6px] sm:flex-row sm:items-center sm:gap-3"
+                      >
+                        <label className="flex min-h-[44px] shrink-0 items-center gap-[10px] text-[15px] sm:w-44">
                           <input
                             type="checkbox"
                             name="instrumentos"
                             value={i.id}
                             defaultChecked={meu !== undefined}
+                            className="h-[20px] w-[20px] shrink-0 accent-[var(--color-azul-fundo)]"
                           />
                           {i.nome}
                         </label>
@@ -225,7 +236,8 @@ export default async function ContaPage({
                           name={`especialidade_${i.id}`}
                           defaultValue={meu?.especialidade ?? ''}
                           placeholder="Especialidade (opcional)"
-                          className="w-full rounded border border-foreground/20 bg-background px-3 py-1 text-sm"
+                          aria-label={`Especialidade de ${i.nome}`}
+                          className={classesCampo}
                         />
                       </div>
                     )
@@ -233,7 +245,7 @@ export default async function ContaPage({
                 </div>
                 <SubmitButton
                   textoAGuardar="A guardar disciplinas…"
-                  className="rounded border border-foreground/20 px-3 py-1 text-sm"
+                  className="flex h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] text-[15px] font-semibold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-surface-raised)] disabled:opacity-50 motion-reduce:transition-none sm:w-auto sm:px-7"
                 >
                   Guardar disciplinas
                 </SubmitButton>
