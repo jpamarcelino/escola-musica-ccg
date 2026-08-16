@@ -55,7 +55,7 @@ export function ConvidarProfessorForm({ action }: { action: Action }) {
           </select>
         </div>
         <SubmitButton
-          textoAGuardar="A gerar..."
+          textoAGuardar="A gerar…"
           className="rounded border border-foreground/20 px-3 py-2 text-sm"
         >
           Convidar professor
@@ -73,7 +73,7 @@ export function ConvidarAdminForm({ action }: { action: Action }) {
   return (
     <form action={formAction} className="space-y-3">
       <SubmitButton
-        textoAGuardar="A gerar..."
+        textoAGuardar="A gerar…"
         className="rounded border border-foreground/20 px-3 py-2 text-sm"
       >
         Convidar administrador
@@ -91,7 +91,7 @@ export function GerarLinkMigracaoForm({ action, alunoId }: { action: Action; alu
     <form action={formAction} className="space-y-2">
       <input type="hidden" name="alunoId" value={alunoId} />
       <SubmitButton
-        textoAGuardar="A gerar..."
+        textoAGuardar="A gerar…"
         className="rounded border border-foreground/20 px-3 py-1 text-xs"
       >
         Gerar link para este aluno gerir a própria conta
@@ -118,7 +118,7 @@ export function ResgatarConviteForm({ action }: { action: Action }) {
           className="w-full rounded border border-foreground/20 bg-background px-3 py-2 text-sm"
         />
         <SubmitButton
-          textoAGuardar="A validar..."
+          textoAGuardar="A validar…"
           className="shrink-0 rounded border border-foreground/20 px-3 py-2 text-sm"
         >
           Resgatar

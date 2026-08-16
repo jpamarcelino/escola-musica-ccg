@@ -378,7 +378,7 @@ export default async function DashboardPage({
               required={false}
             />
             <SubmitButton
-              textoAGuardar="A adicionar..."
+              textoAGuardar="A adicionar…"
               className="familia-adicionar-botao"
             >
               Adicionar aluno

@@ -232,7 +232,7 @@ export default async function ContaPage({
                   })}
                 </div>
                 <SubmitButton
-                  textoAGuardar="A guardar disciplinas..."
+                  textoAGuardar="A guardar disciplinas…"
                   className="rounded border border-foreground/20 px-3 py-1 text-sm"
                 >
                   Guardar disciplinas

@@ -258,7 +258,7 @@ export default async function NovaRecomendacaoPage({
             </section>
 
             <SubmitButton
-              textoAGuardar="A registar..."
+              textoAGuardar="A registar…"
               className="recomendacao-submeter"
             >
               Registar

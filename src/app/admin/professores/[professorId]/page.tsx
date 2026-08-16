@@ -88,7 +88,7 @@ export default async function AdminProfessorPage({
                 value={professorPerfil.adere_recomendacao ? 'false' : 'true'}
               />
               <SubmitButton
-                textoAGuardar="A guardar..."
+                textoAGuardar="A guardar…"
                 className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
               >
                 {professorPerfil.adere_recomendacao ? 'Retirar adesão' : 'Marcar como aderente'}

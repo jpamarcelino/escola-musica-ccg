@@ -43,7 +43,7 @@ export default function EsqueciPasswordPage() {
           disabled={pending}
           className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
         >
-          {pending ? 'A enviar...' : 'Enviar link'}
+          {pending ? 'A enviar…' : 'Enviar link'}
         </button>
 
         <p className="text-sm text-center">

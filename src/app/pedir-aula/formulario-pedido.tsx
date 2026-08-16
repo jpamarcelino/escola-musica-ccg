@@ -170,7 +170,7 @@ export function FormularioPedido({
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
         <BotaoPrimario disabled={aEnviar}>
-          {aEnviar ? 'A enviar...' : 'Enviar pedido'}
+          {aEnviar ? 'A enviar…' : 'Enviar pedido'}
         </BotaoPrimario>
         {/* Campos ocultos só para dar contexto ao FormData reconstruído em
             enviarPedido — o alunoId real é preenchido só depois do popup. */}

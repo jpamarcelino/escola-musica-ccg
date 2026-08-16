@@ -8,6 +8,7 @@ import {
   atualizarDadosRecomendacao,
 } from '@/lib/actions/recomendacoes'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
+import { euros } from '@/lib/moeda'
 
 type Recomendacao = {
   id: number
@@ -117,7 +118,7 @@ export default async function RecomendacaoPage({
               <form action={validarRecomendacao}>
                 <input type="hidden" name="id" value={recomendacao.id} />
                 <SubmitButton
-                  textoAGuardar="A validar..."
+                  textoAGuardar="A validar…"
                   className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
                 >
                   Validar e atribuir mês grátis
@@ -154,7 +155,7 @@ export default async function RecomendacaoPage({
                     {b.estado === 'usado' && b.ano_uso && b.mes_uso && (
                       <>
                         Aplicada em {nomeDoMes(b.ano_uso, b.mes_uso)} de {b.ano_uso}
-                        {b.valor_coberto !== null && ` — ${b.valor_coberto.toFixed(2)}€`}
+                        {b.valor_coberto !== null && ` — ${euros(b.valor_coberto)}`}
                       </>
                     )}
                     {b.estado === 'pendente' &&
@@ -255,7 +256,7 @@ export default async function RecomendacaoPage({
               />
             </div>
             <SubmitButton
-              textoAGuardar="A guardar..."
+              textoAGuardar="A guardar…"
               className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
             >
               Guardar correções
@@ -287,7 +288,7 @@ export default async function RecomendacaoPage({
                 />
               </div>
               <SubmitButton
-                textoAGuardar="A anular..."
+                textoAGuardar="A anular…"
                 className="rounded border border-red-600/40 px-3 py-2 text-sm text-red-600"
               >
                 Anular

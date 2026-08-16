@@ -271,7 +271,7 @@ export default async function HorariosPage({
             </div>
 
             <SubmitButton
-              textoAGuardar="A criar..."
+              textoAGuardar="A criar…"
               className="horarios-criar-botao"
             >
               Criar horários

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { formatarSala } from '@/lib/sala'
 import { calcularIdade } from '@/lib/idade'
+import { euros, eurosOuTexto } from '@/lib/moeda'
 
 type AlunoPerfil = {
   nome: string
@@ -270,7 +271,7 @@ export default async function AdminAlunoPage({
                     <p className="lista-item-sub">
                       {b.estado === 'usado' && b.ano_uso && b.mes_uso
                         ? `Aplicada em ${String(b.mes_uso).padStart(2, '0')}/${b.ano_uso}` +
-                          (b.valor_coberto !== null ? ` — ${b.valor_coberto.toFixed(2)}€` : '')
+                          (b.valor_coberto !== null ? ` — ${euros(b.valor_coberto)}` : '')
                         : b.motivo_anulacao ??
                           (b.estado === 'pendente'
                             ? 'Será aplicada no dia 1 do próximo mês.'
@@ -302,7 +303,7 @@ export default async function AdminAlunoPage({
                         {men.instrumento_nome && ` — ${men.instrumento_nome}`}
                       </p>
                       <p className="lista-item-sub">
-                        {men.valor !== null ? `${men.valor.toFixed(2)}€` : 'Sem valor a cobrar'}
+                        {eurosOuTexto(men.valor, 'Sem valor a cobrar')}
                         {men.numero_fatura && ` — Fatura ${men.numero_fatura}`}
                       </p>
                     </div>

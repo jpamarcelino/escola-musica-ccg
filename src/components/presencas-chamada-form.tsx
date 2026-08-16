@@ -75,7 +75,7 @@ export function PresencasChamadaForm({
       </div>
 
       <SubmitButton
-        textoAGuardar="A guardar..."
+        textoAGuardar="A guardar…"
         className="presencas-guardar"
         disabled={!completo}
       >

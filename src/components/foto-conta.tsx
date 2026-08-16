@@ -28,8 +28,17 @@ export function FotoConta({
   return (
     <form ref={formRef} action={action} className="flex items-center gap-4">
       {preview ? (
+        // width/height explícitos: sem eles o browser não reserva o
+        // espaço e a página salta quando a pré-visualização chega. 80 =
+        // h-20/w-20.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview} alt={nome} className="h-20 w-20 rounded-full object-cover" />
+        <img
+          src={preview}
+          alt={nome}
+          width={80}
+          height={80}
+          className="h-20 w-20 rounded-full object-cover"
+        />
       ) : (
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-foreground/10 text-xs text-foreground/50">
           Sem foto
@@ -50,7 +59,7 @@ function BotaoCarregarFoto({
   return (
     <label className={`botao-foto${pending ? ' a-carregar' : ''}`}>
       {pending && <span className="botao-spinner" aria-hidden="true" />}
-      {pending ? 'A carregar...' : 'Carregar foto'}
+      {pending ? 'A carregar…' : 'Carregar foto'}
       <input
         type="file"
         name="foto"

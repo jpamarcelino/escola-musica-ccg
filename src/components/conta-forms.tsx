@@ -39,7 +39,7 @@ export function EditarNomeForm({ action, nomeAtual }: { action: Action; nomeAtua
           required
           className={classesCampo}
         />
-        <SubmitButton textoAGuardar="A guardar..." className={CLASSES_GUARDAR}>
+        <SubmitButton textoAGuardar="A guardar…" className={CLASSES_GUARDAR}>
           Guardar
         </SubmitButton>
       </div>
@@ -63,7 +63,7 @@ export function EditarEmailForm({ action, emailAtual }: { action: Action; emailA
           required
           className={classesCampo}
         />
-        <SubmitButton textoAGuardar="A guardar..." className={CLASSES_GUARDAR}>
+        <SubmitButton textoAGuardar="A guardar…" className={CLASSES_GUARDAR}>
           Guardar
         </SubmitButton>
       </div>
@@ -107,7 +107,7 @@ export function AlterarPasswordForm({ action }: { action: Action }) {
         />
       </div>
       <Mensagens state={state} />
-      <SubmitButton textoAGuardar="A guardar..." className={CLASSES_GUARDAR}>
+      <SubmitButton textoAGuardar="A guardar…" className={CLASSES_GUARDAR}>
         Alterar password
       </SubmitButton>
     </form>

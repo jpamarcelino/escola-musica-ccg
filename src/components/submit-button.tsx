@@ -4,7 +4,7 @@ import { useFormStatus } from 'react-dom'
 
 export function SubmitButton({
   children,
-  textoAGuardar = 'A guardar...',
+  textoAGuardar = 'A guardar…',
   className,
   style,
   onClick,

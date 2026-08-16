@@ -73,7 +73,7 @@ export function ApagarContaSuperAdminForm({
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <SubmitButton
-        textoAGuardar="A apagar conta..."
+        textoAGuardar="A apagar conta…"
         className="w-full rounded border border-red-600/40 py-2 text-sm text-red-600 hover:bg-red-600/5"
         onClick={(e) => {
           if (

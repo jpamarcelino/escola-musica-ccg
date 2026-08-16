@@ -4,6 +4,7 @@ import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
 import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
+import { euros, eurosOuTexto } from '@/lib/moeda'
 
 type MatriculaDoProfessor = {
   id: number
@@ -143,8 +144,8 @@ export default async function MensalidadesProfessorPage({
         <section className="mensalidades-resumo" aria-label="Resumo do mês">
           <div className="mensalidades-total">
             <p>Por receber</p>
-            <strong>{totalPorReceber.toFixed(2).replace('.', ',')} €</strong>
-            <small>de {totalDoMes.toFixed(2).replace('.', ',')} € previstos</small>
+            <strong>{euros(totalPorReceber)}</strong>
+            <small>de {euros(totalDoMes)} previstos</small>
           </div>
           <dl>
             <div><dt>Pagas</dt><dd>{pagas.length}</dd></div>
@@ -172,7 +173,7 @@ export default async function MensalidadesProfessorPage({
             {linhas.map((l) => (
               <article key={l.chave} data-estado={l.estado}>
                 <span><strong>{l.nome}</strong><small>{l.disciplina}</small></span>
-                <b>{l.estado === 'nao_devida' ? '0,00 €' : l.valor !== null ? `${l.valor.toFixed(2).replace('.', ',')} €` : '—'}</b>
+                <b>{l.estado === 'nao_devida' ? euros(0) : eurosOuTexto(l.valor, '—')}</b>
                 <em>{ESTADO[l.estado].label}</em>
               </article>
             ))}

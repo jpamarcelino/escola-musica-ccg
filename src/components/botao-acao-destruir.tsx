@@ -100,7 +100,7 @@ export function BotaoAcaoDestruir({
                 um botão de submit normal deixa o próprio resultado da ação
                 (redirect ou a linha a desaparecer da lista) fechar isto. */}
             <SubmitButton
-              textoAGuardar="A confirmar..."
+              textoAGuardar="A confirmar…"
               className={`rounded-[var(--radius-pill)] px-4 py-[10px] text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 ${CLASSES_FOCO}`}
               style={{ backgroundColor: cor }}
             >

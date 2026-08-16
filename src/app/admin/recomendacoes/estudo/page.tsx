@@ -4,10 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
 import { recolherDadosEstudo } from '@/lib/estudo-recomendacoes'
-
-function euros(valor: number) {
-  return `${valor.toFixed(2)}€`
-}
+import { euros } from '@/lib/moeda'
 
 function contarRecomendacoes(n: number) {
   return n === 1 ? '1 recomendação' : `${n} recomendações`

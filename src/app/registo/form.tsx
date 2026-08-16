@@ -108,7 +108,7 @@ export default function RegistoForm({
         {state?.info && <MensagemInfo>{state.info}</MensagemInfo>}
 
         <BotaoPrimario disabled={pending}>
-          {pending ? 'A criar conta...' : 'Criar conta'}
+          {pending ? 'A criar conta…' : 'Criar conta'}
         </BotaoPrimario>
 
         <div className="flex flex-col items-center pt-[4px]">

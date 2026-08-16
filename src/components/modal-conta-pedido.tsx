@@ -137,7 +137,7 @@ export function ModalContaPedido({
               />
             </div>
             {estadoLogin?.error && <MensagemErro>{estadoLogin.error}</MensagemErro>}
-            <BotaoPrimario disabled={loginPendente}>{loginPendente ? 'A entrar...' : 'Entrar'}
+            <BotaoPrimario disabled={loginPendente}>{loginPendente ? 'A entrar…' : 'Entrar'}
             </BotaoPrimario>
           </form>
           <p className="text-center text-[14px]" style={{ color: 'var(--color-tinta-suave)' }}>
@@ -227,7 +227,7 @@ export function ModalContaPedido({
             {estadoRegisto?.error && (
               <MensagemErro>{estadoRegisto.error}</MensagemErro>
             )}
-            <BotaoPrimario disabled={registoPendente}>{registoPendente ? 'A criar conta...' : 'Criar conta'}
+            <BotaoPrimario disabled={registoPendente}>{registoPendente ? 'A criar conta…' : 'Criar conta'}
             </BotaoPrimario>
           </form>
           <p className="text-center text-[14px]" style={{ color: 'var(--color-tinta-suave)' }}>
@@ -379,7 +379,7 @@ function EscolherAluno({
             />
           </div>
           {estado?.error && <MensagemErro>{estado.error}</MensagemErro>}
-          <BotaoPrimario disabled={pendente}>{pendente ? 'A criar...' : 'Continuar'}
+          <BotaoPrimario disabled={pendente}>{pendente ? 'A criar…' : 'Continuar'}
           </BotaoPrimario>
           {alunos.length > 0 && (
             <button

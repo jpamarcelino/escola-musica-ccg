@@ -43,7 +43,7 @@ export default function LoginForm() {
           {state?.error && <MensagemErro>{state.error}</MensagemErro>}
 
           <BotaoPrimario disabled={pending}>
-            {pending ? 'A entrar...' : 'Entrar'}
+            {pending ? 'A entrar…' : 'Entrar'}
           </BotaoPrimario>
 
           <div className="flex flex-col items-center gap-[8px] pt-[4px]">

@@ -57,7 +57,7 @@ export function BotaoApagarHorariosSelecionados({
                 </button>
               </AlertDialog.Cancel>
               <SubmitButton
-                textoAGuardar="A apagar..."
+                textoAGuardar="A apagar…"
                 className="min-h-[44px] rounded-[var(--radius-pill)] bg-[#9A3B2E] px-4 text-[14px] font-semibold text-white disabled:opacity-50"
               >
                 Apagar

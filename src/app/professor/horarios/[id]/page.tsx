@@ -115,7 +115,7 @@ export default async function EditarHorarioPage({
           )}
 
           <SubmitButton
-            textoAGuardar="A guardar..."
+            textoAGuardar="A guardar…"
             className="editar-horario-guardar"
           >
             Guardar alterações

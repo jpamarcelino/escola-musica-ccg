@@ -111,7 +111,7 @@ export default async function PedidosPage({
                       <input type="hidden" name="matriculaId" value={pedido.id} />
                       <input type="hidden" name="horarioId" value={d.horario_id} />
                       <SubmitButton
-                        textoAGuardar="A confirmar..."
+                        textoAGuardar="A confirmar…"
                         className="pedido-horario-botao"
                       >
                         Confirmar {label}
