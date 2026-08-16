@@ -197,17 +197,30 @@ export function Metronomo() {
         </div>
       </div>
 
+      {/* aria-pressed em vez de escrever o estado no texto. "Acentuar 1º
+          tempo: ligado" era ambíguo — não se percebia se "ligado" era o
+          estado atual ou o que ia acontecer ao carregar. Agora o rótulo
+          diz sempre a mesma coisa e o estado vive no aria-pressed (que o
+          leitor de ecrã anuncia) e na cor. */}
       <button
         type="button"
         onClick={() => setAcentuar((v) => !v)}
-        className="flex h-[44px] w-full items-center justify-center rounded-[13px] border-[1.5px] text-[14px] font-semibold transition-colors"
+        aria-pressed={acentuar}
+        className="flex h-[44px] w-full items-center justify-center gap-[10px] rounded-[13px] border-[1.5px] text-[14px] font-semibold transition-colors"
         style={
           acentuar
             ? { borderColor: 'var(--color-azul-fundo)', color: 'var(--color-azul-fundo)', backgroundColor: 'var(--color-papel-2)' }
             : { borderColor: 'var(--color-linha)', color: 'var(--color-tinta-suave)' }
         }
       >
-        Acentuar 1º tempo: {acentuar ? 'ligado' : 'desligado'}
+        Acentuar 1º tempo
+        <span
+          aria-hidden="true"
+          className="text-[12px] font-medium"
+          style={{ opacity: 0.75 }}
+        >
+          {acentuar ? '● ligado' : '○ desligado'}
+        </span>
       </button>
 
       <div className="flex justify-center gap-[6px]">

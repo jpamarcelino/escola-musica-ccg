@@ -47,7 +47,12 @@ export default async function MateriaisPage({
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
           <Link href={`/aluno/${alunoId}`} className="partitura-voltar" aria-label={`Voltar à área de ${aluno.nome}`}>←</Link>
-          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Materiais</h1><p>Ferramentas para acompanhar a prática.</p></div>
+          {/* O subtítulo prometia "ferramentas" no plural e havia uma só,
+              depois de a ficha do filho anunciar um caderno — quem vinha
+              à espera de partituras ou trabalho de casa encontrava um
+              metrónomo. Dizer o que está cá dentro evita a desilusão;
+              quando houver mais, o texto acompanha. */}
+          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Materiais</h1><p>Por agora, o metrónomo. Partituras e trabalho de casa chegam depois.</p></div>
         </header>
         <MateriaisClient temMusica={temMusica} />
       </div>
