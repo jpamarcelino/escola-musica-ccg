@@ -18,12 +18,21 @@ import { SimboloCCG } from '@/components/simbolo-ccg'
 // passou para CSS (animation-delay em .ecra-carregamento), onde funciona
 // no servidor e no cliente por igual e não custa um único byte de JS.
 //
-// Quando usar: só quando a espera pode ser mesmo longa e não há
-// estrutura de página para mostrar — arranque da app, redirecionamentos
-// de sessão, o assistente de pedido de aula. Onde já se sabe a forma do
-// que vem a caminho, o esqueleto (skeleton.tsx) continua a ser melhor:
-// mostra o layout a formar-se em vez de o esconder, e por isso a espera
-// parece mais curta do que com um splash por cima.
+// Quando usar: é a resposta de espera de toda a app. Cada área dá-lhe
+// uma mensagem que diz o que está a abrir — "A abrir a secretaria…",
+// "A abrir o caderno…", "A preparar a escolha…" — em vez do genérico
+// "A carregar…", porque nomear o destino torna a espera compreensível.
+//
+// Com `cobrirEcra` sobrepõe-se à página; com `manterNavegacao` deixa a
+// barra inferior utilizável por baixo, para as transições de rota não
+// prenderem quem quer ir a outro lado.
+//
+// Nota histórica, porque o contrário chegou a estar escrito aqui: as
+// áreas com forma previsível respondiam com esqueleto (skeleton.tsx),
+// para se ver o layout a formar-se. Esse ficheiro foi retirado e a app
+// passou a tratar a espera no movimento entre páginas
+// (page-transition.tsx, navigation-feedback.tsx), com este ecrã por
+// cima. Não há esqueletos na app.
 export function EcraCarregamento({
   mensagem = 'A carregar…',
   contexto,

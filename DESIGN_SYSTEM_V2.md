@@ -311,16 +311,39 @@ espelho e expressão viva"*. Daí a sequência:
 sempre     barra indeterminada — o sinal honesto de "ainda a trabalhar"
 ```
 
-**Quando usar qual.** Onde se sabe a forma do que vem a caminho
-(`/dashboard`, `/admin`, `/aluno`, `/pedir-aula`), o **esqueleto**
-continua a ser melhor: mostrar o layout a formar-se faz a espera parecer
-mais curta do que escondê-la atrás de um splash. O ecrã da marca serve o
-caso oposto — `app/loading.tsx` na raiz, onde ainda não se sabe sequer
-que página vai aparecer.
+**Onde aparece.** Em toda a app. Cada área tem o seu `loading.tsx` e
+passa-lhe uma mensagem que nomeia o destino — "A abrir a secretaria…",
+"A abrir o caderno…", "A preparar a escolha…" — em vez do genérico "A
+carregar…", porque nomear o que vem torna a espera compreensível. O
+`app/loading.tsx` da raiz fica com o arranque e com as rotas sem
+`loading.tsx` próprio.
 
-`EcraCarregamentoAdiado` só aparece ao fim de 400ms. Um splash que pisca
-durante 120ms deixa o produto pior: vê-se o clarão sem o conseguir ler e
-fica a sensação de que a app estremeceu.
+Duas variantes: `cobrirEcra` sobrepõe-se à página; `manterNavegacao`
+baixa o z-index e deixa a barra inferior utilizável por baixo, para uma
+transição de rota não prender quem quer ir a outro lado.
+
+**O atraso de 400ms vive em CSS**, não em JavaScript — `animation-delay`
+com `backwards` em `.ecra-carregamento`. Um splash que pisca durante
+120ms deixa o produto pior: vê-se o clarão sem o conseguir ler e fica a
+sensação de que a app estremeceu. A primeira versão fazia isto com
+`useState` e `setTimeout`, e estava errada: um componente de cliente
+devolve `null` no render do servidor, por isso o ecrã nunca entrava no
+HTML transmitido em streaming — que é precisamente o caso do arranque.
+Em CSS funciona nos dois lados e o componente não precisa de JavaScript
+nenhum.
+
+**Armadilha do App Router.** Um `loading.tsx` na raiz não cobre
+navegações do lado do cliente entre rotas irmãs: o boundary da raiz é
+montado uma vez e o React não volta a mostrar o fallback de um boundary
+já montado durante uma transição. Só um segmento novo faz aparecer um
+fallback — daí cada área ter o seu.
+
+> **Nota histórica.** Este documento chegou a dizer que `/dashboard`,
+> `/admin`, `/aluno` e `/pedir-aula` respondiam com **esqueleto**, para
+> se ver o layout a formar-se. Era verdade até o `skeleton.tsx` ser
+> retirado e a app passar a tratar a espera no movimento entre páginas
+> (`page-transition.tsx`, `navigation-feedback.tsx`) com este ecrã por
+> cima. **Não há esqueletos na app.**
 
 ---
 
@@ -334,7 +357,7 @@ mudando tokens (forma pill, cores novas):
 | `BotaoPrimario` / `BotaoSecundario` / `LigacaoTerciaria` | existem — mudar para pill + `--color-ink` |
 | `BotaoAcaoDestruir` (Radix AlertDialog) | existe — só forma muda |
 | `EmptyState` | existe — restilizar, copy já boa |
-| `Skeleton` | existe — restilizar |
+| ~~`Skeleton`~~ | retirado — a espera passou a ser o `EcraCarregamento` (secção 12c) |
 | `Breadcrumbs` | existe — repensar se ainda faz sentido com bottom nav (pode passar a redundante em mobile) |
 | `CartaoLink` / `Cartao` | existem — adaptar a "Card" da secção 8 |
 | **`HeroSection`** | novo — gradiente + anel de progresso |

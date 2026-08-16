@@ -12,9 +12,15 @@ import { EcraCarregamento } from '@/components/ecra-carregamento'
 // podem demorar têm cada uma o seu, ao lado do respetivo page.tsx.
 //
 // As áreas com forma previsível — /dashboard, /admin, /aluno,
-// /pedir-aula — respondem com esqueleto em vez deste ecrã. Aí sabe-se o
-// que vem a caminho, e ver o layout a formar-se faz a espera parecer
-// mais curta do que escondê-la atrás de um splash.
+// /pedir-aula — têm o seu próprio loading.tsx, com uma mensagem que diz
+// o que está a abrir ("A abrir a secretaria…", "A abrir o caderno…") e
+// sobreposto ao ecrã. Este aqui fica com o arranque e com tudo o resto.
+//
+// Houve uma fase em que essas áreas respondiam com esqueleto, para se
+// ver o layout a formar-se. Deixou de ser assim quando o skeleton.tsx
+// foi retirado e a app passou a ter transições de página próprias
+// (page-transition.tsx, navigation-feedback.tsx) — a espera passou a
+// ser tratada no movimento entre páginas e não na forma da que vem.
 export default function Loading() {
   return <EcraCarregamento />
 }
