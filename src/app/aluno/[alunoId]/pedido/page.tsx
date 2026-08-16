@@ -60,8 +60,11 @@ export default async function PedidoPage({
 
   const idadeAluno = calcularIdade(aluno.data_nascimento)
 
-  // Passo 1: escolher escola
-  if (programa !== 'musica' && programa !== 'danca') {
+  // Passo 1: escolher escola — as mesmas três da página inicial, com os
+  // mesmos nomes e cores. Faltava aqui a Música para Bebés: quem já tinha
+  // conta e pedia a partir do perfil do filho não tinha por onde lá chegar,
+  // apesar de a escola existir e ter turmas.
+  if (programa !== 'musica' && programa !== 'danca' && programa !== 'bebes') {
     return (
       <Wizard voltar={`/aluno/${alunoId}`}>
         <ListaEscolhas>
@@ -74,6 +77,12 @@ export default async function PedidoPage({
             href={`/aluno/${alunoId}/pedido?programa=danca`}
             nome="Escola de Dança"
             cor="var(--color-dourado)"
+          />
+          <CartaoLink
+            href={`/aluno/${alunoId}/pedido?programa=bebes`}
+            nome="Música para Bebés"
+            cor="var(--color-verde)"
+            novidade
           />
         </ListaEscolhas>
       </Wizard>
@@ -101,6 +110,16 @@ export default async function PedidoPage({
           elegivel: dentroDaFaixa(idadeAluno, parseFaixaEtaria(idade)),
         }
       }
+      // Nas turmas de bebés o nome é só a faixa etária ("0 aos 3 anos"),
+      // por isso a idade lê-se do próprio nome — sem título a separar.
+      if (programa === 'bebes') {
+        return {
+          ...i,
+          titulo: i.nome,
+          idade: undefined as string | undefined,
+          elegivel: dentroDaFaixa(idadeAluno, parseFaixaEtaria(i.nome)),
+        }
+      }
       return {
         ...i,
         titulo: i.nome,
@@ -121,7 +140,9 @@ export default async function PedidoPage({
         title={
           programa === 'musica'
             ? 'Que instrumento queres aprender?'
-            : 'Que modalidade queres aprender?'
+            : programa === 'bebes'
+              ? 'Escolha a turma indicada'
+              : 'Que modalidade queres aprender?'
         }
         voltar={`/aluno/${alunoId}/pedido`}
       >
