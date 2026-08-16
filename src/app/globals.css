@@ -437,6 +437,48 @@ body {
    background-attachment "local" acompanha o scroll do conteúdo, "scroll"
    fica fixo ao viewport da grelha — a sombra só aparece quando o fundo
    branco "local" já saiu do caminho. */
+/* ── Semana em lista (telemóvel) ─────────────────────────────────────
+   Alternativa à grelha abaixo dos 720px, não substituição: acima disso
+   a grelha volta e esta lista desaparece. A grelha continua a ser a
+   melhor leitura em ecrã largo, onde a semana toda cabe de uma vez e os
+   buracos entre aulas se veem; ao telemóvel é que não servia. */
+.horarios-agenda { display: flex; flex-direction: column; gap: 26px; }
+.horarios-agenda > li > h3 {
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+.horarios-agenda > li > ul { display: flex; flex-direction: column; }
+.horarios-agenda a {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 20px;
+  gap: 12px;
+  align-items: center;
+  min-height: 60px;
+  border-top: 1px solid var(--color-linha);
+  color: inherit;
+  text-decoration: none;
+}
+.horarios-agenda > li > ul > li:last-child a { border-bottom: 1px solid var(--color-linha); }
+.horarios-agenda time { font-size: 15px; font-weight: 700; color: var(--color-azul-fundo); font-variant-numeric: tabular-nums; }
+.horarios-agenda span { display: flex; flex-direction: column; min-width: 0; }
+.horarios-agenda strong { font-size: 15px; font-weight: 600; }
+.horarios-agenda small {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--color-tinta-suave);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.horarios-agenda i { font-style: normal; color: var(--color-tinta-suave); }
+/* Bloqueado lê-se pela palavra em "small", não só pela cor. */
+.horarios-agenda a[data-bloqueado] time { color: var(--color-tinta-suave); }
+.horarios-agenda a[data-bloqueado] strong { color: var(--color-tinta-suave); }
+
 .horarios-grade {
   display: flex;
   overflow-x: auto;
@@ -452,6 +494,12 @@ body {
   background-size: 34px 100%, 34px 100%, 12px 100%, 12px 100%;
   background-attachment: local, local, scroll, scroll;
 }
+
+/* Depois da regra base de propósito: media queries não acrescentam
+   especificidade, por isso um `display: flex` declarado mais abaixo
+   no ficheiro ganharia a este `display: none`. */
+@media (min-width: 721px) { .horarios-agenda { display: none; } }
+@media (max-width: 720px) { .horarios-grade { display: none; } }
 
 .horarios-coluna-horas {
   position: sticky;

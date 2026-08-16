@@ -142,7 +142,10 @@ export default async function HorariosPage({
 
         <section className="partitura-seccao" aria-labelledby="semana-titulo">
           <div className="partitura-seccao-cabecalho">
-            <div><p className="partitura-indice">01</p><h2 id="semana-titulo">Grelha semanal</h2></div>
+            {/* "A semana" e não "Grelha semanal": ao telemóvel esta secção
+                é uma lista por dia, e um título a prometer grelha ficava
+                a descrever o que lá não está. */}
+            <div><p className="partitura-indice">01</p><h2 id="semana-titulo">A semana</h2></div>
           </div>
           <form id="bloquear-horarios-form" action={bloquearHorarios} />
           <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
@@ -153,6 +156,48 @@ export default async function HorariosPage({
             />
           ) : (
             <>
+              {/* Duas leituras da mesma semana, uma por largura de ecrã.
+                  A grelha continua a ser a boa em ecrã largo: vê-se a
+                  semana inteira e os buracos entre aulas, que é o que
+                  interessa a quem gere disponibilidade. A 375px, porém,
+                  só cabem três dias e meio e nove décimos das células
+                  estão vazias — percorre-se muito para encontrar pouco.
+                  A lista mostra só os dias que têm aulas. */}
+              <ol className="horarios-agenda" aria-label="Horários da semana, por dia">
+                {DIAS_SEMANA.filter((dia) => (horariosPorDia.get(dia)?.length ?? 0) > 0).map((dia) => (
+                  <li key={dia}>
+                    <h3>{dia}</h3>
+                    <ul>
+                      {horariosPorDia.get(dia)?.map((h) => {
+                        const bloqueado = h.estado === 'bloqueado'
+                        const alunos = confirmadosPorHorario.get(h.id)
+                        return (
+                          <li key={h.id}>
+                            <Link
+                              href={`/professor/horarios/${h.id}`}
+                              data-bloqueado={bloqueado || undefined}
+                            >
+                              <time>{formatarHora(h.hora_inicio)}</time>
+                              <span>
+                                <strong>{formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}</strong>
+                                <small>
+                                  {bloqueado
+                                    ? 'Bloqueado'
+                                    : alunos?.length
+                                      ? alunos.join(', ')
+                                      : 'Disponível'}
+                                </small>
+                              </span>
+                              <i aria-hidden="true">→</i>
+                            </Link>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </li>
+                ))}
+              </ol>
+
               <div className="horarios-grade partitura-grade" aria-label="Grelha semanal dos horários">
                 <div className="horarios-coluna-horas">
                   <div className="horarios-coluna-horas-cabecalho" />
