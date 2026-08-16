@@ -101,6 +101,23 @@ export default async function PedidosPage({
                   “{pedido.mensagem}”
                 </blockquote>
               )}
+              {/* Sem horários indicados não há nada que confirmar, e o
+                  cabeçalho sozinho deixava o professor a olhar para um
+                  espaço em branco com um botão vermelho por baixo. O
+                  assistente permite pedir só com mensagem — quando o
+                  professor não tem vagas, é isso mesmo que a app sugere ao
+                  encarregado —, por isso este caso é normal e merece ser
+                  explicado em vez de parecer avaria. */}
+              {pedido.disponibilidades_selecionadas.length === 0 ? (
+                <div className="pedido-disponibilidade">
+                  <p>Sem horários indicados</p>
+                  <p className="pedido-disponibilidade-vazio">
+                    {pedido.mensagem
+                      ? 'O encarregado não escolheu horários e deixou a mensagem acima. Combina com ele por telefone e cria o horário em Horários.'
+                      : 'O encarregado não escolheu horários nem deixou mensagem. Vale a pena contactá-lo antes de decidir.'}
+                  </p>
+                </div>
+              ) : (
               <div className="pedido-disponibilidade">
                 <p>Disponibilidade indicada</p>
                 <div>
@@ -121,6 +138,7 @@ export default async function PedidosPage({
                 })}
                 </div>
               </div>
+              )}
               <footer>
                 <BotaoAcaoDestruir
                   label="Recusar"

@@ -6,6 +6,7 @@ import { formatarSala } from '@/lib/sala'
 import { agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
+import { plural } from '@/lib/plural'
 
 type Horario = {
   id: number
@@ -141,7 +142,7 @@ export default async function ConfirmarPresencasPage({
                     <Link
                       key={`${p.horarioId}|${p.data}`}
                       href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
-                    ><time>{formatarDataEscolar(p.data)}</time><span><strong>{p.dia_semana} · {formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? `${p.totalAlunos} alunos`}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
+                    ><time>{formatarDataEscolar(p.data)}</time><span><strong>{p.dia_semana} · {formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? plural(p.totalAlunos, 'aluno', 'alunos')}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
                   ))}
                 </div>
               </section>
@@ -154,7 +155,7 @@ export default async function ConfirmarPresencasPage({
                     <Link
                       key={`${p.horarioId}|${p.data}`}
                       href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
-                    ><time>{formatarHora(p.hora_inicio)}</time><span><strong>{formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? `${p.totalAlunos} alunos`}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
+                    ><time>{formatarHora(p.hora_inicio)}</time><span><strong>{formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? plural(p.totalAlunos, 'aluno', 'alunos')}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
                   ))}
                 </div>
               </section>
