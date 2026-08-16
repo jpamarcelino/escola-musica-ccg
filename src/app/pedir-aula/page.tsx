@@ -15,6 +15,15 @@ import {
 } from '@/lib/idade-disciplinas'
 import { HOUR_HEIGHT, paraMinutos } from '@/lib/horarios-grade'
 
+// Nomes das escolas pelas palavras de quem escolhe, para as etiquetas
+// de "escolhas até agora" no cabeçalho do assistente.
+const NOME_ESCOLA: Record<string, string> = {
+  musica: 'Música',
+  danca: 'Dança',
+  bebes: 'Música para Bebés',
+}
+
+
 // Dias mostrados na grelha, da esquerda para a direita. Sem Domingo — a
 // escola não funciona nesse dia.
 const DIAS_GRADE = DIAS_SEMANA.slice(0, 6)
@@ -57,7 +66,11 @@ export default async function PedirAulaPage({
   // leve à página inicial e não outra vez ao pop-up.
   if (idadeNum === null) {
     return (
-      <Wizard voltar="/">
+      <Wizard
+        voltar="/"
+        passo={2}
+        escolhas={[{ valor: NOME_ESCOLA[programa] ?? programa, href: '/' }]}
+      >
         <SeletorIdade />
       </Wizard>
     )
@@ -111,6 +124,11 @@ export default async function PedirAulaPage({
               : 'Que modalidade queres aprender?'
         }
         voltar="/"
+        passo={3}
+        escolhas={[
+          { valor: NOME_ESCOLA[programa] ?? programa, href: '/' },
+          { valor: `${idadeNum} anos`, href: `/pedir-aula?programa=${programa}` },
+        ]}
       >
         <ListaEscolhas>
           {ordenados.map((i) => (
@@ -164,7 +182,15 @@ export default async function PedirAulaPage({
       .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
 
     return (
-      <Wizard title="Escolhe o professor" voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}>
+      <Wizard
+        title="Escolhe o professor"
+        voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}
+        passo={4}
+        escolhas={[
+          { valor: NOME_ESCOLA[programa] ?? programa, href: '/' },
+          { valor: `${idadeNum} anos`, href: `/pedir-aula?programa=${programa}` },
+        ]}
+      >
         {professores.length ? (
           <ListaEscolhas>
             {professores.map((p) => (
@@ -219,6 +245,11 @@ export default async function PedirAulaPage({
     <Wizard
       title="Seleciona os vários horários em que há disponibilidade"
       voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`}
+      passo={5}
+      escolhas={[
+        { valor: NOME_ESCOLA[programa] ?? programa, href: '/' },
+        { valor: `${idadeNum} anos`, href: `/pedir-aula?programa=${programa}` },
+      ]}
     >
       <FormularioPedido
         diasGrade={DIAS_GRADE}

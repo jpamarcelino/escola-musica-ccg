@@ -1421,6 +1421,49 @@ body {
 .materiais-pagina .partitura-folha,
 .avisos-pagina .partitura-folha { max-width: 760px; }
 .wizard-partitura-conteudo { margin-top: 34px; }
+
+/* ── Progresso do assistente ─────────────────────────────────────────
+   Quatro traços, não um número sozinho: o número diz onde se está, os
+   traços dizem quanto falta — que é a pergunta de quem hesita a meio de
+   uma inscrição. */
+.wizard-passo { font-weight: 600; opacity: .75; }
+.wizard-progresso { display: flex; gap: 5px; margin-top: 20px; }
+.wizard-progresso li {
+  height: 3px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--color-linha);
+  transition: background-color 240ms var(--motion-ease-standard);
+}
+.wizard-progresso li[data-estado="feito"] { background: var(--color-azul-logo); }
+.wizard-progresso li[data-estado="atual"] { background: var(--color-azul-fundo); }
+
+/* As escolhas já feitas, clicáveis para voltar atrás. A idade era pedida
+   ao início e nunca mais aparecia — quem se enganava só descobria no fim. */
+.wizard-escolhas-feitas { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+.wizard-escolhas-feitas li { display: flex; }
+.wizard-escolhas-feitas a,
+.wizard-escolhas-feitas span {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 13px;
+  border: 1px solid var(--color-linha);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--color-tinta-suave);
+  text-decoration: none;
+}
+.wizard-escolhas-feitas a {
+  border-color: var(--color-azul-logo);
+  color: var(--color-azul-fundo);
+}
+.wizard-escolhas-feitas a:hover { background: var(--color-papel-2); }
+.wizard-escolhas-feitas a:focus-visible {
+  outline: 2px solid var(--color-azul);
+  outline-offset: 2px;
+}
 .wizard-escolhas { border-top: 1px solid var(--color-linha); }
 .wizard-escolhas > .entrada-esquerda {
   min-height: 74px;

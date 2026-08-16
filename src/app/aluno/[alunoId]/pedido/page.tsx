@@ -19,6 +19,16 @@ import {
 } from '@/lib/idade-disciplinas'
 import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 
+// Nomes das escolas para as etiquetas de "escolhas até agora". Este
+// percurso tem quatro passos e não cinco como o público: a idade não é
+// perguntada, vem da ficha do filho.
+const NOME_ESCOLA: Record<string, string> = {
+  musica: 'Música',
+  danca: 'Dança',
+  bebes: 'Música para Bebés',
+}
+
+
 // Dias mostrados na grelha, da esquerda para a direita. Sem Domingo — a
 // escola não funciona nesse dia.
 const DIAS_GRADE = DIAS_SEMANA.slice(0, 6)
@@ -66,7 +76,7 @@ export default async function PedidoPage({
   // apesar de a escola existir e ter turmas.
   if (programa !== 'musica' && programa !== 'danca' && programa !== 'bebes') {
     return (
-      <Wizard voltar={`/aluno/${alunoId}`}>
+      <Wizard voltar={`/aluno/${alunoId}`} passo={1} totalPassos={4}>
         <ListaEscolhas>
           <CartaoLink
             href={`/aluno/${alunoId}/pedido?programa=musica`}
@@ -145,6 +155,12 @@ export default async function PedidoPage({
               : 'Que modalidade queres aprender?'
         }
         voltar={`/aluno/${alunoId}/pedido`}
+        passo={2}
+        totalPassos={4}
+        escolhas={[
+          { valor: aluno.nome.split(' ')[0] },
+          { valor: NOME_ESCOLA[programa] ?? programa, href: `/aluno/${alunoId}/pedido` },
+        ]}
       >
         <ListaEscolhas>
           {ordenados.map((i) => (
@@ -236,6 +252,12 @@ export default async function PedidoPage({
       <Wizard
         title="Escolhe o professor"
         voltar={`/aluno/${alunoId}/pedido?programa=${programa}`}
+        passo={3}
+        totalPassos={4}
+        escolhas={[
+          { valor: aluno.nome.split(' ')[0] },
+          { valor: NOME_ESCOLA[programa] ?? programa, href: `/aluno/${alunoId}/pedido` },
+        ]}
       >
         {professores.length ? (
           <ListaEscolhas>
@@ -314,6 +336,12 @@ export default async function PedidoPage({
     <Wizard
       title="Seleciona os vários horários em que há disponibilidade"
       voltar={`/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${instrumento}`}
+      passo={4}
+      totalPassos={4}
+      escolhas={[
+        { valor: aluno.nome.split(' ')[0] },
+        { valor: NOME_ESCOLA[programa] ?? programa, href: `/aluno/${alunoId}/pedido` },
+      ]}
     >
       <form action={escolherDisponibilidades} className="space-y-4">
         <input type="hidden" name="alunoId" value={alunoId} />
