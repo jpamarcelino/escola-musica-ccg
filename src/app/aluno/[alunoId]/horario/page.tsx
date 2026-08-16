@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { cancelarPedido, cancelarMatricula } from '@/lib/actions/aluno'
 import { formatarSala } from '@/lib/sala'
 import { formatarHora } from '@/lib/horarios-grade'
-import { proximaOcorrenciaDeAula } from '@/lib/datas'
+import { proximaOcorrenciaDeAula, formatarDataEscolar } from '@/lib/datas'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
 
@@ -80,7 +80,11 @@ export default async function ConsultarHorarioPage({
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
           <Link href={`/aluno/${alunoId}`} className="partitura-voltar" aria-label={`Voltar à área de ${aluno.nome}`}>←</Link>
-          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Agenda</h1><p>{confirmadas[0] ? `A próxima aula é ${confirmadas[0].proxima}, às ${formatarHora(confirmadas[0].horarios!.hora_inicio)}.` : 'Ainda não há aulas confirmadas.'}</p></div>
+          {/* proximaOcorrenciaDeAula devolve ISO ("2026-08-17"), que é o
+              formato certo para ordenar e comparar mas nunca para mostrar.
+              Estava a chegar ao ecrã tal e qual — e este é o destino do
+              separador "Agenda", não um canto escondido. */}
+          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Agenda</h1><p>{confirmadas[0] ? `A próxima aula é ${formatarDataEscolar(confirmadas[0].proxima, { weekday: 'long', day: 'numeric', month: 'long' })}, às ${formatarHora(confirmadas[0].horarios!.hora_inicio)}.` : 'Ainda não há aulas confirmadas.'}</p></div>
         </header>
 
         {pendentes.length > 0 && (
@@ -115,7 +119,7 @@ export default async function ConsultarHorarioPage({
                 const horario = m.horarios!
                 return (
                   <details key={m.id} className="aluno-aula-registo">
-                    <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" /><span><small>{m.proxima}</small><strong>{m.instrumentos?.nome}</strong><b>{m.profiles?.nome}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</b></span><i aria-hidden="true">+</i></summary>
+                    <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" /><span><small>{formatarDataEscolar(m.proxima, { weekday: 'long', day: 'numeric', month: 'long' })}</small><strong>{m.instrumentos?.nome}</strong><b>{m.profiles?.nome}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</b></span><i aria-hidden="true">+</i></summary>
                     <div><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula semanal</p><BotaoAcaoDestruir label="Cancelar matrícula" variante="editorial" mensagem={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} com ${m.profiles?.nome}? Esta ação é irreversível.`} action={cancelarMatricula}><input type="hidden" name="matriculaId" value={m.id} /></BotaoAcaoDestruir></div>
                   </details>
                 )
