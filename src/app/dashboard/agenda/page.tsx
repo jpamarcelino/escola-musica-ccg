@@ -12,6 +12,7 @@ type Confirmado = {
   id: number
   horario_final_id: number | null
   alunos: { nome: string } | null
+  instrumentos: { nome: string } | null
   horarios: {
     dia_semana: string
     hora_inicio: string
@@ -27,6 +28,7 @@ type BlocoAgenda = {
   hora_fim: string
   sala: string | null
   alunos: string[]
+  disciplinas: string[]
 }
 
 function somarUmDia(data: string): string {
@@ -74,7 +76,7 @@ export default async function AgendaPage() {
   const { data: confirmadosData } = await supabase
     .from('matriculas')
     .select(
-      'id, horario_final_id, alunos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
+      'id, horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -94,8 +96,13 @@ export default async function AgendaPage() {
       hora_fim: c.horarios.hora_fim,
       sala: formatarSala(c.horarios.salas),
       alunos: [],
+      disciplinas: [],
     }
     bloco.alunos.push(c.alunos?.nome ?? '')
+    // Uma aula de grupo partilha o horário mas pode juntar disciplinas
+    // diferentes, por isso guarda-se cada uma só uma vez.
+    const disciplina = c.instrumentos?.nome
+    if (disciplina && !bloco.disciplinas.includes(disciplina)) bloco.disciplinas.push(disciplina)
     blocosPorHorario.set(c.horario_final_id, bloco)
   }
   const blocos = [...blocosPorHorario.values()]
@@ -202,8 +209,12 @@ export default async function AgendaPage() {
                       <span className="partitura-marca" aria-hidden="true" />
                       <span className="partitura-aula-conteudo">
                         {estadoTemporal === 'agora' && <small className="partitura-estado-temporal">Agora</small>}
-                        <strong>{aula.alunos.join(', ')}</strong>
-                        <span>{formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}{aula.sala ? ` · ${aula.sala}` : ''}</span>
+                        {/* A disciplina em destaque e o aluno por baixo, como
+                            no painel inicial. A agenda mostrava só o nome, e
+                            quem ensina duas disciplinas ao mesmo aluno não
+                            distinguia as aulas justamente onde prepara o dia. */}
+                        <strong>{aula.disciplinas.length ? aula.disciplinas.join(' · ') : aula.alunos.join(', ')}</strong>
+                        <span>{aula.alunos.join(', ')} · {formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}{aula.sala ? ` · ${aula.sala}` : ''}</span>
                       </span>
                       <span className="partitura-alunos">{aula.alunos.length} {aula.alunos.length === 1 ? 'aluno' : 'alunos'}</span>
                       <span className="partitura-seta" aria-hidden="true">→</span>

@@ -80,10 +80,26 @@ export default async function PresencasPage() {
           <div><p className="partitura-sobretitulo">Livro de chamada</p><h1>Presenças</h1><p>{porConfirmar > 0 ? 'Há registos que precisam da tua atenção.' : 'Tudo confirmado até hoje.'}</p></div>
         </header>
 
-        <section className={`presencas-estado ${porConfirmar === 0 ? 'presencas-estado-ok' : ''}`}>
-          <span>{porConfirmar}</span>
-          <div><strong>{porConfirmar === 1 ? 'aula por confirmar' : 'aulas por confirmar'}</strong><small>{porConfirmar > 0 ? 'Começa pela ocorrência mais antiga' : 'O livro de chamada está atualizado'}</small></div>
-        </section>
+        {/* O número em destaque passa a ser ele próprio o caminho para a
+            tarefa. Era texto estático: anunciava-se a urgência em corpo
+            grande e vermelho e depois obrigava a procurar a ligação por
+            baixo. Quando não há nada por confirmar não há para onde ir,
+            por isso aí continua a ser só um aviso. */}
+        {porConfirmar > 0 ? (
+          <Link href="/dashboard/presencas/confirmar" className="presencas-estado presencas-estado-ligacao">
+            <span>{porConfirmar}</span>
+            <div>
+              <strong>{porConfirmar === 1 ? 'aula por confirmar' : 'aulas por confirmar'}</strong>
+              <small>Começa pela ocorrência mais antiga</small>
+            </div>
+            <i aria-hidden="true">→</i>
+          </Link>
+        ) : (
+          <section className="presencas-estado presencas-estado-ok">
+            <span>{porConfirmar}</span>
+            <div><strong>aulas por confirmar</strong><small>O livro de chamada está atualizado</small></div>
+          </section>
+        )}
 
         <nav className="presencas-destinos" aria-label="Ações de presenças">
           <Link href="/dashboard/presencas/confirmar"><span><b>01</b><strong>{porConfirmar > 0 ? 'Confirmar agora' : 'Consultar confirmações'}</strong></span><small>Registar presente ou falta por aula</small><i aria-hidden="true">→</i></Link>

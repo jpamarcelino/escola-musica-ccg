@@ -1925,6 +1925,40 @@ body {
 .presencas-estado small { margin-top: 5px; color: var(--color-tinta-suave); }
 .presencas-estado-ok { border-color: var(--color-positive); }
 .presencas-estado-ok > span { color: var(--color-positive); }
+
+/* Quando o bloco é caminho e não só aviso: ganha a seta e o
+   comportamento de ligação.
+   A seta fica fora do fluxo, e não numa terceira coluna, porque a coluna
+   roubava largura ao texto e "aulas por confirmar" passava a quebrar em
+   duas linhas a 375px. */
+.presencas-estado-ligacao {
+  position: relative;
+  /* A coluna do número aperta e o espaçamento também, para devolver ao
+     texto a largura que a seta lhe tira: sem isto "aulas por confirmar"
+     quebra em duas linhas a 375px, e era de uma linha antes de este
+     bloco passar a ligação. */
+  grid-template-columns: 78px 1fr;
+  gap: 14px;
+  padding-right: 24px;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 160ms var(--motion-ease-standard);
+}
+.presencas-estado-ligacao:hover { opacity: .78; }
+.presencas-estado-ligacao:focus-visible {
+  outline: 2px solid var(--color-azul);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.presencas-estado-ligacao > i {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  font-style: normal;
+  color: var(--color-error);
+}
+@media (prefers-reduced-motion: reduce) { .presencas-estado-ligacao { transition: none; } }
 .presencas-destinos { margin-top: 32px; border-top: 1px solid var(--color-linha); }
 .presencas-destinos a {
   display: grid;
