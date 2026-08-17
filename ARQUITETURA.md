@@ -1,6 +1,6 @@
 # Arquitetura e funcionalidades
 
-Estado da app em `3c137f9`, ramo `redesign-dailyme`.
+Estado da app em `main`, publicado em escola-musica-ccg.vercel.app.
 
 Este documento descreve **o que existe hoje**. Foi escrito a ler o
 código e as migrações, não de memória — cada afirmação tem um ficheiro
@@ -62,7 +62,7 @@ tipo — a mesma conta pode ser professor *e* administrador.
 
 | `tipo` | Na app é | Notas |
 |---|---|---|
-| `aluno` | **Encarregado de educação** | a conta que gere alunos, não o aluno |
+| `conta` | **Conta CCG** — quem gere | email, password, avisos, agenda familiar, gestão de alunos |
 | `professor` | Professor | tem `programa` obrigatório (música ou dança) |
 | `admin` | Direção / secretaria | |
 
@@ -71,11 +71,18 @@ admin pode dar ou tirar admin — garantido pelo gatilho
 `impedir_auto_promocao_admin`, que bloqueia **mesmo com chave de
 serviço**.
 
-**`tipo = 'aluno'` não é um aluno.** Desde a migração `0015`, ser aluno
-deixou de significar ter login: os alunos vivem na tabela `alunos`, e um
-filho dependente fica com `propria_conta_id` a `null` — não tem email,
-password nem sessão. Um adulto que se inscreve a si próprio tem os dois:
-a conta e a linha em `alunos`.
+**Conta e aluno são coisas separadas.** A migração `0025` levou esta
+distinção até ao fim e renomeou o tipo `aluno` para `conta`:
+
+- **Conta CCG** — quem gere: email, password, nome, avisos, agenda
+  familiar, gestão de alunos.
+- **Aluno** — quem tem aulas: perfil sem login, seja um filho ou o
+  próprio titular da conta.
+
+Criar conta já não inventa um aluno com o nome do titular. Quem se
+regista escolhe em `/dashboard/alunos` quem vai às aulas. As 17 contas
+que já existiam mantiveram alunos, matrículas, presenças, mensalidades e
+histórico.
 
 Então há **cinco tipos de pessoa** (encarregado, aluno dependente,
 professor, admin, super admin) mas só **três tipos de conta**.
@@ -295,7 +302,12 @@ Registada aqui para não se descobrir duas vezes.
 
 | O quê | Onde | Gravidade |
 |---|---|---|
-| ~~`apagar_propria_conta` falhava com `column "tipo" does not exist`~~ | **resolvido** — migração `0025`, aplicada e verificada (204, 35 contas intactas) | — |
+| ~~`apagar_propria_conta` falhava com `column "tipo" does not exist`~~ | **resolvido** na migração `0025`, aplicada em produção | — |
+| "Ver aulas" desalinhado por volta dos 800&nbsp;px | home pública | Baixo |
+| Painel da Dança sem ilustração | home pública | Baixo |
+| Ecrã do professor sem horários contradiz-se | área do professor | Baixo |
+| Conta "Teste Admin (Claude QA)" com privilégios de admin em produção | base de dados | **Segurança** — sem nada agarrado, apagar não arrasta nada |
+| 18 de 35 perfis são de teste, misturados com pessoas reais no diretório | base de dados | Médio |
 | `/admin/alunos` e `/admin/professores` ainda não foram vistos | 2 rotas + sub-rotas | Média — o resto do `/admin` já foi percorrido |
 | Falta ao professor uma via para propor horário | secção 8 | Média |
 | `/aluno/calendario` por construir | | Média |
