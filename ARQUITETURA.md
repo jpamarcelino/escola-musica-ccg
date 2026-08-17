@@ -295,7 +295,7 @@ Registada aqui para não se descobrir duas vezes.
 
 | O quê | Onde | Gravidade |
 |---|---|---|
-| `apagar_propria_conta` falhava com `column "tipo" does not exist` — **ninguém conseguia apagar a conta** | corrigido na migração `0025`, **por aplicar** | Alta — RGPD; o ficheiro está escrito, falta correr |
+| ~~`apagar_propria_conta` falhava com `column "tipo" does not exist`~~ | **resolvido** — migração `0025`, aplicada e verificada (204, 35 contas intactas) | — |
 | `/admin/alunos` e `/admin/professores` ainda não foram vistos | 2 rotas + sub-rotas | Média — o resto do `/admin` já foi percorrido |
 | Falta ao professor uma via para propor horário | secção 8 | Média |
 | `/aluno/calendario` por construir | | Média |
