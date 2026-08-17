@@ -135,12 +135,14 @@ workspace pnpm o Metro precisa de saber que a raiz do monorepo faz parte
 do projeto, e a busca hierárquica tem de ficar **ligada** — ao contrário
 do conselho que se encontra escrito para monorepos npm e yarn.
 
-As **escritas** não estão lá, e a razão está em
-[`AUDITORIA_SERVER_ACTIONS.md`](AUDITORIA_SERVER_ACTIONS.md): das 48
-Server Actions, uma só é lógica de dados pura. As outras ou escrevem e a
-seguir navegam, ou dependem de coisas que só existem no servidor da web.
-O caminho de escrita não se levanta para a app móvel — tem de ser
-redesenhado.
+As **escritas** estão em `escritas-professor.ts`,
+`escritas-encarregado.ts`, `conta.ts` e `admin.ts`. Não foram levantadas
+das Server Actions: a
+[`AUDITORIA_SERVER_ACTIONS.md`](AUDITORIA_SERVER_ACTIONS.md) explica
+porquê — das 48, uma só era lógica de dados pura; as outras escrevem *e*
+navegam, e a navegação do servidor não existe numa app. O que se
+partilhou foram as queries e as regras; o que decide o que acontece a
+seguir é de cada frente.
 
 O que ainda **não** está no `packages/types` são as formas das linhas de
 cada tabela. Isso quer a geração de tipos do Supabase, que precisa de um
