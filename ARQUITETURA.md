@@ -108,6 +108,12 @@ próxima ocorrência de uma aula, a hora de Lisboa, o nome da sala, os
 plurais: tudo vem do `@ccg/core` e do `@ccg/data`, os mesmos ficheiros
 que a web usa. Não é código parecido nos dois sítios, é o mesmo código.
 
+Confirmado num telemóvel, e não só em teoria: numa segunda-feira à
+noite, a aula de Guitarra das 16h desse mesmo dia apareceu com a data da
+segunda seguinte, e a de Bateria de quarta-feira veio à frente dela na
+lista. É a `proximaOcorrenciaDeAula` e a ordenação por data a correrem
+em Hermes com o mesmo resultado que dão no servidor.
+
 A única diferença real entre as duas apps, no que toca a dados, é onde
 mora a sessão: cookies na web, `AsyncStorage` no telemóvel. É por isso
 que o `packages/data` recebe o cliente já construído.
@@ -413,7 +419,9 @@ Registada aqui para não se descobrir duas vezes.
 | `notificacoes.tipo` permite cinco valores e a app só cria `pedido_aceite` — os outros quatro (lembretes de aula e de pagamento, mudança de horário, novo material) nunca são escritos | esquema vs. Server Actions | Baixa — superfície declarada por usar, não erro |
 | `instrumentos.programa` aceita `bebes`, mas `perfis_escola.programa` só aceita `musica` e `danca`: um professor não pode ter o programa da escola de bebés, e `convites.ts` recusa-o também | esquema | A confirmar com o dono — pode ser intencional (bebés dados por professores de música) |
 | As formas das linhas de cada tabela ainda não estão tipadas — falta gerar os tipos do Supabase, que precisa de token, Docker ou ligação à base | `packages/types` | Média |
-| A app móvel nunca correu num dispositivo nem num emulador — não há SDK Android nem iOS nesta máquina. Compila, passa o typecheck e o bundle do Metro fica feito, mas ninguém a viu a funcionar | `apps/mobile` | **A confirmar antes de qualquer distribuição** |
+| ~~A app móvel nunca correu num dispositivo~~ | **confirmada** em iPhone com Expo Go a 17/08/2026: login, lista de alunos, aulas com data/hora corretas e avisos | — |
+| A app móvel só foi vista num iPhone. O Android não foi experimentado, e é onde vivem a maioria dos encarregados | `apps/mobile` | Média |
+| Não há forma de fazer um pedido de aula pela app — o ecrã vazio manda a pessoa ao site. É consequência de as escritas ainda não estarem partilhadas | `apps/mobile` | Média — decisão de âmbito, não defeito |
 | Três componentes chamam `setState` em síncrono dentro de um `useEffect` (`instalar-callout`, `modal-conta-pedido`, `navigation-feedback`) | web | Baixa — apanhado pela regra `react-hooks/set-state-in-effect` da versão 7 do plugin, que a web não usa (ver abaixo) |
 | A web fixa `eslint-plugin-react-hooks@^5` porque o `FlatCompat` resolve o plugin pelo nome e apanhava a versão 7 trazida pela app móvel. Atualizar a web para a 7 é uma decisão à parte, com as três correções acima | `apps/web` | Baixa |
 
