@@ -1,6 +1,6 @@
 # Arquitetura e funcionalidades
 
-Estado da app em `69f3989`, ramo `redesign-dailyme`.
+Estado da app em `3c137f9`, ramo `redesign-dailyme`.
 
 Este documento descreve **o que existe hoje**. Foi escrito a ler o
 código e as migrações, não de memória — cada afirmação tem um ficheiro
@@ -88,7 +88,7 @@ policies não caírem em recursão: `eh_admin()` e `eh_super_admin()`.
 ## 4. Modelo de dados
 
 15 tabelas. O `supabase/schema.sql` só tem o esquema inicial — o resto
-está nas 24 migrações em `supabase/migrations/`.
+está nas 25 migrações em `supabase/migrations/`.
 
 ### Identidade
 
@@ -204,10 +204,15 @@ Mais de vinte rotas: `/admin`, `/admin/alunos`, `/admin/professores`
 `/confirmar` e `/historico`), `/admin/recomendacoes` (com `/nova`,
 `/estudo`, `/[id]`), `/admin/administradores`, `/admin/conta`.
 
-> ⚠️ **Esta área nunca foi revista.** Não há credenciais de
-> administrador disponíveis para teste, por isso nenhum destes ecrãs foi
-> visto em funcionamento durante a revisão de UI/UX. É o maior buraco
-> de conhecimento sobre a app.
+**Revista em parte.** Foram percorridos com dados reais os ecrãs que
+mexem em dinheiro e em privilégios: `/admin`, `/admin/pagamentos`,
+`/confirmar`, `/confirmar/[professorId]`, `/historico`,
+`/historico/[professorId]`, `/admin/recomendacoes` e
+`/admin/administradores`.
+
+Faltam ver `/admin/alunos` e `/admin/professores` com as suas
+sub-rotas — são de consulta e gestão corrente, sem operações
+financeiras.
 
 ---
 
@@ -290,8 +295,8 @@ Registada aqui para não se descobrir duas vezes.
 
 | O quê | Onde | Gravidade |
 |---|---|---|
-| `apagar_propria_conta` falha com `column "tipo" does not exist` — **ninguém consegue apagar a conta** | função SQL, desatualizada desde a `0021` | Alta — RGPD, e a app tem dados de menores |
-| A área `/admin` nunca foi vista em funcionamento | 20+ rotas | Alta — desconhecido |
+| `apagar_propria_conta` falhava com `column "tipo" does not exist` — **ninguém conseguia apagar a conta** | corrigido na migração `0025`, **por aplicar** | Alta — RGPD; o ficheiro está escrito, falta correr |
+| `/admin/alunos` e `/admin/professores` ainda não foram vistos | 2 rotas + sub-rotas | Média — o resto do `/admin` já foi percorrido |
 | Falta ao professor uma via para propor horário | secção 8 | Média |
 | `/aluno/calendario` por construir | | Média |
 | "Os teus alunos" é vocabulário de secretaria para descrever filhos — mas a mesma lista serve adultos inscritos a si próprios | `dashboard/page.tsx` | Baixa — exige distinguir os casos |
