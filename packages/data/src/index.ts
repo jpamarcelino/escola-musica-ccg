@@ -17,3 +17,10 @@ export type { AlunoResumo } from './alunos'
 
 export { recolherDadosEstudo, estudoParaCsv } from './estudo-recomendacoes'
 export type { LinhaEstudo, TotaisEstudo } from './estudo-recomendacoes'
+
+export {
+  listarMatriculasDoAluno,
+  contarNotificacoesPorLer,
+  listarNotificacoes,
+} from './matriculas'
+export type { MatriculaDoAluno, Notificacao } from './matriculas'

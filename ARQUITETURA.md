@@ -52,6 +52,7 @@ O repositório é um workspace pnpm. A web deixou de estar na raiz:
 
 ```
 apps/web/         a aplicação Next.js
+apps/mobile/      a aplicação Expo (React Native)
 packages/core/    lógica sem framework, partilhada
 packages/data/    leituras da base de dados, partilháveis
 packages/types/   vocabulário de estados, gerado do esquema
@@ -95,6 +96,26 @@ chaves ao ambiente, e num bundle de app móvel isso é código entregue ao
 telemóvel de quem a instala. Há um teste que varre todos os pacotes e
 falha se algum mencionar `SERVICE_ROLE`, ler `process.env` ou criar um
 cliente.
+
+### A app móvel
+
+Expo com `expo-router`, em `apps/mobile`. Nesta primeira volta faz só
+uma coisa e só de leitura: um encarregado entra, vê os seus alunos, as
+aulas de cada um e os avisos. Quatro ecrãs.
+
+O que interessa não é o tamanho — é que as contas são as mesmas. A
+próxima ocorrência de uma aula, a hora de Lisboa, o nome da sala, os
+plurais: tudo vem do `@ccg/core` e do `@ccg/data`, os mesmos ficheiros
+que a web usa. Não é código parecido nos dois sítios, é o mesmo código.
+
+A única diferença real entre as duas apps, no que toca a dados, é onde
+mora a sessão: cookies na web, `AsyncStorage` no telemóvel. É por isso
+que o `packages/data` recebe o cliente já construído.
+
+O `metro.config.js` merece uma leitura antes de se lhe mexer: num
+workspace pnpm o Metro precisa de saber que a raiz do monorepo faz parte
+do projeto, e a busca hierárquica tem de ficar **ligada** — ao contrário
+do conselho que se encontra escrito para monorepos npm e yarn.
 
 As **escritas** não estão lá, e a razão está em
 [`AUDITORIA_SERVER_ACTIONS.md`](AUDITORIA_SERVER_ACTIONS.md): das 48
@@ -392,6 +413,9 @@ Registada aqui para não se descobrir duas vezes.
 | `notificacoes.tipo` permite cinco valores e a app só cria `pedido_aceite` — os outros quatro (lembretes de aula e de pagamento, mudança de horário, novo material) nunca são escritos | esquema vs. Server Actions | Baixa — superfície declarada por usar, não erro |
 | `instrumentos.programa` aceita `bebes`, mas `perfis_escola.programa` só aceita `musica` e `danca`: um professor não pode ter o programa da escola de bebés, e `convites.ts` recusa-o também | esquema | A confirmar com o dono — pode ser intencional (bebés dados por professores de música) |
 | As formas das linhas de cada tabela ainda não estão tipadas — falta gerar os tipos do Supabase, que precisa de token, Docker ou ligação à base | `packages/types` | Média |
+| A app móvel nunca correu num dispositivo nem num emulador — não há SDK Android nem iOS nesta máquina. Compila, passa o typecheck e o bundle do Metro fica feito, mas ninguém a viu a funcionar | `apps/mobile` | **A confirmar antes de qualquer distribuição** |
+| Três componentes chamam `setState` em síncrono dentro de um `useEffect` (`instalar-callout`, `modal-conta-pedido`, `navigation-feedback`) | web | Baixa — apanhado pela regra `react-hooks/set-state-in-effect` da versão 7 do plugin, que a web não usa (ver abaixo) |
+| A web fixa `eslint-plugin-react-hooks@^5` porque o `FlatCompat` resolve o plugin pelo nome e apanhava a versão 7 trazida pela app móvel. Atualizar a web para a 7 é uma decisão à parte, com as três correções acima | `apps/web` | Baixa |
 
 ---
 
