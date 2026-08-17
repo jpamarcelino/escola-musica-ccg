@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { EmptyState } from '@/components/empty-state'
+import { BotaoSecundario } from '@/components/botao-secundario'
 
 type RecomendacaoLinha = {
   id: number
@@ -84,9 +86,14 @@ export default async function RecomendacoesPage({
         <section className="recomendacoes-registos">
           <header><p className="partitura-indice">01</p><h2>Todas as recomendações</h2></header>
           {recomendacoes.length === 0 ? (
-            <p className="recomendacoes-vazio">
-              Ainda não há recomendações registadas.
-            </p>
+            /* EmptyState em vez de texto solto: era das poucas listas da
+               app que ainda anunciava o vazio sem dizer o que fazer a
+               seguir, e aqui a próxima ação é evidente. */
+            <EmptyState
+              titulo="Ainda não há recomendações registadas"
+              descricao="Quando um encarregado trouxer outra família, regista aqui a recomendação para o benefício ser atribuído."
+              acao={<BotaoSecundario href="/admin/recomendacoes/nova">Registar recomendação</BotaoSecundario>}
+            />
           ) : (
             <div className="recomendacoes-lista">
               {recomendacoes.map((r) => (

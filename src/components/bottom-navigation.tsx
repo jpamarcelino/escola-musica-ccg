@@ -77,7 +77,13 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
             >
               {ativo && <span className="bottom-nav-ativo" aria-hidden="true" />}
               <Icone className="bottom-nav-icon" size={20} strokeWidth={ativo ? 2 : 1.5} aria-hidden="true" />
-              <span className="max-w-full truncate text-[12px] font-medium leading-none">
+              {/* 11px com tracking apertado, e não 12px: com cinco
+                  separadores a 375px cada um fica com ~75px, e a
+                  secretaria tem os rótulos mais compridos da app —
+                  "Pagamentos" e "Professores" apareciam cortados a meio
+                  ("Pagament…", "Professor…"). Uma etiqueta de navegação
+                  truncada deixa de ser uma etiqueta. */}
+              <span className="max-w-full truncate text-[11px] font-medium leading-none tracking-[-0.01em]">
                 {item.label}
               </span>
             </Link>

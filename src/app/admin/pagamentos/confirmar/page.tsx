@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { LinhaLista, GrupoLista } from '@/components/lista'
+import { LinhaLista, GrupoLista, TituloSeccao } from '@/components/lista'
 import { Distintivo } from '@/components/distintivo'
 import { EmptyState } from '@/components/empty-state'
 
@@ -87,6 +87,9 @@ export default async function ConfirmarMensalidadesPage() {
     )
   }
 
+  const comPendencias = professores.filter((p) => (porConfirmarPorProfessor.get(p.id) ?? 0) > 0)
+  const emDia = professores.filter((p) => (porConfirmarPorProfessor.get(p.id) ?? 0) === 0)
+
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
       <div className="partitura-folha">
@@ -95,19 +98,43 @@ export default async function ConfirmarMensalidadesPage() {
         {professores.length === 0 ? (
           <EmptyState titulo="Ainda não há professores registados" />
         ) : (
-          <div className="admin-diretorio"><GrupoLista>
-            {professores.map((professor) => {
-              const porConfirmar = porConfirmarPorProfessor.get(professor.id) ?? 0
-              return (
-                <LinhaLista
-                  key={professor.id}
-                  href={`/admin/pagamentos/confirmar/${professor.id}`}
-                  titulo={professor.nome}
-                  direita={porConfirmar > 0 ? <Distintivo>{porConfirmar}</Distintivo> : undefined}
-                />
-              )
-            })}
-          </GrupoLista></div>
+          /* A página chama-se "Por confirmar" e listava os 15 professores
+             pela ordem da base de dados — os 5 com pendências ficavam
+             espalhados entre 10 que não pediam nada. Ninguém sai da lista,
+             porque a secretaria também precisa de abrir quem está em dia
+             (para corrigir um valor, ver o histórico); mas quem precisa de
+             atenção vem primeiro e sob um título que o diz. */
+          <div className="admin-diretorio">
+            {comPendencias.length > 0 && (
+              <>
+                <TituloSeccao contagem={comPendencias.length}>A precisar de confirmação</TituloSeccao>
+                <GrupoLista>
+                  {comPendencias.map((professor) => (
+                    <LinhaLista
+                      key={professor.id}
+                      href={`/admin/pagamentos/confirmar/${professor.id}`}
+                      titulo={professor.nome}
+                      direita={<Distintivo>{porConfirmarPorProfessor.get(professor.id)}</Distintivo>}
+                    />
+                  ))}
+                </GrupoLista>
+              </>
+            )}
+            {emDia.length > 0 && (
+              <>
+                <TituloSeccao contagem={emDia.length}>Em dia</TituloSeccao>
+                <GrupoLista>
+                  {emDia.map((professor) => (
+                    <LinhaLista
+                      key={professor.id}
+                      href={`/admin/pagamentos/confirmar/${professor.id}`}
+                      titulo={professor.nome}
+                    />
+                  ))}
+                </GrupoLista>
+              </>
+            )}
+          </div>
         )}
       </div>
     </main>
