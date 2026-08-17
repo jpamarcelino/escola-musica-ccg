@@ -16,6 +16,12 @@
 -- Assim que corre, qualquer código que ainda teste tipo = 'aluno' deixa de
 -- reconhecer as contas e fica sem navegação.
 
+-- Tudo numa transação: no Postgres as alterações de esquema também são
+-- transacionais, por isso um erro a meio desfaz o resto em vez de deixar
+-- a base a meio caminho — com o tipo já migrado mas o trigger ainda a
+-- criar alunos, por exemplo.
+begin;
+
 -- 1. O tipo novo -----------------------------------------------------------
 -- A constraint tem de aceitar 'conta' ANTES de migrar as linhas, e só
 -- depois é que 'aluno' pode deixar de ser aceite. Feito ao contrário, o
@@ -391,3 +397,5 @@ $$;
 create unique index alunos_propria_conta_unica
   on alunos (propria_conta_id)
   where propria_conta_id is not null;
+
+commit;
