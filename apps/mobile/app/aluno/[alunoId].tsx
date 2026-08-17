@@ -181,6 +181,12 @@ export default function AulasDoAluno() {
         )}
 
         <View style={estilos.rodape}>
+          <BotaoSecundario
+            texto="Materiais e metrónomo"
+            onPress={() =>
+              router.push({ pathname: '/aluno/materiais', params: { nome: nome ?? '' } })
+            }
+          />
           <BotaoPrincipal
             texto="Pedir uma aula"
             onPress={() =>
