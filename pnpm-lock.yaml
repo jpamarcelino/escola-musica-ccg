@@ -52,9 +52,6 @@ importers:
       expo-status-bar:
         specifier: ~3.0.9
         version: 3.0.9(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.87.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)
-      lucide-react-native:
-        specifier: ^1.31.0
-        version: 1.31.0(react-native-svg@15.12.1(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.87.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.87.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)
       react:
         specifier: 19.1.0
         version: 19.1.0
@@ -3943,13 +3940,6 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
-
-  lucide-react-native@1.31.0:
-    resolution: {integrity: sha512-PwqFe7jqEHaCQDQs5jp8+IeEMrXb/Uq0lBQH3na6iE27IVxW3YUsIArARzXbOvvrfDuYD4d/I+YqRTT7w6djJw==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-native: '*'
-      react-native-svg: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0
 
   lucide-react@1.31.0:
     resolution: {integrity: sha512-G8u2eEtoHUnUa9f8lbvqDhCiORMnYLdUEo06EEG9MQvHQrInKcX3Pa2TH39MM5qyzRcWETxB0+aOwAPI1g1kEg==}
@@ -9786,12 +9776,6 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
-
-  lucide-react-native@1.31.0(react-native-svg@15.12.1(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.87.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.87.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0):
-    dependencies:
-      react: 19.1.0
-      react-native: 0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.87.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1)
-      react-native-svg: 15.12.1(react-native@0.81.5(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.87.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)
 
   lucide-react@1.31.0(react@19.2.4):
     dependencies:

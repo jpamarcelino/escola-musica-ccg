@@ -1,16 +1,14 @@
 import { ehProfessor } from '@ccg/data'
 import { Redirect, Tabs } from 'expo-router'
-// Um import por ícone, e não do pacote inteiro. O `lucide-react-native`
-// exporta tudo a partir de um ficheiro único e o Metro não elimina o que
-// não se usa: importar sete ícones pelo nome trazia os mais de mil e
-// quinhentos, e com eles 2 MB para dentro da app.
-import Bell from 'lucide-react-native/icons/bell'
-import CalendarDays from 'lucide-react-native/icons/calendar-days'
-import ClipboardCheck from 'lucide-react-native/icons/clipboard-check'
-import House from 'lucide-react-native/icons/house'
-import Inbox from 'lucide-react-native/icons/inbox'
-import UserRound from 'lucide-react-native/icons/user-round'
-import Users from 'lucide-react-native/icons/users'
+import {
+  IconeAlunos,
+  IconeCalendario,
+  IconeCasa,
+  IconePedidos,
+  IconePerfil,
+  IconePresencas,
+  IconeSino,
+} from '../../componentes/icones'
 import { ACarregar } from '../../componentes/base'
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
@@ -54,7 +52,7 @@ export default function LayoutApp() {
         options={{
           title: 'Hoje',
           tabBarIcon: ({ color, focused }) => (
-            <House color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+            <IconeCasa color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
@@ -63,7 +61,7 @@ export default function LayoutApp() {
         options={{
           title: 'Agenda',
           tabBarIcon: ({ color, focused }) => (
-            <CalendarDays color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+            <IconeCalendario color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
@@ -75,7 +73,7 @@ export default function LayoutApp() {
           title: 'Alunos',
           href: professor ? null : '/alunos',
           tabBarIcon: ({ color, focused }) => (
-            <Users color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+            <IconeAlunos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
@@ -85,7 +83,7 @@ export default function LayoutApp() {
           title: 'Avisos',
           href: professor ? null : '/avisos',
           tabBarIcon: ({ color, focused }) => (
-            <Bell color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+            <IconeSino color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
@@ -97,7 +95,7 @@ export default function LayoutApp() {
           title: 'Presenças',
           href: professor ? '/presencas' : null,
           tabBarIcon: ({ color, focused }) => (
-            <ClipboardCheck color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+            <IconePresencas color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
@@ -107,7 +105,7 @@ export default function LayoutApp() {
           title: 'Pedidos',
           href: professor ? '/pedidos' : null,
           tabBarIcon: ({ color, focused }) => (
-            <Inbox color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+            <IconePedidos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
@@ -117,7 +115,7 @@ export default function LayoutApp() {
         options={{
           title: 'Conta',
           tabBarIcon: ({ color, focused }) => (
-            <UserRound color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+            <IconePerfil color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
