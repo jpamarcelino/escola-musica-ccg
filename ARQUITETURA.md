@@ -421,6 +421,7 @@ Registada aqui para não se descobrir duas vezes.
 | As formas das linhas de cada tabela ainda não estão tipadas — falta gerar os tipos do Supabase, que precisa de token, Docker ou ligação à base | `packages/types` | Média |
 | ~~A app móvel nunca correu num dispositivo~~ | **confirmada** em iPhone com Expo Go a 17/08/2026: login, lista de alunos, aulas com data/hora corretas e avisos | — |
 | A app móvel só foi vista num iPhone. O Android não foi experimentado, e é onde vivem a maioria dos encarregados | `apps/mobile` | Média |
+| A data de uma presença não pode ser futura nem cair fora do dia do horário — mas isso é verificado **só pela aplicação**. A RLS da tabela `presencas` garante a posse e mais nada. Já era assim antes da app; fechá-lo quer uma constraint ou trigger, ou seja uma migração | `presencas` | Média — decisão do dono |
 | Não há forma de fazer um pedido de aula pela app — o ecrã vazio manda a pessoa ao site. É consequência de as escritas ainda não estarem partilhadas | `apps/mobile` | Média — decisão de âmbito, não defeito |
 | Três componentes chamam `setState` em síncrono dentro de um `useEffect` (`instalar-callout`, `modal-conta-pedido`, `navigation-feedback`) | web | Baixa — apanhado pela regra `react-hooks/set-state-in-effect` da versão 7 do plugin, que a web não usa (ver abaixo) |
 | A web fixa `eslint-plugin-react-hooks@^5` porque o `FlatCompat` resolve o plugin pelo nome e apanhava a versão 7 trazida pela app móvel. Atualizar a web para a 7 é uma decisão à parte, com as três correções acima | `apps/web` | Baixa |

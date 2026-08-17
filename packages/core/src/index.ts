@@ -65,3 +65,5 @@ export {
   validarRegisto,
 } from './validacao'
 export type { Erro } from './validacao'
+
+export { validarDataDePresenca } from './presencas'

@@ -98,3 +98,48 @@ export async function matriculasComPresencaMarcada(
 
   return new Set((linhas ?? []).map((l) => (l as { matricula_id: number }).matricula_id))
 }
+
+// Os alunos de uma faixa de horário — quem aparece na chamada. Em música
+// é um; em dança são vários, que é a razão de isto ser uma lista.
+export type AlunoDaAula = {
+  id: number
+  aluno_id: string
+  alunos: { nome: string } | null
+  instrumentos: { nome: string } | null
+}
+
+export async function listarAlunosDoHorario(
+  supabase: ClienteCcg,
+  horarioId: number
+): Promise<AlunoDaAula[]> {
+  const { data } = await supabase
+    .from('matriculas')
+    .select('id, aluno_id, alunos(nome), instrumentos(nome)')
+    .eq('horario_final_id', horarioId)
+    .eq('estado', 'confirmado')
+
+  return (data ?? []) as unknown as AlunoDaAula[]
+}
+
+// As presenças já marcadas numa data, para o ecrã abrir com o que lá está
+// em vez de com tudo por marcar.
+export async function presencasDaData(
+  supabase: ClienteCcg,
+  data: string,
+  matriculaIds: number[]
+): Promise<Map<number, string>> {
+  if (matriculaIds.length === 0) return new Map()
+
+  const { data: linhas } = await supabase
+    .from('presencas')
+    .select('matricula_id, estado')
+    .eq('data', data)
+    .in('matricula_id', matriculaIds)
+
+  return new Map(
+    (linhas ?? []).map((l) => {
+      const linha = l as { matricula_id: number; estado: string }
+      return [linha.matricula_id, linha.estado]
+    })
+  )
+}

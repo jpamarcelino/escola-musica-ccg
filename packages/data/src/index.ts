@@ -38,3 +38,14 @@ export type { AulaDoProfessor, HorarioDoProfessor, PedidoPendente } from './prof
 
 export { listarMatriculasParaCobranca, listarMensalidadesDoMes } from './mensalidades'
 export type { MatriculaParaCobranca, MensalidadeDoMes } from './mensalidades'
+
+export { listarAlunosDoHorario, presencasDaData } from './professor'
+export type { AlunoDaAula } from './professor'
+
+export {
+  marcarPresencas,
+  confirmarPedido,
+  recusarPedido,
+  alternarEstadoHorario,
+} from './escritas-professor'
+export type { Resultado, MarcacaoPresenca } from './escritas-professor'

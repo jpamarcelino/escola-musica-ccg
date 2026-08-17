@@ -1,8 +1,9 @@
 import { calcularIdade, formatarDataEscolar, plural } from '@ccg/core'
 import { listarPedidosPendentes, type PedidoPendente } from '@ccg/data'
+import { Link } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { FlatList, RefreshControl, StyleSheet, Text } from 'react-native'
-import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../componentes/base'
+import { ACarregar, Cabecalho, CartaoTocavel, EstadoVazio } from '../../componentes/base'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
 import { cores, espaco, texto } from '../../lib/tema'
@@ -65,15 +66,20 @@ export default function Pedidos() {
       }
       ListFooterComponent={
         pedidos.length > 0 ? (
-          <Text style={estilos.nota}>
-            Confirmar ou recusar faz-se no site — a app ainda só mostra os pedidos.
-          </Text>
+          <Text style={estilos.nota}>Toca num pedido para confirmar ou recusar.</Text>
         ) : null
       }
       renderItem={({ item }) => {
         const idade = calcularIdade(item.alunos?.data_nascimento)
         return (
-          <Cartao>
+          <Link
+            href={{
+              pathname: '/professor/pedido/[matriculaId]',
+              params: { matriculaId: String(item.id) },
+            }}
+            asChild
+          >
+          <CartaoTocavel rotulo={`Responder ao pedido de ${item.alunos?.nome ?? 'aluno'}`}>
             <Text style={estilos.nome}>{item.alunos?.nome ?? 'Aluno'}</Text>
             <Text style={estilos.detalhe}>
               {[
@@ -85,7 +91,8 @@ export default function Pedidos() {
                 .join(' · ')}
             </Text>
             {item.mensagem ? <Text style={estilos.mensagem}>“{item.mensagem}”</Text> : null}
-          </Cartao>
+          </CartaoTocavel>
+          </Link>
         )
       }}
     />

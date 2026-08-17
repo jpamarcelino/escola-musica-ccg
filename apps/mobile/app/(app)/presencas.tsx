@@ -10,19 +10,25 @@ import {
   matriculasComPresencaMarcada,
   type AulaDoProfessor,
 } from '@ccg/data'
+import { Link } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { RefreshControl, ScrollView, StyleSheet, Text } from 'react-native'
-import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
+import {
+  ACarregar,
+  Cabecalho,
+  Cartao,
+  CartaoTocavel,
+  Distintivo,
+  EstadoVazio,
+} from '../../componentes/base'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
 import { cores, espaco, texto } from '../../lib/tema'
 
-// Consulta, não marcação. A app mostra o que falta marcar; marcar
-// continua a ser no site, porque é uma escrita e as escritas ainda não
-// estão partilhadas (ver AUDITORIA_SERVER_ACTIONS.md).
+// O que falta marcar hoje. Cada aula por marcar leva ao ecrã da chamada.
 //
-// Dizer isto no ecrã, e não só no código, evita que um professor fique à
-// espera de encontrar aqui um botão que não existe.
+// Só aparecem aqui as aulas que JÁ ACABARAM: marcar presenças numa aula
+// a decorrer é registar quem esteve antes de a aula ter acontecido.
 export default function Presencas() {
   const { sessao } = useSessao()
   const [porMarcar, setPorMarcar] = useState<AulaDoProfessor[]>([])
@@ -98,13 +104,27 @@ export default function Presencas() {
       ) : (
         <>
           {porMarcar.map((a) => (
-            <Cartao key={a.id}>
-              <Distintivo texto="Por marcar" tom="aviso" />
-              <Text style={estilos.nome}>{a.alunos?.nome ?? 'Aluno'}</Text>
-              <Text style={estilos.detalhe}>
-                {[a.instrumentos?.nome, a.horarios ? horas(a) : null].filter(Boolean).join(' · ')}
-              </Text>
-            </Cartao>
+            <Link
+              key={a.id}
+              href={{
+                pathname: '/professor/presencas/[horarioId]',
+                params: {
+                  horarioId: String(a.horario_final_id),
+                  dia: a.horarios?.dia_semana ?? '',
+                },
+              }}
+              asChild
+            >
+              <CartaoTocavel rotulo={`Marcar presenças de ${a.alunos?.nome ?? 'aluno'}`}>
+                <Distintivo texto="Por marcar" tom="aviso" />
+                <Text style={estilos.nome}>{a.alunos?.nome ?? 'Aluno'}</Text>
+                <Text style={estilos.detalhe}>
+                  {[a.instrumentos?.nome, a.horarios ? horas(a) : null]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </Text>
+              </CartaoTocavel>
+            </Link>
           ))}
 
           {marcadas.map((a) => (
@@ -118,9 +138,7 @@ export default function Presencas() {
           ))}
 
           {porMarcar.length > 0 && (
-            <Text style={estilos.nota}>
-              Marcar presenças faz-se no site — a app ainda só mostra o que está por fazer.
-            </Text>
+            <Text style={estilos.nota}>Toca numa aula para marcar quem esteve.</Text>
           )}
         </>
       )}
