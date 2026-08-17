@@ -1,9 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
-import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula } from '@/lib/datas'
-import { formatarHora } from '@/lib/horarios-grade'
-import { formatarSala } from '@/lib/sala'
+import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, formatarHora, formatarSala } from '@ccg/core'
 
 type Matricula = {
   id: number

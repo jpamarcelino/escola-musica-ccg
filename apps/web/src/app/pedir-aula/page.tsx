@@ -1,19 +1,10 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { DIAS_SEMANA, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separarFaixaEtaria, parseFaixaEtaria, dentroDaFaixa, elegivelParaDisciplina, HOUR_HEIGHT, paraMinutos } from '@ccg/core'
 import { CartaoLink } from '@/components/cartao-link'
 import { Wizard, ListaEscolhas } from '@/components/wizard'
 import { SeletorIdade } from '@/components/seletor-idade'
 import { FormularioPedido } from './formulario-pedido'
-import {
-  MUSICA_IDADE_MIN,
-  MUSICA_IDADE_MAX,
-  separarFaixaEtaria,
-  parseFaixaEtaria,
-  dentroDaFaixa,
-  elegivelParaDisciplina,
-} from '@/lib/idade-disciplinas'
-import { HOUR_HEIGHT, paraMinutos } from '@/lib/horarios-grade'
 
 // Nomes das escolas pelas palavras de quem escolhe, para as etiquetas
 // de "escolhas até agora" no cabeçalho do assistente.

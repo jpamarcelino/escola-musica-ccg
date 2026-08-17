@@ -3,8 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { calcularIdade } from '@/lib/idade'
-import { elegivelParaDisciplina } from '@/lib/idade-disciplinas'
+import { calcularIdade, elegivelParaDisciplina } from '@ccg/core'
 
 export async function escolherDisponibilidades(formData: FormData) {
   const supabase = await createClient()

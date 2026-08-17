@@ -2,22 +2,12 @@ import type { CSSProperties } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
-import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { DIAS_SEMANA, calcularIdade, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separarFaixaEtaria, parseFaixaEtaria, dentroDaFaixa, elegivelParaDisciplina, HOUR_HEIGHT, paraMinutos, formatarHora } from '@ccg/core'
 import { CartaoLink } from '@/components/cartao-link'
 import { Wizard, ListaEscolhas } from '@/components/wizard'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { CampoTextarea } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
-import { calcularIdade } from '@/lib/idade'
-import {
-  MUSICA_IDADE_MIN,
-  MUSICA_IDADE_MAX,
-  separarFaixaEtaria,
-  parseFaixaEtaria,
-  dentroDaFaixa,
-  elegivelParaDisciplina,
-} from '@/lib/idade-disciplinas'
-import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 
 // Nomes das escolas para as etiquetas de "escolhas até agora". Este
 // percurso tem quatro passos e não cinco como o público: a idade não é

@@ -1,12 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { formatarHora } from '@/lib/horarios-grade'
-import { formatarSala } from '@/lib/sala'
-import { agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO } from '@/lib/datas'
+import { formatarHora, formatarSala, agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO, plural } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
-import { plural } from '@/lib/plural'
 
 type Horario = {
   id: number

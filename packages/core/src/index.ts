@@ -1,0 +1,49 @@
+// Lógica de negócio sem framework: nem React, nem Next, nem DOM, nem
+// Supabase. É o que a web e a app móvel vão partilhar literalmente — o
+// mesmo ficheiro, não duas cópias que divergem ao terceiro mês.
+//
+// O critério para uma função entrar aqui é simples: tem de correr sem
+// alterações no Node, no browser e no Hermes. O tsconfig deste pacote não
+// inclui a lib "dom", por isso quem tentar usar `window` não consegue
+// sequer compilar.
+//
+// Não entra aqui nada que faça queries — isso é o packages/data.
+
+export { DIAS_SEMANA } from './dias-semana'
+
+export {
+  agoraNaEscola,
+  dataMaisRecenteDoDia,
+  diaSemanaDaData,
+  dataEhFutura,
+  hojeISO,
+  estadoTemporalAula,
+  formatarDataEscolar,
+  datasDoDia,
+  proximaOcorrenciaDoDia,
+  proximaOcorrenciaDeAula,
+  INICIO_PRESENCAS,
+} from './datas'
+export type { EstadoTemporalAula } from './datas'
+
+export { MESES_ANO_LETIVO, rotuloMes } from './ano-letivo'
+
+export { euros, eurosOuTexto, eurosParaInput } from './moeda'
+
+export { plural, palavra } from './plural'
+
+export { calcularIdade } from './idade'
+
+export { formatarSala } from './sala'
+export type { Sala } from './sala'
+
+export { HOUR_HEIGHT, paraMinutos, formatarHora } from './horarios-grade'
+
+export {
+  MUSICA_IDADE_MIN,
+  MUSICA_IDADE_MAX,
+  separarFaixaEtaria,
+  parseFaixaEtaria,
+  dentroDaFaixa,
+  elegivelParaDisciplina,
+} from './idade-disciplinas'

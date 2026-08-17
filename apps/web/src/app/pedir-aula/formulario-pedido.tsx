@@ -5,7 +5,7 @@ import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { CampoTextarea } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
-import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
+import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@ccg/core'
 import { ModalContaPedido, ModalEscolherAluno } from '@/components/modal-conta-pedido'
 
 type Horario = {

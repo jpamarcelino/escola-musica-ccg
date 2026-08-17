@@ -9,9 +9,11 @@ packages:
   - 'apps/*'
   - 'packages/*'
 # O pnpm bloqueia scripts de instalação por omissão, o que é bom. Estes
-# dois são precisos e são conhecidos:
+# três são precisos e são conhecidos:
+#   esbuild       — binário que o Vitest usa para compilar os testes
 #   sharp         — bindings nativos da otimização de imagens do Next
 #   unrs-resolver — resolução de imports do ESLint
 allowBuilds:
+  esbuild: true
   sharp: true
   unrs-resolver: true

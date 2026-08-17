@@ -43,9 +43,41 @@ instalável como PWA.
 | Primitivas | Radix (`Dialog`, `AlertDialog`) — só acessibilidade, restilizadas |
 | Ícones | Lucide |
 | Alojamento | Vercel (`vercel.json` define um cron) |
-| Dev | `npm run dev` com Turbopack |
+| Dev | `pnpm dev` com Turbopack |
+| Testes | Vitest, só em `packages/core` |
 
-Três clientes Supabase, em `src/lib/supabase/`:
+### Estrutura do repositório
+
+O repositório é um workspace pnpm. A web deixou de estar na raiz:
+
+```
+apps/web/         a aplicação Next.js
+packages/core/    lógica sem framework, partilhada
+```
+
+O `packages/core` é o que a web e a futura app móvel partilham
+literalmente — o mesmo ficheiro, não duas cópias. Só entra ali código
+que corre sem alterações no Node, no browser e no Hermes: datas,
+dinheiro, plurais, idades, salas, faixas etárias e a grelha de horários.
+Não entra nada que faça queries, nem nada que toque no DOM — o
+`tsconfig.json` do pacote não inclui a lib `dom`, por isso quem tentar
+usar `window` não compila.
+
+É publicado em TypeScript, sem passo de build próprio; quem o consome
+compila-o (`transpilePackages` no `next.config.ts`). Em troca não há
+`dist/` desatualizado.
+
+Comandos, todos a partir da raiz:
+
+| | |
+|---|---|
+| `pnpm dev` | servidor de desenvolvimento da web |
+| `pnpm build` | build de produção da web |
+| `pnpm test` | testes de todos os pacotes |
+| `pnpm typecheck` | TypeScript em todos os pacotes |
+| `pnpm lint` | ESLint (só a web tem configuração) |
+
+Três clientes Supabase, em `apps/web/src/lib/supabase/`:
 
 - `server.ts` — Server Components e Server Actions
 - `client.ts` — o pouco que corre no browser
@@ -225,7 +257,7 @@ financeiras.
 
 ## 7. Escrita: as Server Actions
 
-Toda a escrita passa por Server Actions em `src/lib/actions/`. Não há
+Toda a escrita passa por Server Actions em `apps/web/src/lib/actions/`. Não há
 rotas de API para operações de negócio — a única rota de API é o cron.
 
 | Ficheiro | Responsabilidade |
@@ -291,8 +323,8 @@ estrutural.
 - **Estados vazios**: componente `EmptyState`, com ação de saída quando
   faz sentido.
 - **Ações destrutivas**: `BotaoAcaoDestruir` sobre Radix AlertDialog.
-- **Formatação**: `lib/moeda.ts` (Intl, pt-PT), `lib/datas.ts`,
-  `lib/plural.ts`. Datas e dinheiro nunca formatados à mão.
+- **Formatação**: `moeda.ts` (Intl, pt-PT), `datas.ts` e `plural.ts`, os
+  três em `packages/core`. Datas e dinheiro nunca formatados à mão.
 
 ---
 

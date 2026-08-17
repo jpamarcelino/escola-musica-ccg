@@ -7,8 +7,7 @@ import {
   anularRecomendacao,
   atualizarDadosRecomendacao,
 } from '@/lib/actions/recomendacoes'
-import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
-import { euros } from '@/lib/moeda'
+import { MESES_ANO_LETIVO, euros } from '@ccg/core'
 
 type Recomendacao = {
   id: number

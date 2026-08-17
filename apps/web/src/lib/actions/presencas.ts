@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { diaSemanaDaData, dataEhFutura } from '@/lib/datas'
+import { diaSemanaDaData, dataEhFutura } from '@ccg/core'
 
 const ESTADOS_VALIDOS = ['presente', 'falta_aviso', 'falta_sem_aviso']
 

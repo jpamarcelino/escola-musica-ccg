@@ -1,10 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { calcularIdade } from '@/lib/idade'
+import { calcularIdade, formatarHora } from '@ccg/core'
 import { desmatricularAluno } from '@/lib/actions/professor'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
-import { formatarHora } from '@/lib/horarios-grade'
 
 type Matricula = {
   id: number

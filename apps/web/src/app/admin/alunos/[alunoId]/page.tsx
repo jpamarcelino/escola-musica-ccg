@@ -2,9 +2,7 @@ import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
-import { formatarSala } from '@/lib/sala'
-import { calcularIdade } from '@/lib/idade'
-import { euros, eurosOuTexto } from '@/lib/moeda'
+import { formatarSala, calcularIdade, euros, eurosOuTexto } from '@ccg/core'
 
 type AlunoPerfil = {
   nome: string

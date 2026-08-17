@@ -9,6 +9,12 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   : undefined
 
 const nextConfig: NextConfig = {
+  // O @ccg/core é publicado em TypeScript, sem passo de build próprio: o
+  // que está no disco é o que a web e a app móvel consomem. Assim não há
+  // dist/ desatualizado nem "porque é que a minha alteração não aparece".
+  // Em troca, quem o consome tem de o compilar — no Next é esta linha, e
+  // no Metro/Expo é o comportamento por omissão dentro do workspace.
+  transpilePackages: ['@ccg/core'],
   images: {
     remotePatterns: supabaseHost
       ? [{ protocol: 'https', hostname: supabaseHost, pathname: '/storage/v1/object/public/**' }]

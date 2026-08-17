@@ -1,7 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { formatarDataEscolar } from '@/lib/datas'
+import { formatarDataEscolar } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 
 type Matricula = {

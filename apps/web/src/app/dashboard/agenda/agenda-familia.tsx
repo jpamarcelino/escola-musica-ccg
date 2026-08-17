@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { formatarHora } from '@/lib/horarios-grade'
-import { formatarSala } from '@/lib/sala'
-import { agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula } from '@/lib/datas'
+import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 
 type AulaFamilia = {

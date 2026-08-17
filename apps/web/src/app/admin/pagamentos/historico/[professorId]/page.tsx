@@ -4,7 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { atualizarHistoricoMensalidades } from '@/lib/actions/pagamentos'
-import { MESES_ANO_LETIVO, rotuloMes } from '@/lib/ano-letivo'
+import { MESES_ANO_LETIVO, rotuloMes } from '@ccg/core'
 
 type MatriculaAtual = {
   aluno_id: string

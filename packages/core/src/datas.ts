@@ -1,4 +1,4 @@
-import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { DIAS_SEMANA } from './dias-semana'
 
 const FUSO_HORARIO_ESCOLA = 'Europe/Lisbon'
 

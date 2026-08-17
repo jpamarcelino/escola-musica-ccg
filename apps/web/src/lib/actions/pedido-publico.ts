@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { calcularIdade } from '@/lib/idade'
+import { calcularIdade } from '@ccg/core'
 
 // Variantes de login/signup/criarAlunoDependente que não fazem redirect —
 // usadas pelo popup de conta em /pedir-aula, que precisa de ficar na mesma

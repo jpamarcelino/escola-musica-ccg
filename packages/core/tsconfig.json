@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    // Sem "dom" na lib, de propósito. É esta linha que faz o compilador
+    // recusar `window`, `document` ou `localStorage` dentro deste pacote —
+    // a regra "o core não depende do browser" passa a ser verificada pelo
+    // TypeScript em vez de ficar só escrita num README.
+    //
+    // O Intl continua disponível: faz parte do ECMAScript, não do DOM, e
+    // existe no Node e no Hermes (o motor do React Native).
+    "lib": ["ES2020"],
+    "target": "ES2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

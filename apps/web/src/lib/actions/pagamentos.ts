@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
+import { MESES_ANO_LETIVO } from '@ccg/core'
 
 type SupabaseServidor = Awaited<ReturnType<typeof createClient>>
 

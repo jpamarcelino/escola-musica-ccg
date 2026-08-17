@@ -4,10 +4,7 @@ import { getSchoolProfileContext } from '@/lib/auth-context'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
-import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, hojeISO } from '@/lib/datas'
-import { formatarHora } from '@/lib/horarios-grade'
-import { formatarSala } from '@/lib/sala'
-import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, hojeISO, formatarHora, formatarSala, DIAS_SEMANA } from '@ccg/core'
 
 type AulaConfirmada = {
   id: number

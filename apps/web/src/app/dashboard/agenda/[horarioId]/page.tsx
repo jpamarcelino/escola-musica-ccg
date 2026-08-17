@@ -2,8 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
-import { formatarHora } from '@/lib/horarios-grade'
-import { formatarSala } from '@/lib/sala'
+import { formatarHora, formatarSala } from '@ccg/core'
 
 type Aluno = {
   id: number

@@ -3,8 +3,7 @@ import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
-import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
-import { euros, eurosOuTexto } from '@/lib/moeda'
+import { MESES_ANO_LETIVO, euros, eurosOuTexto } from '@ccg/core'
 
 type MatriculaDoProfessor = {
   id: number

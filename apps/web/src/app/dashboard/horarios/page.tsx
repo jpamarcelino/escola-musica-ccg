@@ -8,8 +8,7 @@ import {
   bloquearHorarios,
   desbloquearHorarios,
 } from '@/lib/actions/professor'
-import { DIAS_SEMANA } from '@/lib/dias-semana'
-import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
+import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora } from '@ccg/core'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'

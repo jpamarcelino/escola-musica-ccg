@@ -2,9 +2,7 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA } from '@/lib/dias-semana'
-import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
-import { formatarSala } from '@/lib/sala'
+import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 
 type Confirmado = {

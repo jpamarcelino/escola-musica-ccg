@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA } from '@/lib/dias-semana'
+import { DIAS_SEMANA } from '@ccg/core'
 
 // Fora deste intervalo o Centro Cultural não abre — evita horários
 // disparatados (ex: 1h da manhã) por engano de fuso ou digitação.

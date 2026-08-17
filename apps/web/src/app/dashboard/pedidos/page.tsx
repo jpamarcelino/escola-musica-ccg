@@ -6,7 +6,7 @@ import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
 import { SubmitButton } from '@/components/submit-button'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
-import { agoraNaEscola } from '@/lib/datas'
+import { agoraNaEscola } from '@ccg/core'
 
 type Pedido = {
   id: number

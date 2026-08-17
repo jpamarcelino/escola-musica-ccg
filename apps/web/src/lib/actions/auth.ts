@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { calcularIdade } from '@/lib/idade'
+import { calcularIdade } from '@ccg/core'
 
 async function origem() {
   const headersList = await headers()

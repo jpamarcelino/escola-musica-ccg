@@ -6,8 +6,7 @@ import { SubmitButton } from '@/components/submit-button'
 import { CampoTexto } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
-import { calcularIdade } from '@/lib/idade'
-import { hojeISO } from '@/lib/datas'
+import { calcularIdade, hojeISO } from '@ccg/core'
 import { ehContaCCG } from '@/lib/navegacao'
 
 // Gestão dos perfis de aluno da Conta CCG.

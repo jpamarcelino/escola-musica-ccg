@@ -1,4 +1,4 @@
-import { agoraNaEscola } from '@/lib/datas'
+import { agoraNaEscola } from '@ccg/core'
 
 // Estrutura hero + content surface (DESIGN_SYSTEM_V2.md secção 7).
 //
