@@ -74,8 +74,8 @@
   --color-primary-mid:    #3D7FB8;
   --color-ink:            #241F1C;
   --color-surface-raised: #F5F6F8;
-  --color-positive:       #4B8B6B;
-  --color-warning:        #A8763A;
+  --color-positive:       #3D7658;
+  --color-warning:        #8F632F;
   --color-error:          #9A3B2E;
 
   --radius-small: 12px;
@@ -117,6 +117,13 @@
   --marca-ciano: #00C4DF;
   --marca-vermelho: #DC291E;
   --marca-preto: #231F20;
+  /* O ciano institucional a pintar letras sobre papel dá 1,99:1 — o
+     comentário acima já avisava que não servia para interface, e mesmo
+     assim acabou nas setas de navegação da secretaria e em títulos.
+     Esta é a mesma cor escurecida até passar (5,46:1 sobre papel).
+     Regra: --marca-ciano para superfícies e para o símbolo; este para
+     tudo o que sejam letras ou ícones sobre fundo claro. */
+  --marca-ciano-texto: #06707F;
 }
 
 /* O grão de papel da v1 foi removido: era um filtro SVG feTurbulence a
@@ -499,7 +506,16 @@ body {
    especificidade, por isso um `display: flex` declarado mais abaixo
    no ficheiro ganharia a este `display: none`. */
 @media (min-width: 721px) { .horarios-agenda { display: none; } }
-@media (max-width: 720px) { .horarios-grade { display: none; } }
+/* Só se esconde a grelha onde existe a lista para a substituir.
+   Quatro páginas usam .horarios-grade — o horário do professor visto
+   pela secretaria, o passo de horários do assistente público, o mesmo
+   passo já autenticado, e a grelha do /dashboard/horarios — mas só esta
+   última tem a lista. Sem o seletor de irmão, a regra deixava as outras
+   três em branco no telemóvel, incluindo o passo onde se escolhe
+   disponibilidade para pedir uma aula. */
+@media (max-width: 720px) {
+  .horarios-agenda ~ .horarios-grade { display: none; }
+}
 
 .horarios-coluna-horas {
   position: sticky;
@@ -1944,7 +1960,24 @@ body {
 .admin-mesa-linha:hover, .admin-mesa-linha[data-ativa="true"] { background: color-mix(in srgb, var(--color-azul-logo) 6%, var(--color-papel)); }
 .admin-mesa-linha > label { display: grid; place-items: center; }
 .admin-mesa-linha > button { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; justify-content: center; border: 0; background: transparent; padding: 8px 12px; color: inherit; text-align: left; cursor: pointer; }
-.admin-mesa-linha > button strong { overflow: hidden; width: 100%; font-family: var(--font-fraunces), ui-serif, serif; font-size: 16px; font-weight: 560; text-overflow: ellipsis; white-space: nowrap; }
+/* O nome quebra em vez de truncar. A coluna tem 148px a 375px e um nome
+   com 19 caracteres já não cabe — "Aluno Design Teste 2" e "Aluno Design
+   Teste 4" apareciam ambos como "Aluno Design Te…", indistinguíveis, e o
+   email por baixo também cortado. Num diretório, o nome é a chave da
+   linha: truncá-lo tira à lista a única coisa que ela serve para fazer.
+   Duas linhas chegam para a esmagadora maioria dos nomes portugueses; a
+   partir daí volta a cortar, mas aí já se leu o suficiente. */
+.admin-mesa-linha > button strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 16px;
+  font-weight: 560;
+  line-height: 1.2;
+}
 .admin-mesa-linha > button span { overflow: hidden; max-width: 100%; font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .admin-mesa-linha > button small { overflow: hidden; max-width: 100%; margin-top: 3px; font-size: 10px; color: var(--color-tinta-suave); text-overflow: ellipsis; white-space: nowrap; }
 .admin-mesa-sem-resultados { padding: 52px 18px; color: var(--color-tinta-suave); }
@@ -2129,8 +2162,12 @@ body {
   font-weight: 700;
   transition: color var(--motion-fast) var(--motion-ease-standard), transform var(--motion-fast) var(--motion-ease-enter);
 }
+/* --color-verde (#7FA98C) da 2,49:1 sobre papel — e a cor da Escola de
+   Danca, pensada para superficies, nao para letras. Aqui pinta o texto
+   que diz que a chamada esta completa, por isso usa-se o verde do
+   sistema de estados, que passa contraste. */
 .presencas-progresso[data-completo="true"] > span:last-child {
-  color: var(--color-verde);
+  color: var(--color-positive);
   transform: translateY(-1px);
 }
 .presencas-chamada-lista { border-top: 1px solid var(--color-linha); }
@@ -2636,7 +2673,7 @@ body {
   color: var(--color-azul-fundo);
 }
 .admin-prioridade > a i,
-.admin-operacoes a i { font-style: normal; color: var(--marca-ciano); transition: transform .18s ease; }
+.admin-operacoes a i { font-style: normal; color: var(--marca-ciano-texto); transition: transform .18s ease; }
 .admin-prioridade > a:hover i,
 .admin-operacoes a:hover i { transform: translateX(4px); }
 
@@ -2728,7 +2765,7 @@ body {
 .admin-escolha a:hover { background: color-mix(in srgb, var(--marca-ciano) 7%, transparent); }
 .admin-escolha strong { max-width: 7ch; margin-top: auto; font-family: var(--font-fraunces), ui-serif, serif; font-size: clamp(30px, 5vw, 48px); font-weight: 650; line-height: .95; letter-spacing: -.03em; }
 .admin-escolha p { max-width: 30ch; margin-top: 15px; font-size: 13px; line-height: 1.55; color: var(--color-tinta-suave); }
-.admin-escolha i { position: absolute; right: 30px; bottom: 30px; font-size: 24px; font-style: normal; color: var(--marca-ciano); transition: transform .18s ease; }
+.admin-escolha i { position: absolute; right: 30px; bottom: 30px; font-size: 24px; font-style: normal; color: var(--marca-ciano-texto); transition: transform .18s ease; }
 .admin-escolha a:hover i { transform: translateX(5px); }
 .admin-escolha a:focus-visible,
 .recomendacoes-acoes a:focus-visible,
@@ -2747,7 +2784,7 @@ body {
 .recomendacoes-acoes { display: flex; justify-content: flex-end; gap: 10px; padding-top: 18px; }
 .recomendacoes-acoes a { display: inline-flex; min-height: 44px; align-items: center; gap: 16px; padding: 0 15px; border: 1px solid var(--color-linha); border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--color-azul-fundo); }
 .recomendacoes-acoes a:first-child { border-color: var(--color-azul-fundo); background: var(--color-azul-fundo); color: white; }
-.recomendacoes-acoes i { font-size: 17px; font-style: normal; color: var(--marca-ciano); }
+.recomendacoes-acoes i { font-size: 17px; font-style: normal; color: var(--marca-ciano-texto); }
 .recomendacoes-registos { margin-top: 52px; }
 .recomendacoes-registos > header { display: flex; gap: 14px; align-items: baseline; margin-bottom: 15px; }
 .recomendacoes-registos h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 25px; font-weight: 650; color: var(--color-azul-fundo); }
@@ -2795,6 +2832,28 @@ body {
 .admin-cobranca > form label { font-size: 12px; color: var(--color-tinta-suave); }
 .admin-cobranca > form input { width: 100%; min-height: 40px; border-radius: 4px; background: transparent; }
 .admin-cobranca > form button { min-height: 40px; border-radius: 4px; padding-inline: 13px; }
+/* O formulário de dar por pago não segue a grelha de três colunas dos
+   outros dois: aqui não há rótulo nem campo, só o botão e, quando falta
+   o valor, a frase que explica porque está desativado. Na grelha, o
+   botão caía na coluna de 118px e "Marcar como pago" partia-se em três
+   linhas. */
+.admin-cobranca > form.admin-cobranca-pago {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  max-width: 470px;
+  margin-top: 18px;
+}
+.admin-cobranca > form.admin-cobranca-pago button {
+  min-height: 44px;
+  border-color: var(--color-azul-fundo);
+  background: var(--color-azul-fundo);
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.admin-cobranca > form.admin-cobranca-pago p { flex: 1 1 190px; margin: 0; }
 .admin-cobranca button:focus-visible,
 .admin-cobranca input:focus-visible,
 .admin-guardar:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
@@ -2809,7 +2868,7 @@ body {
 .admin-historico-form .tabela-historico input { border-radius: 2px; }
 
 .recomendacao-detalhe-pagina .partitura-agenda-cabecalho h1 { max-width: 15ch; }
-.recomendacao-detalhe-pagina .partitura-agenda-cabecalho h1 span { color: var(--marca-ciano); }
+.recomendacao-detalhe-pagina .partitura-agenda-cabecalho h1 span { color: var(--marca-ciano-texto); }
 .recomendacao-detalhe-grelha { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 52px; margin-top: 38px; }
 .recomendacao-seccao { padding: 26px 0; border-top: 1px solid var(--color-linha); }
 .recomendacao-seccao:last-child { border-bottom: 1px solid var(--color-linha); }
@@ -2869,7 +2928,7 @@ body {
 .recomendacao-passo { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 0 18px; padding: 30px 0; border-bottom: 1px solid var(--color-linha); }
 .recomendacao-passo-professor { margin-top: 28px; border-top: 1px solid var(--color-linha); }
 .recomendacao-passo > h2 { grid-column: 1 / span 2; display: grid; grid-template-columns: 46px minmax(0, 1fr); margin-bottom: 16px; font-family: var(--font-fraunces), ui-serif, serif; font-size: 22px; font-weight: 650; color: var(--color-azul-fundo); }
-.recomendacao-passo > h2::first-letter { font-family: var(--font-inter), sans-serif; font-size: 11px; color: var(--marca-ciano); }
+.recomendacao-passo > h2::first-letter { font-family: var(--font-inter), sans-serif; font-size: 11px; color: var(--marca-ciano-texto); }
 .recomendacao-passo > :not(h2) { grid-column: 2; }
 .recomendacao-passo-professor > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .recomendacao-passo-professor a { display: inline-flex; min-height: 44px; align-items: center; border-radius: 4px !important; }
@@ -2936,10 +2995,10 @@ body {
 .publico-nav a:last-child { padding-inline: 17px; border: 1px solid var(--color-azul-fundo); border-radius: 4px; }
 .publico-hero { display: grid; min-height: min(620px, 72vh); align-content: center; padding: 64px 0; }
 .publico-hero h1 { max-width: 850px; margin-top: 15px; font-family: var(--font-fraunces), ui-serif, serif; font-size: clamp(54px, 9vw, 112px); font-weight: 620; line-height: .85; letter-spacing: -.055em; }
-.publico-hero h1 em { font-weight: 450; color: var(--marca-ciano); }
+.publico-hero h1 em { font-weight: 450; color: var(--marca-ciano-texto); }
 .publico-hero > p:not(.partitura-sobretitulo) { max-width: 48ch; margin-top: 30px; font-size: 16px; line-height: 1.65; color: var(--color-tinta-suave); }
 .publico-hero > a { display: inline-flex; width: max-content; min-height: 48px; align-items: center; gap: 32px; margin-top: 28px; border-bottom: 1px solid var(--color-azul-fundo); font-weight: 750; }
-.publico-hero > a i { font-style: normal; color: var(--marca-ciano); }
+.publico-hero > a i { font-style: normal; color: var(--marca-ciano-texto); }
 .publico-escolas { padding: 68px 0; border-top: 1px solid var(--color-linha); }
 .publico-escolas > header { display: grid; grid-template-columns: 180px 1fr; align-items: baseline; }
 .publico-escolas h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: clamp(30px, 5vw, 52px); font-weight: 620; }
@@ -2951,7 +3010,7 @@ body {
 .publico-escolas strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 24px; }
 .publico-escolas a p { margin-top: 3px; font-size: 13px; color: var(--color-tinta-suave); }
 .publico-escolas small { padding: 5px 9px; border: 1px solid var(--marca-ciano); border-radius: 999px; font-size: 10px; font-weight: 750; }
-.publico-escolas a > i { font-size: 22px; font-style: normal; color: var(--marca-ciano); }
+.publico-escolas a > i { font-size: 22px; font-style: normal; color: var(--marca-ciano-texto); }
 .publico-rodape { display: flex; min-height: 110px; align-items: center; justify-content: space-between; border-top: 1px solid var(--color-linha); font-family: var(--font-fraunces), ui-serif, serif; font-style: italic; }
 .publico-rodape a { min-height: 44px; display: inline-flex; align-items: center; font-family: var(--font-inter), sans-serif; font-size: 12px; font-style: normal; font-weight: 700; }
 
@@ -3111,4 +3170,27 @@ button[data-pending="true"] { cursor: progress; }
   :where(input, textarea, select) { transition-duration: 1ms !important; }
   .motion-copy-button:active,
   .motion-tabs button:active { transform: none; }
+}
+
+/* ── Administradores ─────────────────────────────────────────────────
+   O ecrã onde se dá e tira acesso integral à escola. */
+.admin-permissoes-nota {
+  margin-bottom: 18px;
+  max-width: 52ch;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--color-tinta-suave);
+}
+/* O botão acompanha o scroll em vez de ficar no fim de 18 nomes. Fica
+   acima da barra de navegação, com a mesma folga que o conteúdo usa. */
+.admin-permissoes-guardar {
+  position: sticky;
+  bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  margin-top: 22px;
+  padding: 12px 0;
+  background: linear-gradient(to top, var(--color-papel) 62%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-permissoes-guardar { transition: none; }
 }

@@ -117,38 +117,22 @@ export default async function ConfirmarMensalidadesProfessorPage({
               const numeroFatura = mensalidadePorMatricula.get(m.id)?.numero_fatura ?? ''
               return (
                 <article key={m.id} className="admin-cobranca">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="lista-item-titulo">{m.aluno?.nome}</p>
-                      <p className="lista-item-sub">{m.instrumentos?.nome}</p>
-                    </div>
-                    <form action={marcarMensalidadePaga}>
-                      <input type="hidden" name="matriculaId" value={m.id} />
-                      <input type="hidden" name="alunoId" value={m.aluno_id} />
-                      <input type="hidden" name="professorId" value={professorId} />
-                      <input
-                        type="hidden"
-                        name="instrumentoNome"
-                        value={m.instrumentos?.nome ?? ''}
-                      />
-                      <input type="hidden" name="ano" value={ano} />
-                      <input type="hidden" name="mes" value={mes} />
-                      <input type="hidden" name="valor" value={m.valor_mensal ?? 0} />
-                      <input type="hidden" name="pago" value="true" />
-                      <input type="hidden" name="numeroFatura" value={numeroFatura} />
-                      <button
-                        type="submit"
-                        disabled={m.valor_mensal === null}
-                        className="rounded-[13px] border border-[var(--color-linha)] px-3 py-[6px] text-[13px] font-medium text-[var(--color-tinta)]"
-                      >
-                        Marcar como pago
-                      </button>
-                    </form>
+                  <div>
+                    <p className="lista-item-titulo">{m.aluno?.nome}</p>
+                    <p className="lista-item-sub">{m.instrumentos?.nome}</p>
                   </div>
+
+                  {/* A ordem do cartão segue a ordem do trabalho: definir o
+                      valor, registar a fatura, e só depois dar por pago.
+                      Estava ao contrário — "Marcar como pago" vinha primeiro,
+                      desativado, antes do campo que o desbloqueia. Quem
+                      chegava via a ação principal morta sem nada a explicar
+                      porquê. */}
                   <form action={definirValorMensal} className="flex items-center gap-2">
                     <input type="hidden" name="matriculaId" value={m.id} />
-                    <label className="text-xs text-foreground/60">Valor mensal (€)</label>
+                    <label htmlFor={`valor-${m.id}`} className="text-xs text-foreground/60">Valor mensal (€)</label>
                     <input
+                      id={`valor-${m.id}`}
                       type="number"
                       step="0.01"
                       min="0"
@@ -163,6 +147,7 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       Guardar
                     </button>
                   </form>
+
                   <form action={definirNumeroFatura} className="flex items-center gap-2">
                     <input type="hidden" name="matriculaId" value={m.id} />
                     <input type="hidden" name="alunoId" value={m.aluno_id} />
@@ -176,8 +161,9 @@ export default async function ConfirmarMensalidadesProfessorPage({
                     <input type="hidden" name="mes" value={mes} />
                     <input type="hidden" name="valor" value={m.valor_mensal ?? 0} />
                     <input type="hidden" name="pago" value="false" />
-                    <label className="text-xs text-foreground/60">Nº fatura</label>
+                    <label htmlFor={`fatura-${m.id}`} className="text-xs text-foreground/60">Nº fatura</label>
                     <input
+                      id={`fatura-${m.id}`}
                       type="text"
                       name="numeroFatura"
                       defaultValue={numeroFatura}
@@ -190,6 +176,36 @@ export default async function ConfirmarMensalidadesProfessorPage({
                     >
                       Guardar
                     </button>
+                  </form>
+
+                  <form action={marcarMensalidadePaga} className="admin-cobranca-pago">
+                    <input type="hidden" name="matriculaId" value={m.id} />
+                    <input type="hidden" name="alunoId" value={m.aluno_id} />
+                    <input type="hidden" name="professorId" value={professorId} />
+                    <input
+                      type="hidden"
+                      name="instrumentoNome"
+                      value={m.instrumentos?.nome ?? ''}
+                    />
+                    <input type="hidden" name="ano" value={ano} />
+                    <input type="hidden" name="mes" value={mes} />
+                    <input type="hidden" name="valor" value={m.valor_mensal ?? 0} />
+                    <input type="hidden" name="pago" value="true" />
+                    <input type="hidden" name="numeroFatura" value={numeroFatura} />
+                    <button
+                      type="submit"
+                      disabled={m.valor_mensal === null}
+                      className="rounded-[13px] border border-[var(--color-linha)] px-3 py-[6px] text-[13px] font-medium text-[var(--color-tinta)] disabled:opacity-45"
+                    >
+                      Marcar como pago
+                    </button>
+                    {/* Um botão desativado sem explicação é um beco: vê-se
+                        que não dá, não se vê o que fazer para dar. */}
+                    {m.valor_mensal === null && (
+                      <p className="mt-[6px] text-xs text-foreground/60">
+                        Define o valor mensal para poder marcar como pago.
+                      </p>
+                    )}
                   </form>
                 </article>
               )

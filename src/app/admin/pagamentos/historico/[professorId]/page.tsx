@@ -4,7 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { atualizarHistoricoMensalidades } from '@/lib/actions/pagamentos'
-import { MESES_ANO_LETIVO } from '@/lib/ano-letivo'
+import { MESES_ANO_LETIVO, rotuloMes } from '@/lib/ano-letivo'
 
 type MatriculaAtual = {
   aluno_id: string
@@ -160,12 +160,19 @@ export default async function HistoricoPagamentosProfessorPage({
                                   readOnly
                                   name={`v_${aluno.id}_${ano}_${mes}`}
                                   value="DT"
+                                  aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: desistência`}
                                   title="Desistência — aluno saiu antes deste mês."
                                   className="celula-desistencia"
                                 />
                               </td>
                               <td className="th-fatura">
-                                <input type="text" readOnly name={`f_${aluno.id}_${ano}_${mes}`} value="" />
+                                <input
+                                  type="text"
+                                  readOnly
+                                  name={`f_${aluno.id}_${ano}_${mes}`}
+                                  value=""
+                                  aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: sem fatura`}
+                                />
                               </td>
                             </Fragment>
                           )
@@ -179,6 +186,7 @@ export default async function HistoricoPagamentosProfessorPage({
                                 name={`v_${aluno.id}_${ano}_${mes}`}
                                 defaultValue={celula?.valor != null ? celula.valor.toFixed(2) : ''}
                                 placeholder="--"
+                                aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: valor em euros`}
                               />
                             </td>
                             <td className="th-fatura">
@@ -188,6 +196,7 @@ export default async function HistoricoPagamentosProfessorPage({
                                 name={`f_${aluno.id}_${ano}_${mes}`}
                                 defaultValue={celula?.numero_fatura ?? ''}
                                 placeholder="--"
+                                aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: número de fatura`}
                               />
                             </td>
                           </Fragment>

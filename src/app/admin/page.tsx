@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { saudacaoDoDia } from '@/components/hero-section'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -54,7 +55,7 @@ export default async function AdminPage() {
     <main id="conteudo-principal" className="partitura-pagina admin-pagina">
       <div className="partitura-folha">
         <header className="admin-cabecalho">
-          <div><p className="partitura-sobretitulo">Secretaria · visão geral</p><h1>Bom dia, {primeiroNome}.</h1><p>Estado operacional das Escolas Artísticas.</p></div>
+          <div><p className="partitura-sobretitulo">Secretaria · visão geral</p><h1>{saudacaoDoDia()}, {primeiroNome}.</h1><p>Estado operacional das Escolas Artísticas.</p></div>
           <time>{new Intl.DateTimeFormat('pt-PT', { day: '2-digit', month: 'short' }).format(new Date()).replace('.', '')}</time>
         </header>
 

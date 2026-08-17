@@ -57,12 +57,14 @@ export default async function AdminAdministradoresPage() {
 
         <ConvidarAdminForm action={criarConviteAdmin} />
 
-        <p className="text-xs text-foreground/50">
-          Quem estiver marcado ganha acesso à Visão geral. Não te consegues
-          desmarcar a ti próprio, para nunca ficares sem acesso.
-        </p>
-
+        {/* O aviso estava em text-foreground/50 e solto entre o convite e
+            a lista. Explica a regra desta lista, por isso vive com ela. */}
         <form action={atualizarAdministradores} className="admin-permissoes-form">
+          <p className="admin-permissoes-nota">
+            Quem estiver marcado ganha acesso à gestão integral da escola —
+            alunos, professores e pagamentos. Não te consegues desmarcar a ti
+            próprio, para nunca ficares sem acesso.
+          </p>
           <div className="space-y-2">
             {professores.map((professor) => {
               const souEu = professor.id === user.id
@@ -86,9 +88,15 @@ export default async function AdminAdministradoresPage() {
               )
             })}
           </div>
-          <button type="submit" className="botao-cartao">
-            Guardar administradores
-          </button>
+          {/* Colado ao fundo do ecrã: a lista tem 18 nomes e o botão ficava
+              a 1500px do topo. Marcava-se uma caixa em cima e era preciso
+              percorrer tudo para gravar — e quem não percorresse saía da
+              página convencido de que tinha guardado. */}
+          <div className="admin-permissoes-guardar">
+            <button type="submit" className="botao-cartao">
+              Guardar administradores
+            </button>
+          </div>
         </form>
       </div>
     </main>
