@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native'
 import { supabase } from '../lib/supabase'
-import { cores, espaco, raio } from '../lib/tema'
+import { cores, espaco, raio, texto } from '../lib/tema'
 
 export default function Entrar() {
   const router = useRouter()
@@ -44,7 +44,7 @@ export default function Entrar() {
       return
     }
 
-    router.replace('/alunos')
+    router.replace('/')
   }
 
   return (
@@ -67,7 +67,7 @@ export default function Entrar() {
             keyboardType="email-address"
             inputMode="email"
             placeholder="nome@exemplo.pt"
-            placeholderTextColor={cores.textoSuave}
+            placeholderTextColor={cores.tintaSuave}
           />
         </View>
 
@@ -101,7 +101,7 @@ export default function Entrar() {
           ]}
         >
           {aEntrar ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={cores.branco} />
           ) : (
             <Text style={estilos.botaoTexto}>Entrar</Text>
           )}
@@ -117,50 +117,32 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     padding: espaco.l,
     gap: espaco.m,
+    backgroundColor: cores.papel,
   },
-  titulo: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: cores.texto,
-  },
-  subtitulo: {
-    fontSize: 16,
-    color: cores.textoSuave,
-    marginBottom: espaco.l,
-  },
+  titulo: { ...texto.titulo, fontSize: 32, lineHeight: 38, color: cores.tinta },
+  subtitulo: { ...texto.corpo, color: cores.tintaSuave, marginBottom: espaco.l },
   campo: { gap: espaco.xs },
-  etiqueta: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: cores.texto,
-  },
+  etiqueta: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
   input: {
     borderWidth: 1,
-    borderColor: cores.contorno,
-    borderRadius: raio.cartao,
+    borderColor: cores.linha,
+    borderRadius: raio.botao,
     paddingHorizontal: espaco.m,
     // 48 pontos de altura: é o mínimo confortável para um dedo, o mesmo
     // que a web usa nos seus campos.
     height: 48,
-    fontSize: 16,
-    color: cores.texto,
-    backgroundColor: cores.superficie,
+    ...texto.corpo,
+    color: cores.tinta,
+    backgroundColor: cores.branco,
   },
-  erro: {
-    color: cores.vermelho,
-    fontSize: 14,
-  },
+  erro: { ...texto.pequeno, color: cores.erro },
   botao: {
-    backgroundColor: cores.cianoTexto,
+    backgroundColor: cores.azulFundo,
     borderRadius: raio.botao,
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: espaco.s,
   },
-  botaoTexto: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.branco },
 })

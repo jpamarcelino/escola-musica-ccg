@@ -24,3 +24,14 @@ export {
   listarNotificacoes,
 } from './matriculas'
 export type { MatriculaDoAluno, Notificacao } from './matriculas'
+
+export { obterPerfilEscola, ehContaCcg, ehProfessor } from './perfil'
+export type { PerfilEscola } from './perfil'
+
+export {
+  listarAulasDoProfessor,
+  listarHorariosDoProfessor,
+  listarPedidosPendentes,
+  matriculasComPresencaMarcada,
+} from './professor'
+export type { AulaDoProfessor, HorarioDoProfessor, PedidoPendente } from './professor'

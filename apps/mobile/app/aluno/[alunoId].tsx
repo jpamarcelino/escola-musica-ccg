@@ -8,30 +8,38 @@ import {
   proximaOcorrenciaDeAula,
 } from '@ccg/core'
 import { listarMatriculasDoAluno, type MatriculaDoAluno } from '@ccg/data'
-import { Redirect, useLocalSearchParams } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useSessao } from '../../lib/sessao'
+import { RefreshControl, ScrollView, StyleSheet, Text } from 'react-native'
+import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, raio } from '../../lib/tema'
+import { cores, espaco, texto } from '../../lib/tema'
 
 export default function AulasDoAluno() {
-  const { alunoId } = useLocalSearchParams<{ alunoId: string }>()
-  const { sessao, aCarregar: sessaoACarregar } = useSessao()
+  const { alunoId, nome } = useLocalSearchParams<{ alunoId: string; nome?: string }>()
   const [matriculas, setMatriculas] = useState<MatriculaDoAluno[]>([])
   const [aCarregar, setACarregar] = useState(true)
+  const [aRecarregar, setARecarregar] = useState(false)
 
   useEffect(() => {
     if (!alunoId) return
-    listarMatriculasDoAluno(supabase, alunoId)
-      .then(setMatriculas)
-      .finally(() => setACarregar(false))
+    let ativo = true
+    const buscar = async () => {
+      const lista = await listarMatriculasDoAluno(supabase, alunoId)
+      if (!ativo) return
+      setMatriculas(lista)
+      setACarregar(false)
+    }
+    void buscar()
+    return () => {
+      ativo = false
+    }
   }, [alunoId])
 
   // As mesmas contas que a página /aluno/[alunoId] da web faz, com as
   // mesmas funções — não é código parecido, é o mesmo ficheiro.
-  const { aulas, pendentes, hoje } = useMemo(() => {
-    const agora = agoraNaEscola()
+  const { aulas, pendentes, agora } = useMemo(() => {
+    const momento = agoraNaEscola()
     const confirmadas = matriculas
       .filter((m) => m.estado === 'confirmado' && m.horarios)
       .map((m) => ({
@@ -40,7 +48,7 @@ export default function AulasDoAluno() {
           m.horarios!.dia_semana,
           m.horarios!.hora_inicio,
           m.horarios!.hora_fim,
-          agora
+          momento
         ),
       }))
       .sort(
@@ -52,140 +60,103 @@ export default function AulasDoAluno() {
     return {
       aulas: confirmadas,
       pendentes: matriculas.filter((m) => m.estado === 'a_escolher').length,
-      hoje: agora,
+      agora: momento,
     }
   }, [matriculas])
 
-  if (sessaoACarregar || aCarregar) {
-    return (
-      <View style={estilos.centro}>
-        <ActivityIndicator color={cores.cianoTexto} />
-      </View>
-    )
-  }
-
-  if (!sessao) return <Redirect href="/entrar" />
+  if (aCarregar) return <ACarregar />
 
   return (
-    <ScrollView contentContainerStyle={estilos.conteudo}>
-      {pendentes > 0 ? (
-        <View style={estilos.pendente}>
-          <Text style={estilos.pendenteTexto}>
-            {plural(pendentes, 'pedido à espera de horário', 'pedidos à espera de horário')}
-          </Text>
-        </View>
-      ) : null}
+    <>
+      <Stack.Screen options={{ title: nome ?? 'Aulas' }} />
+      <ScrollView
+        contentContainerStyle={estilos.conteudo}
+        refreshControl={
+          <RefreshControl
+            refreshing={aRecarregar}
+            onRefresh={() => {
+              setARecarregar(true)
+              listarMatriculasDoAluno(supabase, alunoId)
+                .then(setMatriculas)
+                .finally(() => setARecarregar(false))
+            }}
+            tintColor={cores.azulFundo}
+          />
+        }
+      >
+        <Cabecalho
+          titulo={nome ?? 'Aulas'}
+          descricao={
+            aulas.length > 0
+              ? plural(aulas.length, 'aula marcada', 'aulas marcadas')
+              : undefined
+          }
+        />
 
-      {aulas.length === 0 ? (
-        // Dois vazios diferentes, e dizê-lo importa: quem tem um pedido à
-        // espera precisa de saber que está a andar; quem não tem nenhum
-        // precisa de saber que a bola está do seu lado. A mensagem antiga
-        // dizia "assim que um professor confirmar" mesmo a quem nunca
-        // tinha pedido nada — prometia uma coisa que não ia acontecer.
-        <View style={estilos.vazio}>
-          {pendentes > 0 ? (
-            <>
-              <Text style={estilos.vazioTitulo}>Ainda não há aulas confirmadas.</Text>
-              <Text style={estilos.vazioTexto}>
-                Assim que um professor confirmar o horário, a aula aparece aqui.
-              </Text>
-            </>
+        {pendentes > 0 && (
+          <Cartao style={estilos.pendente}>
+            <Distintivo
+              texto={plural(pendentes, 'pedido à espera de horário', 'pedidos à espera de horário')}
+              tom="aviso"
+            />
+          </Cartao>
+        )}
+
+        {aulas.length === 0 ? (
+          // Dois vazios diferentes, e dizê-lo importa: quem tem um pedido
+          // à espera precisa de saber que está a andar; quem não tem
+          // nenhum precisa de saber que a bola está do seu lado.
+          pendentes > 0 ? (
+            <EstadoVazio
+              titulo="Ainda não há aulas confirmadas."
+              descricao="Assim que um professor confirmar o horário, a aula aparece aqui."
+            />
           ) : (
-            <>
-              <Text style={estilos.vazioTitulo}>Ainda não há aulas.</Text>
-              <Text style={estilos.vazioTexto}>
-                Para começar, faz um pedido de aula no site da escola. Depois de
-                um professor confirmar o horário, as aulas aparecem aqui.
-              </Text>
-            </>
-          )}
-        </View>
-      ) : (
-        <>
-          <Text style={estilos.resumo}>
-            {plural(aulas.length, 'aula marcada', 'aulas marcadas')}
-          </Text>
-          {aulas.map((aula) => {
-            const horario = aula.horarios!
-            const estado = estadoTemporalAula(
-              aula.data,
-              horario.hora_inicio,
-              horario.hora_fim,
-              hoje
-            )
-            const sala = formatarSala(horario.salas)
+            <EstadoVazio
+              titulo="Ainda não há aulas."
+              descricao="Para começar, faz um pedido de aula no site da escola. Depois de um professor confirmar o horário, as aulas aparecem aqui."
+            />
+          )
+        ) : (
+          <>
+            {aulas.map((aula) => {
+              const h = aula.horarios!
+              const estado = estadoTemporalAula(aula.data, h.hora_inicio, h.hora_fim, agora)
+              const sala = formatarSala(h.salas)
 
-            return (
-              <View key={aula.id} style={estilos.cartao}>
-                {estado === 'agora' ? (
-                  <Text style={estilos.agora}>A decorrer</Text>
-                ) : null}
-
-                <Text style={estilos.disciplina}>
-                  {aula.instrumentos?.nome ?? 'Aula'}
-                </Text>
-
-                <Text style={estilos.quando}>
-                  {horario.dia_semana}, {formatarDataEscolar(aula.data)} ·{' '}
-                  {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
-                </Text>
-
-                <Text style={estilos.detalhe}>
-                  {aula.profiles?.nome ?? 'Professor por atribuir'}
-                  {sala ? ` · ${sala}` : ''}
-                </Text>
-              </View>
-            )
-          })}
-          <Text style={estilos.nota}>
-            {aulas.length === 1
-              ? 'A próxima ocorrência desta aula.'
-              : 'A próxima ocorrência de cada aula.'}
-          </Text>
-        </>
-      )}
-    </ScrollView>
+              return (
+                <Cartao key={aula.id}>
+                  {estado === 'agora' && <Distintivo texto="A decorrer" tom="positivo" />}
+                  <Text style={estilos.disciplina}>{aula.instrumentos?.nome ?? 'Aula'}</Text>
+                  <Text style={estilos.quando}>
+                    {h.dia_semana}, {formatarDataEscolar(aula.data)} ·{' '}
+                    {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}
+                  </Text>
+                  <Text style={estilos.detalhe}>
+                    {[aula.profiles?.nome ?? 'Professor por atribuir', sala]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </Text>
+                </Cartao>
+              )
+            })}
+            <Text style={estilos.nota}>
+              {aulas.length === 1
+                ? 'A próxima ocorrência desta aula.'
+                : 'A próxima ocorrência de cada aula.'}
+            </Text>
+          </>
+        )}
+      </ScrollView>
+    </>
   )
 }
 
 const estilos = StyleSheet.create({
-  centro: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  conteudo: { padding: espaco.m, gap: espaco.s },
-  resumo: {
-    fontSize: 14,
-    color: cores.textoSuave,
-    marginBottom: espaco.xs,
-  },
-  pendente: {
-    backgroundColor: '#FDF4E7',
-    borderRadius: raio.cartao,
-    padding: espaco.m,
-    marginBottom: espaco.s,
-  },
-  pendenteTexto: { color: cores.aviso, fontSize: 15, fontWeight: '600' },
-  cartao: {
-    backgroundColor: cores.superficie,
-    borderRadius: raio.cartao,
-    padding: espaco.m,
-    gap: espaco.xs,
-  },
-  agora: {
-    color: cores.positivo,
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  disciplina: { fontSize: 17, fontWeight: '600', color: cores.texto },
-  quando: { fontSize: 15, color: cores.texto },
-  detalhe: { fontSize: 14, color: cores.textoSuave },
-  vazio: { padding: espaco.l, gap: espaco.s },
-  vazioTitulo: { fontSize: 18, fontWeight: '600', color: cores.texto },
-  vazioTexto: { fontSize: 15, color: cores.textoSuave, lineHeight: 22 },
-  nota: {
-    fontSize: 13,
-    color: cores.textoSuave,
-    marginTop: espaco.s,
-    textAlign: 'center',
-  },
+  conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
+  pendente: { backgroundColor: cores.papel2, borderColor: cores.linha },
+  disciplina: { ...texto.cartao, color: cores.tinta },
+  quando: { ...texto.corpo, color: cores.tinta },
+  detalhe: { ...texto.pequeno, color: cores.tintaSuave },
+  nota: { ...texto.pequeno, color: cores.tintaSuave, marginTop: espaco.s, textAlign: 'center' },
 })
