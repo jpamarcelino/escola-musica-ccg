@@ -77,11 +77,28 @@ export default function AulasDoAluno() {
       ) : null}
 
       {aulas.length === 0 ? (
+        // Dois vazios diferentes, e dizê-lo importa: quem tem um pedido à
+        // espera precisa de saber que está a andar; quem não tem nenhum
+        // precisa de saber que a bola está do seu lado. A mensagem antiga
+        // dizia "assim que um professor confirmar" mesmo a quem nunca
+        // tinha pedido nada — prometia uma coisa que não ia acontecer.
         <View style={estilos.vazio}>
-          <Text style={estilos.vazioTitulo}>Ainda não há aulas confirmadas.</Text>
-          <Text style={estilos.vazioTexto}>
-            Assim que um professor confirmar um horário, a aula aparece aqui.
-          </Text>
+          {pendentes > 0 ? (
+            <>
+              <Text style={estilos.vazioTitulo}>Ainda não há aulas confirmadas.</Text>
+              <Text style={estilos.vazioTexto}>
+                Assim que um professor confirmar o horário, a aula aparece aqui.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={estilos.vazioTitulo}>Ainda não há aulas.</Text>
+              <Text style={estilos.vazioTexto}>
+                Para começar, faz um pedido de aula no site da escola. Depois de
+                um professor confirmar o horário, as aulas aparecem aqui.
+              </Text>
+            </>
+          )}
         </View>
       ) : (
         <>

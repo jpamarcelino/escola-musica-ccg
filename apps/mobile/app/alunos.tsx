@@ -97,12 +97,17 @@ export default function Alunos() {
       }
       renderItem={({ item }) => (
         <Link href={`/aluno/${item.id}`} asChild>
+          {/* Estilo em objeto e não em função: dentro de um `Link asChild`
+              o expo-router clona o elemento, e um `style` que seja função
+              não chega a ser chamado — o cartão ficava sem fundo nenhum,
+              a ler-se como texto solto em vez de algo em que se toca. */}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Ver as aulas de ${item.nome}`}
-            style={({ pressed }) => [estilos.cartao, pressed && { opacity: 0.9 }]}
+            style={estilos.cartao}
           >
             <Text style={estilos.nome}>{item.nome}</Text>
+            <Text style={estilos.seta}>›</Text>
           </Pressable>
         </Link>
       )}
@@ -122,24 +127,38 @@ function Centro({ children }: { children: React.ReactNode }) {
 const estilos = StyleSheet.create({
   centro: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   lista: { padding: espaco.m, gap: espaco.s },
+  // O "Ver avisos" é uma ação, os alunos são a lista. Distinguem-se pela
+  // forma e não só pela cor: este é um botão em pílula, alinhado à
+  // esquerda; os alunos são cartões de largura inteira com uma seta.
   avisos: {
+    alignSelf: 'flex-start',
+    backgroundColor: cores.superficie,
+    borderWidth: 1,
+    borderColor: cores.contorno,
+    borderRadius: raio.botao,
+    paddingVertical: espaco.s + 2,
+    paddingHorizontal: espaco.m,
+    marginBottom: espaco.m,
+  },
+  avisosTexto: { fontSize: 15, fontWeight: '600', color: cores.cianoTexto },
+  cartao: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: cores.superficie,
+    // O fundo cinzento sozinho tem 2% de diferença para o branco e não se
+    // vê — no telemóvel o cartão lia-se como texto solto. O contorno é
+    // que faz o cartão existir.
     borderWidth: 1,
     borderColor: cores.contorno,
     borderRadius: raio.cartao,
-    padding: espaco.m,
-    marginBottom: espaco.s,
-  },
-  avisosTexto: { fontSize: 16, fontWeight: '600', color: cores.cianoTexto },
-  cartao: {
-    backgroundColor: cores.superficie,
-    borderRadius: raio.cartao,
-    padding: espaco.m,
-    // 44 pontos é o alvo de toque mínimo recomendado; com este padding a
-    // linha passa disso com folga.
+    paddingHorizontal: espaco.m,
+    // 44 pontos é o alvo de toque mínimo recomendado; 56 passa disso com
+    // folga.
     minHeight: 56,
-    justifyContent: 'center',
   },
   nome: { fontSize: 17, fontWeight: '600', color: cores.texto },
+  seta: { fontSize: 24, color: cores.textoSuave, marginTop: -2 },
   vazio: { padding: espaco.l, gap: espaco.s },
   vazioTitulo: { fontSize: 18, fontWeight: '600', color: cores.texto },
   vazioTexto: { fontSize: 15, color: cores.textoSuave, lineHeight: 22 },
