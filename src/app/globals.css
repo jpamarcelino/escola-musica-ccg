@@ -3069,3 +3069,26 @@ button[data-pending="true"] { cursor: progress; }
   .motion-copy-button:active,
   .motion-tabs button:active { transform: none; }
 }
+
+/* ── Administradores ─────────────────────────────────────────────────
+   O ecrã onde se dá e tira acesso integral à escola. */
+.admin-permissoes-nota {
+  margin-bottom: 18px;
+  max-width: 52ch;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--color-tinta-suave);
+}
+/* O botão acompanha o scroll em vez de ficar no fim de 18 nomes. Fica
+   acima da barra de navegação, com a mesma folga que o conteúdo usa. */
+.admin-permissoes-guardar {
+  position: sticky;
+  bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  margin-top: 22px;
+  padding: 12px 0;
+  background: linear-gradient(to top, var(--color-papel) 62%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-permissoes-guardar { transition: none; }
+}
