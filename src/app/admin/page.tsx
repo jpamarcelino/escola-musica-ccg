@@ -22,19 +22,30 @@ export default async function AdminPage() {
     redirect('/dashboard')
   }
 
-  const [{ data: nomeData }, { data: perfisData }, { data: matriculasData }, { count: recomendacoesPorValidar }] =
-    await Promise.all([
-      supabase.from('profiles').select('nome').eq('id', user.id).single(),
-      supabase.from('perfis_escola').select('tipo'),
-      supabase.from('matriculas').select('estado'),
-      supabase
-        .from('recomendacoes')
-        .select('id', { count: 'exact', head: true })
-        .eq('estado', 'registada'),
-    ])
+  const [
+    { data: nomeData },
+    { data: perfisData },
+    { data: matriculasData },
+    { count: recomendacoesPorValidar },
+    { count: totalAlunos },
+  ] = await Promise.all([
+    supabase.from('profiles').select('nome').eq('id', user.id).single(),
+    supabase.from('perfis_escola').select('tipo'),
+    supabase.from('matriculas').select('estado'),
+    supabase
+      .from('recomendacoes')
+      .select('id', { count: 'exact', head: true })
+      .eq('estado', 'registada'),
+    // "Alunos" aqui é dimensão da escola, por isso conta perfis de aluno e
+    // não contas de login. Antes contava perfis_escola de tipo 'aluno', o
+    // que funcionava só enquanto conta e aluno eram a mesma coisa — agora
+    // isso contaria encarregados que nunca vão a uma aula, e deixaria de
+    // fora todos os filhos.
+    supabase.from('alunos').select('id', { count: 'exact', head: true }),
+  ])
 
   const primeiroNome = (nomeData?.nome ?? '').trim().split(/\s+/)[0] || 'bem-vindo'
-  const alunos = (perfisData ?? []).filter((p) => p.tipo === 'aluno').length
+  const alunos = totalAlunos ?? 0
   const professores = (perfisData ?? []).filter((p) => p.tipo === 'professor').length
   const totalConfirmadas = (matriculasData ?? []).filter((m) => m.estado === 'confirmado').length
   const totalPendentes = (matriculasData ?? []).filter((m) => m.estado === 'a_escolher').length

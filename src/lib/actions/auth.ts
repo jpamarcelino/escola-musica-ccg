@@ -222,9 +222,10 @@ export async function atualizarEmailConta(
     .eq('id', user.id)
     .single()
 
-  // Só alunos podem mudar o próprio email por aqui — professores e admins
-  // pedem à direção, para já.
-  if (perfil?.tipo !== 'aluno') {
+  // Só as Contas CCG podem mudar o próprio email por aqui — professores e
+  // admins pedem à direção, para já. (Os perfis de aluno não têm email
+  // próprio: quem tem login é sempre a conta que os gere.)
+  if (perfil?.tipo !== 'conta') {
     return { error: 'Não tens permissão para alterar o email.' }
   }
 

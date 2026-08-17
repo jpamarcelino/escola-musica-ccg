@@ -22,7 +22,7 @@ export async function marcarNotificacaoLida(formData: FormData) {
     .eq('id', notificacaoId)
     .eq('user_id', user.id)
 
-  revalidatePath('/aluno/notificacoes')
+  revalidatePath('/dashboard/avisos')
   revalidatePath('/dashboard')
 }
 
@@ -42,6 +42,6 @@ export async function marcarTodasNotificacoesLidas() {
     .eq('user_id', user.id)
     .eq('lida', false)
 
-  revalidatePath('/aluno/notificacoes')
+  revalidatePath('/dashboard/avisos')
   revalidatePath('/dashboard')
 }

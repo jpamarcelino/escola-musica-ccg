@@ -1322,6 +1322,31 @@ body {
   font-weight: 700;
 }
 
+/* Escolha entre dependente e o próprio titular, em /dashboard/alunos.
+   Linhas inteiras clicáveis (a etiqueta envolve o botão de rádio), com
+   56px de altura para o alvo de toque ficar acima dos 44px mínimos. */
+.alunos-quem { border: 0; padding: 0; margin: 0; }
+.alunos-quem legend {
+  padding: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+}
+.alunos-quem label {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 56px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-linha);
+  cursor: pointer;
+}
+.alunos-quem label:first-of-type { border-top: 1px solid var(--color-linha); }
+.alunos-quem input { margin-top: 3px; accent-color: var(--color-azul-fundo); }
+.alunos-quem span { display: flex; flex-direction: column; gap: 2px; }
+.alunos-quem strong { font-size: 15px; font-weight: 600; color: var(--color-tinta); }
+.alunos-quem small { font-size: 12.5px; line-height: 1.35; color: var(--color-tinta-suave); }
+
 .aluno-hub-links { margin-top: 36px; border-top: 1px solid var(--color-linha); }
 .aluno-hub-links a {
   display: grid;
@@ -1547,10 +1572,61 @@ body {
 .avisos-marcar-um:focus-visible,
 .materiais-separador:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
 
+/* Etiqueta com o nome do aluno a que o aviso diz respeito. Os avisos
+   gerais da conta (e todos os antigos, anteriores à migração 0025) não a
+   têm — a linha fica só com a mensagem, como sempre esteve. */
+.avisos-corpo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.avisos-aluno {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-azul-texto);
+}
+.avisos-lista article[data-lida="true"] .avisos-aluno { color: var(--color-tinta-suave); }
+
+/* Filtro por aluno, no topo dos avisos. São links e não botões porque o
+   estado vive no URL (?aluno=…) — funciona sem JavaScript e dá para
+   partilhar ou guardar nos favoritos. */
+.filtro-alunos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.filtro-alunos a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 14px;
+  border: 1px solid var(--color-linha);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  text-decoration: none;
+}
+.filtro-alunos a[aria-current="page"] {
+  border-color: var(--color-azul-fundo);
+  background: var(--color-azul-fundo);
+  color: #fff;
+}
+.filtro-alunos a:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+
+/* Atalho da Home para a gestão de alunos — o formulário de adicionar
+   deixou de estar aqui e passou a viver em /dashboard/alunos. */
+.familia-gerir {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  color: var(--color-azul-fundo);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.familia-gerir i { font-style: normal; }
+
 @media (max-width: 540px) {
   .avisos-lista article { grid-template-columns: 1fr auto; gap: 5px 12px; }
   .avisos-lista time { grid-column: 1; }
-  .avisos-lista p { grid-column: 1; }
+  .avisos-corpo { grid-column: 1; }
   .avisos-lista form { grid-column: 2; grid-row: 1 / span 2; }
 }
 

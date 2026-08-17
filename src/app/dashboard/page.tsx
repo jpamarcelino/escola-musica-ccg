@@ -1,11 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { criarAlunoDependente } from '@/lib/actions/aluno'
 import { InstalarCallout } from '@/components/instalar-callout'
-import { SubmitButton } from '@/components/submit-button'
-import { CampoTexto } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
+import { EmptyState } from '@/components/empty-state'
 import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, hojeISO } from '@/lib/datas'
 import { formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
@@ -343,7 +341,7 @@ export default async function DashboardPage({
         {erro && <MensagemErro>{erro}</MensagemErro>}
 
         {avisoMaisRecente && (
-          <Link href="/aluno/notificacoes" className="familia-aviso"><span>Novo aviso</span><strong>{avisoMaisRecente.mensagem}</strong><i aria-hidden="true">→</i></Link>
+          <Link href="/dashboard/avisos" className="familia-aviso"><span>Novo aviso</span><strong>{avisoMaisRecente.mensagem}</strong><i aria-hidden="true">→</i></Link>
         )}
 
         <section className="familia-proxima" aria-labelledby="proxima-familia-titulo">
@@ -358,33 +356,40 @@ export default async function DashboardPage({
 
         <section className="familia-alunos" aria-labelledby="familia-alunos-titulo">
           <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">02</p><h2 id="familia-alunos-titulo">{meusAlunos.length === 1 ? 'O teu aluno' : 'Os teus alunos'}</h2></div></div>
-          <div>
-            {meusAlunos.map((aluno) => {
-              const resumo = resumoDoFilho(aluno.id)
-              return <Link key={aluno.id} href={`/aluno/${aluno.id}`}><strong>{aluno.nome}</strong><span>{resumo.proxima ? `${resumo.proxima.instrumentos?.nome} · ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}` : resumo.pendentes > 0 ? `${resumo.pendentes} ${resumo.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'Sem aulas marcadas'}</span>{resumo.pendentes > 0 && <small>A aguardar professor</small>}<i aria-hidden="true">→</i></Link>
-            })}
-          </div>
+          {/* Uma conta acabada de criar não tem alunos nenhuns — o registo
+              deixou de os criar sozinho (migração 0025). Sem isto, a
+              secção ficava a mostrar um título e mais nada, sem dizer o
+              que falta nem por onde começar. */}
+          {meusAlunos.length === 0 ? (
+            <EmptyState
+              titulo="Ainda não tens alunos associados."
+              descricao="Adiciona a pessoa que vai frequentar as aulas."
+              acao={
+                <Link href="/dashboard/alunos" className="familia-adicionar-botao">
+                  Adicionar aluno
+                </Link>
+              }
+            />
+          ) : (
+            <div>
+              {meusAlunos.map((aluno) => {
+                const resumo = resumoDoFilho(aluno.id)
+                return <Link key={aluno.id} href={`/aluno/${aluno.id}`}><strong>{aluno.nome}</strong><span>{resumo.proxima ? `${resumo.proxima.instrumentos?.nome} · ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}` : resumo.pendentes > 0 ? `${resumo.pendentes} ${resumo.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'Sem aulas marcadas'}</span>{resumo.pendentes > 0 && <small>A aguardar professor</small>}<i aria-hidden="true">→</i></Link>
+              })}
+            </div>
+          )}
         </section>
 
-        <details className="familia-adicionar">
-          <summary>Adicionar aluno</summary>
-          <form action={criarAlunoDependente} className="mt-[16px] space-y-[14px]">
-            <CampoTexto id="nome" name="nome" label="Nome do aluno" />
-            <CampoTexto
-              id="dataNascimento"
-              name="dataNascimento"
-              label="Data de nascimento"
-              type="date"
-              required={false}
-            />
-            <SubmitButton
-              textoAGuardar="A adicionar…"
-              className="familia-adicionar-botao"
-            >
-              Adicionar aluno
-            </SubmitButton>
-          </form>
-        </details>
+        {/* A Home é a visão de família, não o sítio onde se gere quem são
+            os alunos — o formulário que aqui estava mudou-se para
+            /dashboard/alunos, junto da lista completa. */}
+        {meusAlunos.length > 0 && (
+          <div className="familia-adicionar">
+            <Link href="/dashboard/alunos" className="familia-gerir">
+              Gerir alunos<i aria-hidden="true">→</i>
+            </Link>
+          </div>
+        )}
         <div className="partitura-instalacao"><InstalarCallout /></div>
       </div>
     </main>

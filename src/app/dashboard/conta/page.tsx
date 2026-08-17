@@ -63,7 +63,7 @@ export default async function ContaPage({
   if (profile?.tipo === 'admin') {
     redirect('/admin/conta')
   }
-  if (profile?.tipo !== 'professor' && profile?.tipo !== 'aluno') {
+  if (profile?.tipo !== 'professor' && profile?.tipo !== 'conta') {
     redirect('/dashboard')
   }
   const ehProfessor = profile.tipo === 'professor'

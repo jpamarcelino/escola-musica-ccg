@@ -67,7 +67,7 @@ export default async function AlunoHubPage({
         })}
       </section>
       <aside className="aluno-vivo-atencao" aria-label="Precisa de atenção">
-        {(notificacoesPorLer ?? 0) > 0 && <Link href="/aluno/notificacoes"><small>Novo</small><strong>{notificacoesPorLer} {(notificacoesPorLer ?? 0) === 1 ? 'aviso por ler' : 'avisos por ler'}</strong><span>Consultar avisos</span></Link>}
+        {(notificacoesPorLer ?? 0) > 0 && <Link href="/dashboard/avisos"><small>Novo</small><strong>{notificacoesPorLer} {(notificacoesPorLer ?? 0) === 1 ? 'aviso por ler' : 'avisos por ler'}</strong><span>Consultar avisos</span></Link>}
         {pendentes > 0 && <Link href={`/aluno/${alunoId}/horario`}><small>Em curso</small><strong>{pendentes} {pendentes === 1 ? 'pedido aguarda horário' : 'pedidos aguardam horário'}</strong><span>Acompanhar pedido</span></Link>}
         {/* "O teu caderno" tratava por tu o aluno, mas quem tem esta
             página aberta é o encarregado — a conta é dele. O nome do

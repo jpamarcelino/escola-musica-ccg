@@ -106,6 +106,9 @@ export async function confirmarHorario(formData: FormData) {
     if (m.horarios && m.alunos) {
       await supabase.from('notificacoes').insert({
         user_id: m.alunos.encarregado_id,
+        // Marca a que aluno se refere, para a página de avisos poder
+        // etiquetar e filtrar sem ir procurar o nome dentro do texto.
+        aluno_id: m.aluno_id,
         tipo: 'pedido_aceite',
         mensagem: `A aula de ${m.alunos.nome} (${m.instrumentos?.nome ?? ''}) foi confirmada: ${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}.`,
       })
@@ -115,7 +118,7 @@ export async function confirmarHorario(formData: FormData) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/pedidos')
   revalidatePath('/dashboard/horarios')
-  revalidatePath('/aluno/notificacoes')
+  revalidatePath('/dashboard/avisos')
   redirect('/dashboard/pedidos?guardado=Pedido%20confirmado.')
 }
 

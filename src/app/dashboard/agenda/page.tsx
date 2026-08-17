@@ -7,6 +7,7 @@ import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@/lib/horarios-grade'
 import { formatarSala } from '@/lib/sala'
 import { agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula } from '@/lib/datas'
 import { EmptyState } from '@/components/empty-state'
+import { AgendaFamilia } from './agenda-familia'
 
 type Confirmado = {
   id: number
@@ -60,11 +61,24 @@ function partesData(data: string) {
   }
 }
 
-export default async function AgendaPage() {
+export default async function AgendaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ aluno?: string }>
+}) {
+  const { aluno: alunoFiltro } = await searchParams
   const { supabase, user, profile } = await getSchoolProfileContext()
 
   if (!user) {
     redirect('/login')
+  }
+
+  // A mesma rota serve dois calendários diferentes: o do professor (o
+  // resto deste ficheiro, inalterado) e o da família. Antes, quem não
+  // fosse professor era mandado embora — a Conta CCG tinha um separador
+  // "Agenda" na barra que não levava a agenda nenhuma.
+  if (profile?.tipo === 'conta') {
+    return <AgendaFamilia supabase={supabase} userId={user.id} alunoFiltro={alunoFiltro} />
   }
 
   if (profile?.tipo !== 'professor') {

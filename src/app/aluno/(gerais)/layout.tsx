@@ -1,54 +1,28 @@
 import { Suspense } from 'react'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { BottomNavigation, type ItemNav } from '@/components/bottom-navigation'
+import { BottomNavigation } from '@/components/bottom-navigation'
+import { NAV_CONTA } from '@/lib/navegacao'
 
-// Nav do encarregado para as páginas de /aluno que não pertencem a um
-// filho em concreto — avisos e calendário escolar.
+// Nav da Conta CCG para as páginas de /aluno que não pertencem a um aluno
+// em concreto — hoje só o calendário escolar (os avisos mudaram-se para
+// /dashboard/avisos, por serem da conta e não de um aluno).
 //
 // Estas páginas estavam a ficar sem navegação nenhuma: /aluno não tinha
 // layout, e o layout de /aluno/[alunoId] só cobre a sua própria pasta.
-// Como "Avisos" é um separador da barra, quem lá entrava perdia a barra
-// e ficava só com a seta de voltar.
 //
 // O grupo "(gerais)" existe para o layout não envolver também
-// /aluno/[alunoId] — esse já tem o seu, com destinos apontados ao filho
+// /aluno/[alunoId] — esse já tem o seu, com destinos apontados ao aluno
 // que está a ser visto, e dois layouts empilhados dariam duas barras. Os
-// parênteses mantêm os URLs iguais: /aluno/notificacoes continua a ser
-// /aluno/notificacoes.
+// parênteses mantêm os URLs iguais: /aluno/calendario continua a ser
+// /aluno/calendario.
 async function NavegacaoGeral() {
-  const { supabase, user, profile } = await getSchoolProfileContext()
+  const { user, profile } = await getSchoolProfileContext()
 
-  if (!user || profile?.tipo !== 'aluno') return null
+  if (!user || profile?.tipo !== 'conta') return null
 
-  // Sem filho no URL, os destinos de "Agenda" e "Aluno" apontam ao
-  // primeiro da conta — o mesmo critério que /dashboard usa quando
-  // ainda não há filho escolhido.
-  const { data: alunos } = await supabase
-    .from('alunos')
-    .select('id')
-    .eq('encarregado_id', user.id)
-    .order('criado_em')
-    .limit(1)
-  const alunoId = alunos?.[0]?.id
-
-  const nav: ItemNav[] = [
-    { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
-    {
-      href: alunoId ? `/aluno/${alunoId}/horario` : '/dashboard',
-      label: 'Agenda',
-      icone: 'calendario',
-    },
-    {
-      href: alunoId ? `/aluno/${alunoId}` : '/dashboard',
-      label: 'Aluno',
-      icone: 'alunos',
-      correspondencia: 'exata',
-    },
-    { href: '/aluno/notificacoes', label: 'Avisos', icone: 'notificacoes' },
-    { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
-  ]
-
-  return <BottomNavigation itens={nav} />
+  // Sem aluno no URL, a barra é a de família — a mesma de /dashboard.
+  // Nenhum separador abre um aluno escolhido por nós.
+  return <BottomNavigation itens={NAV_CONTA} />
 }
 
 export default function AlunoGeraisLayout({ children }: { children: React.ReactNode }) {

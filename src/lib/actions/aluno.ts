@@ -175,7 +175,15 @@ export async function cancelarMatricula(formData: FormData) {
   revalidatePath('/dashboard')
 }
 
-export async function criarAlunoDependente(formData: FormData) {
+// Cria um perfil de aluno para a Conta CCG autenticada. O aluno pode ser
+// um dependente (um filho, sem login próprio) ou o próprio titular, quando
+// quem se inscreve é um adulto que vai ele mesmo às aulas — é a diferença
+// entre deixar propria_conta_id a null ou preenchê-lo.
+//
+// Substitui criarAlunoDependente, que só criava dependentes e voltava à
+// Home. O registo deixou de criar um aluno automaticamente (migração
+// 0025), por isso este é agora o único caminho para uma conta ter alunos.
+export async function criarAluno(formData: FormData) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -187,28 +195,57 @@ export async function criarAlunoDependente(formData: FormData) {
 
   const nome = String(formData.get('nome') ?? '').trim()
   const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+  const ehProprio = formData.get('ehProprio') === 'sim'
 
   function voltarComErro(mensagem: string): never {
-    redirect(`/dashboard?erro=${encodeURIComponent(mensagem)}`)
+    redirect(`/dashboard/alunos?erro=${encodeURIComponent(mensagem)}`)
   }
 
   if (!nome) {
     voltarComErro('Indica o nome do aluno.')
   }
-  if (dataNascimento && !/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
+  // Exigida para alunos novos (as linhas antigas podem tê-la a null e
+  // continuam válidas): sem ela, o filtro por idade deixa passar todas as
+  // disciplinas, e alguém acabaria inscrito numa turma que não lhe serve.
+  if (!dataNascimento) {
+    voltarComErro('Indica a data de nascimento do aluno.')
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
     voltarComErro('Data de nascimento inválida.')
+  }
+  if (dataNascimento > new Date().toISOString().slice(0, 10)) {
+    voltarComErro('A data de nascimento não pode ser no futuro.')
+  }
+
+  // Só pode haver um aluno que seja o próprio titular. A base de dados
+  // também o garante (índice único em propria_conta_id), mas verificar
+  // aqui permite explicar porquê em vez de devolver um erro cru.
+  if (ehProprio) {
+    const { data: jaExiste } = await supabase
+      .from('alunos')
+      .select('id')
+      .eq('propria_conta_id', user.id)
+      .maybeSingle()
+
+    if (jaExiste) {
+      voltarComErro('Já tens um perfil de aluno em teu nome. Cria os restantes como dependentes.')
+    }
   }
 
   const { error } = await supabase.from('alunos').insert({
     encarregado_id: user.id,
+    // Nunca vem do formulário: é sempre a conta autenticada, senão dava
+    // para reclamar como "próprio" um perfil de outra pessoa.
+    propria_conta_id: ehProprio ? user.id : null,
     nome,
-    data_nascimento: dataNascimento || null,
+    data_nascimento: dataNascimento,
   })
 
   if (error) {
     voltarComErro('Não foi possível criar o perfil de aluno. Tenta novamente.')
   }
 
+  revalidatePath('/dashboard/alunos')
   revalidatePath('/dashboard')
-  redirect('/dashboard')
+  redirect('/dashboard/alunos')
 }
