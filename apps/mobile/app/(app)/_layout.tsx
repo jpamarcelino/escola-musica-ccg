@@ -34,6 +34,10 @@ export default function LayoutApp() {
   if (!sessao) return <Redirect href="/descobrir" />
 
   const professor = ehProfessor(perfil?.tipo)
+  // A administração é uma marca no perfil e não um tipo: um professor
+  // pode ser administrador. Por isso o separador soma-se aos outros em
+  // vez de os substituir.
+  const admin = perfil?.admin === true
 
   return (
     <Tabs
@@ -110,6 +114,17 @@ export default function LayoutApp() {
           href: professor ? '/pedidos' : null,
           tabBarIcon: ({ color, focused }) => (
             <IconePedidos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: 'Escola',
+          href: admin ? '/admin' : null,
+          tabBarIcon: ({ color, focused }) => (
+            <IconeAlunos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />

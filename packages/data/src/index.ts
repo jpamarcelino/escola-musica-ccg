@@ -71,3 +71,19 @@ export {
   atualizarPassword,
   apagarPropriaConta,
 } from './conta'
+
+export {
+  numerosDaEscola,
+  listarTodosAlunos,
+  listarProfessores,
+  listarRecomendacoes,
+  validarRecomendacao,
+  anularRecomendacao,
+  marcarMensalidadePaga,
+} from './admin'
+export type {
+  NumerosDaEscola,
+  AlunoAdmin,
+  ProfessorAdmin,
+  RecomendacaoAdmin,
+} from './admin'

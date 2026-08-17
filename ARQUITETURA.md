@@ -99,9 +99,21 @@ cliente.
 
 ### A app móvel
 
-Expo com `expo-router`, em `apps/mobile`. Nesta primeira volta faz só
-uma coisa e só de leitura: um encarregado entra, vê os seus alunos, as
-aulas de cada um e os avisos. Quatro ecrãs.
+Expo com `expo-router`, em `apps/mobile`. Cobre os três perfis — Conta
+CCG, professor e administração — e escreve, não só consulta.
+
+As escritas **não passam por Server Actions**: a app escreve direto no
+Supabase e é a RLS que decide se passa. Isso só é possível porque as
+regras deste projeto vivem no Postgres; as Server Actions da web validam
+e navegam, mas não são elas que protegem os dados. As funções em
+`packages/data` não recebem o id de quem escreve, de propósito — passá-lo
+daria a ilusão de se poder escrever em nome de outra pessoa.
+
+O que a app **não** faz, e é decisão e não esquecimento: pagamentos,
+faturação e o estudo das recomendações continuam no site. São tabelas
+largas, de conferir com calma, e num telemóvel dariam mais erros do que
+rapidez. O ecrã de administração di-lo, para ninguém concluir que a app
+está partida.
 
 O que interessa não é o tamanho — é que as contas são as mesmas. A
 próxima ocorrência de uma aula, a hora de Lisboa, o nome da sala, os
