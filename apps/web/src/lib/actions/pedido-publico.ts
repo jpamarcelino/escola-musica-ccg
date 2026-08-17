@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { calcularIdade } from '@ccg/core'
+import { validarDataNascimento, validarRegisto } from '@ccg/core'
 import { listarAlunosDoEncarregado, type AlunoResumo } from '@ccg/data'
 
 // Variantes de login/signup/criarAlunoDependente que não fazem redirect —
@@ -44,28 +44,13 @@ export async function registoModal(
   const telefone = String(formData.get('telefone') ?? '').trim()
   const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
 
-  if (!nome || !email || !password) {
-    return { error: 'Preenche todos os campos.' }
-  }
-  if (password.length < 6) {
-    return { error: 'A password deve ter pelo menos 6 caracteres.' }
-  }
-  if (telefone.replace(/[^0-9]/g, '').length < 9) {
-    return { error: 'Indica um número de telemóvel válido.' }
-  }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
-    return { error: 'Indica a data de nascimento.' }
-  }
-
-  const idade = calcularIdade(dataNascimento)
-  if (idade === null) {
-    return { error: 'Essa data de nascimento não é válida.' }
-  }
-  if (idade < 0) {
-    return { error: 'A data de nascimento não pode ser no futuro.' }
-  }
-  if (idade > 120) {
-    return { error: 'Confirma a data de nascimento.' }
+  // Mesmas regras do registo em auth.ts — literalmente as mesmas, agora.
+  // Este ficheiro avisa no topo que replicava a validação de lá; era
+  // verdade, e as duas cópias já diziam coisas diferentes sobre a data
+  // de nascimento.
+  const erro = validarRegisto({ nome, email, password, telefone, dataNascimento })
+  if (erro) {
+    return { error: erro }
   }
 
   const supabase = await createClient()
@@ -111,8 +96,15 @@ export async function criarAlunoDependenteModal(
   if (!nome) {
     return { error: 'Indica o nome do aluno.' }
   }
-  if (dataNascimento && !/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
-    return { error: 'Data de nascimento inválida.' }
+  // A data continua opcional aqui — quem cria um aluno pelo pop-up pode
+  // não a saber de cor. Mas quando a escreve, passa a valer a mesma regra
+  // de toda a app: antes só se verificava o formato, e uma criança nascida
+  // em 2050 entrava sem uma queixa.
+  if (dataNascimento) {
+    const erroData = validarDataNascimento(dataNascimento, 'aluno')
+    if (erroData) {
+      return { error: erroData }
+    }
   }
 
   const { data: aluno, error } = await supabase

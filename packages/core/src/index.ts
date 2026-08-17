@@ -51,3 +51,17 @@ export {
 
 export { estadoMensalidade, ROTULO_MENSALIDADE, totalPorReceber } from './mensalidades'
 export type { EstadoMensalidade, MensalidadeParaEstado } from './mensalidades'
+
+export {
+  MENSAGEM_CAMPOS_EM_FALTA,
+  PASSWORD_MINIMO,
+  TELEFONE_MINIMO_DIGITOS,
+  validarObrigatorios,
+  validarPassword,
+  validarTelefone,
+  validarDataNascimento,
+  validarEmail,
+  validarNome,
+  validarRegisto,
+} from './validacao'
+export type { Erro } from './validacao'

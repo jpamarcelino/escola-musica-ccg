@@ -1,0 +1,119 @@
+import { calcularIdade } from './idade'
+
+// As regras que decidem se o que alguém escreveu num formulário serve.
+//
+// Estavam repetidas pelas Server Actions da web: "Preenche todos os
+// campos" seis vezes, a regra da password três, as da data de nascimento
+// três, duas e duas. E já tinham começado a divergir — a mesma situação
+// tinha duas mensagens diferentes, "Data de nascimento inválida" num
+// sítio e "Essa data de nascimento não é válida" noutro.
+//
+// Com a app móvel a escrever também, isso passava de incómodo a
+// problema: as duas frentes podiam aceitar coisas diferentes. Aqui é uma
+// regra só, testada, com uma mensagem só.
+//
+// Cada função devolve a mensagem de erro ou `null` quando está bem. É
+// mais direto de ler do que um objeto com `valido: true`, e encadeia-se:
+//
+//     const erro = validarPassword(p) ?? validarTelefone(t)
+//     if (erro) return { error: erro }
+
+export type Erro = string | null
+
+export const MENSAGEM_CAMPOS_EM_FALTA = 'Preenche todos os campos.'
+
+export function validarObrigatorios(...valores: (string | null | undefined)[]): Erro {
+  return valores.some((v) => !v || !v.trim()) ? MENSAGEM_CAMPOS_EM_FALTA : null
+}
+
+// Seis caracteres é o mínimo que o Supabase aceita por omissão. Não é uma
+// password forte, e não é aqui que isso se resolve — mudar este número
+// sem mudar a definição do projeto no Supabase daria um erro do servidor
+// em vez de uma mensagem em português.
+export const PASSWORD_MINIMO = 6
+
+export function validarPassword(password: string): Erro {
+  if (!password) return MENSAGEM_CAMPOS_EM_FALTA
+  if (password.length < PASSWORD_MINIMO) {
+    return `A password deve ter pelo menos ${PASSWORD_MINIMO} caracteres.`
+  }
+  return null
+}
+
+// Conta os algarismos e ignora tudo o resto: quem escreve "+351 912 345
+// 678" ou "912-345-678" está a dar um número válido, e recusá-lo por
+// causa da pontuação é fazer a pessoa adivinhar o formato.
+export const TELEFONE_MINIMO_DIGITOS = 9
+
+export function validarTelefone(telefone: string): Erro {
+  const digitos = telefone.replace(/[^0-9]/g, '')
+  return digitos.length < TELEFONE_MINIMO_DIGITOS
+    ? 'Indica um número de telemóvel válido.'
+    : null
+}
+
+// `dono` muda a frase entre "a tua data de nascimento" e "a data de
+// nascimento" — a mesma regra serve para quem se regista e para quem
+// inscreve um filho, e a frase tem de saber de quem fala.
+export function validarDataNascimento(
+  data: string,
+  dono: 'propria' | 'aluno' = 'propria'
+): Erro {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    return dono === 'propria'
+      ? 'Indica a tua data de nascimento.'
+      : 'Indica a data de nascimento.'
+  }
+
+  const idade = calcularIdade(data)
+  if (idade === null) return 'Essa data de nascimento não é válida.'
+  if (idade < 0) return 'A data de nascimento não pode ser no futuro.'
+  // 120 anos não é um limite de dignidade — é a fronteira a partir da
+  // qual é muito mais provável ser um erro de escrita no ano.
+  if (idade > 120) return 'Confirma a data de nascimento.'
+
+  return null
+}
+
+export function validarEmail(email: string): Erro {
+  const limpo = email.trim()
+  if (!limpo) return MENSAGEM_CAMPOS_EM_FALTA
+  // Verificação deliberadamente frouxa. A validação a sério de um email é
+  // mandar-lhe uma mensagem, e é o que o Supabase faz a seguir; apertar
+  // aqui só serve para recusar endereços válidos que não cabem no padrão.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(limpo)) {
+    return 'Indica um email válido.'
+  }
+  return null
+}
+
+export function validarNome(nome: string): Erro {
+  const limpo = nome.trim()
+  if (!limpo) return MENSAGEM_CAMPOS_EM_FALTA
+  if (limpo.length < 2) return 'Indica o nome completo.'
+  return null
+}
+
+// O conjunto que o registo precisa, pela ordem em que a web já o fazia —
+// primeiro o que falta, depois a password, depois o contacto, e só no fim
+// a data. A ordem decide qual é o erro que a pessoa vê primeiro.
+//
+// Repara que o formato do email NÃO entra aqui, embora o validarEmail
+// exista. A web nunca o verificou: aceita o que lá estiver e deixa o
+// Supabase recusar. Acrescentá-lo neste conjunto mudava o comportamento
+// da web em silêncio, e isso é decisão do dono do projeto, não minha —
+// fica disponível para quem o quiser usar de propósito.
+export function validarRegisto(dados: {
+  nome: string
+  email: string
+  password: string
+  telefone: string
+  dataNascimento: string
+}): Erro {
+  return (
+    validarObrigatorios(dados.nome, dados.email, dados.password) ??
+    validarPassword(dados.password) ??
+    validarTelefone(dados.telefone) ??
+    validarDataNascimento(dados.dataNascimento, 'propria')
+  )
+}

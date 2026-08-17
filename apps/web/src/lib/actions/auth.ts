@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { calcularIdade } from '@ccg/core'
+import { validarPassword, validarRegisto } from '@ccg/core'
 
 async function origem() {
   const headersList = await headers()
@@ -29,31 +29,12 @@ export async function signup(
   // servidor pelo trigger handle_new_user, nunca confiado por si só.
   const conviteCodigo = String(formData.get('conviteCodigo') ?? '').trim() || null
 
-  if (!nome || !email || !password) {
-    return { error: 'Preenche todos os campos.' }
-  }
-  if (password.length < 6) {
-    return { error: 'A password deve ter pelo menos 6 caracteres.' }
-  }
-  // Aceita vários formatos (com/sem indicativo, espaços, traços) — só
-  // confirma que há dígitos suficientes para ser um número a sério.
-  if (telefone.replace(/[^0-9]/g, '').length < 9) {
-    return { error: 'Indica um número de telemóvel válido.' }
-  }
-
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
-    return { error: 'Indica a tua data de nascimento.' }
-  }
-
-  const idade = calcularIdade(dataNascimento)
-  if (idade === null) {
-    return { error: 'Essa data de nascimento não é válida.' }
-  }
-  if (idade < 0) {
-    return { error: 'A data de nascimento não pode ser no futuro.' }
-  }
-  if (idade > 120) {
-    return { error: 'Confirma a data de nascimento.' }
+  // As mesmas regras que a app móvel usa, no mesmo ficheiro: campos
+  // obrigatórios, password, telefone e data de nascimento, por esta
+  // ordem. Estavam escritas à mão aqui e repetidas noutras cinco acções.
+  const erro = validarRegisto({ nome, email, password, telefone, dataNascimento })
+  if (erro) {
+    return { error: erro }
   }
 
   const supabase = await createClient()
@@ -142,8 +123,9 @@ export async function atualizarPassword(
 ): Promise<AuthState> {
   const password = String(formData.get('password') ?? '')
 
-  if (password.length < 6) {
-    return { error: 'A password deve ter pelo menos 6 caracteres.' }
+  const erroPassword = validarPassword(password)
+  if (erroPassword) {
+    return { error: erroPassword }
   }
 
   const supabase = await createClient()
