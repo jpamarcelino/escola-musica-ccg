@@ -1,9 +1,10 @@
 import { palavra, plural } from '@ccg/core'
 import { listarAlunosDoEncarregado, listarMatriculasDoAluno } from '@ccg/data'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { FlatList, RefreshControl, StyleSheet, Text } from 'react-native'
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
 import { ACarregar, Cabecalho, CartaoTocavel, EstadoVazio } from '../../componentes/base'
+import { BotaoPrincipal } from '../../componentes/formulario'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
 import { cores, espaco, texto } from '../../lib/tema'
@@ -11,12 +12,14 @@ import { cores, espaco, texto } from '../../lib/tema'
 type Item = {
   id: string
   nome: string
+  dataNascimento: string | null
   confirmadas: number
   pendentes: number
 }
 
 export default function Alunos() {
   const { sessao } = useSessao()
+  const router = useRouter()
   const [itens, setItens] = useState<Item[]>([])
   const [aCarregar, setACarregar] = useState(true)
   const [aRecarregar, setARecarregar] = useState(false)
@@ -30,6 +33,7 @@ export default function Alunos() {
         return {
           id: a.id,
           nome: a.nome,
+          dataNascimento: a.data_nascimento,
           confirmadas: mats.filter((m) => m.estado === 'confirmado').length,
           pendentes: mats.filter((m) => m.estado === 'a_escolher').length,
         }
@@ -80,11 +84,16 @@ export default function Alunos() {
       ListEmptyComponent={
         <EstadoVazio
           titulo="Ainda não há alunos."
-          descricao="Os alunos a teu cargo aparecem aqui assim que forem criados no site."
+          descricao="Cria um aluno para cada pessoa que vai ter aulas — um filho, ou tu."
         />
       }
+      ListFooterComponent={
+        <View style={estilos.rodape}>
+          <BotaoPrincipal texto="Criar aluno" onPress={() => router.push('/aluno/novo')} />
+        </View>
+      }
       renderItem={({ item }) => (
-        <Link href={{ pathname: '/aluno/[alunoId]', params: { alunoId: item.id, nome: item.nome } }} asChild>
+        <Link href={{ pathname: '/aluno/[alunoId]', params: { alunoId: item.id, nome: item.nome, dataNascimento: item.dataNascimento ?? '' } }} asChild>
           <CartaoTocavel rotulo={`Ver ${item.nome}`}>
             <Text style={estilos.nome}>{item.nome}</Text>
             <Text style={estilos.resumo}>{resumir(item)}</Text>
@@ -114,4 +123,5 @@ const estilos = StyleSheet.create({
   lista: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   nome: { ...texto.cartao, color: cores.tinta },
   resumo: { ...texto.pequeno, color: cores.tintaSuave },
+  rodape: { marginTop: espaco.l },
 })

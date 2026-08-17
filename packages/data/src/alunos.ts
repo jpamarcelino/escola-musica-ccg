@@ -3,6 +3,9 @@ import type { ClienteCcg } from './cliente'
 export type AlunoResumo = {
   id: string
   nome: string
+  // A data decide os escalões de dança: sem ela, o assistente de pedido
+  // mostra disciplinas para as quais a pessoa pode não ter idade.
+  data_nascimento: string | null
 }
 
 // Os alunos a cargo de um encarregado de educação.
@@ -21,7 +24,7 @@ export async function listarAlunosDoEncarregado(
 ): Promise<AlunoResumo[]> {
   const { data } = await supabase
     .from('alunos')
-    .select('id, nome')
+    .select('id, nome, data_nascimento')
     .eq('encarregado_id', encarregadoId)
     .order('nome')
 

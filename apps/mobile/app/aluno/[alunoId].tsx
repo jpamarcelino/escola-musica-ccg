@@ -7,16 +7,19 @@ import {
   plural,
   proximaOcorrenciaDeAula,
 } from '@ccg/core'
-import { listarMatriculasDoAluno, type MatriculaDoAluno } from '@ccg/data'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { cancelarPedido, listarMatriculasDoAluno, type MatriculaDoAluno } from '@ccg/data'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { RefreshControl, ScrollView, StyleSheet, Text } from 'react-native'
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
+import { BotaoPrincipal, BotaoSecundario } from '../../componentes/formulario'
 import { supabase } from '../../lib/supabase'
 import { cores, espaco, texto } from '../../lib/tema'
 
 export default function AulasDoAluno() {
-  const { alunoId, nome } = useLocalSearchParams<{ alunoId: string; nome?: string }>()
+  const { alunoId, nome, dataNascimento } =
+    useLocalSearchParams<{ alunoId: string; nome?: string; dataNascimento?: string }>()
+  const router = useRouter()
   const [matriculas, setMatriculas] = useState<MatriculaDoAluno[]>([])
   const [aCarregar, setACarregar] = useState(true)
   const [aRecarregar, setARecarregar] = useState(false)
@@ -64,7 +67,30 @@ export default function AulasDoAluno() {
     }
   }, [matriculas])
 
+  function cancelar(matriculaId: number, disciplina: string) {
+    // Cancelar apaga o pedido. É preciso dizê-lo: "cancelar" pode
+    // parecer pôr em pausa, e não é.
+    Alert.alert(
+      'Cancelar este pedido?',
+      `O pedido de ${disciplina} é apagado. Podes voltar a pedir quando quiseres.`,
+      [
+        { text: 'Manter', style: 'cancel' },
+        {
+          text: 'Cancelar pedido',
+          style: 'destructive',
+          onPress: async () => {
+            await cancelarPedido(supabase, matriculaId)
+            const lista = await listarMatriculasDoAluno(supabase, alunoId)
+            setMatriculas(lista)
+          },
+        },
+      ]
+    )
+  }
+
   if (aCarregar) return <ACarregar />
+
+  const porConfirmar = matriculas.filter((m) => m.estado === 'a_escolher')
 
   return (
     <>
@@ -93,14 +119,20 @@ export default function AulasDoAluno() {
           }
         />
 
-        {pendentes > 0 && (
-          <Cartao style={estilos.pendente}>
-            <Distintivo
-              texto={plural(pendentes, 'pedido à espera de horário', 'pedidos à espera de horário')}
-              tom="aviso"
+        {porConfirmar.map((m) => (
+          <Cartao key={m.id} style={estilos.pendente}>
+            <Distintivo texto="À espera de horário" tom="aviso" />
+            <Text style={estilos.disciplina}>{m.instrumentos?.nome ?? 'Aula'}</Text>
+            <Text style={estilos.detalhe}>
+              {m.profiles?.nome ?? 'Professor por atribuir'}
+            </Text>
+            <BotaoSecundario
+              texto="Cancelar pedido"
+              tom="destrutivo"
+              onPress={() => cancelar(m.id, m.instrumentos?.nome ?? 'esta disciplina')}
             />
           </Cartao>
-        )}
+        ))}
 
         {aulas.length === 0 ? (
           // Dois vazios diferentes, e dizê-lo importa: quem tem um pedido
@@ -147,6 +179,18 @@ export default function AulasDoAluno() {
             </Text>
           </>
         )}
+
+        <View style={estilos.rodape}>
+          <BotaoPrincipal
+            texto="Pedir uma aula"
+            onPress={() =>
+              router.push({
+                pathname: '/pedir-aula',
+                params: { alunoId, nome: nome ?? '', dataNascimento: dataNascimento ?? '' },
+              })
+            }
+          />
+        </View>
       </ScrollView>
     </>
   )
@@ -159,4 +203,5 @@ const estilos = StyleSheet.create({
   quando: { ...texto.corpo, color: cores.tinta },
   detalhe: { ...texto.pequeno, color: cores.tintaSuave },
   nota: { ...texto.pequeno, color: cores.tintaSuave, marginTop: espaco.s, textAlign: 'center' },
+  rodape: { marginTop: espaco.l },
 })

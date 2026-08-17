@@ -49,3 +49,18 @@ export {
   alternarEstadoHorario,
 } from './escritas-professor'
 export type { Resultado, MarcacaoPresenca } from './escritas-professor'
+
+export {
+  criarAluno,
+  pedirAula,
+  cancelarPedido,
+  marcarNotificacaoLida,
+  marcarTodasLidas,
+} from './escritas-encarregado'
+
+export {
+  listarInstrumentos,
+  listarProfessoresDoInstrumento,
+  listarHorariosPublicos,
+} from './oferta'
+export type { Instrumento, ProfessorPublico, HorarioPublico } from './oferta'
