@@ -1,0 +1,17 @@
+# Monorepo de duas frentes sobre o mesmo Supabase: a web em Next.js e,
+# mais tarde, a app em Expo. Os pacotes partilhados vivem em packages/.
+#
+# pnpm workspaces e nada mais: o Turborepo e o Nx resolvem caching de
+# builds e grafos de dependências em monorepos com dezenas de pacotes, e
+# aqui há dois apps e um punhado de pacotes pequenos. Se um dia o build
+# passar dos dois minutos, acrescenta-se Turborepo em meia hora.
+packages:
+  - 'apps/*'
+  - 'packages/*'
+# O pnpm bloqueia scripts de instalação por omissão, o que é bom. Estes
+# dois são precisos e são conhecidos:
+#   sharp         — bindings nativos da otimização de imagens do Next
+#   unrs-resolver — resolução de imports do ESLint
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
