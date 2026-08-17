@@ -506,7 +506,16 @@ body {
    especificidade, por isso um `display: flex` declarado mais abaixo
    no ficheiro ganharia a este `display: none`. */
 @media (min-width: 721px) { .horarios-agenda { display: none; } }
-@media (max-width: 720px) { .horarios-grade { display: none; } }
+/* Só se esconde a grelha onde existe a lista para a substituir.
+   Quatro páginas usam .horarios-grade — o horário do professor visto
+   pela secretaria, o passo de horários do assistente público, o mesmo
+   passo já autenticado, e a grelha do /dashboard/horarios — mas só esta
+   última tem a lista. Sem o seletor de irmão, a regra deixava as outras
+   três em branco no telemóvel, incluindo o passo onde se escolhe
+   disponibilidade para pedir uma aula. */
+@media (max-width: 720px) {
+  .horarios-agenda ~ .horarios-grade { display: none; }
+}
 
 .horarios-coluna-horas {
   position: sticky;
