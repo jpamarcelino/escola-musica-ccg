@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
-import { recolherDadosEstudo } from '@/lib/estudo-recomendacoes'
+import { recolherDadosEstudo } from '@ccg/data'
 import { euros } from '@ccg/core'
 
 function contarRecomendacoes(n: number) {

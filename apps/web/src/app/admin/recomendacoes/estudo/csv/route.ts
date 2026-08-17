@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { recolherDadosEstudo, estudoParaCsv } from '@/lib/estudo-recomendacoes'
+import { recolherDadosEstudo, estudoParaCsv } from '@ccg/data'
 
 // Exportação para o relatório final (Art. 31.º). Devolve exatamente as
 // mesmas linhas que a página do estudo mostra, porque ambas passam por

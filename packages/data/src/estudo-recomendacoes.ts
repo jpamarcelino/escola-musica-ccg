@@ -1,7 +1,5 @@
-import type { createClient } from '@/lib/supabase/server'
 import type { BeneficioEstado, RecomendacaoEstado } from '@ccg/types'
-
-type SupabaseServidor = Awaited<ReturnType<typeof createClient>>
+import type { ClienteCcg } from './cliente'
 
 export type LinhaEstudo = {
   id: number
@@ -60,7 +58,7 @@ const NOMES_MES = [
 // exportação CSV tem de devolver exatamente os mesmos números que o ecrã
 // mostra — se as duas contas vivessem em sítios diferentes, acabariam
 // por divergir.
-export async function recolherDadosEstudo(supabase: SupabaseServidor) {
+export async function recolherDadosEstudo(supabase: ClienteCcg) {
   const { data: recomendacoesData } = await supabase
     .from('recomendacoes')
     .select(

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { calcularIdade } from '@ccg/core'
+import { listarAlunosDoEncarregado, type AlunoResumo } from '@ccg/data'
 
 // Variantes de login/signup/criarAlunoDependente que não fazem redirect —
 // usadas pelo popup de conta em /pedir-aula, que precisa de ficar na mesma
@@ -131,9 +132,10 @@ export async function criarAlunoDependenteModal(
   return { alunoId: aluno.id }
 }
 
-export async function listarMeusAlunos(): Promise<
-  { id: string; nome: string }[]
-> {
+// A query em si vive no @ccg/data, para a app móvel a usar tal e qual.
+// O que fica aqui é só o que é da web: ser uma Server Action e ir buscar
+// a sessão aos cookies.
+export async function listarMeusAlunos(): Promise<AlunoResumo[]> {
   const supabase = await createClient()
   const {
     data: { user },
@@ -141,11 +143,5 @@ export async function listarMeusAlunos(): Promise<
 
   if (!user) return []
 
-  const { data } = await supabase
-    .from('alunos')
-    .select('id, nome')
-    .eq('encarregado_id', user.id)
-    .order('nome')
-
-  return data ?? []
+  return listarAlunosDoEncarregado(supabase, user.id)
 }

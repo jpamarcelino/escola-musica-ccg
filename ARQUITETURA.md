@@ -53,6 +53,7 @@ O repositório é um workspace pnpm. A web deixou de estar na raiz:
 ```
 apps/web/         a aplicação Next.js
 packages/core/    lógica sem framework, partilhada
+packages/data/    leituras da base de dados, partilháveis
 packages/types/   vocabulário de estados, gerado do esquema
 ```
 
@@ -84,6 +85,23 @@ pnpm --filter @ccg/types gerar
 Há um teste que repete a extração e compara com o ficheiro no disco, por
 isso uma migração que mude os valores permitidos e se esqueça de
 regenerar faz falhar a suite em vez de divergir em silêncio.
+
+O `packages/data` guarda as leituras. A regra que lhe dá forma é uma só:
+**as funções recebem o cliente Supabase, nunca o criam.** Isso torna-as
+partilháveis (na web o cliente lê a sessão dos cookies, na app móvel do
+armazenamento local) e, mais importante, impede a `service role key` de
+lá entrar — um pacote que criasse o seu cliente teria de ir buscar
+chaves ao ambiente, e num bundle de app móvel isso é código entregue ao
+telemóvel de quem a instala. Há um teste que varre todos os pacotes e
+falha se algum mencionar `SERVICE_ROLE`, ler `process.env` ou criar um
+cliente.
+
+As **escritas** não estão lá, e a razão está em
+[`AUDITORIA_SERVER_ACTIONS.md`](AUDITORIA_SERVER_ACTIONS.md): das 48
+Server Actions, uma só é lógica de dados pura. As outras ou escrevem e a
+seguir navegam, ou dependem de coisas que só existem no servidor da web.
+O caminho de escrita não se levanta para a app móvel — tem de ser
+redesenhado.
 
 O que ainda **não** está no `packages/types` são as formas das linhas de
 cada tabela. Isso quer a geração de tipos do Supabase, que precisa de um

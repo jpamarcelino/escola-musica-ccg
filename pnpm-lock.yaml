@@ -13,6 +13,9 @@ importers:
       '@ccg/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@ccg/data':
+        specifier: workspace:*
+        version: link:../../packages/data
       '@ccg/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -71,6 +74,25 @@ importers:
 
   packages/core:
     devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(supports-color@7.2.0)
+
+  packages/data:
+    dependencies:
+      '@ccg/types':
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.110.8
+        version: 2.112.3
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
       typescript:
         specifier: ^5
         version: 5.9.3

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    // Sem "dom", pela mesma razão do @ccg/core: este código tem de correr
+    // no servidor do Next e no Hermes. O tipo do cliente Supabase vem do
+    // @supabase/supabase-js, que é isomórfico.
+    "lib": ["ES2020"],
+    "target": "ES2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
