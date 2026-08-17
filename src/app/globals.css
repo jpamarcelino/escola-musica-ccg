@@ -1875,7 +1875,24 @@ body {
 .admin-mesa-linha:hover, .admin-mesa-linha[data-ativa="true"] { background: color-mix(in srgb, var(--color-azul-logo) 6%, var(--color-papel)); }
 .admin-mesa-linha > label { display: grid; place-items: center; }
 .admin-mesa-linha > button { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; justify-content: center; border: 0; background: transparent; padding: 8px 12px; color: inherit; text-align: left; cursor: pointer; }
-.admin-mesa-linha > button strong { overflow: hidden; width: 100%; font-family: var(--font-fraunces), ui-serif, serif; font-size: 16px; font-weight: 560; text-overflow: ellipsis; white-space: nowrap; }
+/* O nome quebra em vez de truncar. A coluna tem 148px a 375px e um nome
+   com 19 caracteres já não cabe — "Aluno Design Teste 2" e "Aluno Design
+   Teste 4" apareciam ambos como "Aluno Design Te…", indistinguíveis, e o
+   email por baixo também cortado. Num diretório, o nome é a chave da
+   linha: truncá-lo tira à lista a única coisa que ela serve para fazer.
+   Duas linhas chegam para a esmagadora maioria dos nomes portugueses; a
+   partir daí volta a cortar, mas aí já se leu o suficiente. */
+.admin-mesa-linha > button strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 16px;
+  font-weight: 560;
+  line-height: 1.2;
+}
 .admin-mesa-linha > button span { overflow: hidden; max-width: 100%; font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .admin-mesa-linha > button small { overflow: hidden; max-width: 100%; margin-top: 3px; font-size: 10px; color: var(--color-tinta-suave); text-overflow: ellipsis; white-space: nowrap; }
 .admin-mesa-sem-resultados { padding: 52px 18px; color: var(--color-tinta-suave); }
