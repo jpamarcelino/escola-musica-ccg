@@ -48,3 +48,6 @@ export {
   dentroDaFaixa,
   elegivelParaDisciplina,
 } from './idade-disciplinas'
+
+export { estadoMensalidade, ROTULO_MENSALIDADE, totalPorReceber } from './mensalidades'
+export type { EstadoMensalidade, MensalidadeParaEstado } from './mensalidades'

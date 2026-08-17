@@ -35,3 +35,6 @@ export {
   matriculasComPresencaMarcada,
 } from './professor'
 export type { AulaDoProfessor, HorarioDoProfessor, PedidoPendente } from './professor'
+
+export { listarMatriculasParaCobranca, listarMensalidadesDoMes } from './mensalidades'
+export type { MatriculaParaCobranca, MensalidadeDoMes } from './mensalidades'

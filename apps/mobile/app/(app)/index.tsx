@@ -19,9 +19,17 @@ import {
   matriculasComPresencaMarcada,
   type AulaDoProfessor,
 } from '@ccg/data'
+import { Link } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
+import {
+  ACarregar,
+  Cabecalho,
+  Cartao,
+  CartaoTocavel,
+  Distintivo,
+  EstadoVazio,
+} from '../../componentes/base'
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
@@ -219,6 +227,33 @@ export default function Hoje() {
           {aSeguir.map((l) => (
             <CartaoAula key={l.chave} linha={l} estado="futura" comData />
           ))}
+        </>
+      )}
+
+      {/* Os ecrãs que não têm separador próprio. A web chega-lhes pelo
+          painel do professor; aqui é pelo mesmo sítio, para quem conhece
+          um lado procurar no outro onde espera. */}
+      {professor && (
+        <>
+          <Text style={estilos.seccao}>Gerir</Text>
+          <Link href="/professor/alunos" asChild>
+            <CartaoTocavel rotulo="Ver os teus alunos">
+              <Text style={estilos.aulaTitulo}>Alunos</Text>
+              <Text style={estilos.aulaDetalhe}>Quem tens, com que disciplina e quando</Text>
+            </CartaoTocavel>
+          </Link>
+          <Link href="/professor/horarios" asChild>
+            <CartaoTocavel rotulo="Ver os teus horários">
+              <Text style={estilos.aulaTitulo}>Horários</Text>
+              <Text style={estilos.aulaDetalhe}>A tua disponibilidade da semana</Text>
+            </CartaoTocavel>
+          </Link>
+          <Link href="/professor/mensalidades" asChild>
+            <CartaoTocavel rotulo="Ver mensalidades">
+              <Text style={estilos.aulaTitulo}>Mensalidades</Text>
+              <Text style={estilos.aulaDetalhe}>O que está pago e o que falta receber</Text>
+            </CartaoTocavel>
+          </Link>
         </>
       )}
     </ScrollView>
