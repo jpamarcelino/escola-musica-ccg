@@ -2730,6 +2730,28 @@ body {
 .admin-cobranca > form label { font-size: 12px; color: var(--color-tinta-suave); }
 .admin-cobranca > form input { width: 100%; min-height: 40px; border-radius: 4px; background: transparent; }
 .admin-cobranca > form button { min-height: 40px; border-radius: 4px; padding-inline: 13px; }
+/* O formulário de dar por pago não segue a grelha de três colunas dos
+   outros dois: aqui não há rótulo nem campo, só o botão e, quando falta
+   o valor, a frase que explica porque está desativado. Na grelha, o
+   botão caía na coluna de 118px e "Marcar como pago" partia-se em três
+   linhas. */
+.admin-cobranca > form.admin-cobranca-pago {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  max-width: 470px;
+  margin-top: 18px;
+}
+.admin-cobranca > form.admin-cobranca-pago button {
+  min-height: 44px;
+  border-color: var(--color-azul-fundo);
+  background: var(--color-azul-fundo);
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.admin-cobranca > form.admin-cobranca-pago p { flex: 1 1 190px; margin: 0; }
 .admin-cobranca button:focus-visible,
 .admin-cobranca input:focus-visible,
 .admin-guardar:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
