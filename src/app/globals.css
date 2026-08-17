@@ -74,8 +74,8 @@
   --color-primary-mid:    #3D7FB8;
   --color-ink:            #241F1C;
   --color-surface-raised: #F5F6F8;
-  --color-positive:       #4B8B6B;
-  --color-warning:        #A8763A;
+  --color-positive:       #3D7658;
+  --color-warning:        #8F632F;
   --color-error:          #9A3B2E;
 
   --radius-small: 12px;
@@ -117,6 +117,13 @@
   --marca-ciano: #00C4DF;
   --marca-vermelho: #DC291E;
   --marca-preto: #231F20;
+  /* O ciano institucional a pintar letras sobre papel dá 1,99:1 — o
+     comentário acima já avisava que não servia para interface, e mesmo
+     assim acabou nas setas de navegação da secretaria e em títulos.
+     Esta é a mesma cor escurecida até passar (5,46:1 sobre papel).
+     Regra: --marca-ciano para superfícies e para o símbolo; este para
+     tudo o que sejam letras ou ícones sobre fundo claro. */
+  --marca-ciano-texto: #06707F;
 }
 
 /* O grão de papel da v1 foi removido: era um filtro SVG feTurbulence a
@@ -2053,8 +2060,12 @@ body {
   font-weight: 700;
   transition: color var(--motion-fast) var(--motion-ease-standard), transform var(--motion-fast) var(--motion-ease-enter);
 }
+/* --color-verde (#7FA98C) da 2,49:1 sobre papel — e a cor da Escola de
+   Danca, pensada para superficies, nao para letras. Aqui pinta o texto
+   que diz que a chamada esta completa, por isso usa-se o verde do
+   sistema de estados, que passa contraste. */
 .presencas-progresso[data-completo="true"] > span:last-child {
-  color: var(--color-verde);
+  color: var(--color-positive);
   transform: translateY(-1px);
 }
 .presencas-chamada-lista { border-top: 1px solid var(--color-linha); }
@@ -2560,7 +2571,7 @@ body {
   color: var(--color-azul-fundo);
 }
 .admin-prioridade > a i,
-.admin-operacoes a i { font-style: normal; color: var(--marca-ciano); transition: transform .18s ease; }
+.admin-operacoes a i { font-style: normal; color: var(--marca-ciano-texto); transition: transform .18s ease; }
 .admin-prioridade > a:hover i,
 .admin-operacoes a:hover i { transform: translateX(4px); }
 
@@ -2652,7 +2663,7 @@ body {
 .admin-escolha a:hover { background: color-mix(in srgb, var(--marca-ciano) 7%, transparent); }
 .admin-escolha strong { max-width: 7ch; margin-top: auto; font-family: var(--font-fraunces), ui-serif, serif; font-size: clamp(30px, 5vw, 48px); font-weight: 650; line-height: .95; letter-spacing: -.03em; }
 .admin-escolha p { max-width: 30ch; margin-top: 15px; font-size: 13px; line-height: 1.55; color: var(--color-tinta-suave); }
-.admin-escolha i { position: absolute; right: 30px; bottom: 30px; font-size: 24px; font-style: normal; color: var(--marca-ciano); transition: transform .18s ease; }
+.admin-escolha i { position: absolute; right: 30px; bottom: 30px; font-size: 24px; font-style: normal; color: var(--marca-ciano-texto); transition: transform .18s ease; }
 .admin-escolha a:hover i { transform: translateX(5px); }
 .admin-escolha a:focus-visible,
 .recomendacoes-acoes a:focus-visible,
@@ -2671,7 +2682,7 @@ body {
 .recomendacoes-acoes { display: flex; justify-content: flex-end; gap: 10px; padding-top: 18px; }
 .recomendacoes-acoes a { display: inline-flex; min-height: 44px; align-items: center; gap: 16px; padding: 0 15px; border: 1px solid var(--color-linha); border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--color-azul-fundo); }
 .recomendacoes-acoes a:first-child { border-color: var(--color-azul-fundo); background: var(--color-azul-fundo); color: white; }
-.recomendacoes-acoes i { font-size: 17px; font-style: normal; color: var(--marca-ciano); }
+.recomendacoes-acoes i { font-size: 17px; font-style: normal; color: var(--marca-ciano-texto); }
 .recomendacoes-registos { margin-top: 52px; }
 .recomendacoes-registos > header { display: flex; gap: 14px; align-items: baseline; margin-bottom: 15px; }
 .recomendacoes-registos h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 25px; font-weight: 650; color: var(--color-azul-fundo); }
@@ -2733,7 +2744,7 @@ body {
 .admin-historico-form .tabela-historico input { border-radius: 2px; }
 
 .recomendacao-detalhe-pagina .partitura-agenda-cabecalho h1 { max-width: 15ch; }
-.recomendacao-detalhe-pagina .partitura-agenda-cabecalho h1 span { color: var(--marca-ciano); }
+.recomendacao-detalhe-pagina .partitura-agenda-cabecalho h1 span { color: var(--marca-ciano-texto); }
 .recomendacao-detalhe-grelha { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 52px; margin-top: 38px; }
 .recomendacao-seccao { padding: 26px 0; border-top: 1px solid var(--color-linha); }
 .recomendacao-seccao:last-child { border-bottom: 1px solid var(--color-linha); }
@@ -2793,7 +2804,7 @@ body {
 .recomendacao-passo { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 0 18px; padding: 30px 0; border-bottom: 1px solid var(--color-linha); }
 .recomendacao-passo-professor { margin-top: 28px; border-top: 1px solid var(--color-linha); }
 .recomendacao-passo > h2 { grid-column: 1 / span 2; display: grid; grid-template-columns: 46px minmax(0, 1fr); margin-bottom: 16px; font-family: var(--font-fraunces), ui-serif, serif; font-size: 22px; font-weight: 650; color: var(--color-azul-fundo); }
-.recomendacao-passo > h2::first-letter { font-family: var(--font-inter), sans-serif; font-size: 11px; color: var(--marca-ciano); }
+.recomendacao-passo > h2::first-letter { font-family: var(--font-inter), sans-serif; font-size: 11px; color: var(--marca-ciano-texto); }
 .recomendacao-passo > :not(h2) { grid-column: 2; }
 .recomendacao-passo-professor > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .recomendacao-passo-professor a { display: inline-flex; min-height: 44px; align-items: center; border-radius: 4px !important; }
@@ -2860,10 +2871,10 @@ body {
 .publico-nav a:last-child { padding-inline: 17px; border: 1px solid var(--color-azul-fundo); border-radius: 4px; }
 .publico-hero { display: grid; min-height: min(620px, 72vh); align-content: center; padding: 64px 0; }
 .publico-hero h1 { max-width: 850px; margin-top: 15px; font-family: var(--font-fraunces), ui-serif, serif; font-size: clamp(54px, 9vw, 112px); font-weight: 620; line-height: .85; letter-spacing: -.055em; }
-.publico-hero h1 em { font-weight: 450; color: var(--marca-ciano); }
+.publico-hero h1 em { font-weight: 450; color: var(--marca-ciano-texto); }
 .publico-hero > p:not(.partitura-sobretitulo) { max-width: 48ch; margin-top: 30px; font-size: 16px; line-height: 1.65; color: var(--color-tinta-suave); }
 .publico-hero > a { display: inline-flex; width: max-content; min-height: 48px; align-items: center; gap: 32px; margin-top: 28px; border-bottom: 1px solid var(--color-azul-fundo); font-weight: 750; }
-.publico-hero > a i { font-style: normal; color: var(--marca-ciano); }
+.publico-hero > a i { font-style: normal; color: var(--marca-ciano-texto); }
 .publico-escolas { padding: 68px 0; border-top: 1px solid var(--color-linha); }
 .publico-escolas > header { display: grid; grid-template-columns: 180px 1fr; align-items: baseline; }
 .publico-escolas h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: clamp(30px, 5vw, 52px); font-weight: 620; }
@@ -2875,7 +2886,7 @@ body {
 .publico-escolas strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 24px; }
 .publico-escolas a p { margin-top: 3px; font-size: 13px; color: var(--color-tinta-suave); }
 .publico-escolas small { padding: 5px 9px; border: 1px solid var(--marca-ciano); border-radius: 999px; font-size: 10px; font-weight: 750; }
-.publico-escolas a > i { font-size: 22px; font-style: normal; color: var(--marca-ciano); }
+.publico-escolas a > i { font-size: 22px; font-style: normal; color: var(--marca-ciano-texto); }
 .publico-rodape { display: flex; min-height: 110px; align-items: center; justify-content: space-between; border-top: 1px solid var(--color-linha); font-family: var(--font-fraunces), ui-serif, serif; font-style: italic; }
 .publico-rodape a { min-height: 44px; display: inline-flex; align-items: center; font-family: var(--font-inter), sans-serif; font-size: 12px; font-style: normal; font-weight: 700; }
 
