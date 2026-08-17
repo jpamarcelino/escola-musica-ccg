@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula } from '@ccg/core'
+import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import { AgendaFamilia } from './agenda-familia'
 import { ehContaCCG } from '@/lib/navegacao'
@@ -13,7 +13,7 @@ type Confirmado = {
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
   horarios: {
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     salas: { nome: string; piso: number | null; numero: number | null } | null
@@ -22,7 +22,7 @@ type Confirmado = {
 
 type BlocoAgenda = {
   horarioId: number
-  dia_semana: string
+  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
   sala: string | null

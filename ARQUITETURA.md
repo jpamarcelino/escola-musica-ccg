@@ -53,6 +53,7 @@ O repositório é um workspace pnpm. A web deixou de estar na raiz:
 ```
 apps/web/         a aplicação Next.js
 packages/core/    lógica sem framework, partilhada
+packages/types/   vocabulário de estados, gerado do esquema
 ```
 
 O `packages/core` é o que a web e a futura app móvel partilham
@@ -66,6 +67,30 @@ usar `window` não compila.
 É publicado em TypeScript, sem passo de build próprio; quem o consome
 compila-o (`transpilePackages` no `next.config.ts`). Em troca não há
 `dist/` desatualizado.
+
+O `packages/types` resolve outro problema. As colunas de estado são
+`text` com uma constraint `CHECK`, e não tipos enum — do lado da
+aplicação chegavam como `string`, e um `'confimado'` mal escrito
+compilava sem queixa até o Postgres o recusar em produção. O ficheiro
+`src/estados.gerado.ts` traz as 14 uniões, extraídas do `schema.sql` e
+das migrações aplicadas por ordem (o estado final de uma constraint não
+se lê no `schema.sql`: o `tipo` de `perfis_escola` muda três vezes ao
+longo das 25 migrações). Não se edita à mão:
+
+```
+pnpm --filter @ccg/types gerar
+```
+
+Há um teste que repete a extração e compara com o ficheiro no disco, por
+isso uma migração que mude os valores permitidos e se esqueça de
+regenerar faz falhar a suite em vez de divergir em silêncio.
+
+O que ainda **não** está no `packages/types` são as formas das linhas de
+cada tabela. Isso quer a geração de tipos do Supabase, que precisa de um
+token de acesso, do Docker ou da ligação à base — nenhum deles disponível
+até agora. As projeções de cada query continuam declaradas em cada
+página, e é aceitável: seis páginas declaram um tipo `Matricula` e as
+seis são projeções diferentes, não cópias.
 
 Comandos, todos a partir da raiz:
 
@@ -346,6 +371,9 @@ Registada aqui para não se descobrir duas vezes.
 | "Os teus alunos" é vocabulário de secretaria para descrever filhos — mas a mesma lista serve adultos inscritos a si próprios | `dashboard/page.tsx` | Baixa — exige distinguir os casos |
 | Não há como trocar de filho a partir do separador "Aluno" | `bottom-navigation` | Baixa |
 | Contas demo (`demo-professor@ccg.pt`, `demo-encarregado@ccg.pt`) vivas em produção com password conhecida | base de dados | A remover antes de publicar |
+| `notificacoes.tipo` permite cinco valores e a app só cria `pedido_aceite` — os outros quatro (lembretes de aula e de pagamento, mudança de horário, novo material) nunca são escritos | esquema vs. Server Actions | Baixa — superfície declarada por usar, não erro |
+| `instrumentos.programa` aceita `bebes`, mas `perfis_escola.programa` só aceita `musica` e `danca`: um professor não pode ter o programa da escola de bebés, e `convites.ts` recusa-o também | esquema | A confirmar com o dono — pode ser intencional (bebés dados por professores de música) |
+| As formas das linhas de cada tabela ainda não estão tipadas — falta gerar os tipos do Supabase, que precisa de token, Docker ou ligação à base | `packages/types` | Média |
 
 ---
 

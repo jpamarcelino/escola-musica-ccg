@@ -5,7 +5,7 @@ type ProfessorPerfil = {
   nome: string
   email: string | null
   telefone: string | null
-  programa: string | null
+  programa: PerfisEscolaPrograma | null
   admin: boolean
 }
 
@@ -48,7 +48,7 @@ export default async function AdminProfessorContaPage({
     .maybeSingle()
 
   const professorPerfil = professorPerfilData as {
-    programa: string | null
+    programa: PerfisEscolaPrograma | null
     admin: boolean
     profiles: { nome: string; email: string | null; telefone: string | null } | null
   } | null
@@ -102,3 +102,4 @@ export default async function AdminProfessorContaPage({
   )
 }
 import Link from 'next/link'
+import type { PerfisEscolaPrograma } from '@ccg/types'

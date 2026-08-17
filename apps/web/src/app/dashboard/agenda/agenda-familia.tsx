@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula } from '@ccg/core'
+import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 
 type AulaFamilia = {
@@ -9,7 +9,7 @@ type AulaFamilia = {
   alunoNome: string
   disciplina: string
   professor: string
-  dia_semana: string
+  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
   sala: string | null
@@ -97,7 +97,7 @@ export async function AgendaFamilia({
     instrumentos: { nome: string } | null
     professor: { nome: string } | null
     horarios: {
-      dia_semana: string
+      dia_semana: DiaSemana
       hora_inicio: string
       hora_fim: string
       salas: { nome: string; piso: number | null; numero: number | null } | null

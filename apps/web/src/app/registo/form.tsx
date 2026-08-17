@@ -8,10 +8,11 @@ import { BotaoPrimario } from '@/components/botao-primario'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { Campo, CampoTexto, classesCampo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemInfo, MensagemNota } from '@/components/mensagem'
+import type { ConvitePrograma, ConviteTipo } from '@ccg/types'
 
 type ConviteInfo = {
-  tipo: string
-  programa: string | null
+  tipo: ConviteTipo
+  programa: ConvitePrograma | null
   aluno_nome: string | null
   valido: boolean
 } | null

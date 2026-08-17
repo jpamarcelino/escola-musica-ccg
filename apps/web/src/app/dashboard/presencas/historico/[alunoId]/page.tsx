@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatarDataEscolar } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
+import type { PresencaEstado } from '@ccg/types'
 
 type Matricula = {
   id: number
@@ -12,7 +13,7 @@ type Matricula = {
 type Presenca = {
   id: number
   data: string
-  estado: string
+  estado: PresencaEstado
   matricula_id: number
 }
 

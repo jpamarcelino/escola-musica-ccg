@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
   // dist/ desatualizado nem "porque é que a minha alteração não aparece".
   // Em troca, quem o consome tem de o compilar — no Next é esta linha, e
   // no Metro/Expo é o comportamento por omissão dentro do workspace.
-  transpilePackages: ['@ccg/core'],
+  transpilePackages: ['@ccg/core', '@ccg/types'],
   images: {
     remotePatterns: supabaseHost
       ? [{ protocol: 'https', hostname: supabaseHost, pathname: '/storage/v1/object/public/**' }]

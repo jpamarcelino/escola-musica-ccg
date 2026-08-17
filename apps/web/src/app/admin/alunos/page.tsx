@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { AdminAlunosDirectory, type AlunoDiretorio } from '@/components/admin-alunos-directory'
+import type { DiaSemana } from '@ccg/core'
 
 export default async function AdminAlunosPage() {
   const supabase = await createClient()
@@ -29,7 +30,7 @@ export default async function AdminAlunosPage() {
     .order('nome')
   const alunos = (alunosData ?? []) as unknown as {
     id: string; nome: string; data_nascimento: string | null; encarregado: { email: string | null; telefone: string | null } | null
-    matriculas: { estado: string; instrumentos: { nome: string } | null; professor: { nome: string } | null; horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null }[]
+    matriculas: { estado: string; instrumentos: { nome: string } | null; professor: { nome: string } | null; horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string } | null }[]
   }[]
   const diretorio: AlunoDiretorio[] = alunos.map((aluno) => ({ id: aluno.id, nome: aluno.nome, dataNascimento: aluno.data_nascimento, email: aluno.encarregado?.email ?? null, telefone: aluno.encarregado?.telefone ?? null, matriculas: aluno.matriculas.map((m) => ({ estado: m.estado, instrumento: m.instrumentos?.nome ?? null, professor: m.professor?.nome ?? null, horario: m.horarios ? `${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}` : null })) }))
 

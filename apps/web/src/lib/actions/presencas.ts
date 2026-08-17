@@ -4,8 +4,19 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { diaSemanaDaData, dataEhFutura } from '@ccg/core'
+import { PRESENCAESTADO_VALORES, type PresencaEstado } from '@ccg/types'
 
-const ESTADOS_VALIDOS = ['presente', 'falta_aviso', 'falta_sem_aviso']
+// O estado chega do formulário, portanto de fora — tem mesmo de ser
+// validado aqui. O que mudou é a lista deixar de ser uma cópia à mão da
+// constraint da tabela (que podia ficar para trás numa migração) e passar
+// a ser a própria constraint, lida do esquema.
+//
+// Devolver um type predicate faz a verificação de execução e a do
+// compilador serem a mesma coisa: depois deste `if`, o TypeScript já sabe
+// que o valor é um PresencaEstado, e a linha vai para o upsert sem cast.
+function ehEstadoValido(valor: string): valor is PresencaEstado {
+  return (PRESENCAESTADO_VALORES as readonly string[]).includes(valor)
+}
 
 export async function marcarPresencas(formData: FormData) {
   const supabase = await createClient()
@@ -62,14 +73,14 @@ export async function marcarPresencas(formData: FormData) {
     professor_id: string
     instrumento_nome: string | null
     data: string
-    estado: string
+    estado: PresencaEstado
     marcado_por: string
     atualizado_em: string
   }[] = []
 
   for (const matricula of matriculasValidas) {
     const estado = String(formData.get(`estado_${matricula.id}`) ?? '')
-    if (!ESTADOS_VALIDOS.includes(estado)) continue
+    if (!ehEstadoValido(estado)) continue
     linhas.push({
       matricula_id: matricula.id,
       aluno_id: matricula.aluno_id,

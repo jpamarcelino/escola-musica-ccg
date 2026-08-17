@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { BotaoSecundario } from '@/components/botao-secundario'
+import type { RecomendacaoEstado } from '@ccg/types'
 
 type RecomendacaoLinha = {
   id: number
@@ -10,7 +11,7 @@ type RecomendacaoLinha = {
   novo_aluno_nome: string
   professor_nome: string
   modalidade: string | null
-  estado: string
+  estado: RecomendacaoEstado
   criado_em: string
 }
 

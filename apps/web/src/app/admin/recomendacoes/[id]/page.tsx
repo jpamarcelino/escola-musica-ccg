@@ -8,6 +8,7 @@ import {
   atualizarDadosRecomendacao,
 } from '@/lib/actions/recomendacoes'
 import { MESES_ANO_LETIVO, euros } from '@ccg/core'
+import type { BeneficioEstado, RecomendacaoEstado } from '@ccg/types'
 
 type Recomendacao = {
   id: number
@@ -19,7 +20,7 @@ type Recomendacao = {
   data_primeiro_pagamento: string | null
   data_validacao: string | null
   valor_inscricao: number | null
-  estado: string
+  estado: RecomendacaoEstado
   motivo_anulacao: string | null
   observacoes: string | null
   criado_em: string
@@ -27,7 +28,7 @@ type Recomendacao = {
 
 type Beneficio = {
   id: number
-  estado: string
+  estado: BeneficioEstado
   ano_uso: number | null
   mes_uso: number | null
   valor_coberto: number | null

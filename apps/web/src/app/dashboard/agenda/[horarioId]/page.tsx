@@ -2,7 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
-import { formatarHora, formatarSala } from '@ccg/core'
+import { formatarHora, formatarSala, type DiaSemana } from '@ccg/core'
 
 type Aluno = {
   id: number
@@ -43,7 +43,7 @@ export default async function AgendaHorarioPage({
     .eq('professor_id', user.id)
     .maybeSingle()
   const horario = horarioData as unknown as {
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     salas: { nome: string; piso: number | null; numero: number | null } | null

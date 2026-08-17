@@ -7,7 +7,7 @@ import { ConvidarAdminForm } from '@/components/convite-forms'
 type Professor = {
   id: string
   nome: string
-  tipo: string
+  tipo: PerfisEscolaTipo
   admin: boolean
 }
 
@@ -39,7 +39,7 @@ export default async function AdminAdministradoresPage() {
   const professores = (
     (professoresData ?? []) as unknown as {
       id: string
-      tipo: string
+      tipo: PerfisEscolaTipo
       admin: boolean
       profiles: { nome: string } | null
     }[]
@@ -103,3 +103,4 @@ export default async function AdminAdministradoresPage() {
   )
 }
 import Link from 'next/link'
+import type { PerfisEscolaTipo } from '@ccg/types'

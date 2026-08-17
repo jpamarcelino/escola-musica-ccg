@@ -4,7 +4,8 @@ import { getSchoolProfileContext } from '@/lib/auth-context'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
-import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, hojeISO, formatarHora, formatarSala, DIAS_SEMANA } from '@ccg/core'
+import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, hojeISO, formatarHora, formatarSala, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
+import type { MatriculaEstado } from '@ccg/types'
 
 type AulaConfirmada = {
   id: number
@@ -12,7 +13,7 @@ type AulaConfirmada = {
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
   horarios: {
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     salas: { nome: string; piso: number | null; numero: number | null } | null
@@ -248,10 +249,10 @@ export default async function DashboardPage({
   type MatriculaFilho = {
     id: number
     aluno_id: string
-    estado: string
+    estado: MatriculaEstado
     instrumentos: { nome: string } | null
     horarios: {
-      dia_semana: string
+      dia_semana: DiaSemana
       hora_inicio: string
       hora_fim: string
       salas: { nome: string; piso: number | null; numero: number | null } | null

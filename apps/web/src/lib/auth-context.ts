@@ -1,5 +1,6 @@
 import { cache } from 'react'
 import { createClient } from '@/lib/supabase/server'
+import type { PerfisEscolaPrograma, PerfisEscolaTipo } from '@ccg/types'
 
 // React mantém este resultado apenas durante o render atual. Layout e página
 // partilham assim a mesma validação remota sem guardar sessões entre pedidos.
@@ -14,9 +15,9 @@ export const getAuthContext = cache(async () => {
 
 export type SchoolProfile = {
   nome: string
-  tipo: string | undefined
+  tipo: PerfisEscolaTipo | undefined
   admin: boolean | undefined
-  programa: string | null | undefined
+  programa: PerfisEscolaPrograma | null | undefined
 }
 
 // Layout e página são renderizados no mesmo pedido. Esta função evita que
@@ -31,9 +32,18 @@ export const getSchoolProfileContext = cache(async () => {
     .eq('id', user.id)
     .single()
 
+  // Esta é a fronteira onde os dados do Supabase entram sem tipo. Estreitar
+  // aqui, e não mais à frente, é o que faz valer a pena: a partir deste
+  // ponto o `tipo` já não é uma string qualquer, e comparar com um valor
+  // inexistente passa a ser erro de compilação. Os valores são garantidos
+  // pela constraint CHECK da tabela — é dela que estas uniões saem.
   const row = data as {
     nome: string
-    perfis_escola: { tipo: string; admin: boolean; programa: string | null } | null
+    perfis_escola: {
+      tipo: PerfisEscolaTipo
+      admin: boolean
+      programa: PerfisEscolaPrograma | null
+    } | null
   } | null
 
   const profile: SchoolProfile | null = row

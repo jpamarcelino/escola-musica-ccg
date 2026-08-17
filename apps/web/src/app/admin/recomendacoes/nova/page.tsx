@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SubmitButton } from '@/components/submit-button'
 import { registarRecomendacao } from '@/lib/actions/recomendacoes'
+import type { MatriculaEstado } from '@ccg/types'
 
 type ProfessorAderente = {
   id: string
@@ -11,7 +12,7 @@ type ProfessorAderente = {
 
 type AlunoDoProfessor = {
   aluno_id: string
-  estado: string
+  estado: MatriculaEstado
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
 }

@@ -2,17 +2,18 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { cancelarPedido, cancelarMatricula } from '@/lib/actions/aluno'
-import { formatarSala, formatarHora, proximaOcorrenciaDeAula, formatarDataEscolar } from '@ccg/core'
+import { formatarSala, formatarHora, proximaOcorrenciaDeAula, formatarDataEscolar, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
+import type { MatriculaEstado } from '@ccg/types'
 
 type Matricula = {
   id: number
-  estado: string
+  estado: MatriculaEstado
   instrumentos: { nome: string } | null
   profiles: { nome: string } | null
   horarios: {
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     salas: { nome: string; piso: number | null; numero: number | null } | null

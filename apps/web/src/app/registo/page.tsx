@@ -2,10 +2,11 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { FundoPapel } from '@/components/fundo-papel'
 import RegistoForm from './form'
+import type { ConvitePrograma, ConviteTipo } from '@ccg/types'
 
 type ConviteInfo = {
-  tipo: string
-  programa: string | null
+  tipo: ConviteTipo
+  programa: ConvitePrograma | null
   aluno_nome: string | null
   valido: boolean
 } | null

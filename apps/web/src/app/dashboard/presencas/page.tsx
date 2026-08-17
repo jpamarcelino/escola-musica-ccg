@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
-import { datasDoDia, INICIO_PRESENCAS, hojeISO } from '@ccg/core'
+import { datasDoDia, INICIO_PRESENCAS, hojeISO, type DiaSemana } from '@ccg/core'
 
 type Horario = {
   id: number
-  dia_semana: string
+  dia_semana: DiaSemana
 }
 
 type MatriculaConfirmada = {

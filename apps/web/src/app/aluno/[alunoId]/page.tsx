@@ -1,14 +1,15 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
-import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, formatarHora, formatarSala } from '@ccg/core'
+import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, formatarHora, formatarSala, type DiaSemana } from '@ccg/core'
+import type { MatriculaEstado } from '@ccg/types'
 
 type Matricula = {
   id: number
-  estado: string
+  estado: MatriculaEstado
   instrumentos: { nome: string } | null
   profiles: { nome: string } | null
-  horarios: { dia_semana: string; hora_inicio: string; hora_fim: string; salas: { nome: string; piso: number | null; numero: number | null } | null } | null
+  horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string; salas: { nome: string; piso: number | null; numero: number | null } | null } | null
 }
 
 export default async function AlunoHubPage({

@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { formatarHora, formatarSala, agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO, plural } from '@ccg/core'
+import { formatarHora, formatarSala, agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO, plural, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
 
 type Horario = {
   id: number
-  dia_semana: string
+  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
   salas: { nome: string; piso: number | null; numero: number | null } | null
@@ -21,7 +21,7 @@ type MatriculaConfirmada = {
 type Pendente = {
   horarioId: number
   data: string
-  dia_semana: string
+  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
   sala: string | null

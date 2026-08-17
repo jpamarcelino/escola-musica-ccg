@@ -2,7 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
-import { formatarHora, formatarSala, dataMaisRecenteDoDia } from '@ccg/core'
+import { formatarHora, formatarSala, dataMaisRecenteDoDia, type DiaSemana } from '@ccg/core'
 import { marcarPresencas } from '@/lib/actions/presencas'
 import { MensagemErro } from '@/components/mensagem'
 import { PresencasChamadaForm } from '@/components/presencas-chamada-form'
@@ -36,7 +36,7 @@ export default async function PresencasHorarioPage({
     .eq('professor_id', user.id)
     .maybeSingle()
   const horario = horarioData as unknown as {
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     salas: { nome: string; piso: number | null; numero: number | null } | null

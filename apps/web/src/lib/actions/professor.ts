@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA } from '@ccg/core'
+import { DIAS_SEMANA, type DiaSemana } from '@ccg/core'
 
 // Fora deste intervalo o Centro Cultural não abre — evita horários
 // disparatados (ex: 1h da manhã) por engano de fuso ou digitação.
@@ -61,7 +61,7 @@ export async function confirmarHorario(formData: FormData) {
 
   const temSobreposicao = (
     (outrasConfirmadas ?? []) as unknown as {
-      horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+      horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string } | null
     }[]
   ).some((c) => {
     const h = c.horarios
@@ -98,7 +98,7 @@ export async function confirmarHorario(formData: FormData) {
       aluno_id: string
       alunos: { nome: string; encarregado_id: string } | null
       instrumentos: { nome: string } | null
-      horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+      horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string } | null
     }
     // A notificação vai para quem gere o aluno (o encarregado) — um
     // dependente não tem inbox própria, e mesmo quando o próprio aluno
@@ -327,7 +327,7 @@ export async function criarHorarios(formData: FormData) {
 
   const linhas: {
     professor_id: string
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     estado: string

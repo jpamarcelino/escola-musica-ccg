@@ -2,15 +2,16 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala } from '@ccg/core'
+import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
+import type { PerfisEscolaPrograma } from '@ccg/types'
 
 type Confirmado = {
   id: number
   horario_final_id: number | null
   alunos: { nome: string } | null
   horarios: {
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     salas: { nome: string; piso: number | null; numero: number | null } | null
@@ -19,7 +20,7 @@ type Confirmado = {
 
 type BlocoAgenda = {
   horarioId: number
-  dia_semana: string
+  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
   sala: string | null
@@ -60,7 +61,7 @@ export default async function AdminProfessorHorarioPage({
     .maybeSingle()
 
   const professorPerfil = professorPerfilData as {
-    programa: string | null
+    programa: PerfisEscolaPrograma | null
     profiles: { nome: string } | null
   } | null
 

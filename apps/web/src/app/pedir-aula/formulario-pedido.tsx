@@ -5,15 +5,16 @@ import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { CampoTextarea } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
-import { HOUR_HEIGHT, paraMinutos, formatarHora } from '@ccg/core'
+import { HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import { ModalContaPedido, ModalEscolherAluno } from '@/components/modal-conta-pedido'
+import type { HorarioEstado, InstrumentoPrograma } from '@ccg/types'
 
 type Horario = {
   id: number
-  dia_semana: string
+  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
-  estado: string
+  estado: HorarioEstado
 }
 
 // Passo final do wizard público (/pedir-aula): a mesma grelha de horários +
@@ -47,7 +48,7 @@ export function FormularioPedido({
   // Viajam com o pedido só para o erro poder devolver a pessoa a este
   // mesmo passo. Sem eles, o redirect de erro caía num /pedir-aula sem
   // escola nem idade — ou seja, no pop-up da idade, do início.
-  programa: string
+  programa: InstrumentoPrograma
   idade: number
   autenticado: boolean
   erroInicial?: string

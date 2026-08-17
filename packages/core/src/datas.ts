@@ -1,4 +1,4 @@
-import { DIAS_SEMANA } from './dias-semana'
+import { DIAS_SEMANA, type DiaSemana } from './dias-semana'
 
 const FUSO_HORARIO_ESCOLA = 'Europe/Lisbon'
 
@@ -28,7 +28,7 @@ export function agoraNaEscola(instante = new Date()): Date {
   )
 }
 
-function indiceDoDia(diaSemana: string) {
+function indiceDoDia(diaSemana: DiaSemana) {
   return DIAS_SEMANA.indexOf(diaSemana)
 }
 
@@ -40,7 +40,7 @@ function indiceSegundaBase(data: Date) {
 
 // A data mais recente (hoje incluído) que cai nesse dia da semana — usada
 // como valor por omissão ao abrir a marcação de presenças.
-export function dataMaisRecenteDoDia(diaSemana: string, referencia = new Date()): string {
+export function dataMaisRecenteDoDia(diaSemana: DiaSemana, referencia = new Date()): string {
   const hoje = new Date(referencia)
   hoje.setHours(0, 0, 0, 0)
   const diff = (indiceSegundaBase(hoje) - indiceDoDia(diaSemana) + 7) % 7
@@ -49,7 +49,7 @@ export function dataMaisRecenteDoDia(diaSemana: string, referencia = new Date())
   return paraISO(data)
 }
 
-export function diaSemanaDaData(data: string): string {
+export function diaSemanaDaData(data: string): DiaSemana {
   const [ano, mes, dia] = data.split('-').map(Number)
   return DIAS_SEMANA[indiceSegundaBase(new Date(ano, mes - 1, dia))]
 }
@@ -104,7 +104,7 @@ export const INICIO_PRESENCAS = '2026-07-27'
 
 // Todas as datas (semanais) desse dia da semana entre "desde" e "ate",
 // inclusive — usado para gerar as aulas ainda por confirmar.
-export function datasDoDia(diaSemana: string, desde: string, ate: string): string[] {
+export function datasDoDia(diaSemana: DiaSemana, desde: string, ate: string): string[] {
   const datas: string[] = []
   let atual = dataMaisRecenteDoDiaApartirDe(diaSemana, desde)
   while (atual <= ate) {
@@ -117,7 +117,7 @@ export function datasDoDia(diaSemana: string, desde: string, ate: string): strin
 // A próxima aula desse dia da semana a partir de hoje (hoje incluído) —
 // usada para mostrar a "próxima aula marcada" ao aluno.
 export function proximaOcorrenciaDoDia(
-  diaSemana: string,
+  diaSemana: DiaSemana,
   referencia = agoraNaEscola()
 ): string {
   return dataMaisRecenteDoDiaApartirDe(diaSemana, paraISO(referencia))
@@ -127,7 +127,7 @@ export function proximaOcorrenciaDoDia(
 // passou, devolve a semana seguinte. A versão que considera apenas o dia é
 // útil para calendários; para cards "Próxima aula" esta é a função correta.
 export function proximaOcorrenciaDeAula(
-  diaSemana: string,
+  diaSemana: DiaSemana,
   horaInicio: string,
   horaFim?: string,
   referencia = agoraNaEscola()
@@ -143,7 +143,7 @@ export function proximaOcorrenciaDeAula(
 }
 
 // A primeira ocorrência desse dia da semana a partir de (e incluindo) "desde".
-function dataMaisRecenteDoDiaApartirDe(diaSemana: string, desde: string): string {
+function dataMaisRecenteDoDiaApartirDe(diaSemana: DiaSemana, desde: string): string {
   const [ano, mes, dia] = desde.split('-').map(Number)
   const diff = (indiceDoDia(diaSemana) - indiceSegundaBase(new Date(ano, mes - 1, dia)) + 7) % 7
   return somarDias(desde, diff)

@@ -8,7 +8,7 @@ import {
   bloquearHorarios,
   desbloquearHorarios,
 } from '@/lib/actions/professor'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora } from '@ccg/core'
+import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
@@ -20,13 +20,14 @@ import { EmptyState } from '@/components/empty-state'
 import { MensagemErro } from '@/components/mensagem'
 import { SubmitButton } from '@/components/submit-button'
 import { HorariosToolbar } from '@/components/horarios-toolbar'
+import type { HorarioEstado } from '@ccg/types'
 
 type HorarioProfessor = {
   id: number
-  dia_semana: string
+  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
-  estado: string
+  estado: HorarioEstado
 }
 
 type Confirmado = {
@@ -37,7 +38,7 @@ type Confirmado = {
     nome: string
     encarregado: { telefone: string | null } | null
   } | null
-  horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+  horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string } | null
 }
 
 export default async function HorariosPage({

@@ -6,7 +6,7 @@ import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
 import { SubmitButton } from '@/components/submit-button'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
-import { agoraNaEscola } from '@ccg/core'
+import { agoraNaEscola, type DiaSemana } from '@ccg/core'
 
 type Pedido = {
   id: number
@@ -19,7 +19,7 @@ type Pedido = {
   instrumentos: { nome: string } | null
   disponibilidades_selecionadas: {
     horario_id: number
-    horarios: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string } | null
   }[]
 }
 

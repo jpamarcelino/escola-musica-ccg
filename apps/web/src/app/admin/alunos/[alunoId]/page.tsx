@@ -2,7 +2,8 @@ import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
-import { formatarSala, calcularIdade, euros, eurosOuTexto } from '@ccg/core'
+import { formatarSala, calcularIdade, euros, eurosOuTexto, type DiaSemana } from '@ccg/core'
+import type { MatriculaEstado, PresencaEstado } from '@ccg/types'
 
 type AlunoPerfil = {
   nome: string
@@ -12,11 +13,11 @@ type AlunoPerfil = {
 
 type Matricula = {
   id: number
-  estado: string
+  estado: MatriculaEstado
   professor: { nome: string } | null
   instrumentos: { nome: string } | null
   horarios: {
-    dia_semana: string
+    dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
     salas: { nome: string; piso: number | null; numero: number | null } | null
@@ -26,7 +27,7 @@ type Matricula = {
 type Presenca = {
   id: number
   data: string
-  estado: string
+  estado: PresencaEstado
   matricula_id: number
 }
 

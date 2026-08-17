@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    // Ao contrário do @ccg/core, este pacote lê ficheiros do disco para
+    // gerar os tipos — por isso precisa dos tipos do Node. O que sai
+    // daqui, e é o que a app importa, continua a ser só tipos.
+    "lib": ["ES2022"],
+    "target": "ES2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["node_modules"]
+}

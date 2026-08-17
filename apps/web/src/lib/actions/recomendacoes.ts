@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import type { MatriculaEstado } from '@ccg/types'
 
 type AlunoParaRecomendacao = {
   id: string
@@ -133,7 +134,7 @@ export async function registarRecomendacao(formData: FormData) {
 
   const matriculas = (matriculasData ?? []) as unknown as {
     aluno_id: string
-    estado: string
+    estado: MatriculaEstado
     instrumentos: { nome: string } | null
   }[]
 

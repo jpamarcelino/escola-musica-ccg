@@ -1,4 +1,5 @@
 import type { createClient } from '@/lib/supabase/server'
+import type { BeneficioEstado, RecomendacaoEstado } from '@ccg/types'
 
 type SupabaseServidor = Awaited<ReturnType<typeof createClient>>
 
@@ -13,7 +14,7 @@ export type LinhaEstudo = {
   dataPrimeiroPagamento: string | null
   dataValidacao: string | null
   valorInscricao: number | null
-  estado: string
+  estado: RecomendacaoEstado
   motivoAnulacao: string | null
   beneficioEstado: string | null
   beneficioMes: string | null
@@ -79,7 +80,7 @@ export async function recolherDadosEstudo(supabase: SupabaseServidor) {
     data_primeiro_pagamento: string | null
     valor_inscricao: number | null
     data_validacao: string | null
-    estado: string
+    estado: RecomendacaoEstado
     motivo_anulacao: string | null
   }[]
 
@@ -88,7 +89,7 @@ export async function recolherDadosEstudo(supabase: SupabaseServidor) {
     .select('recomendacao_id, estado, ano_uso, mes_uso, valor_coberto')
   const beneficios = (beneficiosData ?? []) as {
     recomendacao_id: number
-    estado: string
+    estado: BeneficioEstado
     ano_uso: number | null
     mes_uso: number | null
     valor_coberto: number | null

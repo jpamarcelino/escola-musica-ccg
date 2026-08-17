@@ -10,6 +10,7 @@
 // Não entra aqui nada que faça queries — isso é o packages/data.
 
 export { DIAS_SEMANA } from './dias-semana'
+export type { DiaSemana } from './dias-semana'
 
 export {
   agoraNaEscola,
