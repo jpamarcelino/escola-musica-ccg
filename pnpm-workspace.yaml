@@ -18,17 +18,27 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 # O pnpm segura pacotes acabados de publicar durante uns dias, como defesa
-# contra pacotes comprometidos. O SDK 57 da Expo saiu há pouco e move-se
-# em bloco: estas exclusões foram acrescentadas pelo próprio `expo install`
-# ao instalar a app móvel, e são todas do mesmo lançamento.
+# contra pacotes comprometidos. O SDK da Expo move-se em bloco, por isso
+# são muitas de uma vez — foram acrescentadas pelo próprio `expo install`.
+#
+# O projeto está no SDK 56 e não no 57, de propósito: o 57 é recente ao
+# ponto de a app Expo Go publicada nas lojas ainda não o abrir, e sem o
+# Expo Go não há como experimentar a app sem instalar o SDK do Android.
 minimumReleaseAgeExclude:
-  - '@expo/cli@57.0.16'
-  - '@expo/config@57.0.8'
+  - '@expo/cli@56.1.24'
   - '@expo/fingerprint@0.20.8'
   - '@expo/inline-modules@0.1.6'
-  - '@expo/log-box@57.0.3'
-  - expo-asset@57.0.12
-  - expo-constants@57.0.12
-  - expo@57.0.14
-  - '@expo/metro-runtime@57.0.11'
-  - expo-router@57.0.14
+  - expo-asset@56.0.23
+  - expo-constants@56.0.24
+  - expo@56.0.20
+  - '@expo/metro-runtime@56.0.20'
+  - expo-router@56.2.19
+  - '@expo/config-plugins@56.0.15'
+  - '@expo/prebuild-config@56.0.22'
+  - '@expo/router-server@56.0.18'
+  - expo-file-system@56.0.10
+  - expo-modules-autolinking@56.0.22
+  - expo-modules-core@56.0.24
+  - expo-server@56.0.6
+  - '@expo/ui@56.0.26'
+  - expo-linking@56.0.17
