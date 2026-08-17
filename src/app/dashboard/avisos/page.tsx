@@ -38,7 +38,7 @@ export default async function AvisosPage({
     redirect('/dashboard')
   }
 
-  const [avisosResposta, { data: alunosData }] = await Promise.all([
+  const [{ data: avisosData }, { data: alunosData }] = await Promise.all([
     supabase
       .from('notificacoes')
       .select('id, mensagem, lida, criado_em, aluno_id')
@@ -50,24 +50,6 @@ export default async function AvisosPage({
       .eq('encarregado_id', user.id)
       .order('criado_em'),
   ])
-
-  // Enquanto a migração 0025 não correr, a coluna aluno_id ainda não
-  // existe e o pedido acima falha inteiro (a base devolve 42703, não uma
-  // lista sem a coluna). Sem esta segunda tentativa, publicar o código
-  // antes da migração deixava a página de avisos em branco.
-  //
-  // Assim que a migração estiver aplicada e confirmada, este bloco pode
-  // desaparecer — é a única coisa que ainda contempla a base antiga.
-  let avisosData = avisosResposta.data
-  const temColunaAluno = !avisosResposta.error
-  if (avisosResposta.error) {
-    const semColuna = await supabase
-      .from('notificacoes')
-      .select('id, mensagem, lida, criado_em')
-      .eq('user_id', user.id)
-      .order('criado_em', { ascending: false })
-    avisosData = (semColuna.data ?? []).map((n) => ({ ...n, aluno_id: null }))
-  }
 
   const todos = (avisosData ?? []) as Notificacao[]
   const alunos = alunosData ?? []
@@ -100,10 +82,8 @@ export default async function AvisosPage({
         </header>
 
         {/* Só vale a pena filtrar quando há mais do que um aluno — com um
-            só, os dois separadores mostrariam a mesma lista. E não vale
-            de todo antes da migração: sem a coluna aluno_id, filtrar por
-            aluno devolveria sempre uma lista vazia. */}
-        {temColunaAluno && alunos.length > 1 && (
+            só, os dois separadores mostrariam a mesma lista. */}
+        {alunos.length > 1 && (
           <nav className="filtro-alunos" aria-label="Filtrar avisos por aluno">
             <Link href="/dashboard/avisos" aria-current={!filtroValido ? 'page' : undefined}>
               Todos
