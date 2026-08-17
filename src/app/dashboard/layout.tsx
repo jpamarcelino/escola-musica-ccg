@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { BottomNavigation } from '@/components/bottom-navigation'
-import { NAV_CONTA, NAV_PROFESSOR } from '@/lib/navegacao'
+import { NAV_CONTA, NAV_PROFESSOR, ehContaCCG } from '@/lib/navegacao'
 
 // A navegação inferior vive no layout para acompanhar o utilizador por
 // todas as páginas de /dashboard/* — não é um enfeite da Home. Os
@@ -18,7 +18,7 @@ async function DashboardNavigation() {
 
   if (!user) return null
   if (profile?.tipo === 'professor') return <BottomNavigation itens={NAV_PROFESSOR} />
-  if (profile?.tipo === 'conta') return <BottomNavigation itens={NAV_CONTA} />
+  if (ehContaCCG(profile?.tipo)) return <BottomNavigation itens={NAV_CONTA} />
   return null
 }
 

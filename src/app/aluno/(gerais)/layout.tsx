@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { BottomNavigation } from '@/components/bottom-navigation'
-import { NAV_CONTA } from '@/lib/navegacao'
+import { NAV_CONTA, ehContaCCG } from '@/lib/navegacao'
 
 // Nav da Conta CCG para as páginas de /aluno que não pertencem a um aluno
 // em concreto — hoje só o calendário escolar (os avisos mudaram-se para
@@ -18,7 +18,7 @@ import { NAV_CONTA } from '@/lib/navegacao'
 async function NavegacaoGeral() {
   const { user, profile } = await getSchoolProfileContext()
 
-  if (!user || profile?.tipo !== 'conta') return null
+  if (!user || !ehContaCCG(profile?.tipo)) return null
 
   // Sem aluno no URL, a barra é a de família — a mesma de /dashboard.
   // Nenhum separador abre um aluno escolhido por nós.

@@ -104,14 +104,29 @@ export async function confirmarHorario(formData: FormData) {
     // dependente não tem inbox própria, e mesmo quando o próprio aluno
     // gere a conta, encarregado_id é ele mesmo.
     if (m.horarios && m.alunos) {
-      await supabase.from('notificacoes').insert({
+      const mensagem = `A aula de ${m.alunos.nome} (${m.instrumentos?.nome ?? ''}) foi confirmada: ${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}.`
+
+      const { error: erroAviso } = await supabase.from('notificacoes').insert({
         user_id: m.alunos.encarregado_id,
         // Marca a que aluno se refere, para a página de avisos poder
         // etiquetar e filtrar sem ir procurar o nome dentro do texto.
         aluno_id: m.aluno_id,
         tipo: 'pedido_aceite',
-        mensagem: `A aula de ${m.alunos.nome} (${m.instrumentos?.nome ?? ''}) foi confirmada: ${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}.`,
+        mensagem,
       })
+
+      // Enquanto a migração 0025 não correr, a coluna aluno_id não existe
+      // e este insert falha. O aviso é secundário face ao que já ficou
+      // feito (a matrícula está confirmada), mas perdê-lo em silêncio
+      // deixava o encarregado sem saber — por isso repete-se sem a
+      // coluna. Remover assim que a migração estiver aplicada.
+      if (erroAviso) {
+        await supabase.from('notificacoes').insert({
+          user_id: m.alunos.encarregado_id,
+          tipo: 'pedido_aceite',
+          mensagem,
+        })
+      }
     }
   }
 

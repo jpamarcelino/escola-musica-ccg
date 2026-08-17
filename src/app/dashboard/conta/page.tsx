@@ -24,6 +24,7 @@ import { EmptyState } from '@/components/empty-state'
 import { criarConviteMigracaoAluno, resgatarConvite } from '@/lib/actions/convites'
 import { GerarLinkMigracaoForm, ResgatarConviteForm } from '@/components/convite-forms'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
+import { ehContaCCG } from '@/lib/navegacao'
 
 export default async function ContaPage({
   searchParams,
@@ -63,7 +64,10 @@ export default async function ContaPage({
   if (profile?.tipo === 'admin') {
     redirect('/admin/conta')
   }
-  if (profile?.tipo !== 'professor' && profile?.tipo !== 'conta') {
+  // O "!profile" explícito não é redundante: sem ele o TypeScript deixa
+  // de conseguir garantir que "profile" existe daqui para baixo, porque a
+  // verificação do tipo passou a estar dentro de uma função.
+  if (!profile || (profile.tipo !== 'professor' && !ehContaCCG(profile.tipo))) {
     redirect('/dashboard')
   }
   const ehProfessor = profile.tipo === 'professor'

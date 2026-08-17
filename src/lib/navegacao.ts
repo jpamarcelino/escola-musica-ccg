@@ -1,5 +1,21 @@
 import type { ItemNav } from '@/components/bottom-navigation'
 
+// Uma Conta CCG é o perfil de quem gere alunos. A migração 0025 renomeia
+// este tipo de 'aluno' para 'conta' — o nome antigo confundia a conta com
+// a pessoa que tem aulas, que é justamente a separação que se foi fazer.
+//
+// Durante a transição aceitam-se os dois. Isto existe para que o código
+// possa ir para o ar ANTES de a migração correr: sem esta tolerância, a
+// ordem passava a importar, e publicar primeiro deixava dezassete contas
+// sem navegação até alguém se lembrar de correr o SQL (e correr o SQL
+// primeiro partia a versão que estava no ar).
+//
+// Depois de a migração correr e de o resultado estar confirmado, o 'aluno'
+// pode sair daqui — é a única coisa que fica a apontar para o nome antigo.
+export function ehContaCCG(tipo: string | undefined | null): boolean {
+  return tipo === 'conta' || tipo === 'aluno'
+}
+
 // Barras de navegação inferior da Conta CCG, num sítio só — antes estava
 // copiada em três layouts (/dashboard, /aluno/(gerais) e /aluno/[alunoId]),
 // e cada cópia foi divergindo.

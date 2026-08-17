@@ -8,6 +8,7 @@ import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { calcularIdade } from '@/lib/idade'
 import { hojeISO } from '@/lib/datas'
+import { ehContaCCG } from '@/lib/navegacao'
 
 // Gestão dos perfis de aluno da Conta CCG.
 //
@@ -35,7 +36,7 @@ export default async function AlunosPage({
   // Página da Conta CCG. Professores e admins têm as suas próprias áreas —
   // e o filtro por encarregado_id abaixo devolveria uma lista vazia que não
   // explicava nada.
-  if (profile?.tipo !== 'conta') {
+  if (!ehContaCCG(profile?.tipo)) {
     redirect('/dashboard')
   }
 

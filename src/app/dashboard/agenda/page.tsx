@@ -8,6 +8,7 @@ import { formatarSala } from '@/lib/sala'
 import { agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula } from '@/lib/datas'
 import { EmptyState } from '@/components/empty-state'
 import { AgendaFamilia } from './agenda-familia'
+import { ehContaCCG } from '@/lib/navegacao'
 
 type Confirmado = {
   id: number
@@ -77,7 +78,7 @@ export default async function AgendaPage({
   // resto deste ficheiro, inalterado) e o da família. Antes, quem não
   // fosse professor era mandado embora — a Conta CCG tinha um separador
   // "Agenda" na barra que não levava a agenda nenhuma.
-  if (profile?.tipo === 'conta') {
+  if (ehContaCCG(profile?.tipo)) {
     return <AgendaFamilia supabase={supabase} userId={user.id} alunoFiltro={alunoFiltro} />
   }
 
