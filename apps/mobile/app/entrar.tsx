@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
+import { BotaoSecundario } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
 import { cores, espaco, raio, texto } from '../lib/tema'
 
@@ -106,6 +107,15 @@ export default function Entrar() {
             <Text style={estilos.botaoTexto}>Entrar</Text>
           )}
         </Pressable>
+
+        {/* Sem estas duas saídas a app era um beco: quem não tinha conta
+            não a podia criar, e quem esquecia a password ficava preso. */}
+        <BotaoSecundario
+          texto="Esqueci-me da password"
+          onPress={() => router.push('/recuperar-password')}
+        />
+        <Text style={estilos.separador}>Ainda não tens conta?</Text>
+        <BotaoSecundario texto="Criar conta" onPress={() => router.push('/registo')} />
       </ScrollView>
     </KeyboardAvoidingView>
   )
@@ -145,4 +155,10 @@ const estilos = StyleSheet.create({
     marginTop: espaco.s,
   },
   botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.branco },
+  separador: {
+    ...texto.pequeno,
+    color: cores.tintaSuave,
+    textAlign: 'center',
+    marginTop: espaco.s,
+  },
 })

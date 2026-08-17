@@ -60,6 +60,8 @@ export default function LayoutRaiz() {
           }}
         >
           <Stack.Screen name="entrar" options={{ headerShown: false }} />
+          <Stack.Screen name="registo" options={{ headerShown: false }} />
+          <Stack.Screen name="recuperar-password" options={{ headerShown: false }} />
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack>
         </ProvedorPerfil>
