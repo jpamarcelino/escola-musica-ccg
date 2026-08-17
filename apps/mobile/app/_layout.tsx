@@ -59,6 +59,7 @@ export default function LayoutRaiz() {
             contentStyle: { backgroundColor: cores.papel },
           }}
         >
+          <Stack.Screen name="descobrir" options={{ headerShown: false }} />
           <Stack.Screen name="entrar" options={{ headerShown: false }} />
           <Stack.Screen name="registo" options={{ headerShown: false }} />
           <Stack.Screen name="recuperar-password" options={{ headerShown: false }} />

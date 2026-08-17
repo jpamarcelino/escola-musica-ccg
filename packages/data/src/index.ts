@@ -64,3 +64,10 @@ export {
   listarHorariosPublicos,
 } from './oferta'
 export type { Instrumento, ProfessorPublico, HorarioPublico } from './oferta'
+
+export {
+  atualizarNome,
+  atualizarEmail,
+  atualizarPassword,
+  apagarPropriaConta,
+} from './conta'

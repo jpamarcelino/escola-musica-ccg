@@ -27,7 +27,11 @@ export default function LayoutApp() {
   const { perfil, aCarregar: perfilACarregar } = usePerfil()
 
   if (sessaoACarregar || perfilACarregar) return <ACarregar />
-  if (!sessao) return <Redirect href="/entrar" />
+  // Sem sessão, a app abre na descoberta e não no login — tal como a
+  // web abre em "/" e não em "/login". Quem chega sem conta tem de ver
+  // primeiro o que a escola faz; pedir credenciais a quem ainda não sabe
+  // o que isto é fecha a porta antes de a mostrar.
+  if (!sessao) return <Redirect href="/descobrir" />
 
   const professor = ehProfessor(perfil?.tipo)
 
