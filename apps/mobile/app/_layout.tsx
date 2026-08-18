@@ -56,6 +56,12 @@ export default function LayoutRaiz() {
             headerTintColor: cores.azulFundo,
             headerTitleStyle: { fontFamily: tipos.display, fontSize: 17, color: cores.tinta },
             headerShadowVisible: false,
+            // Só a seta, sem legenda. Por omissão o iOS escreve ao lado da
+            // seta o nome do ecrã anterior, e o ecrã anterior destes é o
+            // grupo de rotas — dava um botão a dizer "(app)", que é nome de
+            // pasta do código e não diz nada a ninguém. Pior: parecia avaria,
+            // ao ponto de se duvidar que o botão sequer funcionasse.
+            headerBackButtonDisplayMode: 'minimal',
             contentStyle: { backgroundColor: cores.papel },
           }}
         >
