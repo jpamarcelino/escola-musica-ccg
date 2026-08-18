@@ -1,11 +1,10 @@
 import { calcularIdade, plural } from '@ccg/core'
 import { listarTodosAlunos, type AlunoAdmin } from '@ccg/data'
-import { Stack } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { FlatList, StyleSheet, Text, TextInput } from 'react-native'
-import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../componentes/base'
-import { supabase } from '../../lib/supabase'
-import { cores, espaco, raio, texto } from '../../lib/tema'
+import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../../componentes/base'
+import { supabase } from '../../../lib/supabase'
+import { cores, espaco, raio, texto } from '../../../lib/tema'
 
 export default function AlunosAdmin() {
   const [alunos, setAlunos] = useState<AlunoAdmin[]>([])
@@ -37,7 +36,6 @@ export default function AlunosAdmin() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Alunos' }} />
       <FlatList
         data={visiveis}
         keyExtractor={(a) => a.id}

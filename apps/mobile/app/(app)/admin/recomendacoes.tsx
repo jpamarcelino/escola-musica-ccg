@@ -6,7 +6,6 @@ import {
   type RecomendacaoAdmin,
 } from '@ccg/data'
 import type { RecomendacaoEstado } from '@ccg/types'
-import { Stack } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { Alert, StyleSheet, Text, View } from 'react-native'
 import { FlatList } from 'react-native'
@@ -17,10 +16,10 @@ import {
   Distintivo,
   EstadoVazio,
   type TomDistintivo,
-} from '../../componentes/base'
-import { BotaoPrincipal, BotaoSecundario, Campo, Mensagem } from '../../componentes/formulario'
-import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+} from '../../../componentes/base'
+import { BotaoPrincipal, BotaoSecundario, Campo, Mensagem } from '../../../componentes/formulario'
+import { supabase } from '../../../lib/supabase'
+import { cores, espaco, texto } from '../../../lib/tema'
 
 const ROTULO: Record<RecomendacaoEstado, string> = {
   registada: 'Por validar',
@@ -102,7 +101,6 @@ export default function Recomendacoes() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Recomendações' }} />
       <FlatList
         data={lista}
         keyExtractor={(r) => String(r.id)}

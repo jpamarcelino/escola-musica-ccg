@@ -16,11 +16,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from 'react-native'
 import { Cabecalho, Cartao, Distintivo } from '../../componentes/base'
 import { BotaoPrincipal, Campo, Mensagem } from '../../componentes/formulario'
+import { useModo } from '../../lib/modo'
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
@@ -32,6 +34,7 @@ export default function Conta() {
   const router = useRouter()
   const { sessao } = useSessao()
   const { perfil } = usePerfil()
+  const { modoAdmin, podeAlternar, alternar } = useModo()
 
   // Uma secção aberta de cada vez. Três formulários todos abertos num
   // ecrã de telemóvel é uma parede de campos onde ninguém percebe o que
@@ -135,6 +138,14 @@ export default function Conta() {
     )
   }
 
+  function trocarModo(ligado: boolean) {
+    alternar(ligado)
+    // Trocar a barra por baixo dos pés e deixar a pessoa na Conta seria
+    // desorientador: os separadores mudam todos e o ecrã fica igual.
+    // Levá-la ao primeiro ecrã do modo novo mostra o que mudou.
+    router.replace(ligado ? '/admin' : '/')
+  }
+
   async function sair() {
     await supabase.auth.signOut()
     router.replace('/entrar')
@@ -156,6 +167,27 @@ export default function Conta() {
             {perfil?.admin ? <Distintivo texto="Administração" tom="neutro" /> : null}
           </View>
         </Cartao>
+
+        {podeAlternar ? (
+          <Cartao>
+            <View style={estilos.modoTopo}>
+              <View style={estilos.modoTexto}>
+                <Text style={estilos.linhaTitulo}>Modo de administração</Text>
+                <Text style={estilos.modoNota}>
+                  {modoAdmin
+                    ? 'A app está a mostrar a escola inteira. Desliga para voltares às tuas aulas.'
+                    : 'Liga para gerires alunos, professores e recomendações.'}
+                </Text>
+              </View>
+              <Switch
+                value={modoAdmin}
+                onValueChange={trocarModo}
+                accessibilityLabel="Modo de administração"
+                trackColor={{ true: cores.azulFundo, false: cores.linha }}
+              />
+            </View>
+          </Cartao>
+        ) : null}
 
         {erro ? <Mensagem texto={erro} tom="erro" /> : null}
         {info ? <Mensagem texto={info} tom="sucesso" /> : null}
@@ -284,6 +316,9 @@ const estilos = StyleSheet.create({
     minHeight: 44,
   },
   linhaTitulo: { ...texto.cartao, color: cores.tinta },
+  modoTopo: { flexDirection: 'row', alignItems: 'center', gap: espaco.m, minHeight: 44 },
+  modoTexto: { flex: 1, gap: 2 },
+  modoNota: { ...texto.pequeno, color: cores.tintaSuave },
   seta: { fontSize: 24, color: cores.tintaSuave },
   corpo: { gap: espaco.m, marginTop: espaco.s },
   sair: {

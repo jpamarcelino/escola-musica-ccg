@@ -1,11 +1,10 @@
 import { plural } from '@ccg/core'
 import { listarProfessores, type ProfessorAdmin } from '@ccg/data'
-import { Stack } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text } from 'react-native'
-import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
-import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../../componentes/base'
+import { supabase } from '../../../lib/supabase'
+import { cores, espaco, texto } from '../../../lib/tema'
 
 const ESCOLA: Record<string, string> = {
   musica: 'Música',
@@ -32,7 +31,6 @@ export default function ProfessoresAdmin() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Professores' }} />
       <FlatList
         data={professores}
         keyExtractor={(p) => p.id}

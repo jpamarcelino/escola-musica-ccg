@@ -30,26 +30,35 @@ export default async function AdminContaPage({
 
   const { data: profileRowData } = await supabase
     .from('profiles')
-    .select('nome, perfis_escola(tipo, super_admin)')
+    .select('nome, perfis_escola(tipo, admin, super_admin)')
     .eq('id', user.id)
     .single()
 
   const profileRow = profileRowData as {
     nome: string
-    perfis_escola: { tipo: string; super_admin: boolean } | null
+    perfis_escola: { tipo: string; admin: boolean; super_admin: boolean } | null
   } | null
 
   const profile = profileRow
     ? {
         nome: profileRow.nome,
         tipo: profileRow.perfis_escola?.tipo,
+        admin: profileRow.perfis_escola?.admin ?? false,
         super_admin: profileRow.perfis_escola?.super_admin ?? false,
       }
     : null
 
-  if (profile?.tipo !== 'admin') {
+  // A porta é a marca de administração, não o tipo de perfil. Só deixar
+  // entrar `tipo === 'admin'` fechava esta página a um professor que
+  // também administra — e como o "Mais" da barra da administração aponta
+  // para cá, tocar-lhe atirava-o para fora do painel onde estava.
+  if (!profile?.admin) {
     redirect('/dashboard')
   }
+  // Quem só administra não tem painel de aulas para onde voltar: para
+  // esses, /dashboard reencaminha de volta para /admin, e oferecer a
+  // saída seria mandá-los num círculo.
+  const temPainelProprio = profile.tipo !== 'admin'
 
   const { data: outrosAdminsData } = profile.super_admin
     ? await supabase
@@ -87,6 +96,17 @@ export default async function AdminContaPage({
           <h2 className="font-semibold">Alterar password</h2>
           <AlterarPasswordForm action={atualizarPasswordConta} />
         </section>
+
+        {temPainelProprio && (
+          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+            <h2 className="font-semibold">As tuas aulas</h2>
+            <p className="text-sm text-foreground/60">
+              A tua foto, as disciplinas que ensinas e a tua agenda estão no painel
+              de professor.
+            </p>
+            <LigacaoTerciaria href="/dashboard">Voltar ao painel de professor</LigacaoTerciaria>
+          </section>
+        )}
 
         <section className="border-t border-[var(--color-linha)] pt-6">
           <form action={logout}>

@@ -41,14 +41,19 @@ export default async function ContaPage({
 
   const { data: profileRowData } = await supabase
     .from('profiles')
-    .select('nome, foto_url, perfis_escola(tipo, programa, super_admin)')
+    .select('nome, foto_url, perfis_escola(tipo, programa, admin, super_admin)')
     .eq('id', user.id)
     .single()
 
   const profileRow = profileRowData as {
     nome: string
     foto_url: string | null
-    perfis_escola: { tipo: string; programa: string | null; super_admin: boolean } | null
+    perfis_escola: {
+      tipo: string
+      programa: string | null
+      admin: boolean
+      super_admin: boolean
+    } | null
   } | null
 
   const profile = profileRow
@@ -57,6 +62,7 @@ export default async function ContaPage({
         foto_url: profileRow.foto_url,
         tipo: profileRow.perfis_escola?.tipo,
         programa: profileRow.perfis_escola?.programa,
+        admin: profileRow.perfis_escola?.admin ?? false,
         super_admin: profileRow.perfis_escola?.super_admin ?? false,
       }
     : null
@@ -162,6 +168,22 @@ export default async function ContaPage({
             </p>
           )}
         </section>
+
+        {profile.admin && (
+          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+            <h2 className="font-semibold">Administração</h2>
+            {/* O único caminho para /admin a partir do painel de quem dá
+                aulas. Administrar é uma marca no perfil e não um tipo: um
+                professor pode ser administrador, e para esses o painel da
+                escola existia sem ter porta — só lá chegava quem soubesse
+                escrever o endereço à mão. */}
+            <p className="text-sm text-foreground/60">
+              Tens acesso à gestão da escola: alunos, professores, mensalidades e
+              recomendações.
+            </p>
+            <LigacaoTerciaria href="/admin">Ir para o painel da escola</LigacaoTerciaria>
+          </section>
+        )}
 
         <section className="space-y-3">
           <h2 className="font-semibold">Alterar password</h2>

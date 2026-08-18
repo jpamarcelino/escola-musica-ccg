@@ -10,6 +10,7 @@ import {
   IconeSino,
 } from '../../componentes/icones'
 import { ACarregar } from '../../componentes/base'
+import { useModo } from '../../lib/modo'
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
 import { cores, tipos } from '../../lib/tema'
@@ -18,15 +19,23 @@ import { cores, tipos } from '../../lib/tema'
 // Conta CCG gere alunos (Hoje, Agenda, Alunos, Avisos, Conta) e um
 // professor dá aulas (Hoje, Agenda, Presenças, Pedidos, Conta).
 //
-// Os separadores que não pertencem ao papel de quem entrou não são
-// escondidos com um `if` à volta do ecrã — recebem `href: null`, que os
-// tira da barra e impede a navegação para eles. Um ecrã que existe mas
-// não devia ser alcançável é uma porta que alguém acaba por encontrar.
+// A administração é o terceiro conjunto, e não se soma aos outros: é um
+// modo que se liga na Conta e substitui a barra inteira (Escola, Alunos,
+// Professores, Recomendações, Conta). Antes era um separador permanente
+// chamado "Escola" encostado aos outros cinco — seis separadores numa
+// barra de telemóvel, e a gestão da escola a um toque acidental de quem
+// só queria ver as aulas do dia.
+//
+// Os separadores que não pertencem ao papel nem ao modo de quem entrou
+// não são escondidos com um `if` à volta do ecrã — recebem `href: null`,
+// que os tira da barra e impede a navegação para eles. Um ecrã que existe
+// mas não devia ser alcançável é uma porta que alguém acaba por encontrar.
 export default function LayoutApp() {
   const { sessao, aCarregar: sessaoACarregar } = useSessao()
   const { perfil, aCarregar: perfilACarregar } = usePerfil()
+  const { modoAdmin, aCarregar: modoACarregar } = useModo()
 
-  if (sessaoACarregar || perfilACarregar) return <ACarregar />
+  if (sessaoACarregar || perfilACarregar || modoACarregar) return <ACarregar />
   // Sem sessão, a app abre na descoberta e não no login — tal como a
   // web abre em "/" e não em "/login". Quem chega sem conta tem de ver
   // primeiro o que a escola faz; pedir credenciais a quem ainda não sabe
@@ -35,9 +44,13 @@ export default function LayoutApp() {
 
   const professor = ehProfessor(perfil?.tipo)
   // A administração é uma marca no perfil e não um tipo: um professor
-  // pode ser administrador. Por isso o separador soma-se aos outros em
-  // vez de os substituir.
+  // pode ser administrador. `admin` diz se a pessoa pode administrar;
+  // `modoAdmin` diz se está a fazê-lo agora.
   const admin = perfil?.admin === true
+  // O modo só vale para quem tem a marca. A dupla verificação é de
+  // propósito: se o perfil mudar em memória sem o modo ainda ter sido
+  // reposto, a barra nunca chega a mostrar administração a quem não é.
+  const gerir = admin && modoAdmin
 
   return (
     <Tabs
@@ -55,10 +68,12 @@ export default function LayoutApp() {
         tabBarLabelStyle: { fontFamily: tipos.corpoMedio, fontSize: 11 },
       }}
     >
+      {/* Do dia a dia — fora do modo de administração */}
       <Tabs.Screen
         name="index"
         options={{
           title: 'Hoje',
+          href: gerir ? null : '/',
           tabBarIcon: ({ color, focused }) => (
             <IconeCasa color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
@@ -68,6 +83,7 @@ export default function LayoutApp() {
         name="agenda"
         options={{
           title: 'Agenda',
+          href: gerir ? null : '/agenda',
           tabBarIcon: ({ color, focused }) => (
             <IconeCalendario color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
@@ -79,7 +95,7 @@ export default function LayoutApp() {
         name="alunos"
         options={{
           title: 'Alunos',
-          href: professor ? null : '/alunos',
+          href: professor || gerir ? null : '/alunos',
           tabBarIcon: ({ color, focused }) => (
             <IconeAlunos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
@@ -89,7 +105,7 @@ export default function LayoutApp() {
         name="avisos"
         options={{
           title: 'Avisos',
-          href: professor ? null : '/avisos',
+          href: professor || gerir ? null : '/avisos',
           tabBarIcon: ({ color, focused }) => (
             <IconeSino color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
@@ -101,7 +117,7 @@ export default function LayoutApp() {
         name="presencas"
         options={{
           title: 'Presenças',
-          href: professor ? '/presencas' : null,
+          href: professor && !gerir ? '/presencas' : null,
           tabBarIcon: ({ color, focused }) => (
             <IconePresencas color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
@@ -111,20 +127,51 @@ export default function LayoutApp() {
         name="pedidos"
         options={{
           title: 'Pedidos',
-          href: professor ? '/pedidos' : null,
+          href: professor && !gerir ? '/pedidos' : null,
           tabBarIcon: ({ color, focused }) => (
             <IconePedidos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />
 
+      {/* Só no modo de administração */}
       <Tabs.Screen
         name="admin"
         options={{
           title: 'Escola',
-          href: admin ? '/admin' : null,
+          href: gerir ? '/admin' : null,
+          tabBarIcon: ({ color, focused }) => (
+            <IconeCasa color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="admin/alunos"
+        options={{
+          title: 'Alunos',
+          href: gerir ? '/admin/alunos' : null,
           tabBarIcon: ({ color, focused }) => (
             <IconeAlunos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="admin/professores"
+        options={{
+          title: 'Professores',
+          href: gerir ? '/admin/professores' : null,
+          tabBarIcon: ({ color, focused }) => (
+            <IconePresencas color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="admin/recomendacoes"
+        options={{
+          title: 'Recomendações',
+          href: gerir ? '/admin/recomendacoes' : null,
+          tabBarIcon: ({ color, focused }) => (
+            <IconePedidos color={color} size={22} strokeWidth={focused ? 2.2 : 1.6} />
           ),
         }}
       />

@@ -13,6 +13,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { ProvedorModo } from '../lib/modo'
 import { ProvedorPerfil } from '../lib/perfil'
 import { ProvedorSessao } from '../lib/sessao'
 import { cores, tipos } from '../lib/tema'
@@ -49,6 +50,7 @@ export default function LayoutRaiz() {
     <SafeAreaProvider>
       <ProvedorSessao>
         <ProvedorPerfil>
+        <ProvedorModo>
         <StatusBar style="dark" />
         <Stack
           screenOptions={{
@@ -71,6 +73,7 @@ export default function LayoutRaiz() {
           <Stack.Screen name="recuperar-password" options={{ headerShown: false }} />
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack>
+        </ProvedorModo>
         </ProvedorPerfil>
       </ProvedorSessao>
     </SafeAreaProvider>
