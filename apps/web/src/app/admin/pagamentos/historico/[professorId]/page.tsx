@@ -119,10 +119,6 @@ export default async function HistoricoPagamentosProfessorPage({
               <input key={a.id} type="hidden" name="alunoIds" value={a.id} />
             ))}
 
-            <button type="submit" className="admin-guardar">
-              Guardar alterações
-            </button>
-
             <div className="tabela-historico-wrap">
               <table className="tabela-historico">
                 <thead>
@@ -208,6 +204,10 @@ export default async function HistoricoPagamentosProfessorPage({
               </table>
             </div>
 
+            {/* Um botão, no fim do formulário. Havia dois iguais, um em
+                cada ponta da tabela; dois botões idênticos no mesmo
+                formulário são uma pergunta ("fazem o mesmo?") sem
+                ganho nenhum. */}
             <button type="submit" className="admin-guardar">
               Guardar alterações
             </button>
