@@ -237,10 +237,21 @@ export default async function NovaRecomendacaoPage({
 
             <section className="recomendacao-passo">
               <h2 className="secao-titulo">4. Confirmação administrativa</h2>
+              {/* Estes campos deixaram de ser o caminho normal. Quem valida
+                  a recomendação é o primeiro pagamento: ao marcar a mensalidade
+                  como paga em Mensalidades, a recomendação valida-se sozinha e o
+                  mês grátis do recomendador passa a existir (migração 0027).
+                  Ficam para o que a app não sabe — inscrições tratadas fora
+                  dela, ou correções. */}
               <p className="text-[13px] text-[var(--color-tinta-suave)]">
-                O Art. 11.º só valida a recomendação depois de a secretaria confirmar a
-                inscrição e o pagamento da inscrição e da primeira mensalidade. Sem estas
-                datas, a recomendação fica registada e pode ser validada mais tarde.
+                <strong>Não é preciso preencher nada aqui.</strong> Quando marcares
+                como paga a primeira mensalidade deste aluno, a recomendação valida-se
+                sozinha e o mês grátis do recomendador é atribuído — é a mesma
+                confirmação que o Art. 11.º pede, feita uma vez em vez de duas.
+              </p>
+              <p className="text-[13px] text-[var(--color-tinta-suave)]">
+                Usa estes campos só quando a inscrição foi tratada fora da app, ou para
+                corrigir datas.
               </p>
               <div className="flex flex-wrap gap-4">
                 <div className="space-y-1">
