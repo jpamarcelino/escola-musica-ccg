@@ -53,3 +53,7 @@ next-env.d.ts
 
 # servidor local iniciado pelo Codex
 .codex-dev-*.log
+
+# Compilacao de verificacao (npm run verificar), a parte da .next que o
+# servidor local usa — ver o comentario do distDir em apps/web/next.config.ts
+.next-verificacao/

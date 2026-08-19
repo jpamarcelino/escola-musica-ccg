@@ -8,7 +8,19 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
   : undefined
 
+// Pasta onde a compilação escreve. Por omissão é a `.next`, que é
+// também a que o `next dev` usa — e correr uma compilação com o servidor
+// local ligado punha os dois a escrever nos mesmos ficheiros. O servidor
+// só dava por isso mais tarde, a servir "Internal Server Error" em todas
+// as páginas, e a causa não aparecia em lado nenhum: nem erro de código,
+// nem aviso ao compilar.
+//
+// Com esta variável, uma compilação de verificação escreve à parte e não
+// toca no que o servidor local está a servir (ver `npm run verificar`).
+const distDir = process.env.NEXT_DIST_DIR || '.next'
+
 const nextConfig: NextConfig = {
+  distDir,
   // O @ccg/core é publicado em TypeScript, sem passo de build próprio: o
   // que está no disco é o que a web e a app móvel consomem. Assim não há
   // dist/ desatualizado nem "porque é que a minha alteração não aparece".
