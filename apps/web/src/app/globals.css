@@ -3230,3 +3230,54 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   .cabecalho-publico { min-height: 60px; }
   .cabecalho-publico small { display: none; }
 }
+
+/* ---------------------------------------------------------------------
+   Opções que dependem da idade do aluno
+
+   A escolha de modalidade mostra tudo o que a escola tem, e não só o que
+   serve à idade indicada: esconder o resto deixaria um pai sem perceber
+   que o ballet existe, apenas que a filha de 3 anos não o pode fazer
+   ainda. Mas mostrar tudo com o mesmo peso é pior — era o que acontecia,
+   com a diferença entre poder e não poder reduzida a uma seta.
+
+   Duas forças, portanto: as impossíveis recuam, as possíveis avançam.
+   --------------------------------------------------------------------- */
+
+/* Recua: sem cor no ícone, texto esbatido e nada que sugira toque. O
+   texto de apoio mantém-se legível de propósito — é ele que traz a
+   faixa etária, ou seja, a resposta à pergunta "porquê?". */
+/* O esbatido vai dentro do filter, e não em `opacity`: estas linhas têm
+   uma animação de entrada que anima a opacidade, e no cascata as
+   animações ganham a declarações normais — a regra era escrita e
+   ignorada. */
+.cartao-bloqueado { filter: grayscale(1) opacity(0.55); cursor: default; }
+.cartao-bloqueado span[class*="text-[17px]"] { color: var(--color-tinta-suave) !important; }
+
+/* Avança — mas só quando há alguma recuada ao lado. Destacar todas as
+   opções quando todas servem não destacaria nenhuma, e encheria de cor
+   os passos onde nunca há nada bloqueado (escola, professor). */
+.wizard-escolhas:has(.cartao-bloqueado) .cartao-disponivel {
+  /* A tinta estende-se para lá da margem e volta a entrar no padding,
+     para o texto continuar alinhado com as linhas apagadas. */
+  margin-inline: -14px;
+  padding-inline: 14px;
+  border-radius: 8px;
+  border-bottom-color: transparent;
+  background: var(--color-papel-2) !important;
+}
+/* Duas possíveis seguidas encostavam-se e liam-se como um cartão só,
+   com duas linhas lá dentro. Um fio de ar chega para voltarem a ser
+   duas escolhas. */
+.wizard-escolhas:has(.cartao-bloqueado) .cartao-disponivel + .cartao-disponivel {
+  margin-top: 3px;
+}
+.wizard-escolhas:has(.cartao-bloqueado) .cartao-disponivel:hover {
+  background: color-mix(in srgb, var(--marca-ciano) 12%, var(--color-papel-2)) !important;
+}
+/* A seta deixa de ser um cinzento entre cinzentos e passa a ser o azul
+   da casa: é o convite a seguir em frente. */
+/* !important porque a seta traz a cor num style inline, que de outro
+   modo ganha a qualquer classe. */
+.wizard-escolhas:has(.cartao-bloqueado) .cartao-disponivel > svg:last-child {
+  color: var(--color-azul-fundo) !important;
+}

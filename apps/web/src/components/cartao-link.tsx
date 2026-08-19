@@ -42,6 +42,10 @@ export function CartaoLink({
   // Visível mas fora de alcance — as disciplinas que não servem à idade
   // do aluno. Deixa de ser um destino navegável: nem para o rato, nem
   // para o teclado, nem para um leitor de ecrã.
+  //
+  // O aspeto de "apagado" está em .cartao-bloqueado (globals.css) e não
+  // aqui: dentro do wizard as linhas levam `background: transparent
+  // !important`, e classes utilitárias soltas perdiam essa disputa.
   bloqueado?: boolean
 }) {
   const classesBase =
@@ -123,7 +127,7 @@ export function CartaoLink({
   if (bloqueado) {
     return (
       <div
-        className={`${classesBase} opacity-45 grayscale`}
+        className={`${classesBase} cartao-opcao cartao-bloqueado`}
         style={{ backgroundColor: 'var(--color-surface-raised)' }}
         aria-disabled="true"
       >
@@ -135,7 +139,7 @@ export function CartaoLink({
   return (
     <Link
       href={href}
-      className={`${classesBase} transition-[transform,background-color] duration-150 hover:bg-[#EDEFF3] motion-safe:active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)] motion-reduce:transition-none`}
+      className={`${classesBase} cartao-opcao cartao-disponivel transition-[transform,background-color] duration-150 hover:bg-[#EDEFF3] motion-safe:active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)] motion-reduce:transition-none`}
       style={{ backgroundColor: 'var(--color-surface-raised)' }}
     >
       {conteudo}
