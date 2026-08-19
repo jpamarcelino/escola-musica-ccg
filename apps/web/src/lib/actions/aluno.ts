@@ -212,6 +212,47 @@ export async function cancelarMatricula(formData: FormData) {
   revalidatePath('/dashboard/avisos')
 }
 
+// Desmarcar uma aula futura, do lado da família.
+//
+// Toda a regra vive na função da base de dados (migração 0032): que só
+// música tem reposições, que faltam 24 horas, que a data tem de cair no
+// dia do horário, e que a aula fica no livro de presenças como falta com
+// aviso. Aqui só se passa o recado e se diz o que correu mal.
+export async function desmarcarAula(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = Number(formData.get('matriculaId') ?? 0)
+  const data = String(formData.get('data') ?? '')
+  const alunoId = String(formData.get('alunoId') ?? '')
+
+  const { error } = await supabase.rpc('desmarcar_aula', {
+    p_matricula_id: matriculaId,
+    p_data: data,
+  })
+
+  if (error) {
+    // A função devolve mensagens escritas para quem as vai ler ("As aulas
+    // só podem ser desmarcadas até 24 horas antes."), por isso passam
+    // diretas em vez de virarem um "algo correu mal".
+    redirect(
+      `/aluno/${alunoId}/horario?erro=${encodeURIComponent(error.message || 'Não foi possível desmarcar a aula.')}`
+    )
+  }
+
+  revalidatePath(`/aluno/${alunoId}/horario`)
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard/avisos')
+  redirect(`/aluno/${alunoId}/horario?desmarcada=1`)
+}
+
 // Tira um perfil de aluno da conta. Não o apaga: por trás dele estão
 // presenças, mensalidades e o Programa de Recomendação, todos com este
 // id — apagar a linha deixava o histórico da escola com buracos.

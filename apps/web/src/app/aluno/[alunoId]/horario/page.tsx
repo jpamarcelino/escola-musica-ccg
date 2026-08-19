@@ -1,9 +1,10 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { cancelarPedido } from '@/lib/actions/aluno'
-import { formatarSala, formatarHora, proximaOcorrenciaDeAula, formatarDataEscolar, type DiaSemana } from '@ccg/core'
+import { cancelarPedido, desmarcarAula } from '@/lib/actions/aluno'
+import { formatarSala, formatarHora, proximaAulaPorAcontecer, formatarDataEscolar, hojeISO, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
+import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import type { MatriculaEstado } from '@ccg/types'
 
@@ -22,10 +23,13 @@ type Matricula = {
 
 export default async function ConsultarHorarioPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ alunoId: string }>
+  searchParams: Promise<{ erro?: string; desmarcada?: string }>
 }) {
   const { alunoId } = await params
+  const { erro, desmarcada } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -57,17 +61,34 @@ export default async function ConsultarHorarioPage({
     .order('criado_em', { ascending: false })
   const matriculas = (data ?? []) as unknown as Matricula[]
 
+  // As aulas que já foram desmarcadas. A grelha é semanal e não há linha
+  // por aula, por isso é esta lista que diz quais das ocorrências futuras
+  // já não vão acontecer.
+  const { data: desmarcadasData } = await supabase
+    .from('aulas_desmarcadas')
+    .select('matricula_id, data')
+    .eq('aluno_id', alunoId)
+    .gte('data', hojeISO())
+  const porMatricula = new Map<number, Set<string>>()
+  for (const d of desmarcadasData ?? []) {
+    const atual = porMatricula.get(d.matricula_id) ?? new Set<string>()
+    atual.add(d.data)
+    porMatricula.set(d.matricula_id, atual)
+  }
+
   const pendentes = matriculas.filter((m) => m.estado === 'a_escolher')
   const confirmadas = matriculas
     .filter((m) => m.estado === 'confirmado' && m.horarios)
     .map((m) => ({
       ...m,
-      proxima: proximaOcorrenciaDeAula(
+      proxima: proximaAulaPorAcontecer(
         m.horarios!.dia_semana,
         m.horarios!.hora_inicio,
-        m.horarios!.hora_fim
+        m.horarios!.hora_fim,
+        porMatricula.get(m.id) ?? new Set<string>()
       ),
     }))
+    .filter((m): m is typeof m & { proxima: string } => m.proxima !== null)
     .sort((a, b) =>
       a.proxima === b.proxima
         ? a.horarios!.hora_inicio.localeCompare(b.horarios!.hora_inicio)
@@ -85,6 +106,11 @@ export default async function ConsultarHorarioPage({
               separador "Agenda", não um canto escondido. */}
           <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Agenda</h1><p>{confirmadas[0] ? `A próxima aula é ${formatarDataEscolar(confirmadas[0].proxima, { weekday: 'long', day: 'numeric', month: 'long' })}, às ${formatarHora(confirmadas[0].horarios!.hora_inicio)}.` : 'Ainda não há aulas confirmadas.'}</p></div>
         </header>
+
+        {erro && <MensagemErro>{erro}</MensagemErro>}
+        {desmarcada && (
+          <MensagemInfo>Aula desmarcada. O professor foi avisado.</MensagemInfo>
+        )}
 
         {pendentes.length > 0 && (
           <section className="aluno-pedidos-curso">
@@ -125,7 +151,24 @@ export default async function ConsultarHorarioPage({
                           proximidade das duas coisas fazia com que abrir o
                           horário mostrasse sempre um botão vermelho. Mudou-se
                           para /dashboard/conta/avancado, com as outras saídas. */}
-                    <div><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula semanal</p></div>
+                    <div>
+                      <p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula semanal</p>
+                      {/* Desmarcar age sobre UMA ocorrência — a próxima —
+                          e não sobre a matrícula. Daí a data ir no
+                          formulário: sem ela, a base de dados não saberia
+                          de que aula se fala. */}
+                      <BotaoAcaoDestruir
+                        label="Desmarcar esta aula"
+                        variante="editorial"
+                        titulo="Desmarcar a aula de que dia?"
+                        mensagem={`Fica desmarcada só a aula de ${formatarDataEscolar(m.proxima, { weekday: 'long', day: 'numeric', month: 'long' })}. As seguintes mantêm-se.\n\nO professor é avisado. Só é possível até 24 horas antes.`}
+                        action={desmarcarAula}
+                      >
+                        <input type="hidden" name="matriculaId" value={m.id} />
+                        <input type="hidden" name="data" value={m.proxima} />
+                        <input type="hidden" name="alunoId" value={alunoId} />
+                      </BotaoAcaoDestruir>
+                    </div>
                   </details>
                 )
               })}

@@ -142,6 +142,32 @@ export function proximaOcorrenciaDeAula(
   return limite > referencia ? candidata : somarDias(candidata, 7)
 }
 
+// A próxima aula que ainda vai acontecer, saltando as que foram
+// desmarcadas.
+//
+// Existe porque nesta app uma aula não é uma linha: a grelha é semanal e
+// "a próxima" é sempre calculada. Desmarcar uma aula não a apaga de lado
+// nenhum — cria uma exceção com data, e é aqui que a exceção passa a
+// contar. Sem isto, quem desmarcasse a aula desta semana continuava a
+// vê-la anunciada como a seguinte.
+//
+// O limite de 52 semanas é uma paragem de segurança: um conjunto de
+// exceções mal formado não pode pôr a página a girar para sempre.
+export function proximaAulaPorAcontecer(
+  diaSemana: DiaSemana,
+  horaInicio: string,
+  horaFim: string,
+  desmarcadas: ReadonlySet<string>,
+  referencia = agoraNaEscola()
+): string | null {
+  let data = proximaOcorrenciaDeAula(diaSemana, horaInicio, horaFim, referencia)
+  for (let semana = 0; semana < 52; semana += 1) {
+    if (!desmarcadas.has(data)) return data
+    data = somarDias(data, 7)
+  }
+  return null
+}
+
 // A primeira ocorrência desse dia da semana a partir de (e incluindo) "desde".
 function dataMaisRecenteDoDiaApartirDe(diaSemana: DiaSemana, desde: string): string {
   const [ano, mes, dia] = desde.split('-').map(Number)

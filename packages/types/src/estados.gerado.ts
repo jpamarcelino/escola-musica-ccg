@@ -9,6 +9,26 @@
 // isso uma migração que mude os valores permitidos e se esqueça de
 // regenerar faz falhar a suite em vez de divergir em silêncio.
 
+// aulas_desmarcadas.origem — fixado em 0031_cancelamentos_e_reposicoes.sql
+export type AulasDesmarcadaOrigem = 'aluno' | 'professor'
+
+export const AULASDESMARCADAORIGEM_VALORES = [
+  'aluno',
+  'professor',
+] as const satisfies readonly AulasDesmarcadaOrigem[]
+
+// aulas_desmarcadas.reposicao_estado — fixado em 0031_cancelamentos_e_reposicoes.sql
+export type AulasDesmarcadaReposicaoEstado = 'sem_pedido' | 'por_repor' | 'pendente' | 'agendada' | 'nao_possivel' | 'expirada'
+
+export const AULASDESMARCADAREPOSICAOESTADO_VALORES = [
+  'sem_pedido',
+  'por_repor',
+  'pendente',
+  'agendada',
+  'nao_possivel',
+  'expirada',
+] as const satisfies readonly AulasDesmarcadaReposicaoEstado[]
+
 // beneficios.estado — fixado em 0024_programa_recomendacao.sql
 export type BeneficioEstado = 'pendente' | 'usado' | 'expirado' | 'anulado'
 
@@ -35,6 +55,14 @@ export const CONVITETIPO_VALORES = [
   'admin',
   'migracao_aluno',
 ] as const satisfies readonly ConviteTipo[]
+
+// horarios_reposicao.estado — fixado em 0031_cancelamentos_e_reposicoes.sql
+export type HorariosReposicaoEstado = 'disponivel' | 'ocupado'
+
+export const HORARIOSREPOSICAOESTADO_VALORES = [
+  'disponivel',
+  'ocupado',
+] as const satisfies readonly HorariosReposicaoEstado[]
 
 // horarios.dia_semana — fixado em schema.sql
 export type HorarioDiaSemana = 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado' | 'Domingo'
@@ -84,8 +112,8 @@ export const MATRICULAESTADO_VALORES = [
   'cancelado',
 ] as const satisfies readonly MatriculaEstado[]
 
-// notificacoes.tipo — fixado em 0029_cancelar_matricula.sql
-export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada'
+// notificacoes.tipo — fixado em 0031_cancelamentos_e_reposicoes.sql
+export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada' | 'aula_desmarcada' | 'reposicao_pedida' | 'reposicao_agendada' | 'reposicao_nao_possivel' | 'reposicao_sem_opcoes' | 'reposicao_expirada' | 'reposicao_lembrete'
 
 export const NOTIFICACAOTIPO_VALORES = [
   'pedido_aceite',
@@ -94,7 +122,24 @@ export const NOTIFICACAOTIPO_VALORES = [
   'mudanca_horario',
   'novo_material',
   'matricula_cancelada',
+  'aula_desmarcada',
+  'reposicao_pedida',
+  'reposicao_agendada',
+  'reposicao_nao_possivel',
+  'reposicao_sem_opcoes',
+  'reposicao_expirada',
+  'reposicao_lembrete',
 ] as const satisfies readonly NotificacaoTipo[]
+
+// pedidos_reposicao.estado — fixado em 0031_cancelamentos_e_reposicoes.sql
+export type PedidosReposicaoEstado = 'pendente' | 'agendada' | 'nao_possivel' | 'expirada'
+
+export const PEDIDOSREPOSICAOESTADO_VALORES = [
+  'pendente',
+  'agendada',
+  'nao_possivel',
+  'expirada',
+] as const satisfies readonly PedidosReposicaoEstado[]
 
 // perfis_escola.programa — fixado em 0021_generalizar_perfis_escola.sql
 export type PerfisEscolaPrograma = 'musica' | 'danca'
@@ -113,13 +158,14 @@ export const PERFISESCOLATIPO_VALORES = [
   'admin',
 ] as const satisfies readonly PerfisEscolaTipo[]
 
-// presencas.estado — fixado em 0002_presencas.sql
-export type PresencaEstado = 'presente' | 'falta_aviso' | 'falta_sem_aviso'
+// presencas.estado — fixado em 0031_cancelamentos_e_reposicoes.sql
+export type PresencaEstado = 'presente' | 'falta_aviso' | 'falta_sem_aviso' | 'falta_professor'
 
 export const PRESENCAESTADO_VALORES = [
   'presente',
   'falta_aviso',
   'falta_sem_aviso',
+  'falta_professor',
 ] as const satisfies readonly PresencaEstado[]
 
 // profiles.programa — fixado em schema.sql

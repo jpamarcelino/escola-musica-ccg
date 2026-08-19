@@ -26,6 +26,7 @@ export {
   INICIO_PRESENCAS,
 } from './datas'
 export type { EstadoTemporalAula } from './datas'
+export { proximaAulaPorAcontecer } from './datas'
 
 export { MESES_ANO_LETIVO, rotuloMes } from './ano-letivo'
 

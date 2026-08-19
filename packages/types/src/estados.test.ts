@@ -52,7 +52,7 @@ describe('extração das constraints', () => {
   })
 
   it('encontra todas as colunas com valores fixos', () => {
-    expect(unioes).toHaveLength(15)
+    expect(unioes).toHaveLength(19)
   })
 
   it('nenhuma união vem vazia', () => {
@@ -103,6 +103,10 @@ describe('os estados usados pela app existem no esquema', () => {
       'presente',
       'falta_aviso',
       'falta_sem_aviso',
+      // Desmarcada pelo professor (0031). A falta é dele e não do aluno,
+      // por isso tem estado próprio — as contas de assiduidade não a
+      // podem somar às faltas de quem teve a aula desmarcada.
+      'falta_professor',
     ])
   })
 })
