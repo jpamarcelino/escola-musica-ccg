@@ -1,23 +1,14 @@
-import {
-  ANO_LETIVO_FIM,
-  ANO_LETIVO_INICIO,
-  INTERRUPCOES,
-  feriados,
-  formatarDataEscolar,
-  hojeISO,
-  mesesDoCalendario,
-  type DiaDoCalendario,
-} from '@ccg/core'
-import type { AulaNoCalendario, GrupoDoCalendario } from '@/lib/calendario'
+import { formatarDataEscolar, hojeISO, mesesDoCalendario, type DiaDoCalendario } from '@ccg/core'
+import type { AulaNoCalendario, GrupoDoCalendario, TipoDeAula } from '@/lib/calendario'
 
 const DIAS_CABECALHO = [
+  { curto: 'D', longo: 'Domingo' },
   { curto: 'S', longo: 'Segunda' },
   { curto: 'T', longo: 'Terça' },
   { curto: 'Q', longo: 'Quarta' },
   { curto: 'Q', longo: 'Quinta' },
   { curto: 'S', longo: 'Sexta' },
   { curto: 'S', longo: 'Sábado' },
-  { curto: 'D', longo: 'Domingo' },
 ]
 
 const CLASSE_ESTADO: Record<DiaDoCalendario['estado'], string> = {
@@ -28,7 +19,25 @@ const CLASSE_ESTADO: Record<DiaDoCalendario['estado'], string> = {
   fora_do_ano: 'calendario-dia-fechado',
 }
 
-function rotuloDoDia(dia: DiaDoCalendario, aulas: AulaNoCalendario[]): string {
+const ROTULO_AULA: Record<TipoDeAula, string> = {
+  aula: 'Aula',
+  reposicao: 'Reposição',
+  desmarcada: 'Desmarcada',
+}
+
+// O que dizer por baixo do número, quando não há aulas nesse dia.
+//
+// Os fins de semana não levam nada: escrever "fim de semana" 104 vezes
+// num calendário só ensina o que toda a gente já sabe. Feriado e férias
+// levam, porque são a diferença entre "não tenho aula" e "esqueci-me".
+function rotuloDoEstado(dia: DiaDoCalendario): string | null {
+  if (dia.estado === 'feriado') return 'Feriado'
+  if (dia.estado === 'interrupcao') return 'Férias'
+  if (dia.estado === 'fora_do_ano') return 'Férias'
+  return null
+}
+
+function descricaoDoDia(dia: DiaDoCalendario, aulas: AulaNoCalendario[]): string {
   const data = formatarDataEscolar(dia.data, { weekday: 'long', day: 'numeric', month: 'long' })
   const estado =
     dia.motivo ??
@@ -36,7 +45,7 @@ function rotuloDoDia(dia: DiaDoCalendario, aulas: AulaNoCalendario[]): string {
       ? 'dia de aulas'
       : dia.estado === 'fim_de_semana'
         ? 'fim de semana'
-        : 'fora do ano letivo')
+        : 'sem aulas')
   if (aulas.length === 0) return `${data} — ${estado}`
   return `${data} — ${estado}. ${aulas.map((a) => `${a.titulo}, ${a.detalhe}`).join('. ')}`
 }
@@ -45,14 +54,12 @@ function rotuloDoDia(dia: DiaDoCalendario, aulas: AulaNoCalendario[]): string {
 //
 // Os dias de aulas a azul e tudo o resto a cinzento — é a única pergunta
 // que traz alguém a um calendário escolar ("há aula no dia 8?"), e a
-// resposta tem de se ver sem ler nada. Por cima disso, um ponto por aula
-// marcada: quem tem aulas quer saber onde é que as suas caem, não só que
-// dias a escola abre.
+// resposta tem de se ver sem ler nada. Por baixo do número, o que há
+// nesse dia: aula, reposição, desmarcada, feriado, férias.
 //
 // Não é interativo de propósito. Um calendário de doze meses com casas
 // clicáveis num telemóvel é uma coleção de alvos pequenos demais para o
-// dedo; o que cada dia tem vai no `aria-label` e no `title`, e a agenda
-// continua a ser o sítio onde se age sobre uma aula.
+// dedo; a agenda continua a ser o sítio onde se age sobre uma aula.
 export function CalendarioAnoLetivo({
   porData,
   grupos,
@@ -63,13 +70,10 @@ export function CalendarioAnoLetivo({
   const meses = mesesDoCalendario()
   const hoje = hojeISO()
   const indiceDoGrupo = new Map(grupos.map((g, i) => [g.chave, i % 4]))
-
-  const paragens = [
-    ...[...feriados(2026), ...feriados(2027)]
-      .filter(([data]) => data >= ANO_LETIVO_INICIO && data <= ANO_LETIVO_FIM)
-      .map(([data, nome]) => ({ data, nome })),
-    ...INTERRUPCOES.map((i) => ({ data: i.inicio, nome: i.nome })),
-  ].sort((a, b) => a.data.localeCompare(b.data))
+  // Com um aluno só, a cor não distingue nada de nada — o ponto ao lado
+  // de "Aula" seria decoração, e a legenda uma linha a explicar-se a si
+  // própria.
+  const distinguirGrupos = grupos.length > 1
 
   return (
     <div className="space-y-6">
@@ -80,22 +84,17 @@ export function CalendarioAnoLetivo({
         <span>
           <i className="calendario-amostra calendario-dia-fechado" aria-hidden="true" /> Sem aulas
         </span>
-        {grupos.map((g) => (
-          <span key={g.chave}>
-            <i
-              className="calendario-amostra calendario-ponto"
-              data-cor={indiceDoGrupo.get(g.chave)}
-              aria-hidden="true"
-            />{' '}
-            {g.nome}
-          </span>
-        ))}
-        {grupos.length === 0 && porData.size > 0 && (
-          <span>
-            <i className="calendario-amostra calendario-ponto" data-cor={0} aria-hidden="true" /> As
-            tuas aulas
-          </span>
-        )}
+        {distinguirGrupos &&
+          grupos.map((g) => (
+            <span key={g.chave}>
+              <i
+                className="calendario-amostra calendario-ponto"
+                data-cor={indiceDoGrupo.get(g.chave)}
+                aria-hidden="true"
+              />{' '}
+              {g.nome}
+            </span>
+          ))}
       </div>
 
       <div className="calendario-meses">
@@ -120,24 +119,53 @@ export function CalendarioAnoLetivo({
                     {semana.map((dia, j) => {
                       if (!dia) return <td key={j} className="calendario-vazio" />
                       const aulas = porData.get(dia.data) ?? []
-                      const rotulo = rotuloDoDia(dia, aulas)
+                      const estado = rotuloDoEstado(dia)
                       return (
                         <td key={j}>
                           <span
                             className={`calendario-dia ${CLASSE_ESTADO[dia.estado]} ${dia.data === hoje ? 'calendario-dia-hoje' : ''}`}
-                            title={rotulo}
+                            title={descricaoDoDia(dia, aulas)}
                           >
-                            <span aria-hidden="true">{Number(dia.data.slice(8))}</span>
-                            <span className="sr-only">{rotulo}</span>
-                            {aulas.length > 0 && (
-                              <span className="calendario-pontos" aria-hidden="true">
-                                {aulas.slice(0, 3).map((aula, k) => (
-                                  <i
-                                    key={k}
-                                    className="calendario-ponto"
+                            <span className="calendario-dia-numero" aria-hidden="true">
+                              {Number(dia.data.slice(8))}
+                            </span>
+                            <span className="sr-only">{descricaoDoDia(dia, aulas)}</span>
+                            {/* Duas aulas cabem; à terceira, o dia
+                                passa a dizer quantas são. Encher a casa
+                                de linhas de 8px não é mostrar mais, é
+                                deixar de se ler. */}
+                            {aulas.slice(0, 2).map((aula, k) => (
+                              <span key={k} className="calendario-evento" aria-hidden="true">
+                                <span className="calendario-evento-rotulo" data-tipo={aula.tipo}>
+                                  {ROTULO_AULA[aula.tipo]}
+                                </span>
+                                {/* De quem é a aula, por baixo. Fora da
+                                    linha da palavra e não ao lado dela:
+                                    numa casa de 43px, um ponto ao lado
+                                    de "Desmarcada" era o que faltava
+                                    para a palavra deixar de caber. */}
+                                {distinguirGrupos && (
+                                  <span
+                                    className="calendario-evento-nome"
                                     data-cor={indiceDoGrupo.get(aula.grupo) ?? 0}
-                                  />
-                                ))}
+                                  >
+                                    {aula.titulo.split(' ')[0]}
+                                  </span>
+                                )}
+                              </span>
+                            ))}
+                            {aulas.length > 2 && (
+                              <span className="calendario-evento" aria-hidden="true">
+                                <span className="calendario-evento-rotulo">
+                                  +{aulas.length - 2}
+                                </span>
+                              </span>
+                            )}
+                            {aulas.length === 0 && estado && (
+                              <span className="calendario-evento" aria-hidden="true">
+                                <span className="calendario-evento-rotulo" data-tipo="fechado">
+                                  {estado}
+                                </span>
                               </span>
                             )}
                           </span>
@@ -151,28 +179,6 @@ export function CalendarioAnoLetivo({
           </section>
         ))}
       </div>
-
-      {/* Porque é que o dia 25 está a cinzento. Sem esta lista, um dia
-          fechado a meio da semana parece um erro do calendário. */}
-      <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-        <h2 className="font-semibold">Dias em que a escola fecha</h2>
-        <ul className="space-y-1 text-sm text-foreground/70">
-          {paragens.map((p) => (
-            <li key={p.data}>
-              <strong className="font-medium text-foreground">
-                {formatarDataEscolar(p.data, { day: 'numeric', month: 'long' })}
-              </strong>{' '}
-              · {p.nome}
-            </li>
-          ))}
-        </ul>
-        {INTERRUPCOES.length === 0 && (
-          <p className="text-sm text-foreground/60">
-            As interrupções do Natal, do Carnaval e da Páscoa ainda não estão marcadas. Assim que a
-            escola as definir, aparecem aqui e os dias ficam a cinzento.
-          </p>
-        )}
-      </section>
     </div>
   )
 }

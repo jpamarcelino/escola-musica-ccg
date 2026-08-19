@@ -15,6 +15,8 @@ import {
 // matrícula diz qual das linhas o aluno ocupa. Para desenhar um ano
 // inteiro é preciso espalhar essa grelha pelos dias de aulas — e é aqui
 // que se faz, uma vez, para o calendário da família e o do professor.
+export type TipoDeAula = 'aula' | 'reposicao' | 'desmarcada'
+
 export type AulaNoCalendario = {
   data: string
   hora_inicio: string
@@ -24,7 +26,7 @@ export type AulaNoCalendario = {
   // A que "cor" pertence: um aluno, na conta da família; o próprio
   // professor, do outro lado. É o que liga o ponto no dia à legenda.
   grupo: string
-  reposicao: boolean
+  tipo: TipoDeAula
 }
 
 export type GrupoDoCalendario = { chave: string; nome: string }
@@ -95,9 +97,13 @@ export async function calendarioDaFamilia(
         .eq('estado', 'confirmado')
         .not('horario_final_id', 'is', null),
       supabase.from('alunos').select('id, nome').eq('encarregado_id', userId).order('criado_em'),
+      // As desmarcadas servem duas coisas: tirar a aula do dia e pôr lá,
+      // no lugar dela, a palavra "desmarcada". Um dia que ficasse
+      // simplesmente vazio não se distinguia de um dia sem aulas — e a
+      // pergunta de quem desmarcou é justamente "ficou registado?".
       supabase
         .from('aulas_desmarcadas')
-        .select('matricula_id, data')
+        .select('matricula_id, aluno_id, data, hora_inicio, hora_fim, instrumento_nome')
         .gte('data', ANO_LETIVO_INICIO)
         .lte('data', ANO_LETIVO_FIM),
       supabase
@@ -146,9 +152,22 @@ export async function calendarioDaFamilia(
         titulo: m.alunos?.nome ?? '',
         detalhe,
         grupo: m.aluno_id,
-        reposicao: false,
+        tipo: 'aula',
       })
     }
+  }
+
+  for (const d of desmarcadasData ?? []) {
+    if (!nomePorAluno.has(d.aluno_id)) continue
+    aulas.push({
+      data: d.data,
+      hora_inicio: d.hora_inicio,
+      hora_fim: d.hora_fim,
+      titulo: nomePorAluno.get(d.aluno_id) ?? '',
+      detalhe: `Desmarcada · ${formatarHora(d.hora_inicio)}–${formatarHora(d.hora_fim)}${d.instrumento_nome ? ` · ${d.instrumento_nome}` : ''}`,
+      grupo: d.aluno_id,
+      tipo: 'desmarcada',
+    })
   }
 
   // As reposições são avulsas e podem cair em qualquer dia — incluindo um
@@ -162,7 +181,7 @@ export async function calendarioDaFamilia(
       titulo: nomePorAluno.get(r.aluno_id) ?? '',
       detalhe: `Reposição · ${formatarHora(r.hora_inicio)}–${formatarHora(r.hora_fim)}${r.instrumento_nome ? ` · ${r.instrumento_nome}` : ''}`,
       grupo: r.aluno_id,
-      reposicao: true,
+      tipo: 'reposicao',
     })
   }
 
@@ -195,7 +214,7 @@ export async function calendarioDoProfessor(
         .not('horario_final_id', 'is', null),
       supabase
         .from('aulas_desmarcadas')
-        .select('matricula_id, data')
+        .select('matricula_id, aluno_id, data, hora_inicio, hora_fim, instrumento_nome')
         .eq('professor_id', professorId)
         .gte('data', ANO_LETIVO_INICIO)
         .lte('data', ANO_LETIVO_FIM),
@@ -243,9 +262,21 @@ export async function calendarioDoProfessor(
         // Um professor é um só: o calendário dele não precisa de cores
         // para distinguir pessoas, só de saber onde há aulas.
         grupo: 'aulas',
-        reposicao: false,
+        tipo: 'aula',
       })
     }
+  }
+
+  for (const d of desmarcadasData ?? []) {
+    aulas.push({
+      data: d.data,
+      hora_inicio: d.hora_inicio,
+      hora_fim: d.hora_fim,
+      titulo: d.instrumento_nome ?? '',
+      detalhe: `Desmarcada · ${formatarHora(d.hora_inicio)}–${formatarHora(d.hora_fim)}${nomePorAluno.get(d.aluno_id) ? ` · ${nomePorAluno.get(d.aluno_id)}` : ''}`,
+      grupo: 'aulas',
+      tipo: 'desmarcada',
+    })
   }
 
   for (const r of reposicoesData ?? []) {
@@ -256,7 +287,7 @@ export async function calendarioDoProfessor(
       titulo: r.instrumento_nome ?? 'Reposição',
       detalhe: `Reposição · ${formatarHora(r.hora_inicio)}–${formatarHora(r.hora_fim)}${nomePorAluno.get(r.aluno_id) ? ` · ${nomePorAluno.get(r.aluno_id)}` : ''}`,
       grupo: 'aulas',
-      reposicao: true,
+      tipo: 'reposicao',
     })
   }
 

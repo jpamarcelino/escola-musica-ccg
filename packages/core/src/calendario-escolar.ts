@@ -174,9 +174,12 @@ export type MesDoCalendario = {
   ano: number
   mes: number
   label: string
-  // Seis semanas de sete dias, de segunda a domingo. As casas antes do
-  // dia 1 e depois do último dia são `null` — o mês tem de encaixar numa
-  // grelha, e um espaço vazio é diferente de um dia cinzento.
+  // Semanas de domingo a sábado, como nos calendários de parede
+  // portugueses. (O resto da app conta as semanas de segunda a domingo,
+  // porque é a ordem dos dias de aulas; aqui o que conta é a leitura.)
+  // As casas antes do dia 1 e depois do último dia são `null` — o mês tem
+  // de encaixar numa grelha, e um espaço vazio é diferente de um dia
+  // cinzento.
   semanas: (DiaDoCalendario | null)[][]
 }
 
@@ -188,9 +191,8 @@ const NOMES_MES = [
 function mesDoCalendario(ano: number, mes: number): MesDoCalendario {
   const primeiro = new Date(ano, mes - 1, 1)
   const totalDias = new Date(ano, mes, 0).getDate()
-  // 0=segunda..6=domingo, para a grelha começar na segunda como o resto
-  // da app (DIAS_SEMANA).
-  const deslocamento = (primeiro.getDay() + 6) % 7
+  // getDay() já dá 0=domingo, que é a primeira coluna.
+  const deslocamento = primeiro.getDay()
 
   const casas: (DiaDoCalendario | null)[] = Array(deslocamento).fill(null)
   for (let dia = 1; dia <= totalDias; dia += 1) {

@@ -27,7 +27,7 @@ export default async function CalendarioPage() {
     : await calendarioDaFamilia(supabase, user.id)
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
+    <main id="conteudo-principal" className="flex-1 flex justify-center p-3 pb-[104px] sm:p-6 sm:pb-[104px]">
       <div className="w-full max-w-4xl space-y-6">
         {/* "Calendário" e não "Calendário do ano letivo": o título do
             PageHeader corta-se numa linha, e num telemóvel o nome longo

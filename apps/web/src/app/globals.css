@@ -1729,7 +1729,7 @@ body {
   display: grid;
   grid-template-columns: minmax(150px, .7fr) 1fr;
   gap: 20px;
-  min-height: 58px;
+  min-height: 62px;
   align-items: center;
   border-bottom: 1px solid var(--color-linha);
 }
@@ -2150,6 +2150,7 @@ body {
   gap: 10px;
   align-items: baseline;
   margin-bottom: 10px;
+  padding-inline: 6px;
 }
 .presencas-grupo > header > span { font-size: 10px; font-weight: 700; letter-spacing: .14em; color: var(--color-tinta-suave); }
 .presencas-grupo h2,
@@ -3492,27 +3493,36 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 }
 
 /* Calendário do ano letivo -------------------------------------------
-   Doze meses numa página. Cada mês é uma <table> porque é mesmo uma
-   tabela — dias em colunas de semana — e é assim que um leitor de ecrã
-   sabe anunciar "quinta-feira, 8". As casas são quadradas e nunca
-   descem dos 30px: abaixo disso o número deixa de se ler no telemóvel. */
+   Doze meses numa página, um por linha, para se percorrer o ano a
+   deslizar. Cada mês é uma <table> porque é mesmo uma tabela — dias em
+   colunas de semana — e é assim que um leitor de ecrã sabe anunciar
+   "quinta-feira, 8". As casas são altas porque têm de caber o número e
+   o que há nesse dia. */
 .calendario-meses {
   display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+/* Só em ecrãs largos é que dois meses lado a lado continuam legíveis;
+   abaixo disso, um mês ocupa a largura toda e ganha-se altura na casa. */
+@media (min-width: 900px) {
+  .calendario-meses { grid-template-columns: repeat(2, 1fr); }
 }
 .calendario-mes {
   border: 1px solid var(--color-linha);
   border-radius: 14px;
-  padding: 12px;
+  /* Pouco espaço lateral de propósito: cada pixel que a moldura não
+     gasta é largura que a casa ganha, e "Desmarcada" tem de caber numa
+     linha num ecrã de 375px. */
+  padding: 14px 8px;
   background: var(--color-papel);
 }
 .calendario-mes h2 {
   font-family: var(--font-fraunces), serif;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-azul-fundo);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 .calendario-mes h2 span { color: var(--color-tinta-suave); font-weight: 400; }
 .calendario-mes table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -3520,29 +3530,31 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   font-size: 11px;
   font-weight: 600;
   color: var(--color-tinta-suave);
-  padding-bottom: 4px;
+  padding-bottom: 6px;
 }
 .calendario-mes th abbr { text-decoration: none; }
-.calendario-mes td { padding: 1px; text-align: center; }
+.calendario-mes td { padding: 1.5px; vertical-align: top; }
 
 .calendario-dia {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 2px;
-  min-height: 30px;
-  border-radius: 7px;
-  font-size: 12px;
+  min-height: 58px;
+  padding: 4px 1px;
+  border-radius: 8px;
+  line-height: 1.1;
+}
+.calendario-dia-numero {
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
 }
 .calendario-dia-aula {
   background: var(--color-azul-fundo);
   color: #fff;
-  font-weight: 600;
 }
+.calendario-dia-aula .calendario-dia-numero { font-weight: 600; }
 .calendario-dia-fechado {
   background: var(--color-papel-2);
   color: var(--color-tinta-suave);
@@ -3551,13 +3563,59 @@ body:has(.auth-pagina) { background: var(--color-papel); }
    um dia fechado, e essa informação não pode ser substituída. */
 .calendario-dia-hoje { outline: 2px solid var(--color-dourado); outline-offset: 1px; }
 
-.calendario-pontos { display: flex; gap: 2px; }
+/* O que há naquele dia, por baixo do número. O tamanho acompanha a
+   largura do ecrã porque a casa também acompanha: sete colunas num
+   telemóvel dão pouco mais de 45px, e "Reposição" tem de lá caber. */
+.calendario-evento {
+  display: block;
+  width: 100%;
+  text-align: center;
+  line-height: 1.15;
+}
+.calendario-evento-rotulo {
+  display: block;
+  font-size: clamp(7.5px, 2.1vw, 10px);
+  font-weight: 500;
+  /* Uma linha, sempre. Uma palavra única partida ao meio ("Desmarcad" /
+     "a") não se lê melhor por ocupar duas linhas — lê-se pior. */
+  white-space: nowrap;
+}
+/* "Desmarcada" é a palavra mais longa das cinco e a única que não cabia
+   na casa de um telemóvel. Encolhe só ela, em vez de encolher todas. */
+.calendario-evento-rotulo[data-tipo='desmarcada'] { font-size: clamp(6.8px, 1.9vw, 9.5px); }
+.calendario-evento-rotulo[data-tipo='desmarcada'] { text-decoration: line-through; opacity: 0.85; }
+.calendario-evento-rotulo[data-tipo='fechado'] { font-weight: 400; font-style: italic; }
+.calendario-dia-aula .calendario-evento-rotulo[data-tipo='reposicao'] { color: var(--color-azul-logo); }
+.calendario-dia-fechado .calendario-evento-rotulo[data-tipo='reposicao'] { color: var(--color-azul-texto); }
+
+/* O primeiro nome de quem tem a aula, só quando a conta tem mais do que
+   um aluno. Cortado com reticências em vez de partido em duas linhas: o
+   nome é o detalhe, e a palavra por cima é que tem de se ler. */
+.calendario-evento-nome {
+  display: block;
+  font-size: clamp(7px, 1.9vw, 9px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.9;
+}
+.calendario-evento-nome[data-cor='0'] { color: var(--color-dourado); }
+.calendario-evento-nome[data-cor='1'] { color: var(--color-verde); }
+.calendario-evento-nome[data-cor='2'] { color: #C4553F; }
+.calendario-evento-nome[data-cor='3'] { color: var(--color-azul-texto); }
+/* Sobre o azul escuro, os mesmos tons não se leem — clareiam. */
+.calendario-dia-aula .calendario-evento-nome[data-cor='0'] { color: #E8B771; }
+.calendario-dia-aula .calendario-evento-nome[data-cor='1'] { color: #A9D6B8; }
+.calendario-dia-aula .calendario-evento-nome[data-cor='2'] { color: #F0A08F; }
+.calendario-dia-aula .calendario-evento-nome[data-cor='3'] { color: var(--color-azul-logo); }
+
 .calendario-ponto {
   width: 4px;
   height: 4px;
   border-radius: 999px;
   background: var(--color-dourado);
   display: inline-block;
+  flex: none;
 }
 .calendario-ponto[data-cor='1'] { background: var(--color-verde); }
 .calendario-ponto[data-cor='2'] { background: #E0523F; }
@@ -3581,6 +3639,7 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   min-height: 0;
 }
 .calendario-legenda .calendario-ponto { width: 8px; height: 8px; border-radius: 999px; }
+
 .agenda-ligacao-calendario {
   display: inline-flex;
   align-items: center;

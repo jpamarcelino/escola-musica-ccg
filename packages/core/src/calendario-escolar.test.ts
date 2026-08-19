@@ -84,11 +84,12 @@ describe('mesesDoCalendario', () => {
     expect(meses[11]).toMatchObject({ ano: 2027, mes: 8, label: 'Agosto' })
   })
 
-  it('alinha as semanas à segunda-feira', () => {
-    // 1 de outubro de 2026 é uma quinta: três casas vazias antes.
+  it('alinha as semanas ao domingo', () => {
+    // 1 de outubro de 2026 é uma quinta: com o domingo na primeira
+    // coluna, ficam quatro casas vazias antes.
     const outubro = meses.find((m) => m.mes === 10)!
-    expect(outubro.semanas[0].slice(0, 3)).toEqual([null, null, null])
-    expect(outubro.semanas[0][3]?.data).toBe('2026-10-01')
+    expect(outubro.semanas[0].slice(0, 4)).toEqual([null, null, null, null])
+    expect(outubro.semanas[0][4]?.data).toBe('2026-10-01')
   })
 
   it('conta cada dia do mês uma só vez', () => {
