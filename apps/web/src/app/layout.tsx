@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { Suspense } from "react";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
 import { NavigationFeedback } from "@/components/navigation-feedback";
 import { PageTransition } from "@/components/page-transition";
 import "./globals.css";
@@ -55,6 +56,11 @@ export default function RootLayout({
         >
           Saltar para o conteúdo
         </a>
+        {/* Fora da transição de página, de propósito: a marca é o ponto
+            fixo do ecrã e não deve piscar a cada navegação. */}
+        <Suspense fallback={null}>
+          <CabecalhoPublico />
+        </Suspense>
         <Suspense fallback={children}>
           <PageTransition>{children}</PageTransition>
         </Suspense>

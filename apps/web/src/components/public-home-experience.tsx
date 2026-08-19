@@ -36,7 +36,11 @@ export function PublicHomeExperience() {
   return (
     <main id="conteudo-principal" className={`publico-vivo publico-vivo-${ativa}`}>
       <nav className="publico-vivo-nav" aria-label="Navegação principal">
-        <span className="publico-vivo-marca"><SimboloCCG /><small>Centro Cultural da Guarda</small></span>
+        {/* Também aqui é ligação, e não texto: quem desce a home e quer
+            recomeçar do topo procura a marca, e nas outras páginas ela
+            leva ao início — se aqui não fizesse nada, a regra deixava de
+            valer justamente onde se aprende. */}
+        <Link href="/" className="publico-vivo-marca" aria-label="Centro Cultural da Guarda — ir para o início"><SimboloCCG /><small>Centro Cultural da Guarda</small></Link>
         <div><Link href="/login">Entrar</Link><Link href="/registo">Criar conta</Link></div>
       </nav>
 

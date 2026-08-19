@@ -1793,8 +1793,13 @@ body {
 .publico-vivo-danca { --vivo-acento: var(--color-dourado); }
 .publico-vivo-bebes { --vivo-acento: var(--color-verde); }
 .publico-vivo-nav { display: flex; min-height: 72px; align-items: center; justify-content: space-between; max-width: 1440px; margin: auto; padding: 0 clamp(20px, 5vw, 72px); font-size: 13px; }
-.publico-vivo-nav > span { font-family: var(--font-fraunces), ui-serif, serif; font-weight: 700; letter-spacing: .04em; }
-.publico-vivo-marca { display: flex; align-items: center; gap: 10px; }
+/* A marca era um <span> e passou a <a> para levar ao início. O seletor
+   acompanha os dois: o resto da barra continua a usar > span. */
+.publico-vivo-nav > span,
+.publico-vivo-marca { font-family: var(--font-fraunces), ui-serif, serif; font-weight: 700; letter-spacing: .04em; }
+/* Anula o padding lateral que .publico-vivo-nav a dá aos botões de
+   sessão: a marca alinha com a margem da página, não com eles. */
+.publico-vivo-marca { display: flex; align-items: center; gap: 10px; min-height: 44px; padding-left: 0; padding-right: 8px; text-decoration: none; }
 .publico-vivo-marca svg { width: 29px; height: 32px; color: var(--marca-ciano); }
 .publico-vivo-nav small { margin-left: 8px; font-family: var(--font-geist-sans), sans-serif; font-weight: 500; color: var(--color-tinta-suave); }
 .publico-vivo-nav div { display: flex; align-items: center; gap: 10px; }
@@ -3015,7 +3020,9 @@ body {
 .publico-rodape a { min-height: 44px; display: inline-flex; align-items: center; font-family: var(--font-inter), sans-serif; font-size: 12px; font-style: normal; font-weight: 700; }
 
 .auth-pagina { position: relative; overflow: hidden; background: var(--color-papel) !important; }
-.auth-pagina::before { content: ""; position: fixed; left: clamp(18px, 5vw, 70px); top: 22px; width: 35px; height: 38px; background: var(--marca-ciano); -webkit-mask: url('/simbolo-ccg.svg') center / contain no-repeat; mask: url('/simbolo-ccg.svg') center / contain no-repeat; }
+/* O símbolo desta zona era um ::before decorativo, fixo no canto: via-se
+   mas não se clicava, e em CSS não há como o tornar uma ligação. Passou
+   para o <CabecalhoPublico>, que o mostra igual e leva à página inicial. */
 .auth-pagina::after { content: "Escolas Artísticas · Guarda"; position: fixed; right: clamp(18px, 5vw, 70px); bottom: 28px; font-size: 10px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; color: var(--color-tinta-suave); }
 .auth-pagina > div { position: relative; z-index: 1; }
 .auth-pagina [class*="rounded-"] { border-radius: 4px; }
@@ -3193,4 +3200,33 @@ button[data-pending="true"] { cursor: progress; }
 }
 @media (prefers-reduced-motion: reduce) {
   .admin-permissoes-guardar { transition: none; }
+}
+
+
+/* Cabeçalho das páginas públicas (tudo menos a home, que tem barra
+   própria, e as áreas com sessão, que têm a sua). Só a marca, e a marca
+   é a porta de saída: em qualquer ecrã, tocar-lhe volta ao início. */
+/* width: 100% não é redundante: o <body> é flex em coluna, e nele o
+   `margin: 0 auto` que centra a faixa também a encolhe ao conteúdo. */
+.cabecalho-publico { display: flex; width: 100%; min-height: 72px; align-items: center; max-width: 1440px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 72px); }
+.cabecalho-publico a { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding-right: 8px; color: inherit; text-decoration: none; font-family: var(--font-fraunces), ui-serif, serif; font-weight: 700; letter-spacing: .04em; font-size: 13px; }
+.cabecalho-publico svg { width: 29px; height: 32px; color: var(--marca-ciano); }
+.cabecalho-publico small { font-family: var(--font-geist-sans), sans-serif; font-weight: 500; font-size: 13px; letter-spacing: normal; color: var(--color-tinta-suave); }
+.cabecalho-publico a:hover small { color: var(--color-tinta); }
+.cabecalho-publico a:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; border-radius: 4px; }
+
+/* A faixa é transparente para tomar a cor da página que encima. O
+   problema é que a cor destas páginas vive no <main>, e o cabeçalho está
+   por fora dele — ficava uma banda branca por cima do papel. Em vez de
+   pintar a faixa (as páginas públicas não têm todas o mesmo fundo: /login
+   é papel, /instalar é branco), leva-se a cor ao <body> quando a página
+   que lá está é de papel. Assim a faixa continua sem cor própria e nunca
+   desalinha de nada. */
+body:has(.auth-pagina) { background: var(--color-papel); }
+
+/* Em ecrã estreito fica só o símbolo — o nome por extenso comia metade
+   da largura e a marca já se reconhece pela pincelada. */
+@media (max-width: 520px) {
+  .cabecalho-publico { min-height: 60px; }
+  .cabecalho-publico small { display: none; }
 }
