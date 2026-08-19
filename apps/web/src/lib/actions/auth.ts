@@ -291,7 +291,10 @@ export async function apagarConta() {
     .select('tipo')
     .eq('id', user.id)
     .single()
-  const contaHref = profile?.tipo === 'admin' ? '/admin/conta' : '/dashboard/conta'
+  // Fora da administração, apagar a conta vive na página seguinte à
+  // Conta — é para lá que o erro tem de voltar, senão a mensagem aparece
+  // num ecrã onde já não há botão nenhum para tentar outra vez.
+  const contaHref = profile?.tipo === 'admin' ? '/admin/conta' : '/dashboard/conta/avancado'
 
   // Apaga a conta através de uma função da BD (a app só tem a anon key,
   // que não pode apagar de auth.users diretamente). Isto cascateia até

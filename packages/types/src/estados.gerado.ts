@@ -57,6 +57,15 @@ export const HORARIOESTADO_VALORES = [
   'bloqueado',
 ] as const satisfies readonly HorarioEstado[]
 
+// indicacoes_recomendacao.estado — fixado em 0026_indicacoes_de_recomendacao.sql
+export type IndicacoesRecomendacaoEstado = 'por_confirmar' | 'confirmada' | 'recusada'
+
+export const INDICACOESRECOMENDACAOESTADO_VALORES = [
+  'por_confirmar',
+  'confirmada',
+  'recusada',
+] as const satisfies readonly IndicacoesRecomendacaoEstado[]
+
 // instrumentos.programa — fixado em 0023_musica_bebes.sql
 export type InstrumentoPrograma = 'musica' | 'danca' | 'bebes'
 

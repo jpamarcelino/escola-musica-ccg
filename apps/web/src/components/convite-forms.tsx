@@ -84,6 +84,8 @@ export function ConvidarAdminForm({ action }: { action: Action }) {
   )
 }
 
+// O lado de quem entrega. O link leva a /registo?convite=…, para servir
+// tanto a quem já tem conta como a quem ainda a vai criar.
 export function GerarLinkMigracaoForm({ action, alunoId }: { action: Action; alunoId: string }) {
   const [state, formAction] = useActionState(action, undefined)
 
@@ -94,7 +96,7 @@ export function GerarLinkMigracaoForm({ action, alunoId }: { action: Action; alu
         textoAGuardar="A gerar…"
         className="rounded border border-foreground/20 px-3 py-1 text-xs"
       >
-        Gerar link para este aluno gerir a própria conta
+        Gerar link para passar este aluno
       </SubmitButton>
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state?.link && <LinkGerado link={state.link} />}
@@ -102,13 +104,19 @@ export function GerarLinkMigracaoForm({ action, alunoId }: { action: Action; alu
   )
 }
 
-export function ResgatarConviteForm({ action }: { action: Action }) {
+// Chamava-se "resgatar um convite", e a caixa perguntava "Tens um código
+// de convite?" — linguagem de promoção, para uma operação que é outra
+// coisa: alguém decidiu passar-te um perfil de aluno e enviou-te o código
+// que o entrega. Quem não tinha código nenhum lia aquilo como um passo em
+// falta. A ação e a função da base de dados continuam a chamar-se
+// "resgatar" (0019); o que muda é o que a pessoa lê.
+export function ReceberAlunoForm({ action }: { action: Action }) {
   const [state, formAction] = useActionState(action, undefined)
 
   return (
     <form action={formAction} className="space-y-2">
       <label htmlFor="codigo" className="block text-sm font-medium">
-        Tens um código de convite?
+        Código que te enviaram
       </label>
       <div className="flex gap-2">
         <input
@@ -121,7 +129,7 @@ export function ResgatarConviteForm({ action }: { action: Action }) {
           textoAGuardar="A validar…"
           className="shrink-0 rounded border border-foreground/20 px-3 py-2 text-sm"
         >
-          Resgatar
+          Receber aluno
         </SubmitButton>
       </div>
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}

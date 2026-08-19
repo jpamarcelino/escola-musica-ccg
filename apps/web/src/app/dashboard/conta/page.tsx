@@ -5,8 +5,6 @@ import {
   atualizarNomeConta,
   atualizarEmailConta,
   atualizarPasswordConta,
-  apagarConta,
-  apagarContaSuperAdmin,
   logout,
 } from '@/lib/actions/auth'
 import { PageHeader } from '@/components/page-header'
@@ -18,11 +16,6 @@ import {
   EditarEmailForm,
   AlterarPasswordForm,
 } from '@/components/conta-forms'
-import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
-import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
-import { EmptyState } from '@/components/empty-state'
-import { criarConviteMigracaoAluno, resgatarConvite } from '@/lib/actions/convites'
-import { GerarLinkMigracaoForm, ResgatarConviteForm } from '@/components/convite-forms'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { ehContaCCG } from '@/lib/navegacao'
 
@@ -41,7 +34,7 @@ export default async function ContaPage({
 
   const { data: profileRowData } = await supabase
     .from('profiles')
-    .select('nome, foto_url, perfis_escola(tipo, programa, admin, super_admin)')
+    .select('nome, foto_url, perfis_escola(tipo, programa, admin)')
     .eq('id', user.id)
     .single()
 
@@ -52,7 +45,6 @@ export default async function ContaPage({
       tipo: string
       programa: string | null
       admin: boolean
-      super_admin: boolean
     } | null
   } | null
 
@@ -63,7 +55,6 @@ export default async function ContaPage({
         tipo: profileRow.perfis_escola?.tipo,
         programa: profileRow.perfis_escola?.programa,
         admin: profileRow.perfis_escola?.admin ?? false,
-        super_admin: profileRow.perfis_escola?.super_admin ?? false,
       }
     : null
 
@@ -77,22 +68,6 @@ export default async function ContaPage({
     redirect('/dashboard')
   }
   const ehProfessor = profile.tipo === 'professor'
-
-  const outrosAdminsQuery = profile.super_admin
-    ? supabase
-        .from('perfis_escola')
-        .select('id, profiles(nome)')
-        .eq('admin', true)
-        .neq('id', user.id)
-    : Promise.resolve({ data: [] })
-
-  const meusAlunosQuery = !ehProfessor
-    ? supabase
-        .from('alunos')
-        .select('id, nome, propria_conta_id')
-        .eq('encarregado_id', user.id)
-        .order('criado_em')
-    : Promise.resolve({ data: [] })
 
   const instrumentosQuery = ehProfessor
     ? supabase
@@ -109,29 +84,12 @@ export default async function ContaPage({
         .eq('professor_id', user.id)
     : Promise.resolve({ data: [] })
 
-  // Depois de resolver identidade e permissões, estes dados são independentes.
-  // Em paralelo, a página paga apenas a latência da consulta mais lenta em vez
-  // de acumular até quatro viagens consecutivas ao Supabase.
-  const [
-    { data: outrosAdminsData },
-    { data: meusAlunosData },
-    { data: instrumentosData },
-    { data: meusInstrumentosData },
-  ] = await Promise.all([
-    outrosAdminsQuery,
-    meusAlunosQuery,
+  // As duas consultas do professor são independentes uma da outra: em
+  // paralelo, a página paga a latência da mais lenta em vez da soma.
+  const [{ data: instrumentosData }, { data: meusInstrumentosData }] = await Promise.all([
     instrumentosQuery,
     meusInstrumentosQuery,
   ])
-
-  const outrosAdmins = (
-    (outrosAdminsData ?? []) as unknown as { id: string; profiles: { nome: string } | null }[]
-  ).map((p) => ({
-    id: p.id,
-    nome: p.profiles?.nome ?? '',
-  }))
-
-  const meusAlunos = meusAlunosData ?? []
 
   const todosInstrumentos = instrumentosData ?? []
 
@@ -189,33 +147,6 @@ export default async function ContaPage({
           <h2 className="font-semibold">Alterar password</h2>
           <AlterarPasswordForm action={atualizarPasswordConta} />
         </section>
-
-        {!ehProfessor && (
-          <section className="space-y-4">
-            <h2 className="font-semibold">Perfis de aluno que geres</h2>
-            {meusAlunos.length === 0 ? (
-              <EmptyState titulo="Nenhum perfil de aluno" />
-            ) : (
-              <div className="space-y-3">
-                {meusAlunos.map((a) => (
-                  <div key={a.id} className="lista-item space-y-2">
-                    <p className="lista-item-titulo">{a.nome}</p>
-                    {a.propria_conta_id === user.id ? (
-                      <p className="lista-item-sub">Este perfil és tu.</p>
-                    ) : (
-                      <GerarLinkMigracaoForm action={criarConviteMigracaoAluno} alunoId={a.id} />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-            <p className="text-xs text-foreground/50">
-              Recebeste um link de migração de outra pessoa (ex: um encarregado a passar-te o teu
-              próprio perfil)?
-            </p>
-            <ResgatarConviteForm action={resgatarConvite} />
-          </section>
-        )}
 
         {ehProfessor && (
           <>
@@ -286,16 +217,13 @@ export default async function ContaPage({
           </form>
         </section>
 
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-          {profile.super_admin ? (
-            <ApagarContaSuperAdminForm action={apagarContaSuperAdmin} outrosAdmins={outrosAdmins} />
-          ) : (
-            <BotaoAcaoDestruir
-              label="Apagar conta"
-              mensagem="Tens a certeza que queres apagar a tua conta? Esta ação é irreversível — perdes o acesso e todos os teus dados de conta são apagados. (O histórico de presenças e mensalidades mantém-se.)"
-              action={apagarConta}
-            />
-          )}
+        {/* Passar alunos para outra conta e apagar a conta mudaram-se
+            para uma página à parte: são raras, não se desfazem, e ao lado
+            do nome e da password liam-se como mais um campo a preencher. */}
+        <section className="space-y-2 border-t border-[var(--color-linha)] pt-6">
+          <LigacaoTerciaria href="/dashboard/conta/avancado">
+            Transferir alunos ou apagar a conta
+          </LigacaoTerciaria>
         </section>
       </div>
     </main>

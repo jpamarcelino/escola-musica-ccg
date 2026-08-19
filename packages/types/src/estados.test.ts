@@ -52,7 +52,7 @@ describe('extração das constraints', () => {
   })
 
   it('encontra todas as colunas com valores fixos', () => {
-    expect(unioes).toHaveLength(14)
+    expect(unioes).toHaveLength(15)
   })
 
   it('nenhuma união vem vazia', () => {
