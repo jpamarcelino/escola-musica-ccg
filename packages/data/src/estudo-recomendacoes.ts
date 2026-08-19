@@ -255,3 +255,143 @@ export function estudoParaCsv(linhas: LinhaEstudo[]) {
   // BOM à cabeça para o Excel abrir os acentos corretamente.
   return '﻿' + [cabecalho, ...corpo].join('\n')
 }
+
+// ---------------------------------------------------------------------
+// Desempenho por professor
+//
+// A pergunta do projeto-piloto não é só "quanto rendeu o Programa" — é
+// "aderir compensa?". E essa só se responde pondo lado a lado quem aderiu
+// e quem não aderiu, professor a professor.
+//
+// Vive ao lado do resto do estudo, e não numa página só sua, pela mesma
+// razão que o CSV: são números da mesma pergunta, e separá-los em dois
+// sítios com duas contas é como acabam por divergir.
+// ---------------------------------------------------------------------
+
+export type DesempenhoProfessor = {
+  professorId: string
+  nome: string
+  programa: string | null
+  aderente: boolean
+  aderiuEm: string | null
+  // Matrículas confirmadas neste momento.
+  alunosAtivos: number
+  // Matrículas criadas no último ano, aderente ou não — é a coluna que
+  // permite comparar crescimento entre os dois grupos.
+  alunosNovosUltimoAno: number
+  // Só para aderentes: quantos entraram depois de ele ter aderido.
+  alunosDesdeAdesao: number | null
+  recomendacoesValidadas: number
+  mesesGratisDados: number
+  custoMesesGratis: number
+  receitaPaga: number
+  // O que sobra depois de descontar o que ele suportou do seu bolso.
+  // Metade do mês grátis é do CCG (Art. 5.º), mas o que aqui interessa é
+  // o efeito na conta do professor.
+  saldo: number
+}
+
+export async function recolherDesempenhoPorProfessor(
+  supabase: ClienteCcg
+): Promise<DesempenhoProfessor[]> {
+  const { data: professoresData } = await supabase
+    .from('perfis_escola')
+    .select('id, programa, adere_recomendacao, adesao_recomendacao_em, profiles(nome)')
+    .eq('tipo', 'professor')
+
+  const professores = (professoresData ?? []) as unknown as {
+    id: string
+    programa: string | null
+    adere_recomendacao: boolean
+    adesao_recomendacao_em: string | null
+    profiles: { nome: string } | null
+  }[]
+
+  const [{ data: matriculasData }, { data: mensalidadesData }, { data: recomendacoesData }, { data: beneficiosData }] =
+    await Promise.all([
+      supabase.from('matriculas').select('professor_id, aluno_id, estado, criado_em'),
+      // `desistencia` marca a mensalidade que assinala a saída do aluno
+      // (0014) — não é receita, e contá-la inflacionava os dois grupos.
+      supabase.from('mensalidades').select('professor_id, valor, pago, desistencia'),
+      supabase.from('recomendacoes').select('professor_id, estado'),
+      supabase.from('beneficios').select('professor_id, estado, valor_coberto'),
+    ])
+
+  const matriculas = (matriculasData ?? []) as {
+    professor_id: string
+    aluno_id: string
+    estado: string
+    criado_em: string
+  }[]
+  const mensalidades = (mensalidadesData ?? []) as {
+    professor_id: string
+    valor: number | null
+    pago: boolean
+    desistencia: boolean
+  }[]
+  const recomendacoes = (recomendacoesData ?? []) as {
+    professor_id: string
+    estado: RecomendacaoEstado
+  }[]
+  const beneficios = (beneficiosData ?? []) as {
+    professor_id: string
+    estado: BeneficioEstado
+    valor_coberto: number | null
+  }[]
+
+  const haUmAno = new Date()
+  haUmAno.setFullYear(haUmAno.getFullYear() - 1)
+
+  return professores
+    .map((p) => {
+      const minhas = matriculas.filter((m) => m.professor_id === p.id)
+      // Contam-se alunos, e não matrículas: quem tem piano e bateria com
+      // o mesmo professor é um aluno, não dois.
+      const alunosAtivos = new Set(
+        minhas.filter((m) => m.estado === 'confirmado').map((m) => m.aluno_id)
+      ).size
+      // Só matrículas confirmadas contam como aluno novo. Contar também
+      // os pedidos por responder dava colunas absurdas — mais "novos" do
+      // que alunos ao todo — e sobretudo dizia o que ainda não aconteceu:
+      // um pedido não é um aluno, é uma intenção.
+      const confirmadas = minhas.filter((m) => m.estado === 'confirmado')
+      const alunosNovosUltimoAno = new Set(
+        confirmadas.filter((m) => new Date(m.criado_em) >= haUmAno).map((m) => m.aluno_id)
+      ).size
+      const alunosDesdeAdesao =
+        p.adere_recomendacao && p.adesao_recomendacao_em
+          ? new Set(
+              confirmadas
+                .filter((m) => new Date(m.criado_em) >= new Date(p.adesao_recomendacao_em!))
+                .map((m) => m.aluno_id)
+            ).size
+          : null
+
+      const receitaPaga = mensalidades
+        .filter((m) => m.professor_id === p.id && m.pago && !m.desistencia)
+        .reduce((soma, m) => soma + (m.valor ?? 0), 0)
+
+      const meus = beneficios.filter((b) => b.professor_id === p.id)
+      const usados = meus.filter((b) => b.estado === 'usado')
+      const custoMesesGratis = usados.reduce((soma, b) => soma + (b.valor_coberto ?? 0), 0)
+
+      return {
+        professorId: p.id,
+        nome: p.profiles?.nome ?? 'Sem nome',
+        programa: p.programa,
+        aderente: p.adere_recomendacao,
+        aderiuEm: p.adesao_recomendacao_em,
+        alunosAtivos,
+        alunosNovosUltimoAno,
+        alunosDesdeAdesao,
+        recomendacoesValidadas: recomendacoes.filter(
+          (r) => r.professor_id === p.id && r.estado === 'validada'
+        ).length,
+        mesesGratisDados: usados.length,
+        custoMesesGratis,
+        receitaPaga,
+        saldo: receitaPaga - custoMesesGratis,
+      }
+    })
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+}

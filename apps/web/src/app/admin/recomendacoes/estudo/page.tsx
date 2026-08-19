@@ -3,11 +3,19 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/page-header'
 import { EmptyState } from '@/components/empty-state'
-import { recolherDadosEstudo } from '@ccg/data'
+import { recolherDadosEstudo, recolherDesempenhoPorProfessor } from '@ccg/data'
 import { euros } from '@ccg/core'
 
-function contarRecomendacoes(n: number) {
-  return n === 1 ? '1 recomendação' : `${n} recomendações`
+// Uma casa decimal: "4,3 alunos" diz mais do que "4", e menos do que
+// uma precisão que estes números não têm.
+function media(valores: number[]): string {
+  if (valores.length === 0) return '—'
+  return (valores.reduce((a, b) => a + b, 0) / valores.length).toFixed(1).replace('.', ',')
+}
+
+function mediaBruta(valores: number[]): number {
+  if (valores.length === 0) return 0
+  return valores.reduce((a, b) => a + b, 0) / valores.length
 }
 
 export default async function EstudoRecomendacoesPage() {
@@ -30,7 +38,10 @@ export default async function EstudoRecomendacoesPage() {
     redirect('/dashboard')
   }
 
-  const { linhas, totais } = await recolherDadosEstudo(supabase)
+  const [{ linhas, totais }, desempenho] = await Promise.all([
+    recolherDadosEstudo(supabase),
+    recolherDesempenhoPorProfessor(supabase),
+  ])
 
   // §19 da proposta: o resultado líquido é a receita nova gerada (as
   // inscrições mais as mensalidades pagas pelos novos alunos) menos o
@@ -38,8 +49,8 @@ export default async function EstudoRecomendacoesPage() {
   const receitaNova = totais.valorInscricoes + totais.valorSeguros + totais.receitaNovosAlunos
   const resultadoLiquido = receitaNova - totais.valorBeneficios
 
-  const aderentes = linhas.filter((l) => l.professorAderente)
-  const naoAderentes = linhas.filter((l) => !l.professorAderente)
+  const grupoAderentes = desempenho.filter((p) => p.aderente)
+  const grupoNaoAderentes = desempenho.filter((p) => !p.aderente)
 
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
@@ -113,19 +124,85 @@ export default async function EstudoRecomendacoesPage() {
         <section className="space-y-3">
           <h2 className="secao-titulo">Aderentes e não aderentes</h2>
           <p className="text-sm text-foreground/60">
-            §28 da proposta. Só aparecem aqui recomendações já registadas — a comparação
-            completa entre as duas classes de professores exige também os dados de
-            inscrições fora do Programa.
+            §28 da proposta. Em cima, o retrato dos dois grupos; em baixo, professor a
+            professor. É esta comparação que responde à pergunta do projeto-piloto —
+            aderir compensa?
           </p>
-          <div className="space-y-2">
-            <div className="lista-item flex items-center justify-between gap-3">
-              <p className="lista-item-titulo">Professores aderentes</p>
-              <p className="lista-item-sub">{contarRecomendacoes(aderentes.length)}</p>
-            </div>
-            <div className="lista-item flex items-center justify-between gap-3">
-              <p className="lista-item-titulo">Professores que já não aderem</p>
-              <p className="lista-item-sub">{contarRecomendacoes(naoAderentes.length)}</p>
-            </div>
+
+          {/* Média por professor, e não total: os dois grupos podem ter
+              tamanhos muito diferentes, e comparar somas diria mais sobre
+              quantos são do que sobre como lhes correu. */}
+          <div className="estudo-comparacao">
+            {[
+              { titulo: 'Aderentes', grupo: grupoAderentes },
+              { titulo: 'Não aderentes', grupo: grupoNaoAderentes },
+            ].map(({ titulo, grupo }) => (
+              <div key={titulo} className="estudo-comparacao-coluna">
+                <h3>
+                  {titulo} <span>{grupo.length === 1 ? '1 professor' : `${grupo.length} professores`}</span>
+                </h3>
+                {grupo.length === 0 ? (
+                  <p className="estudo-vazio">Nenhum.</p>
+                ) : (
+                  <dl>
+                    <div>
+                      <dt>Alunos por professor</dt>
+                      <dd>{media(grupo.map((p) => p.alunosAtivos))}</dd>
+                    </div>
+                    <div>
+                      <dt>Alunos novos no último ano</dt>
+                      <dd>{media(grupo.map((p) => p.alunosNovosUltimoAno))}</dd>
+                    </div>
+                    <div>
+                      <dt>Receita por professor</dt>
+                      <dd>{euros(mediaBruta(grupo.map((p) => p.receitaPaga)))}</dd>
+                    </div>
+                  </dl>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-linha)]">
+                  <th className="p-2">Professor</th>
+                  <th className="p-2">Programa</th>
+                  <th className="p-2">Alunos</th>
+                  <th className="p-2">Novos (1 ano)</th>
+                  <th className="p-2">Desde a adesão</th>
+                  <th className="p-2">Recomendações</th>
+                  <th className="p-2">Meses dados</th>
+                  <th className="p-2">Receita</th>
+                  <th className="p-2">Saldo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {desempenho.map((p) => (
+                  <tr key={p.professorId} className="border-b border-[var(--color-linha)]">
+                    <td className="p-2">
+                      {p.nome}
+                      {p.aderente && <span className="estudo-marca">aderente</span>}
+                    </td>
+                    <td className="p-2">{p.programa ?? '—'}</td>
+                    <td className="p-2">{p.alunosAtivos}</td>
+                    <td className="p-2">{p.alunosNovosUltimoAno}</td>
+                    {/* Um traço, e não um zero: quem não aderiu não tem
+                        "desde a adesão" nenhum, e um zero leria-se como
+                        "aderiu e não cresceu". */}
+                    <td className="p-2">{p.alunosDesdeAdesao ?? '—'}</td>
+                    <td className="p-2">{p.recomendacoesValidadas}</td>
+                    <td className="p-2">
+                      {p.mesesGratisDados}
+                      {p.custoMesesGratis > 0 && ` (${euros(p.custoMesesGratis)})`}
+                    </td>
+                    <td className="p-2">{euros(p.receitaPaga)}</td>
+                    <td className="p-2">{euros(p.saldo)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 

@@ -3407,3 +3407,44 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   font-weight: 600;
   color: var(--color-tinta-suave);
 }
+
+/* Comparação entre professores aderentes e não aderentes, no estudo.
+   Duas colunas lado a lado em ecrã largo, empilhadas no telemóvel — a
+   comparação perde-se se for preciso deslizar de uma para a outra. */
+.estudo-comparacao { display: grid; gap: 12px; margin-top: 6px; }
+@media (min-width: 640px) { .estudo-comparacao { grid-template-columns: 1fr 1fr; } }
+.estudo-comparacao-coluna {
+  border: 1px solid var(--color-linha);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--color-papel);
+}
+.estudo-comparacao-coluna h3 {
+  font-family: var(--font-fraunces), ui-serif, serif;
+  font-size: 16px;
+  color: var(--color-azul-fundo);
+}
+.estudo-comparacao-coluna h3 span {
+  margin-left: 8px;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-tinta-suave);
+}
+.estudo-comparacao-coluna dl { margin-top: 10px; display: grid; gap: 8px; }
+.estudo-comparacao-coluna dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.estudo-comparacao-coluna dt { font-size: 13px; color: var(--color-tinta-suave); }
+.estudo-comparacao-coluna dd { font-size: 16px; font-weight: 650; color: var(--color-tinta); font-variant-numeric: tabular-nums; }
+.estudo-vazio { margin-top: 8px; font-size: 13px; color: var(--color-tinta-suave); }
+
+/* Marca discreta ao lado do nome. Não é um distintivo colorido de
+   propósito: numa tabela de doze linhas, doze manchas de cor competiam
+   com os números, que são o assunto. */
+.estudo-marca {
+  margin-left: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--marca-ciano-texto, var(--color-azul-fundo));
+}

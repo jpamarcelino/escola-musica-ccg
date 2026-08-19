@@ -15,8 +15,12 @@ export type { ClienteCcg } from './cliente'
 export { listarAlunosDoEncarregado } from './alunos'
 export type { AlunoResumo } from './alunos'
 
-export { recolherDadosEstudo, estudoParaCsv } from './estudo-recomendacoes'
-export type { LinhaEstudo, TotaisEstudo } from './estudo-recomendacoes'
+export {
+  recolherDadosEstudo,
+  recolherDesempenhoPorProfessor,
+  estudoParaCsv,
+} from './estudo-recomendacoes'
+export type { LinhaEstudo, TotaisEstudo, DesempenhoProfessor } from './estudo-recomendacoes'
 
 export {
   listarMatriculasDoAluno,
