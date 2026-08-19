@@ -2,8 +2,11 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
+import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, formatarDataEscolar, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
+import { MensagemErro, MensagemInfo } from '@/components/mensagem'
+import { desmarcarDiaProfessor } from '@/lib/actions/professor'
 import { AgendaFamilia } from './agenda-familia'
 import { ehContaCCG } from '@/lib/navegacao'
 
@@ -65,9 +68,9 @@ function partesData(data: string) {
 export default async function AgendaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ aluno?: string }>
+  searchParams: Promise<{ aluno?: string; erro?: string; dia?: string }>
 }) {
-  const { aluno: alunoFiltro } = await searchParams
+  const { aluno: alunoFiltro, erro, dia } = await searchParams
   const { supabase, user, profile } = await getSchoolProfileContext()
 
   if (!user) {
@@ -87,6 +90,11 @@ export default async function AgendaPage({
   }
 
   const mostrarNomes = profile.programa === 'musica'
+  // O mesmo teste, com outro nome, porque é outra decisão: só música tem
+  // reposições, e desmarcar uma aula sem reposição a seguir seria só
+  // perder a aula. Reutilizar `mostrarNomes` para isto ligava duas
+  // regras que podem divergir amanhã.
+  const podeDesmarcar = profile.programa === 'musica'
 
   const { data: confirmadosData } = await supabase
     .from('matriculas')
@@ -218,6 +226,14 @@ export default async function AgendaPage({
           </div>
         </header>
 
+        {erro && <MensagemErro>{erro}</MensagemErro>}
+        {dia && (
+          <MensagemInfo>
+            {dia === '1' ? '1 aula desmarcada.' : `${dia} aulas desmarcadas.`} Os alunos foram
+            avisados.
+          </MensagemInfo>
+        )}
+
         {blocos.length === 0 ? (
           <EmptyState titulo="Ainda não tens aulas confirmadas" />
         ) : (
@@ -230,6 +246,20 @@ export default async function AgendaPage({
                 <header>
                   <span className="partitura-dia-numero">{partes.dia}</span>
                   <span><strong>{rotuloData(data)}</strong><small>{partes.semana} · {partes.mes}</small></span>
+                  {/* A confirmação diz a data por extenso e quantas aulas
+                      caem — é a diferença entre desmarcar um dia e
+                      desmarcar o dia errado. */}
+                  {podeDesmarcar && (
+                    <BotaoAcaoDestruir
+                      label="Desmarcar o dia"
+                      variante="editorial"
+                      titulo="Desmarcar todas as aulas deste dia?"
+                      mensagem={`${formatarDataEscolar(data, { weekday: 'long', day: 'numeric', month: 'long' })} — ${aulas.length} ${aulas.length === 1 ? 'aula' : 'aulas'}.\n\nCada aluno é avisado de que vai haver reposição.`}
+                      action={desmarcarDiaProfessor}
+                    >
+                      <input type="hidden" name="data" value={data} />
+                    </BotaoAcaoDestruir>
+                  )}
                 </header>
                 <div className="partitura-linha-tempo">
                   {aulas.map((aula, indice) => {

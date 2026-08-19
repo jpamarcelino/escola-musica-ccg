@@ -1242,7 +1242,10 @@ body {
 .partitura-dia + .partitura-dia { margin-top: 46px; }
 .partitura-dia > header {
   display: grid;
-  grid-template-columns: 58px 1fr;
+  /* Terceira coluna para o "Desmarcar o dia". Fica "auto" e não uma
+     largura fixa: com o botão ausente (dança, que não tem reposições) a
+     coluna colapsa e o cabeçalho volta a ser o de antes. */
+  grid-template-columns: 58px 1fr auto;
   gap: 16px;
   align-items: center;
   margin-bottom: 8px;
@@ -1695,6 +1698,11 @@ body {
 .detalhe-aula-alunos a strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
 .detalhe-aula-alunos a span { font-size: 13px; color: var(--color-tinta-suave); }
 .detalhe-aula-alunos a i { font-style: normal; color: var(--color-azul-texto); }
+/* Cada aluno passou a ser uma linha com duas coisas: a ligação para o
+   dossier e o botão de desmarcar a próxima aula. O traço que separava as
+   linhas mudou-se da ligação para o contentor, senão passava a meio. */
+.detalhe-aula-aluno { border-bottom: 1px solid var(--color-linha); padding-bottom: 10px; }
+.detalhe-aula-aluno > a { border-bottom: 0; }
 
 .detalhe-aluno-ficha dl { border-top: 1px solid var(--color-linha); }
 .detalhe-aluno-ficha dl > div {

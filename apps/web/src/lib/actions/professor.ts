@@ -557,6 +557,72 @@ export async function apagarHorarios(formData: FormData) {
   redirect('/dashboard/horarios')
 }
 
+// Desmarcar UMA aula. Não é desmatricular: a matrícula fica, e o que
+// deixa de existir é a ocorrência daquele dia.
+//
+// A regra vive na função da base de dados (0032): só música, a data tem
+// de cair no dia do horário, a aula tem de não ter começado, a família é
+// avisada e a aula fica no livro de presenças como falta do professor —
+// que é dele e não do aluno.
+export async function desmarcarAulaProfessor(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = Number(formData.get('matriculaId') ?? 0)
+  const data = String(formData.get('data') ?? '')
+  const horarioId = String(formData.get('horarioId') ?? '')
+
+  const { error } = await supabase.rpc('desmarcar_aula', {
+    p_matricula_id: matriculaId,
+    p_data: data,
+  })
+
+  const destino = horarioId ? `/dashboard/agenda/${horarioId}` : '/dashboard/agenda'
+
+  if (error) {
+    redirect(`${destino}?erro=${encodeURIComponent(error.message || 'Não foi possível desmarcar a aula.')}`)
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/agenda')
+  revalidatePath(destino)
+  redirect(`${destino}?desmarcada=1`)
+}
+
+// Desmarcar o dia inteiro. A função percorre as matrículas de música com
+// horário nesse dia e desmarca cada uma pelo caminho normal — cada aluno
+// recebe o seu aviso, e nenhuma lógica fica duplicada.
+export async function desmarcarDiaProfessor(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const data = String(formData.get('data') ?? '')
+
+  const { data: quantas, error } = await supabase.rpc('desmarcar_dia', { p_data: data })
+
+  if (error) {
+    redirect(
+      `/dashboard/agenda?erro=${encodeURIComponent(error.message || 'Não foi possível desmarcar o dia.')}`
+    )
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/agenda')
+  redirect(`/dashboard/agenda?dia=${encodeURIComponent(String(quantas ?? 0))}`)
+}
+
 export async function desmatricularAluno(formData: FormData) {
   const supabase = await createClient()
   const {
