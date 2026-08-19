@@ -131,8 +131,7 @@ export default async function ContaAvancadoPage({
                   de cada aula — um sítio para consultar, não para desfazer
                   uma inscrição. */}
               <p className="text-sm text-foreground/60">
-                Termina as aulas de uma disciplina. O aluno mantém-se na tua conta, e o histórico
-                de presenças e de mensalidades não se apaga.
+                Termina as aulas de uma disciplina. O aluno mantém-se na tua conta.
               </p>
               {matriculas.length === 0 ? (
                 <EmptyState titulo="Nenhuma aula a decorrer" />
@@ -148,12 +147,13 @@ export default async function ContaAvancadoPage({
                         label="Cancelar matrícula"
                         titulo="Cancelar esta matrícula?"
                         variante="editorial"
-                        // A confirmação diz o que vai acontecer, e não
-                        // "tens a certeza?". Quem chega aqui já sabe que
-                        // tem a certeza — o que não sabe é que a
-                        // mensalidade do mês é cobrada na mesma, nem que
-                        // o acesso aos materiais acaba no mesmo instante.
-                        mensagem={`Cancelar a matrícula de ${m.instrumentos?.nome} de ${m.alunos?.nome}, com ${m.profiles?.nome}?\n\nO professor e a secretaria são avisados, e o horário deixa de estar reservado. ${m.alunos?.nome} perde o acesso aos materiais desta disciplina.\n\nA mensalidade deste mês é cobrada na mesma. O histórico de presenças e de pagamentos mantém-se.`}
+                        // Uma frase para o que acontece, outra para o
+                        // que custa dinheiro. O resto — avisos, arquivo,
+                        // histórico — é funcionamento interno da escola:
+                        // não muda a decisão de quem está a carregar no
+                        // botão, e enche de texto o momento em que ela é
+                        // tomada.
+                        mensagem={`Terminam as aulas de ${m.instrumentos?.nome} de ${m.alunos?.nome}, com ${m.profiles?.nome}.\n\nA mensalidade deste mês é cobrada na mesma.`}
                         action={cancelarMatricula}
                       >
                         <input type="hidden" name="matriculaId" value={m.id} />
@@ -204,8 +204,7 @@ export default async function ContaAvancadoPage({
                   popup explica a diferença que interessa — sai da tua
                   conta, fica no arquivo da escola. */}
               <p className="text-sm text-foreground/60">
-                O perfil sai da tua conta e passa a antigo aluno no arquivo da escola. As aulas a
-                decorrer são canceladas, e o histórico de presenças e de pagamentos mantém-se.
+                O perfil sai da tua conta. As aulas a decorrer são canceladas.
               </p>
               {meusAlunos.length === 0 ? (
                 <EmptyState titulo="Nenhum perfil de aluno" />
@@ -227,14 +226,14 @@ export default async function ContaAvancadoPage({
                         <BotaoAcaoDestruir
                           label="Eliminar perfil"
                           titulo={`Eliminar o perfil de ${a.nome}?`}
-                          // O popup diz primeiro o que a pessoa não está à
-                          // espera: que isto cancela as aulas. Só depois o
-                          // resto.
-                          mensagem={`${
+                          // A única coisa que a pessoa pode não estar à
+                          // espera é que eliminar o perfil cancela as
+                          // aulas. É isso que o popup diz, e mais nada.
+                          mensagem={
                             disciplinas.length === 0
-                              ? `${a.nome} não tem aulas a decorrer.`
-                              : `Isto cancela ${disciplinas.length === 1 ? 'a matrícula' : 'as matrículas'} de ${disciplinas.join(', ')}. ${disciplinas.length === 1 ? 'O professor é avisado' : 'Os professores são avisados'} e ${disciplinas.length === 1 ? 'o horário fica' : 'os horários ficam'} por preencher.`
-                          }\n\n${a.nome} deixa de aparecer na tua conta e passa a antigo aluno no arquivo da escola. A secretaria é avisada.\n\nO histórico de presenças e de pagamentos mantém-se. As mensalidades já emitidas continuam a ser devidas.`}
+                              ? `${a.nome} sai da tua conta.`
+                              : `${a.nome} sai da tua conta, e ${disciplinas.length === 1 ? 'a matrícula' : 'as matrículas'} de ${disciplinas.join(', ')} ${disciplinas.length === 1 ? 'é cancelada' : 'são canceladas'}.`
+                          }
                           action={arquivarAluno}
                         >
                           <input type="hidden" name="alunoId" value={a.id} />
@@ -262,25 +261,14 @@ export default async function ContaAvancadoPage({
         <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
           <h2 className="font-semibold">Apagar a conta</h2>
           <p className="text-sm text-foreground/60">
-            Perdes o acesso e os dados da conta são apagados. O histórico de presenças e de
-            mensalidades da escola mantém-se.
+            Perdes o acesso e os dados da conta são apagados.
           </p>
-          {/* Não há eliminação de perfis de aluno em separado: um perfil
-              costuma ter matrículas, presenças e mensalidades atrás dele.
-              Quem quiser deixar de gerir um aluno passa-o acima; apagá-lo
-              é uma decisão da secretaria, não desta página. */}
-          {!ehProfessor && meusAlunos.length > 0 && (
-            <p className="text-xs text-foreground/50">
-              Para deixares de gerir um aluno sem apagares a conta, passa-o para outra conta na
-              secção acima.
-            </p>
-          )}
           {superAdmin ? (
             <ApagarContaSuperAdminForm action={apagarContaSuperAdmin} outrosAdmins={outrosAdmins} />
           ) : (
             <BotaoAcaoDestruir
               label="Apagar conta"
-              mensagem="Tens a certeza que queres apagar a tua conta? Esta ação é irreversível — perdes o acesso e todos os teus dados de conta são apagados. (O histórico de presenças e mensalidades mantém-se.)"
+              mensagem="Perdes o acesso e os dados da conta são apagados. Não há como voltar atrás."
               action={apagarConta}
             />
           )}

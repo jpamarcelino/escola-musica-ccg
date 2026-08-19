@@ -120,7 +120,7 @@ export default async function AdminContaPage({
           ) : (
             <BotaoAcaoDestruir
               label="Apagar conta"
-              mensagem="Tens a certeza que queres apagar a tua conta? Esta ação é irreversível — perdes o acesso e todos os teus dados de conta são apagados. (O histórico de presenças e mensalidades mantém-se.)"
+              mensagem="Perdes o acesso e os dados da conta são apagados. Não há como voltar atrás."
               action={apagarConta}
             />
           )}
