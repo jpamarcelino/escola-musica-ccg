@@ -57,3 +57,6 @@ next-env.d.ts
 # Compilacao de verificacao (npm run verificar), a parte da .next que o
 # servidor local usa — ver o comentario do distDir em apps/web/next.config.ts
 .next-verificacao/
+
+# Ficheiros temporarios da CLI do Supabase
+supabase/.temp/
