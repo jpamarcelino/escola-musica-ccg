@@ -248,6 +248,11 @@ export default async function DashboardPage({
               <Link href="/dashboard/presencas"><span>Presenças</span><small>Registar e consultar</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/horarios"><span>Horários</span><small>Disponibilidade semanal</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/mensalidades"><span>Mensalidades</span><small>Estado dos pagamentos</small><b aria-hidden="true">→</b></Link>
+              {/* Só música tem reposições — em dança o separador levava a
+                  um formulário que não serve para nada. */}
+              {profile.programa === 'musica' && (
+                <Link href="/dashboard/reposicoes"><span>Reposições</span><small>Vagas para repor aulas</small><b aria-hidden="true">→</b></Link>
+              )}
               {(pedidosPendentes ?? 0) > 0 && (
                 <Link href="/dashboard/pedidos"><span>Pedidos</span><small>{pedidosPendentes} por responder</small><b aria-hidden="true">→</b></Link>
               )}

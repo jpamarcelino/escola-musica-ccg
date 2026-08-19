@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA, type DiaSemana } from '@ccg/core'
+import { DIAS_SEMANA, hojeISO, type DiaSemana } from '@ccg/core'
 
 // Fora deste intervalo o Centro Cultural não abre — evita horários
 // disparatados (ex: 1h da manhã) por engano de fuso ou digitação.
@@ -555,6 +555,80 @@ export async function apagarHorarios(formData: FormData) {
   }
 
   redirect('/dashboard/horarios')
+}
+
+// Uma vaga pontual para repor uma aula. Não entra na grelha semanal — é
+// uma data e uma hora, uma vez só, e por isso vive em tabela própria em
+// vez de ser mais um `horarios`.
+export async function criarHorarioReposicao(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const data = String(formData.get('data') ?? '')
+  const horaInicio = String(formData.get('horaInicio') ?? '')
+  const horaFim = String(formData.get('horaFim') ?? '')
+
+  function voltarComErro(mensagem: string): never {
+    redirect(`/dashboard/reposicoes?erro=${encodeURIComponent(mensagem)}`)
+  }
+
+  if (!data || !horaInicio || !horaFim) {
+    voltarComErro('Preenche a data e as horas.')
+  }
+  if (data < hojeISO()) {
+    voltarComErro('A data não pode ser no passado.')
+  }
+  if (horaFim <= horaInicio) {
+    voltarComErro('A hora de fim tem de ser depois da de início.')
+  }
+
+  const { error } = await supabase.from('horarios_reposicao').insert({
+    professor_id: user.id,
+    data,
+    hora_inicio: horaInicio,
+    hora_fim: horaFim,
+  })
+
+  if (error) {
+    // O índice único (professor, data, hora de início) é o que impede
+    // duas vagas em cima uma da outra.
+    voltarComErro(
+      error.code === '23505'
+        ? 'Já tens uma vaga de reposição a essa hora nesse dia.'
+        : 'Não foi possível criar a vaga.'
+    )
+  }
+
+  revalidatePath('/dashboard/reposicoes')
+  redirect('/dashboard/reposicoes?criada=1')
+}
+
+// Só as que ainda estão disponíveis. Uma vaga ocupada tem uma reposição
+// marcada em cima dela — apagá-la deixava um aluno com aula sem vaga.
+export async function apagarHorarioReposicao(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  await supabase
+    .from('horarios_reposicao')
+    .delete()
+    .eq('id', Number(formData.get('horarioId') ?? 0))
+    .eq('professor_id', user.id)
+    .eq('estado', 'disponivel')
+
+  revalidatePath('/dashboard/reposicoes')
 }
 
 // Desmarcar UMA aula. Não é desmatricular: a matrícula fica, e o que
