@@ -4,7 +4,7 @@ import { getSchoolProfileContext } from '@/lib/auth-context'
 import { InstalarCallout } from '@/components/instalar-callout'
 import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
-import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, hojeISO, formatarHora, formatarSala, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
+import { agoraNaEscola, estadoTemporalAula, proximaAulaPorAcontecer, hojeISO, formatarHora, formatarSala, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
 
 type AulaConfirmada = {
@@ -91,6 +91,21 @@ export default async function DashboardPage({
     const horarios = horariosData ?? []
     const confirmadas = (confirmadasData ?? []) as unknown as AulaConfirmada[]
 
+    // As aulas que já foram desmarcadas. Não há linha por aula — a grelha
+    // é semanal — por isso é esta lista que diz quais das ocorrências
+    // futuras já não vão acontecer.
+    const { data: desmarcadasProf } = await supabase
+      .from('aulas_desmarcadas')
+      .select('matricula_id, data')
+      .eq('professor_id', user.id)
+      .gte('data', hojeISO())
+    const canceladasPorMatricula = new Map<number, Set<string>>()
+    for (const d of desmarcadasProf ?? []) {
+      const atual = canceladasPorMatricula.get(d.matricula_id) ?? new Set<string>()
+      atual.add(d.data)
+      canceladasPorMatricula.set(d.matricula_id, atual)
+    }
+
     // Ocupação da agenda: horários (não bloqueados) com pelo menos um
     // aluno confirmado ÷ horários disponíveis. Em dança vários alunos
     // partilham o mesmo horário, por isso conta-se por horário distinto.
@@ -108,13 +123,15 @@ export default async function DashboardPage({
     const proximas = confirmadas
       .filter((c) => c.horarios)
       .map((c) => {
-        const data = proximaOcorrenciaDeAula(
+        const data = proximaAulaPorAcontecer(
           c.horarios!.dia_semana,
           c.horarios!.hora_inicio,
-          c.horarios!.hora_fim
+          c.horarios!.hora_fim,
+          canceladasPorMatricula.get(c.id) ?? new Set<string>()
         )
         return { ...c, data }
       })
+      .filter((c): c is typeof c & { data: string } => c.data !== null)
       .sort((a, b) =>
         a.data === b.data
           ? a.horarios!.hora_inicio.localeCompare(b.horarios!.hora_inicio)
@@ -285,6 +302,17 @@ export default async function DashboardPage({
   const matriculas = (matriculasData ?? []) as unknown as MatriculaFilho[]
   const avisoMaisRecente = avisosData?.[0] ?? null
 
+  const { data: desmarcadasFamilia } = await supabase
+    .from('aulas_desmarcadas')
+    .select('matricula_id, data')
+    .gte('data', hojeISO())
+  const canceladasFamilia = new Map<number, Set<string>>()
+  for (const d of desmarcadasFamilia ?? []) {
+    const atual = canceladasFamilia.get(d.matricula_id) ?? new Set<string>()
+    atual.add(d.data)
+    canceladasFamilia.set(d.matricula_id, atual)
+  }
+
   const confirmadasFilhos = matriculas.filter((m) => m.estado === 'confirmado' && m.horarios)
 
   function resumoDoFilho(alunoId: string) {
@@ -292,12 +320,14 @@ export default async function DashboardPage({
       .filter((m) => m.aluno_id === alunoId)
       .map((m) => ({
         ...m,
-        data: proximaOcorrenciaDeAula(
+        data: proximaAulaPorAcontecer(
           m.horarios!.dia_semana,
           m.horarios!.hora_inicio,
-          m.horarios!.hora_fim
+          m.horarios!.hora_fim,
+          canceladasFamilia.get(m.id) ?? new Set<string>()
         ),
       }))
+      .filter((m): m is typeof m & { data: string } => m.data !== null)
       .sort((a, b) =>
         a.data === b.data
           ? a.horarios!.hora_inicio.localeCompare(b.horarios!.hora_inicio)
@@ -314,12 +344,14 @@ export default async function DashboardPage({
   const proximaGlobal = confirmadasFilhos
     .map((m) => ({
       ...m,
-      data: proximaOcorrenciaDeAula(
+      data: proximaAulaPorAcontecer(
         m.horarios!.dia_semana,
         m.horarios!.hora_inicio,
-        m.horarios!.hora_fim
+        m.horarios!.hora_fim,
+        canceladasFamilia.get(m.id) ?? new Set<string>()
       ),
     }))
+    .filter((m): m is typeof m & { data: string } => m.data !== null)
     .sort((a, b) =>
       a.data === b.data
         ? a.horarios!.hora_inicio.localeCompare(b.horarios!.hora_inicio)

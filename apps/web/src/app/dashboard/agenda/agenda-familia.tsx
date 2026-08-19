@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula, type DiaSemana } from '@ccg/core'
+import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 
 type AulaFamilia = {
@@ -64,7 +64,7 @@ export async function AgendaFamilia({
   userId: string
   alunoFiltro?: string
 }) {
-  const [{ data: matriculasData }, { data: alunosData }] = await Promise.all([
+  const [{ data: matriculasData }, { data: alunosData }, { data: desmarcadasData }] = await Promise.all([
     supabase
       .from('matriculas')
       .select(
@@ -81,7 +81,20 @@ export async function AgendaFamilia({
       .select('id, nome')
       .eq('encarregado_id', userId)
       .order('criado_em'),
+    // As ocorrências que já não vão acontecer. A grelha é semanal e não há
+    // linha por aula, por isso é esta lista que as tira da agenda.
+    supabase
+      .from('aulas_desmarcadas')
+      .select('matricula_id, data')
+      .gte('data', hojeISO()),
   ])
+
+  const canceladas = new Map<number, Set<string>>()
+  for (const d of desmarcadasData ?? []) {
+    const atual = canceladas.get(d.matricula_id) ?? new Set<string>()
+    atual.add(d.data)
+    canceladas.set(d.matricula_id, atual)
+  }
 
   const alunos = alunosData ?? []
   const idsValidos = new Set(alunos.map((a) => a.id))
@@ -117,12 +130,14 @@ export async function AgendaFamilia({
       hora_inicio: m.horarios!.hora_inicio,
       hora_fim: m.horarios!.hora_fim,
       sala: formatarSala(m.horarios!.salas),
-      data: proximaOcorrenciaDeAula(
+      data: proximaAulaPorAcontecer(
         m.horarios!.dia_semana,
         m.horarios!.hora_inicio,
-        m.horarios!.hora_fim
+        m.horarios!.hora_fim,
+        canceladas.get(m.id) ?? new Set<string>()
       ),
     }))
+    .filter((a): a is typeof a & { data: string } => a.data !== null)
     .sort((a, b) =>
       a.data === b.data ? a.hora_inicio.localeCompare(b.hora_inicio) : a.data.localeCompare(b.data)
     )

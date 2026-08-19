@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaOcorrenciaDeAula, type DiaSemana } from '@ccg/core'
+import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import { AgendaFamilia } from './agenda-familia'
 import { ehContaCCG } from '@/lib/navegacao'
@@ -28,6 +28,9 @@ type BlocoAgenda = {
   sala: string | null
   alunos: string[]
   disciplinas: string[]
+  // Quem está neste bloco. Preciso para saber se a aula foi desmarcada:
+  // um bloco de grupo só desaparece quando todos desmarcaram.
+  matriculas: number[]
 }
 
 function somarUmDia(data: string): string {
@@ -96,6 +99,18 @@ export default async function AgendaPage({
     .order('criado_em')
   const confirmados = (confirmadosData ?? []) as unknown as Confirmado[]
 
+  const { data: desmarcadasData } = await supabase
+    .from('aulas_desmarcadas')
+    .select('matricula_id, data')
+    .eq('professor_id', user.id)
+    .gte('data', hojeISO())
+  const canceladasPorMatricula = new Map<number, Set<string>>()
+  for (const d of desmarcadasData ?? []) {
+    const atual = canceladasPorMatricula.get(d.matricula_id) ?? new Set<string>()
+    atual.add(d.data)
+    canceladasPorMatricula.set(d.matricula_id, atual)
+  }
+
   // Agrupa por horario_final_id — mais que um aluno pode partilhar o mesmo
   // horário (ex: aula de grupo em dança).
   const blocosPorHorario = new Map<number, BlocoAgenda>()
@@ -109,7 +124,9 @@ export default async function AgendaPage({
       sala: formatarSala(c.horarios.salas),
       alunos: [],
       disciplinas: [],
+      matriculas: [],
     }
+    bloco.matriculas.push(c.id)
     bloco.alunos.push(c.alunos?.nome ?? '')
     // Uma aula de grupo partilha o horário mas pode juntar disciplinas
     // diferentes, por isso guarda-se cada uma só uma vez.
@@ -122,12 +139,20 @@ export default async function AgendaPage({
   const agendaTemporal = blocos
     .map((bloco) => ({
       ...bloco,
-      data: proximaOcorrenciaDeAula(
+      data: proximaAulaPorAcontecer(
         bloco.dia_semana,
         bloco.hora_inicio,
-        bloco.hora_fim
+        bloco.hora_fim,
+        // A interseção: as datas em que NENHUM dos alunos deste bloco tem
+        // aula. Se um continuar inscrito, o professor tem de lá estar.
+        new Set(
+          [...(canceladasPorMatricula.get(bloco.matriculas[0]) ?? new Set<string>())].filter(
+            (data) => bloco.matriculas.every((id) => canceladasPorMatricula.get(id)?.has(data))
+          )
+        )
       ),
     }))
+    .filter((bloco): bloco is typeof bloco & { data: string } => bloco.data !== null)
     .sort((a, b) =>
       a.data === b.data
         ? a.hora_inicio.localeCompare(b.hora_inicio)
