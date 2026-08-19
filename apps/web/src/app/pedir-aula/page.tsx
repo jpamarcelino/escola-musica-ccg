@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separarFaixaEtaria, parseFaixaEtaria, dentroDaFaixa, elegivelParaDisciplina, HOUR_HEIGHT, paraMinutos } from '@ccg/core'
@@ -82,6 +83,7 @@ export default async function PedirAulaPage({
           ...i,
           titulo,
           idade: faixa,
+          faixa: parseFaixaEtaria(faixa),
           elegivel: dentroDaFaixa(idadeNum, parseFaixaEtaria(faixa)),
         }
       }
@@ -90,6 +92,7 @@ export default async function PedirAulaPage({
           ...i,
           titulo: i.nome,
           idade: undefined as string | undefined,
+          faixa: parseFaixaEtaria(i.nome),
           elegivel: dentroDaFaixa(idadeNum, parseFaixaEtaria(i.nome)),
         }
       }
@@ -97,6 +100,7 @@ export default async function PedirAulaPage({
         ...i,
         titulo: i.nome,
         idade: undefined as string | undefined,
+        faixa: { min: MUSICA_IDADE_MIN, max: MUSICA_IDADE_MAX },
         elegivel: dentroDaFaixa(idadeNum, { min: MUSICA_IDADE_MIN, max: MUSICA_IDADE_MAX }),
       }
     })
@@ -104,6 +108,24 @@ export default async function PedirAulaPage({
       ...itens.filter((i) => i.elegivel),
       ...itens.filter((i) => !i.elegivel),
     ]
+
+    // Quando nada serve, a lista fica uma parede de cinzento sem uma
+    // palavra a dizer porquê. As disciplinas de Dança trazem a faixa no
+    // próprio nome ("4 aos 12 anos"), mas os instrumentos não trazem
+    // nada — e é justamente aí que a idade costuma ficar de fora, por
+    // ser abaixo do mínimo. Esta nota diz o limite e, quando existe,
+    // aponta a escola onde essa idade cabe.
+    const sugestao = itens.length > 0 && !itens.some((i) => i.elegivel)
+      ? construirSugestao(
+          programa,
+          idadeNum,
+          // Uma disciplina cujo nome não traga faixa não tem limite que
+          // se cite, e por isso não entra no cálculo do mínimo/máximo.
+          itens
+            .map((i) => i.faixa)
+            .filter((f): f is { min: number; max: number } => f !== null)
+        )
+      : null
 
     return (
       <Wizard
@@ -121,6 +143,18 @@ export default async function PedirAulaPage({
           { valor: `${idadeNum} anos`, href: `/pedir-aula?programa=${programa}` },
         ]}
       >
+        {sugestao && (
+          <p className="wizard-sem-opcoes">
+            {sugestao.texto}
+            {sugestao.acao && (
+              <>
+                {' '}
+                <Link href={sugestao.acao.href}>{sugestao.acao.texto}</Link>
+              </>
+            )}
+          </p>
+        )}
+
         <ListaEscolhas>
           {ordenados.map((i) => (
             <CartaoLink
@@ -258,4 +292,45 @@ export default async function PedirAulaPage({
       />
     </Wizard>
   )
+}
+
+
+// Nota mostrada quando nenhuma disciplina da escola serve a idade dada.
+// Diz o limite pelos números reais das disciplinas (e não por um texto
+// fixo que envelhece quando a escola muda a oferta), e encaminha para a
+// escola vizinha quando há uma que cobre essa idade.
+function construirSugestao(
+  programa: 'musica' | 'danca' | 'bebes',
+  idade: number,
+  faixas: { min: number; max: number }[]
+): { texto: string; acao?: { texto: string; href: string } } | null {
+  if (faixas.length === 0) return null
+
+  const minimo = Math.min(...faixas.map((f) => f.min))
+  const maximo = Math.max(...faixas.map((f) => f.max))
+  const escola = NOME_ESCOLA[programa] ?? programa
+
+  // Novo demais. É o caso comum: um pai com uma criança pequena entra
+  // em Música porque é o nome que conhece.
+  if (idade < minimo) {
+    const texto = `Com ${idade} ${idade === 1 ? 'ano' : 'anos'}, ainda não há nada em ${escola} — começa aos ${minimo}.`
+    // "Primeiros sons" existe justamente para esta idade; mandar para lá
+    // é mais útil do que mandar de volta à página inicial.
+    return programa !== 'bebes' && idade <= 5
+      ? {
+          texto,
+          acao: { texto: 'Ver Primeiros sons →', href: `/pedir-aula?programa=bebes&idade=${idade}` },
+        }
+      : { texto }
+  }
+
+  // Crescido demais. Em "Primeiros sons" é o que acontece a partir dos
+  // 6 anos, e aí a Música é o passo seguinte natural.
+  const texto = `Com ${idade} anos já não há nada em ${escola} — vai até aos ${maximo}.`
+  return programa === 'bebes'
+    ? {
+        texto,
+        acao: { texto: 'Ver Música →', href: `/pedir-aula?programa=musica&idade=${idade}` },
+      }
+    : { texto }
 }

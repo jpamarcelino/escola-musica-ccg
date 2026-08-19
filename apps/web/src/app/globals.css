@@ -3281,3 +3281,25 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .wizard-escolhas:has(.cartao-bloqueado) .cartao-disponivel > svg:last-child {
   color: var(--color-azul-fundo) !important;
 }
+
+/* A nota que aparece quando nenhuma disciplina serve a idade dada. Fica
+   por cima da lista apagada, e não no lugar dela: continuar a mostrar o
+   que a escola tem responde a "então e o que é que há?", que é a
+   pergunta seguinte de quem chega cedo demais. */
+.wizard-sem-opcoes {
+  margin: 4px 0 18px;
+  border-left: 2px solid var(--marca-ciano);
+  padding: 12px 0 12px 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-tinta);
+  background: color-mix(in srgb, var(--marca-ciano) 7%, transparent);
+}
+.wizard-sem-opcoes a {
+  display: inline-block;
+  min-height: 24px;
+  font-weight: 650;
+  color: var(--color-azul-fundo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
