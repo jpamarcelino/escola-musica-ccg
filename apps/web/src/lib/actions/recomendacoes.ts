@@ -278,7 +278,7 @@ export async function validarRecomendacao(formData: FormData) {
 
   const { data: recomendacao } = await supabase
     .from('recomendacoes')
-    .select('id, estado, recomendador_id, recomendador_nome, professor_id, data_inscricao, data_primeiro_pagamento, valor_inscricao, valor_seguro')
+    .select('id, estado, recomendador_id, recomendador_nome, professor_id, novo_aluno_id, data_inscricao, data_primeiro_pagamento, valor_inscricao, valor_seguro')
     .eq('id', id)
     .maybeSingle()
 
@@ -292,14 +292,25 @@ export async function validarRecomendacao(formData: FormData) {
     )
   }
 
-  // Este botão deixou de ser o caminho normal — quem valida é o primeiro
-  // pagamento (0027). Fica como saída para o que a app não vê: um
-  // pagamento feito em mão na secretaria e nunca lançado em Mensalidades.
+  // Só para recomendações registadas sem aluno na app — um nome escrito
+  // à mão, de quem ainda não tem perfil. Em todos os outros casos quem
+  // valida é o pagamento (0027/0033), e um segundo caminho para o mesmo
+  // ato só criava a dúvida de qual dos dois conta.
   //
-  // Já não exige as datas preenchidas. Exigi-las tornaria o botão inútil:
-  // essas datas passaram a chegar com o pagamento, e quando chegam a
-  // recomendação já se validou sozinha. Faltando, fica a data de hoje —
-  // que é a verdade disponível, e não uma invenção.
+  // A verificação está aqui e não só no ecrã: uma regra que decide quem
+  // ganha um mês grátis não pode depender de o botão estar escondido.
+  if (recomendacao.novo_aluno_id) {
+    redirect(
+      destino +
+        '?erro=' +
+        encodeURIComponent(
+          'Esta recomendação valida-se sozinha quando o primeiro pagamento for confirmado em Mensalidades.'
+        )
+    )
+  }
+
+  // Não exige as datas preenchidas. Faltando, fica a data de hoje — que é
+  // a verdade disponível, e não uma invenção.
   const hoje = new Date().toISOString().slice(0, 10)
 
   // As taxas da escola do professor, copiadas como o gatilho faz (0028).

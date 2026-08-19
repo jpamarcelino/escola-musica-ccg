@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SubmitButton } from '@/components/submit-button'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import {
   validarRecomendacao,
   anularRecomendacao,
@@ -13,6 +14,7 @@ import type { BeneficioEstado, RecomendacaoEstado } from '@ccg/types'
 type Recomendacao = {
   id: number
   recomendador_nome: string
+  novo_aluno_id: string | null
   novo_aluno_nome: string
   professor_nome: string
   modalidade: string | null
@@ -78,7 +80,7 @@ export default async function RecomendacaoPage({
   const { data: recomendacaoData } = await supabase
     .from('recomendacoes')
     .select(
-      'id, recomendador_nome, novo_aluno_nome, professor_nome, modalidade, data_inscricao, data_primeiro_pagamento, valor_inscricao, data_validacao, estado, motivo_anulacao, observacoes, criado_em'
+      'id, recomendador_nome, novo_aluno_id, novo_aluno_nome, professor_nome, modalidade, data_inscricao, data_primeiro_pagamento, valor_inscricao, data_validacao, estado, motivo_anulacao, observacoes, criado_em'
     )
     .eq('id', id)
     .maybeSingle()
@@ -108,12 +110,34 @@ export default async function RecomendacaoPage({
         <div className="recomendacao-detalhe-grelha"><div>
         <section className="recomendacao-seccao recomendacao-estado">
           <h2>Estado</h2>
-          {recomendacao.estado === 'registada' && (
+          {/* Por validar, com o aluno ligado à app: não há aqui nada
+              para carregar. A validação acontece quando a mensalidade
+              for confirmada em Mensalidades — é o mesmo ato humano, feito
+              uma vez só, e um botão a repeti-lo aqui só criava a dúvida
+              de qual dos dois é que conta. */}
+          {recomendacao.estado === 'registada' && recomendacao.novo_aluno_id && (
             <div className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3">
               <p className="text-sm text-foreground/70">
-                Por validar. Assim que for validada, o aluno{' '}
-                <strong>{recomendacao.recomendador_nome}</strong> ganha uma mensalidade
-                gratuita, que será aplicada automaticamente no mês seguinte (Art. 13.º).
+                Por validar. Valida-se sozinha quando o primeiro pagamento de{' '}
+                <strong>{recomendacao.novo_aluno_nome}</strong> for confirmado em Mensalidades
+                (Art. 11.º). Nessa altura, <strong>{recomendacao.recomendador_nome}</strong> ganha
+                uma mensalidade gratuita, aplicada no mês seguinte (Art. 13.º).
+              </p>
+              <LigacaoTerciaria href="/admin/pagamentos">Ir a Mensalidades</LigacaoTerciaria>
+            </div>
+          )}
+          {/* Sem aluno ligado — a recomendação foi registada só com um
+              nome escrito à mão, de alguém que ainda não existe na app.
+              Aqui não há pagamento nenhum que a app consiga reconhecer, e
+              por isso este é o único caso em que a validação tem mesmo de
+              ser feita à mão. */}
+          {recomendacao.estado === 'registada' && !recomendacao.novo_aluno_id && (
+            <div className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3">
+              <p className="text-sm text-foreground/70">
+                Por validar. <strong>{recomendacao.novo_aluno_nome}</strong> foi registado só
+                pelo nome, sem perfil na app — não há pagamento que a possa validar sozinha.
+                Confirma que a inscrição e a primeira mensalidade foram pagas antes de validar
+                (Art. 11.º).
               </p>
               <form action={validarRecomendacao}>
                 <input type="hidden" name="id" value={recomendacao.id} />
