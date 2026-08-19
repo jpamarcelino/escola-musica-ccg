@@ -35,7 +35,7 @@ export default async function EstudoRecomendacoesPage() {
   // §19 da proposta: o resultado líquido é a receita nova gerada (as
   // inscrições mais as mensalidades pagas pelos novos alunos) menos o
   // custo das mensalidades oferecidas.
-  const receitaNova = totais.valorInscricoes + totais.receitaNovosAlunos
+  const receitaNova = totais.valorInscricoes + totais.valorSeguros + totais.receitaNovosAlunos
   const resultadoLiquido = receitaNova - totais.valorBeneficios
 
   const aderentes = linhas.filter((l) => l.professorAderente)
@@ -87,6 +87,10 @@ export default async function EstudoRecomendacoesPage() {
             <div className="lista-item flex items-center justify-between gap-3">
               <p className="lista-item-titulo">Valor das inscrições geradas</p>
               <p className="lista-item-sub">{euros(totais.valorInscricoes)}</p>
+            </div>
+            <div className="lista-item flex items-center justify-between gap-3">
+              <p className="lista-item-titulo">Seguros pagos pelos novos alunos</p>
+              <p className="lista-item-sub">{euros(totais.valorSeguros)}</p>
             </div>
             <div className="lista-item flex items-center justify-between gap-3">
               <p className="lista-item-titulo">Mensalidades pagas pelos novos alunos</p>
@@ -149,6 +153,7 @@ export default async function EstudoRecomendacoesPage() {
                     <th className="p-2">Professor</th>
                     <th className="p-2">Modalidade</th>
                     <th className="p-2">Inscrição</th>
+                    <th className="p-2">Taxas</th>
                     <th className="p-2">Estado</th>
                     <th className="p-2">Benefício</th>
                     <th className="p-2">Meses pagos</th>
@@ -168,6 +173,11 @@ export default async function EstudoRecomendacoesPage() {
                       <td className="p-2">{l.professorNome}</td>
                       <td className="p-2">{l.modalidade ?? '—'}</td>
                       <td className="p-2">{l.dataInscricao ?? '—'}</td>
+                      <td className="p-2">
+                        {l.valorInscricao === null && l.valorSeguro === null
+                          ? '—'
+                          : euros((l.valorInscricao ?? 0) + (l.valorSeguro ?? 0))}
+                      </td>
                       <td className="p-2">{l.estado}</td>
                       <td className="p-2">
                         {l.beneficioEstado ?? '—'}

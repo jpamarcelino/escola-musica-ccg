@@ -12,6 +12,7 @@ export type LinhaEstudo = {
   dataPrimeiroPagamento: string | null
   dataValidacao: string | null
   valorInscricao: number | null
+  valorSeguro: number | null
   estado: RecomendacaoEstado
   motivoAnulacao: string | null
   beneficioEstado: string | null
@@ -33,6 +34,7 @@ export type TotaisEstudo = {
   beneficiosExpirados: number
   valorBeneficios: number
   valorInscricoes: number
+  valorSeguros: number
   receitaNovosAlunos: number
   desistencias: number
   professoresAbrangidos: number
@@ -62,7 +64,7 @@ export async function recolherDadosEstudo(supabase: ClienteCcg) {
   const { data: recomendacoesData } = await supabase
     .from('recomendacoes')
     .select(
-      'id, recomendador_nome, novo_aluno_id, novo_aluno_nome, professor_id, professor_nome, modalidade, data_inscricao, data_primeiro_pagamento, valor_inscricao, data_validacao, estado, motivo_anulacao'
+      'id, recomendador_nome, novo_aluno_id, novo_aluno_nome, professor_id, professor_nome, modalidade, data_inscricao, data_primeiro_pagamento, valor_inscricao, valor_seguro, data_validacao, estado, motivo_anulacao'
     )
     .order('criado_em')
 
@@ -77,6 +79,7 @@ export async function recolherDadosEstudo(supabase: ClienteCcg) {
     data_inscricao: string | null
     data_primeiro_pagamento: string | null
     valor_inscricao: number | null
+    valor_seguro: number | null
     data_validacao: string | null
     estado: RecomendacaoEstado
     motivo_anulacao: string | null
@@ -153,6 +156,7 @@ export async function recolherDadosEstudo(supabase: ClienteCcg) {
       dataPrimeiroPagamento: r.data_primeiro_pagamento,
       dataValidacao: r.data_validacao,
       valorInscricao: r.valor_inscricao,
+      valorSeguro: r.valor_seguro,
       estado: r.estado,
       motivoAnulacao: r.motivo_anulacao,
       beneficioEstado: beneficio?.estado ?? null,
@@ -177,6 +181,11 @@ export async function recolherDadosEstudo(supabase: ClienteCcg) {
     beneficiosExpirados: linhas.filter((l) => l.beneficioEstado === 'expirado').length,
     valorBeneficios: linhas.reduce((soma, l) => soma + (l.beneficioValor ?? 0), 0),
     valorInscricoes: linhas.reduce((soma, l) => soma + (l.valorInscricao ?? 0), 0),
+    // O seguro é cobrado uma vez, com a inscrição, e é dinheiro que só
+    // entra porque a recomendação trouxe o aluno — por isso conta para o
+    // balanço, mas em linha própria: são duas taxas distintas e podem
+    // divergir uma da outra.
+    valorSeguros: linhas.reduce((soma, l) => soma + (l.valorSeguro ?? 0), 0),
     receitaNovosAlunos: linhas.reduce((soma, l) => soma + l.receitaNovoAluno, 0),
     desistencias: linhas.filter((l) => l.novoAlunoDesistiu).length,
     professoresAbrangidos: new Set(linhas.map((l) => l.professorNome)).size,
@@ -195,6 +204,7 @@ const COLUNAS_CSV = [
   'data_inscricao',
   'data_primeiro_pagamento',
   'valor_inscricao',
+  'valor_seguro',
   'data_validacao',
   'estado',
   'motivo_anulacao',
@@ -227,6 +237,7 @@ export function estudoParaCsv(linhas: LinhaEstudo[]) {
       l.dataInscricao,
       l.dataPrimeiroPagamento,
       l.valorInscricao,
+      l.valorSeguro,
       l.dataValidacao,
       l.estado,
       l.motivoAnulacao,

@@ -236,70 +236,21 @@ export default async function NovaRecomendacaoPage({
             </section>
 
             <section className="recomendacao-passo">
-              <h2 className="secao-titulo">4. Confirmação administrativa</h2>
-              {/* Estes campos deixaram de ser o caminho normal. Quem valida
-                  a recomendação é o primeiro pagamento: ao marcar a mensalidade
-                  como paga em Mensalidades, a recomendação valida-se sozinha e o
-                  mês grátis do recomendador passa a existir (migração 0027).
-                  Ficam para o que a app não sabe — inscrições tratadas fora
-                  dela, ou correções. */}
+              <h2 className="secao-titulo">4. Notas</h2>
+              {/* O que aqui estava — datas de inscrição e de primeiro
+                  pagamento, valor da inscrição, e um visto para "validar já"
+                  — saiu todo. Nenhum desses dados precisa de ser escrito:
+                  quando a secretaria marcar como paga a primeira mensalidade
+                  deste aluno, a recomendação valida-se, as taxas são copiadas
+                  da tabela da escola e o mês grátis do recomendador nasce
+                  (migrações 0027 e 0028). Pedir aqui a mesma confirmação era
+                  fazer a mesma pessoa dizer o mesmo facto duas vezes. */}
               <p className="text-[13px] text-[var(--color-tinta-suave)]">
-                <strong>Não é preciso preencher nada aqui.</strong> Quando marcares
-                como paga a primeira mensalidade deste aluno, a recomendação valida-se
-                sozinha e o mês grátis do recomendador é atribuído — é a mesma
-                confirmação que o Art. 11.º pede, feita uma vez em vez de duas.
+                Não há nada a confirmar aqui. A recomendação valida-se sozinha quando
+                marcares como paga a primeira mensalidade deste aluno, em{' '}
+                <strong>Mensalidades</strong> — e é aí que o mês grátis do recomendador
+                passa a existir.
               </p>
-              <p className="text-[13px] text-[var(--color-tinta-suave)]">
-                Usa estes campos só quando a inscrição foi tratada fora da app, ou para
-                corrigir datas.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <div className="space-y-1">
-                  <label
-                    htmlFor="dataInscricao"
-                    className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
-                  >
-                    Data de inscrição
-                  </label>
-                  <input
-                    id="dataInscricao"
-                    name="dataInscricao"
-                    type="date"
-                    className="rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label
-                    htmlFor="dataPrimeiroPagamento"
-                    className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
-                  >
-                    Data do 1.º pagamento
-                  </label>
-                  <input
-                    id="dataPrimeiroPagamento"
-                    name="dataPrimeiroPagamento"
-                    type="date"
-                    className="rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label
-                    htmlFor="valorInscricao"
-                    className="block text-[12.5px] font-medium text-[var(--color-tinta-suave)]"
-                  >
-                    Valor da inscrição (€)
-                  </label>
-                  <input
-                    id="valorInscricao"
-                    name="valorInscricao"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="10.00"
-                    className="w-28 rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
-                  />
-                </div>
-              </div>
               <div className="space-y-1">
                 <label
                   htmlFor="modalidade"
@@ -327,10 +278,6 @@ export default async function NovaRecomendacaoPage({
                   className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
                 />
               </div>
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="validarJa" />
-                Já confirmei tudo — validar e atribuir já o mês grátis
-              </label>
             </section>
 
             <SubmitButton

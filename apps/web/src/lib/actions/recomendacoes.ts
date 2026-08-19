@@ -51,19 +51,15 @@ export async function registarRecomendacao(formData: FormData) {
   const novoAlunoId = String(formData.get('novoAlunoId') ?? '')
   const novoAlunoNomeLivre = String(formData.get('novoAlunoNomeLivre') ?? '').trim()
   const modalidade = String(formData.get('modalidade') ?? '').trim() || null
-  const dataInscricao = String(formData.get('dataInscricao') ?? '') || null
-  const dataPrimeiroPagamento = String(formData.get('dataPrimeiroPagamento') ?? '') || null
   const observacoes = String(formData.get('observacoes') ?? '').trim() || null
-  const validarJa = String(formData.get('validarJa') ?? '') === 'on'
   // Presente só quando o registo nasceu de uma indicação escrita por quem
   // pediu a aula (0026) — nesse caso, registar fecha-a.
   const indicacaoId = String(formData.get('indicacaoId') ?? '')
-  const valorInscricaoTexto = String(formData.get('valorInscricao') ?? '').trim().replace(',', '.')
-  const valorInscricao = valorInscricaoTexto === '' ? null : Number(valorInscricaoTexto)
 
-  if (valorInscricao !== null && (Number.isNaN(valorInscricao) || valorInscricao < 0)) {
-    erroAoRegistar('Valor de inscrição inválido.')
-  }
+  // Datas de inscrição e de primeiro pagamento, valor da inscrição e do
+  // seguro deixaram de ser pedidos aqui: chegam sozinhos quando a
+  // primeira mensalidade for marcada como paga (0027 e 0028). Registar
+  // deixa de ser um ato que valida — é só um ato que regista.
 
   if (!professorId || !recomendadorId) {
     erroAoRegistar('Escolhe o professor e o aluno que recomendou.')
@@ -186,14 +182,6 @@ export async function registarRecomendacao(formData: FormData) {
     matriculas.find((m) => m.aluno_id === novoAlunoId)?.instrumentos?.nome ??
     null
 
-  const podeValidar = validarJa && dataInscricao !== null && dataPrimeiroPagamento !== null
-
-  if (validarJa && !podeValidar) {
-    erroAoRegistar(
-      'Para validar já é preciso a data de inscrição e a data do primeiro pagamento (Art. 11.º).'
-    )
-  }
-
   const { data: novaRecomendacao, error: erroInsert } = await supabase
     .from('recomendacoes')
     .insert({
@@ -204,11 +192,7 @@ export async function registarRecomendacao(formData: FormData) {
       professor_id: professorId,
       professor_nome: professorPerfil.profiles?.nome ?? '',
       modalidade: modalidadeFinal,
-      data_inscricao: dataInscricao,
-      data_primeiro_pagamento: dataPrimeiroPagamento,
-      valor_inscricao: valorInscricao,
-      data_validacao: podeValidar ? new Date().toISOString().slice(0, 10) : null,
-      estado: podeValidar ? 'validada' : 'registada',
+      estado: 'registada',
       observacoes,
       registado_por: user.id,
     })
@@ -217,15 +201,6 @@ export async function registarRecomendacao(formData: FormData) {
 
   if (erroInsert || !novaRecomendacao) {
     erroAoRegistar('Não foi possível registar a recomendação. ' + (erroInsert?.message ?? ''))
-  }
-
-  if (podeValidar) {
-    await criarBeneficio(supabase, {
-      recomendacaoId: novaRecomendacao.id,
-      alunoId: recomendadorId,
-      alunoNome: recomendador.nome,
-      professorId,
-    })
   }
 
   // A indicação sai da lista de trabalho da secretaria e passa a apontar
@@ -303,7 +278,7 @@ export async function validarRecomendacao(formData: FormData) {
 
   const { data: recomendacao } = await supabase
     .from('recomendacoes')
-    .select('id, estado, recomendador_id, recomendador_nome, professor_id, data_inscricao, data_primeiro_pagamento')
+    .select('id, estado, recomendador_id, recomendador_nome, professor_id, data_inscricao, data_primeiro_pagamento, valor_inscricao, valor_seguro')
     .eq('id', id)
     .maybeSingle()
 
@@ -317,22 +292,40 @@ export async function validarRecomendacao(formData: FormData) {
     )
   }
 
-  if (!recomendacao.data_inscricao || !recomendacao.data_primeiro_pagamento) {
-    redirect(
-      destino +
-        '?erro=' +
-        encodeURIComponent(
-          'Preenche primeiro a data de inscrição e a do primeiro pagamento — ' +
-            'o Art. 11.º só valida depois de ambos confirmados.'
-        )
-    )
-  }
+  // Este botão deixou de ser o caminho normal — quem valida é o primeiro
+  // pagamento (0027). Fica como saída para o que a app não vê: um
+  // pagamento feito em mão na secretaria e nunca lançado em Mensalidades.
+  //
+  // Já não exige as datas preenchidas. Exigi-las tornaria o botão inútil:
+  // essas datas passaram a chegar com o pagamento, e quando chegam a
+  // recomendação já se validou sozinha. Faltando, fica a data de hoje —
+  // que é a verdade disponível, e não uma invenção.
+  const hoje = new Date().toISOString().slice(0, 10)
+
+  // As taxas da escola do professor, copiadas como o gatilho faz (0028).
+  const { data: perfilProfessor } = await supabase
+    .from('perfis_escola')
+    .select('programa')
+    .eq('id', recomendacao.professor_id)
+    .maybeSingle()
+
+  const { data: taxas } = perfilProfessor?.programa
+    ? await supabase
+        .from('taxas_escola')
+        .select('inscricao, seguro')
+        .eq('programa', perfilProfessor.programa)
+        .maybeSingle()
+    : { data: null }
 
   await supabase
     .from('recomendacoes')
     .update({
       estado: 'validada',
-      data_validacao: new Date().toISOString().slice(0, 10),
+      data_validacao: hoje,
+      data_inscricao: recomendacao.data_inscricao ?? hoje,
+      data_primeiro_pagamento: recomendacao.data_primeiro_pagamento ?? hoje,
+      valor_inscricao: recomendacao.valor_inscricao ?? taxas?.inscricao ?? null,
+      valor_seguro: recomendacao.valor_seguro ?? taxas?.seguro ?? null,
       atualizado_em: new Date().toISOString(),
     })
     .eq('id', id)
