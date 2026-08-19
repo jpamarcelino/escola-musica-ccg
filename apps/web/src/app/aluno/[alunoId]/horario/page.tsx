@@ -5,6 +5,18 @@ import { cancelarPedido, desmarcarAula } from '@/lib/actions/aluno'
 import { formatarSala, formatarHora, proximaAulaPorAcontecer, formatarDataEscolar, hojeISO, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
+import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
+
+// Onde está a reposição de cada aula desmarcada, dito para quem espera
+// por ela. "sem_pedido" não entra: nesse caso o que se mostra é o botão
+// de pedir, e não uma frase sobre o estado.
+const ROTULO_REPOSICAO: Record<string, string> = {
+  por_repor: 'O professor vai marcar a reposição.',
+  pendente: 'Pedido de reposição enviado. À espera de resposta.',
+  agendada: 'Reposição marcada.',
+  nao_possivel: 'Não foi possível repor esta aula.',
+  expirada: 'O pedido de reposição expirou. Fala com o professor.',
+}
 import { EmptyState } from '@/components/empty-state'
 import type { MatriculaEstado } from '@ccg/types'
 
@@ -66,11 +78,13 @@ export default async function ConsultarHorarioPage({
   // já não vão acontecer.
   const { data: desmarcadasData } = await supabase
     .from('aulas_desmarcadas')
-    .select('matricula_id, data')
+    .select('id, matricula_id, data, hora_inicio, hora_fim, instrumento_nome, origem, reposicao_estado')
     .eq('aluno_id', alunoId)
     .gte('data', hojeISO())
+    .order('data')
+  const desmarcadas = desmarcadasData ?? []
   const porMatricula = new Map<number, Set<string>>()
-  for (const d of desmarcadasData ?? []) {
+  for (const d of desmarcadas) {
     const atual = porMatricula.get(d.matricula_id) ?? new Set<string>()
     atual.add(d.data)
     porMatricula.set(d.matricula_id, atual)
@@ -145,8 +159,41 @@ export default async function ConsultarHorarioPage({
           </section>
         )}
 
+        {/* As aulas que já não vão acontecer continuam na lista, marcadas.
+            Tirá-las por completo escondia justamente a informação que
+            interessa: a agenda ficava igual à de antes de desmarcar, e a
+            pessoa não tinha como confirmar que o pedido tinha resultado. */}
+        {desmarcadas.length > 0 && (
+          <section className="aluno-proximas-aulas">
+            <header><p className="partitura-indice">02</p><h2>Aulas desmarcadas</h2></header>
+            <div className="partitura-linha-tempo">
+              {desmarcadas.map((d) => (
+                <div key={d.id} className="aluno-aula-registo aluno-aula-desmarcada">
+                  <p>
+                    <strong>{d.instrumento_nome}</strong>
+                    <span className="aluno-etiqueta-desmarcada">Desmarcada</span>
+                  </p>
+                  <p>
+                    {formatarDataEscolar(d.data, { weekday: 'long', day: 'numeric', month: 'long' })}
+                    , {formatarHora(d.hora_inicio)}–{formatarHora(d.hora_fim)}
+                  </p>
+                  <p>{ROTULO_REPOSICAO[d.reposicao_estado] ?? ''}</p>
+                  {/* Só faz sentido oferecer o pedido a quem ainda o pode
+                      fazer: o professor que desmarca fica com a reposição
+                      do lado dele. */}
+                  {d.origem === 'aluno' && d.reposicao_estado === 'sem_pedido' && (
+                    <LigacaoTerciaria href={`/aluno/${alunoId}/reposicao/${d.id}`}>
+                      Pedir reposição
+                    </LigacaoTerciaria>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="aluno-proximas-aulas">
-          <header><p className="partitura-indice">02</p><h2>Próximas aulas</h2></header>
+          <header><p className="partitura-indice">{desmarcadas.length > 0 ? '03' : '02'}</p><h2>Próximas aulas</h2></header>
           {confirmadas.length === 0 ? (
             <EmptyState
               titulo="Ainda não há aulas confirmadas"
@@ -192,7 +239,7 @@ export default async function ConsultarHorarioPage({
 
         {reposicoes.length > 0 && (
           <section className="aluno-proximas-aulas">
-            <header><p className="partitura-indice">03</p><h2>Reposições marcadas</h2></header>
+            <header><p className="partitura-indice">{desmarcadas.length > 0 ? '04' : '03'}</p><h2>Reposições marcadas</h2></header>
             <div className="partitura-linha-tempo">
               {reposicoes.map((r) => (
                 <div key={r.id} className="aluno-aula-registo aluno-aula-reposicao">
