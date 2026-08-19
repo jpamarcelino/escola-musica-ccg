@@ -212,6 +212,34 @@ export async function cancelarMatricula(formData: FormData) {
   revalidatePath('/dashboard/avisos')
 }
 
+// Tira um perfil de aluno da conta. Não o apaga: por trás dele estão
+// presenças, mensalidades e o Programa de Recomendação, todos com este
+// id — apagar a linha deixava o histórico da escola com buracos.
+//
+// Arquivar arrasta o cancelamento das aulas atrás de si, pelo mesmo
+// caminho de sempre (avisos ao professor e à secretaria, horário
+// libertado). Quem decide isso é a função da base de dados, e não esta
+// ação: ver a migração 0030.
+export async function arquivarAluno(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const alunoId = String(formData.get('alunoId') ?? '')
+
+  await supabase.rpc('arquivar_aluno', { p_aluno_id: alunoId })
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/alunos')
+  revalidatePath('/dashboard/conta/avancado')
+  revalidatePath('/dashboard/avisos')
+}
+
 // Cria um perfil de aluno para a Conta CCG autenticada. O aluno pode ser
 // um dependente (um filho, sem login próprio) ou o próprio titular, quando
 // quem se inscreve é um adulto que vai ele mesmo às aulas — é a diferença

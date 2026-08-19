@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
 import { apagarConta, apagarContaSuperAdmin } from '@/lib/actions/auth'
 import { criarConviteMigracaoAluno, resgatarConvite } from '@/lib/actions/convites'
-import { cancelarMatricula } from '@/lib/actions/aluno'
+import { arquivarAluno, cancelarMatricula } from '@/lib/actions/aluno'
 import { PageHeader } from '@/components/page-header'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
@@ -92,7 +92,7 @@ export default async function ContaAvancadoPage({
     ? await supabase
         .from('matriculas')
         .select(
-          'id, alunos!inner(nome, encarregado_id), instrumentos(nome), profiles!matriculas_professor_id_fkey(nome)'
+          'id, aluno_id, alunos!inner(nome, encarregado_id), instrumentos(nome), profiles!matriculas_professor_id_fkey(nome)'
         )
         .eq('alunos.encarregado_id', user.id)
         .eq('estado', 'confirmado')
@@ -106,6 +106,7 @@ export default async function ContaAvancadoPage({
 
   const matriculas = (matriculasData ?? []) as unknown as {
     id: number
+    aluno_id: string
     alunos: { nome: string } | null
     instrumentos: { nome: string } | null
     profiles: { nome: string } | null
@@ -189,6 +190,58 @@ export default async function ContaAvancadoPage({
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+            </section>
+
+            <section className="space-y-4 border-t border-[var(--color-linha)] pt-6">
+              <h2 className="font-semibold">Eliminar um perfil de aluno</h2>
+              {/* "Eliminar" é o que a pessoa pensa que está a fazer, e é
+                  por isso que o botão diz isso. O que a app faz é
+                  arquivar: por trás de um perfil estão presenças,
+                  mensalidades e recomendações com este id, e apagá-lo
+                  deixava o histórico da escola com buracos. O aviso do
+                  popup explica a diferença que interessa — sai da tua
+                  conta, fica no arquivo da escola. */}
+              <p className="text-sm text-foreground/60">
+                O perfil sai da tua conta e passa a antigo aluno no arquivo da escola. As aulas a
+                decorrer são canceladas, e o histórico de presenças e de pagamentos mantém-se.
+              </p>
+              {meusAlunos.length === 0 ? (
+                <EmptyState titulo="Nenhum perfil de aluno" />
+              ) : (
+                <div className="space-y-3">
+                  {meusAlunos.map((a) => {
+                    const aulas = matriculas.filter((m) => m.aluno_id === a.id)
+                    const disciplinas = aulas
+                      .map((m) => m.instrumentos?.nome)
+                      .filter((nome): nome is string => Boolean(nome))
+                    return (
+                      <div key={a.id} className="lista-item space-y-2">
+                        <p className="lista-item-titulo">{a.nome}</p>
+                        <p className="lista-item-sub">
+                          {disciplinas.length === 0
+                            ? 'Sem aulas a decorrer'
+                            : `${disciplinas.length === 1 ? 'Aula a decorrer' : 'Aulas a decorrer'}: ${disciplinas.join(', ')}`}
+                        </p>
+                        <BotaoAcaoDestruir
+                          label="Eliminar perfil"
+                          titulo={`Eliminar o perfil de ${a.nome}?`}
+                          // O popup diz primeiro o que a pessoa não está à
+                          // espera: que isto cancela as aulas. Só depois o
+                          // resto.
+                          mensagem={`${
+                            disciplinas.length === 0
+                              ? `${a.nome} não tem aulas a decorrer.`
+                              : `Isto cancela ${disciplinas.length === 1 ? 'a matrícula' : 'as matrículas'} de ${disciplinas.join(', ')}. ${disciplinas.length === 1 ? 'O professor é avisado' : 'Os professores são avisados'} e ${disciplinas.length === 1 ? 'o horário fica' : 'os horários ficam'} por preencher.`
+                          }\n\n${a.nome} deixa de aparecer na tua conta e passa a antigo aluno no arquivo da escola. A secretaria é avisada.\n\nO histórico de presenças e de pagamentos mantém-se. As mensalidades já emitidas continuam a ser devidas.`}
+                          action={arquivarAluno}
+                        >
+                          <input type="hidden" name="alunoId" value={a.id} />
+                        </BotaoAcaoDestruir>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </section>

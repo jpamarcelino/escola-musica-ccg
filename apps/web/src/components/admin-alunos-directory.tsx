@@ -7,6 +7,9 @@ export type AlunoDiretorio = {
   id: string
   nome: string
   dataNascimento: string | null
+  // Preenchido quando a família tirou o perfil da conta (migração 0030).
+  // O aluno não desaparece do diretório da escola — muda de grupo.
+  arquivadoEm: string | null
   email: string | null
   telefone: string | null
   matriculas: {
@@ -25,10 +28,13 @@ export type AlunoDiretorio = {
 // histórico todo, e pode voltar a inscrever-se. Antes da migração 0029 a
 // matrícula era apagada e este grupo era indistinguível de quem nunca se
 // tinha inscrito.
+// "Na escola" e não "Todos": os antigos alunos também estão na lista,
+// noutro grupo, e um separador chamado "Todos" que não os inclui mentia.
 const GRUPOS = [
-  { chave: 'todos', rotulo: 'Todos' },
+  { chave: 'escola', rotulo: 'Na escola' },
   { chave: 'com', rotulo: 'Com matrícula' },
   { chave: 'sem', rotulo: 'Sem matrícula' },
+  { chave: 'antigos', rotulo: 'Antigos alunos' },
 ] as const
 
 type Grupo = (typeof GRUPOS)[number]['chave']
@@ -37,10 +43,39 @@ function temAulas(aluno: AlunoDiretorio): boolean {
   return aluno.matriculas.some((m) => m.estado === 'confirmado')
 }
 
+function arquivado(aluno: AlunoDiretorio): boolean {
+  return aluno.arquivadoEm !== null
+}
+
+// Um antigo aluno nunca aparece nos outros três grupos: já não é da
+// escola, e deixá-lo em "sem matrícula" fazia a secretaria ligar a
+// famílias que já saíram.
+function pertence(aluno: AlunoDiretorio, grupo: Grupo): boolean {
+  if (grupo === 'antigos') return arquivado(aluno)
+  if (arquivado(aluno)) return false
+  if (grupo === 'com') return temAulas(aluno)
+  if (grupo === 'sem') return !temAulas(aluno)
+  return true
+}
+
 // O que mostrar na coluna do meio. A ordem é a da importância para quem
 // atende ao balcão: o que está a decorrer, o que está à espera de
 // resposta, e só depois o que terminou.
+function dataCurta(iso: string) {
+  return new Intl.DateTimeFormat('pt-PT', { day: 'numeric', month: 'short', year: 'numeric' }).format(
+    new Date(iso)
+  )
+}
+
 function situacao(aluno: AlunoDiretorio) {
+  if (aluno.arquivadoEm) {
+    return {
+      titulo: 'Antigo aluno',
+      detalhe: `Saiu a ${dataCurta(aluno.arquivadoEm)}`,
+      professor: null,
+    }
+  }
+
   const ativa = aluno.matriculas.find((m) => m.estado === 'confirmado')
   if (ativa) return { titulo: ativa.instrumento ?? 'Matriculado', detalhe: ativa.horario ?? 'Sem horário', professor: ativa.professor }
 
@@ -51,11 +86,7 @@ function situacao(aluno: AlunoDiretorio) {
     .filter((m) => m.estado === 'cancelado')
     .sort((a, b) => (b.canceladaEm ?? '').localeCompare(a.canceladaEm ?? ''))[0]
   if (cancelada) {
-    const quando = cancelada.canceladaEm
-      ? new Intl.DateTimeFormat('pt-PT', { day: 'numeric', month: 'short', year: 'numeric' }).format(
-          new Date(cancelada.canceladaEm)
-        )
-      : null
+    const quando = cancelada.canceladaEm ? dataCurta(cancelada.canceladaEm) : null
     return {
       titulo: 'Sem matrícula',
       detalhe: quando ? `Cancelou ${cancelada.instrumento ?? 'aulas'} a ${quando}` : `Cancelou ${cancelada.instrumento ?? 'aulas'}`,
@@ -68,7 +99,7 @@ function situacao(aluno: AlunoDiretorio) {
 
 export function AdminAlunosDirectory({ alunos }: { alunos: AlunoDiretorio[] }) {
   const [pesquisa, setPesquisa] = useState('')
-  const [grupo, setGrupo] = useState<Grupo>('todos')
+  const [grupo, setGrupo] = useState<Grupo>('escola')
   const [ativo, setAtivo] = useState<string | null>(null)
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set())
   const painelRef = useRef<HTMLElement>(null)
@@ -78,7 +109,7 @@ export function AdminAlunosDirectory({ alunos }: { alunos: AlunoDiretorio[] }) {
         .filter((aluno) =>
           aluno.nome.toLocaleLowerCase('pt-PT').includes(pesquisa.trim().toLocaleLowerCase('pt-PT'))
         )
-        .filter((aluno) => (grupo === 'todos' ? true : grupo === 'com' ? temAulas(aluno) : !temAulas(aluno))),
+        .filter((aluno) => pertence(aluno, grupo)),
     [alunos, pesquisa, grupo]
   )
   const alunoAtivo = alunos.find((aluno) => aluno.id === ativo) ?? null
@@ -130,12 +161,7 @@ export function AdminAlunosDirectory({ alunos }: { alunos: AlunoDiretorio[] }) {
           nome. O grupo é para quando se quer a lista, não a pessoa. */}
       <div className="admin-mesa-grupos" role="group" aria-label="Filtrar por situação">
         {GRUPOS.map((g) => {
-          const quantos =
-            g.chave === 'todos'
-              ? alunos.length
-              : g.chave === 'com'
-                ? alunos.filter(temAulas).length
-                : alunos.filter((a) => !temAulas(a)).length
+          const quantos = alunos.filter((a) => pertence(a, g.chave)).length
           return (
             <button
               key={g.chave}
@@ -166,14 +192,16 @@ export function AdminAlunosDirectory({ alunos }: { alunos: AlunoDiretorio[] }) {
               ? `Nenhum aluno corresponde a “${pesquisa}”.`
               : grupo === 'com'
                 ? 'Nenhum aluno com matrícula ativa.'
-                : 'Nenhum aluno sem matrícula.'}
+                : grupo === 'antigos'
+                  ? 'Nenhum antigo aluno.'
+                  : 'Nenhum aluno sem matrícula.'}
           </p>
         )}
       </section>
 
       {alunoAtivo && <aside ref={painelRef} className="admin-dossier" aria-labelledby="admin-dossier-titulo">
         <header><div><small>Dossier de aluno</small><h2 id="admin-dossier-titulo" tabIndex={-1}>{alunoAtivo.nome}</h2></div><button type="button" onClick={() => setAtivo(null)} aria-label="Fechar dossier">×</button></header>
-        <section><h3>Situação atual</h3>{alunoAtivo.matriculas.length ? alunoAtivo.matriculas.map((matricula, indice) => <div key={indice} className="admin-dossier-registo" data-estado={matricula.estado}><strong>{matricula.instrumento}</strong><span>{matricula.professor ?? 'Professor por atribuir'}</span><small>{matricula.estado === 'cancelado' ? (matricula.canceladaEm ? `Cancelada a ${new Intl.DateTimeFormat('pt-PT', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(matricula.canceladaEm))}` : 'Cancelada') : matricula.estado === 'a_escolher' ? 'Pedido por responder' : (matricula.horario ?? 'Sem horário')}</small></div>) : <p>Sem matrículas registadas.</p>}</section>
+        <section><h3>Situação atual</h3>{alunoAtivo.matriculas.length ? alunoAtivo.matriculas.map((matricula, indice) => <div key={indice} className="admin-dossier-registo" data-estado={matricula.estado}><strong>{matricula.instrumento}</strong><span>{matricula.professor ?? 'Professor por atribuir'}</span><small>{matricula.estado === 'cancelado' ? (matricula.canceladaEm ? `Cancelada a ${dataCurta(matricula.canceladaEm)}` : 'Cancelada') : matricula.estado === 'a_escolher' ? 'Pedido por responder' : (matricula.horario ?? 'Sem horário')}</small></div>) : <p>Sem matrículas registadas.</p>}</section>
         <section><h3>Contacto</h3><dl><div><dt>Email</dt><dd>{alunoAtivo.email ?? 'Não indicado'}</dd></div><div><dt>Telemóvel</dt><dd>{alunoAtivo.telefone ?? 'Não indicado'}</dd></div><div><dt>Nascimento</dt><dd>{alunoAtivo.dataNascimento ?? 'Não indicado'}</dd></div></dl></section>
         <footer><Link href={`/admin/alunos/${alunoAtivo.id}`}>Abrir dossier completo</Link><span>Esc para fechar</span></footer>
       </aside>}
