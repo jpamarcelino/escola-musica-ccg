@@ -3313,3 +3313,97 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ---------------------------------------------------------------------
+   Programa de Recomendação — do lado de quem pede a aula
+   --------------------------------------------------------------------- */
+
+/* A pergunta vive num bloco à parte, separada por um fio, porque não é
+   sobre a aula: é sobre como a pessoa chegou até cá. Misturada com os
+   horários lia-se como mais um campo por preencher. */
+.recomendacao-bloco {
+  margin-top: 6px;
+  border-top: 1px solid var(--color-linha);
+  padding-top: 16px;
+}
+.recomendacao-pergunta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 14.5px;
+  color: var(--color-tinta);
+}
+.recomendacao-campos {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+  border-left: 2px solid var(--marca-ciano);
+  padding-left: 14px;
+}
+/* Dito antes dos campos, e não depois: quem lê isto a seguir a escrever
+   o nome já escreveu à espera de outra coisa. */
+.recomendacao-nota { font-size: 13px; line-height: 1.5; color: var(--color-tinta-suave); }
+.recomendacao-ajuda { font-size: 12px; color: var(--color-tinta-suave); }
+.recomendacao-opcional { font-weight: 400; color: var(--color-tinta-suave); }
+
+/* ---------------------------------------------------------------------
+   E do lado da secretaria
+   --------------------------------------------------------------------- */
+
+/* Fica acima da lista de recomendações, porque é trabalho por fazer — e
+   trabalho por fazer não se procura, aparece. */
+.indicacoes-seccao { margin-top: 34px; }
+.indicacoes-seccao > header { margin-bottom: 14px; }
+.indicacoes-seccao h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 21px; color: var(--color-azul-fundo); }
+.indicacoes-seccao > header > p:last-child { margin-top: 6px; max-width: 62ch; font-size: 13px; line-height: 1.55; color: var(--color-tinta-suave); }
+.indicacoes-lista { display: grid; gap: 2px; }
+.indicacoes-lista a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--marca-ciano) 8%, transparent);
+  color: inherit;
+  text-decoration: none;
+}
+.indicacoes-lista a:hover { background: color-mix(in srgb, var(--marca-ciano) 14%, transparent); }
+.indicacoes-lista a > div { flex: 1; min-width: 0; }
+.indicacoes-lista p { font-size: 14.5px; line-height: 1.4; }
+.indicacoes-lista small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--color-tinta-suave); }
+.indicacoes-lista i { color: var(--color-azul-fundo); font-style: normal; }
+
+/* O que a pessoa escreveu, mostrado à secretaria antes de escolher das
+   listas reais. Tom de aviso, não de facto: o nome pode não bater certo
+   com ninguém. */
+.indicacao-origem {
+  margin-top: 22px;
+  border-left: 2px solid var(--marca-ciano);
+  padding: 14px 0 14px 16px;
+  background: color-mix(in srgb, var(--marca-ciano) 6%, transparent);
+}
+.indicacao-origem > p:nth-child(2) { margin-top: 4px; font-size: 15px; line-height: 1.5; }
+.indicacao-origem small { display: block; margin-top: 8px; max-width: 62ch; font-size: 12.5px; line-height: 1.5; color: var(--color-tinta-suave); }
+.indicacao-recusar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.indicacao-recusar input {
+  flex: 1;
+  min-width: 240px;
+  min-height: 44px;
+  border: 1px solid var(--color-linha);
+  border-radius: 4px;
+  padding: 0 12px;
+  font-size: 13.5px;
+  background: white;
+}
+.indicacao-recusar button {
+  min-height: 44px;
+  border: 1px solid var(--color-linha);
+  border-radius: 4px;
+  padding: 0 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+}

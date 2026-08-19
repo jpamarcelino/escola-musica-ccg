@@ -7,6 +7,7 @@ import { CartaoLink } from '@/components/cartao-link'
 import { Wizard, ListaEscolhas } from '@/components/wizard'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { CampoTextarea } from '@/components/campo-formulario'
+import { CampoRecomendacao } from '@/components/campo-recomendacao'
 import { MensagemErro } from '@/components/mensagem'
 
 // Nomes das escolas para as etiquetas de "escolhas até agora". Este
@@ -276,10 +277,21 @@ export default async function PedidoPage({
   // Traz também os bloqueados (não só os "aberto") — continuam visíveis na
   // grelha, a preto e branco e sem poder ser escolhidos, para se ver o
   // horário completo do professor.
-  const { data: horarios } = await supabase
-    .from('horarios')
-    .select('id, dia_semana, hora_inicio, hora_fim, estado')
-    .eq('professor_id', professor)
+  // Aqui há sessão, por isso a adesão ao Programa lê-se direta de
+  // perfis_escola — ao contrário do wizard público, que passa pela função
+  // `professores_publicos` por não ter sessão nenhuma.
+  const [{ data: horarios }, { data: professorPerfil }] = await Promise.all([
+    supabase
+      .from('horarios')
+      .select('id, dia_semana, hora_inicio, hora_fim, estado')
+      .eq('professor_id', professor),
+    supabase
+      .from('perfis_escola')
+      .select('adere_recomendacao')
+      .eq('id', professor)
+      .eq('tipo', 'professor')
+      .maybeSingle(),
+  ])
 
   const horariosGrade = (horarios ?? []).filter((h) =>
     DIAS_GRADE.includes(h.dia_semana)
@@ -424,6 +436,8 @@ export default async function PedidoPage({
           placeholder="Ex: só posso às quintas-feiras a partir das 16h — achas que dá para arranjar?"
           ajuda="Deixa uma mensagem ao professor em vez de escolher um horário. Ele decide se quer entrar em contacto fora da app."
         />
+
+        {professorPerfil?.adere_recomendacao && <CampoRecomendacao />}
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
         <BotaoPrimario>Enviar pedido</BotaoPrimario>

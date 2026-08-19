@@ -201,6 +201,7 @@ export default async function PedirAulaPage({
         nome: string
         foto_url: string | null
         especialidade: string | null
+        adere_recomendacao: boolean
       }[]
     )
       .slice()
@@ -242,6 +243,16 @@ export default async function PedirAulaPage({
   // Passo 5: escolher horários + mensagem — grelha igual à do wizard
   // autenticado, mas entregue a um componente cliente (formulario-pedido)
   // que decide, no momento do "Enviar pedido", se mostra o popup de conta.
+  // A adesão ao Programa vem pela função pública, e não de perfis_escola:
+  // aqui ainda se pode estar sem sessão, e essa tabela só abre a quem
+  // entrou. A conta cria-se no fim, ao carregar em "Enviar pedido".
+  const { data: professoresDoInstrumento } = await supabase.rpc('professores_publicos', {
+    instrumento_id_param: Number(instrumento),
+  })
+  const professorEscolhido = (
+    (professoresDoInstrumento ?? []) as { professor_id: string; adere_recomendacao: boolean }[]
+  ).find((p) => p.professor_id === professor)
+
   const { data: horarios } = await supabase
     .from('horarios')
     .select('id, dia_semana, hora_inicio, hora_fim, estado')
@@ -285,6 +296,7 @@ export default async function PedirAulaPage({
         semHorarios={semHorarios}
         instrumentoId={instrumento}
         professorId={professor}
+        professorAdereRecomendacao={professorEscolhido?.adere_recomendacao ?? false}
         programa={programa}
         idade={idadeNum}
         autenticado={!!user}

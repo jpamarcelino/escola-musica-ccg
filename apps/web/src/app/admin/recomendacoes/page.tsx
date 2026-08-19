@@ -62,6 +62,22 @@ export default async function RecomendacoesPage({
     .order('criado_em', { ascending: false })
   const recomendacoes = (recomendacoesData ?? []) as RecomendacaoLinha[]
 
+  // As indicações que chegaram pelos pedidos de aula (0026). São
+  // afirmações por confirmar, não recomendações — por isso vivem numa
+  // secção própria, acima da lista, e não misturadas com as validadas.
+  const { data: indicacoesData } = await supabase
+    .from('indicacoes_recomendacao')
+    .select('id, novo_aluno_nome, recomendador_nome_indicado, modalidade_indicada, criado_em')
+    .eq('estado', 'por_confirmar')
+    .order('criado_em', { ascending: true })
+  const indicacoes = (indicacoesData ?? []) as {
+    id: number
+    novo_aluno_nome: string
+    recomendador_nome_indicado: string
+    modalidade_indicada: string | null
+    criado_em: string
+  }[]
+
   const { data: beneficiosData } = await supabase.from('beneficios').select('estado')
   const beneficios = beneficiosData ?? []
 
@@ -83,6 +99,47 @@ export default async function RecomendacoesPage({
         </section>
 
         <nav className="recomendacoes-acoes" aria-label="Ações do programa"><Link href="/admin/recomendacoes/nova">Registar recomendação <i aria-hidden="true">＋</i></Link><Link href="/admin/recomendacoes/estudo">Dados para o estudo <i aria-hidden="true">→</i></Link></nav>
+
+        {indicacoes.length > 0 && (
+          <section className="indicacoes-seccao" aria-labelledby="indicacoes-titulo">
+            <header>
+              <p className="partitura-indice">00</p>
+              <h2 id="indicacoes-titulo">
+                {indicacoes.length === 1
+                  ? 'Uma indicação por confirmar'
+                  : `${indicacoes.length} indicações por confirmar`}
+              </h2>
+              <p>
+                Escritas por quem pediu a aula. O nome é como a pessoa o escreveu —
+                confirma de quem se trata antes de registar a recomendação.
+              </p>
+            </header>
+            <ul className="indicacoes-lista">
+              {indicacoes.map((i) => (
+                <li key={i.id}>
+                  <Link href={`/admin/recomendacoes/nova?indicacao=${i.id}`}>
+                    <div>
+                      <p>
+                        <strong>{i.recomendador_nome_indicado}</strong> recomendou{' '}
+                        {i.novo_aluno_nome}
+                      </p>
+                      <small>
+                        {i.modalidade_indicada
+                          ? `Terá aulas de ${i.modalidade_indicada} · `
+                          : ''}
+                        {new Intl.DateTimeFormat('pt-PT', {
+                          day: '2-digit',
+                          month: 'short',
+                        }).format(new Date(i.criado_em))}
+                      </small>
+                    </div>
+                    <i aria-hidden="true">→</i>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="recomendacoes-registos">
           <header><p className="partitura-indice">01</p><h2>Todas as recomendações</h2></header>

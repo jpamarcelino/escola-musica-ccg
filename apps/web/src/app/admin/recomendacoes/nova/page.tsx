@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SubmitButton } from '@/components/submit-button'
-import { registarRecomendacao } from '@/lib/actions/recomendacoes'
+import { recusarIndicacao, registarRecomendacao } from '@/lib/actions/recomendacoes'
 import type { MatriculaEstado } from '@ccg/types'
 
 type ProfessorAderente = {
@@ -24,9 +24,9 @@ type AlunoDoProfessor = {
 export default async function NovaRecomendacaoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ professor?: string; erro?: string }>
+  searchParams: Promise<{ professor?: string; erro?: string; indicacao?: string }>
 }) {
-  const { professor: professorId, erro } = await searchParams
+  const { professor: professorId, erro, indicacao } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -47,6 +47,33 @@ export default async function NovaRecomendacaoPage({
     redirect('/dashboard')
   }
 
+  // Quando se chega aqui a partir de uma indicação escrita por quem pediu
+  // a aula (0026), traz-se o que a pessoa escreveu. Não preenche os campos
+  // do formulário: é uma pista para a secretaria confirmar de quem se
+  // trata, e a escolha final continua a ser feita das listas reais.
+  const { data: indicacaoData } = indicacao
+    ? await supabase
+        .from('indicacoes_recomendacao')
+        .select(
+          'id, novo_aluno_id, novo_aluno_nome, professor_id, recomendador_nome_indicado, modalidade_indicada, estado'
+        )
+        .eq('id', Number(indicacao))
+        .maybeSingle()
+    : { data: null }
+  const indicacaoAtual = indicacaoData as {
+    id: number
+    novo_aluno_id: string
+    novo_aluno_nome: string
+    professor_id: string
+    recomendador_nome_indicado: string
+    modalidade_indicada: string | null
+    estado: string
+  } | null
+
+  // O professor da indicação é o do pedido — não faz sentido escolher
+  // outro, e pré-seleccioná-lo poupa um passo.
+  const professorEscolhido = professorId ?? indicacaoAtual?.professor_id
+
   const { data: professoresData } = await supabase
     .from('perfis_escola')
     .select('id, profiles(nome)')
@@ -55,11 +82,11 @@ export default async function NovaRecomendacaoPage({
   const professores = (professoresData ?? []) as unknown as ProfessorAderente[]
   professores.sort((a, b) => (a.profiles?.nome ?? '').localeCompare(b.profiles?.nome ?? ''))
 
-  const { data: alunosData } = professorId
+  const { data: alunosData } = professorEscolhido
     ? await supabase
         .from('matriculas')
         .select('aluno_id, estado, alunos(nome), instrumentos(nome)')
-        .eq('professor_id', professorId)
+        .eq('professor_id', professorEscolhido)
     : { data: [] }
   const matriculas = (alunosData ?? []) as unknown as AlunoDoProfessor[]
 
@@ -90,6 +117,40 @@ export default async function NovaRecomendacaoPage({
           </p>
         )}
 
+        {indicacaoAtual && (
+          <section className="indicacao-origem">
+            <p className="partitura-indice">Indicação por confirmar</p>
+            <p>
+              <strong>{indicacaoAtual.novo_aluno_nome}</strong> escreveu, ao pedir a aula,
+              que foi recomendado por <strong>{indicacaoAtual.recomendador_nome_indicado}</strong>
+              {indicacaoAtual.modalidade_indicada
+                ? `, que terá aulas de ${indicacaoAtual.modalidade_indicada}`
+                : ''}
+              .
+            </p>
+            <small>
+              O nome está como a pessoa o escreveu, e pode não corresponder a ninguém.
+              Confirma de quem se trata e escolhe-o em baixo — ao registar, esta
+              indicação fica fechada.
+            </small>
+            {indicacaoAtual.estado === 'por_confirmar' && (
+              /* A saída para quando não se encontra ninguém. Sem ela, a
+                 indicação ficava para sempre na lista de trabalho. */
+              <form action={recusarIndicacao} className="indicacao-recusar">
+                <input type="hidden" name="indicacaoId" value={indicacaoAtual.id} />
+                <input
+                  type="text"
+                  name="motivo"
+                  maxLength={300}
+                  placeholder="Porquê? (ex: não há nenhuma Maria com este professor)"
+                  aria-label="Motivo da recusa"
+                />
+                <SubmitButton textoAGuardar="A arquivar…">Não encontrei — arquivar</SubmitButton>
+              </form>
+            )}
+          </section>
+        )}
+
         <section className="recomendacao-passo recomendacao-passo-professor">
           <h2 className="secao-titulo">1. Professor</h2>
           {professores.length === 0 ? (
@@ -103,9 +164,9 @@ export default async function NovaRecomendacaoPage({
               {professores.map((p) => (
                 <Link
                   key={p.id}
-                  href={`/admin/recomendacoes/nova?professor=${p.id}`}
+                  href={`/admin/recomendacoes/nova?professor=${p.id}${indicacao ? `&indicacao=${indicacao}` : ''}`}
                   className={
-                    professorId === p.id
+                    professorEscolhido === p.id
                       ? 'rounded-[13px] border-[1.5px] border-[var(--color-azul-fundo)] bg-[var(--color-azul-fundo)] px-3 py-2 text-[14px] font-medium text-white'
                       : 'rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]'
                   }
@@ -117,9 +178,12 @@ export default async function NovaRecomendacaoPage({
           )}
         </section>
 
-        {professorId && (
+        {professorEscolhido && (
           <form action={registarRecomendacao} className="recomendacao-form">
-            <input type="hidden" name="professorId" value={professorId} />
+            <input type="hidden" name="professorId" value={professorEscolhido} />
+            {indicacaoAtual && indicacaoAtual.estado === 'por_confirmar' && (
+              <input type="hidden" name="indicacaoId" value={indicacaoAtual.id} />
+            )}
 
             <section className="recomendacao-passo">
               <h2 className="secao-titulo">2. Quem recomendou</h2>

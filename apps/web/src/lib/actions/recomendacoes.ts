@@ -55,6 +55,9 @@ export async function registarRecomendacao(formData: FormData) {
   const dataPrimeiroPagamento = String(formData.get('dataPrimeiroPagamento') ?? '') || null
   const observacoes = String(formData.get('observacoes') ?? '').trim() || null
   const validarJa = String(formData.get('validarJa') ?? '') === 'on'
+  // Presente só quando o registo nasceu de uma indicação escrita por quem
+  // pediu a aula (0026) — nesse caso, registar fecha-a.
+  const indicacaoId = String(formData.get('indicacaoId') ?? '')
   const valorInscricaoTexto = String(formData.get('valorInscricao') ?? '').trim().replace(',', '.')
   const valorInscricao = valorInscricaoTexto === '' ? null : Number(valorInscricaoTexto)
 
@@ -225,8 +228,54 @@ export async function registarRecomendacao(formData: FormData) {
     })
   }
 
+  // A indicação sai da lista de trabalho da secretaria e passa a apontar
+  // para a recomendação que gerou. Depois do insert, de propósito: se
+  // alguma coisa acima falhar, a indicação continua por tratar em vez de
+  // desaparecer sem deixar recomendação nenhuma.
+  if (indicacaoId) {
+    await supabase
+      .from('indicacoes_recomendacao')
+      .update({
+        estado: 'confirmada',
+        recomendacao_id: novaRecomendacao.id,
+        tratada_em: new Date().toISOString(),
+        tratada_por: user.id,
+      })
+      .eq('id', Number(indicacaoId))
+      .eq('estado', 'por_confirmar')
+  }
+
   revalidatePath('/admin/recomendacoes')
   redirect(`/admin/recomendacoes/${novaRecomendacao.id}`)
+}
+
+// Quando a secretaria não encontra o recomendador — nome trocado, pessoa
+// que não é aluno, ou engano. A indicação sai da lista sem se tornar
+// recomendação. Não se apaga: o registo de que alguém tentou indicar
+// alguém é o que evita a mesma conversa daqui a um mês.
+export async function recusarIndicacao(formData: FormData) {
+  const { supabase, user } = await exigirAdmin()
+
+  const indicacaoId = String(formData.get('indicacaoId') ?? '')
+  const motivo = String(formData.get('motivo') ?? '').trim().slice(0, 300) || null
+
+  if (!indicacaoId) {
+    redirect('/admin/recomendacoes')
+  }
+
+  await supabase
+    .from('indicacoes_recomendacao')
+    .update({
+      estado: 'recusada',
+      motivo_recusa: motivo,
+      tratada_em: new Date().toISOString(),
+      tratada_por: user.id,
+    })
+    .eq('id', Number(indicacaoId))
+    .eq('estado', 'por_confirmar')
+
+  revalidatePath('/admin/recomendacoes')
+  redirect('/admin/recomendacoes')
 }
 
 type SupabaseServidor = Awaited<ReturnType<typeof createClient>>

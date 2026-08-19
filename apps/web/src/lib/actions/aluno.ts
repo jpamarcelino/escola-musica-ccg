@@ -25,6 +25,13 @@ export async function escolherDisponibilidades(formData: FormData) {
   const origem = String(formData.get('origem') ?? '')
   const programa = String(formData.get('programa') ?? '')
   const idade = String(formData.get('idade') ?? '')
+  // Programa de Recomendação: quem chega pode dizer que foi recomendado.
+  // É texto livre e por confirmar — ver a migração 0026 e o comentário
+  // mais abaixo, onde se grava.
+  const recomendadoPor = String(formData.get('recomendadoPor') ?? '').trim().slice(0, 120)
+  const recomendadoModalidade = String(formData.get('recomendadoModalidade') ?? '')
+    .trim()
+    .slice(0, 80)
 
   function voltarComErro(mensagemErro: string): never {
     // O wizard público precisa de "programa" e "idade" no caminho de volta:
@@ -52,19 +59,29 @@ export async function escolherDisponibilidades(formData: FormData) {
   // aluno, mesmo que o pedido chegue diretamente a este endpoint. Também
   // confirma aqui que este aluno é mesmo gerido por quem está autenticado
   // (a RLS já impediria o insert, mas o erro fica mais claro assim).
-  const [{ data: aluno }, { data: instrumentoPedido }] = await Promise.all([
-    supabase
-      .from('alunos')
-      .select('data_nascimento')
-      .eq('id', alunoId)
-      .eq('encarregado_id', user.id)
-      .maybeSingle(),
-    supabase
-      .from('instrumentos')
-      .select('nome, programa')
-      .eq('id', Number(instrumentoId))
-      .single(),
-  ])
+  const [{ data: aluno }, { data: instrumentoPedido }, { data: professorPerfil }] =
+    await Promise.all([
+      supabase
+        .from('alunos')
+        .select('nome, data_nascimento')
+        .eq('id', alunoId)
+        .eq('encarregado_id', user.id)
+        .maybeSingle(),
+      supabase
+        .from('instrumentos')
+        .select('nome, programa')
+        .eq('id', Number(instrumentoId))
+        .single(),
+      // Se o professor adere ao Programa decide-se aqui, no servidor, e
+      // não pelo que o formulário disser: o ecrã só esconde a pergunta,
+      // e um pedido forjado chegaria na mesma a este ponto.
+      supabase
+        .from('perfis_escola')
+        .select('adere_recomendacao')
+        .eq('id', professorId)
+        .eq('tipo', 'professor')
+        .maybeSingle(),
+    ])
 
   if (!aluno) {
     redirect('/dashboard')
@@ -127,6 +144,22 @@ export async function escolherDisponibilidades(formData: FormData) {
     if (disponibilidadesError) {
       voltarComErro('Não foi possível guardar as disponibilidades. Tenta novamente.')
     }
+  }
+
+  // A indicação de quem recomendou entra depois da matrícula, porque é
+  // dela que depende (ver 0026). Falhar aqui não desfaz o pedido: a aula
+  // pedida vale por si, e a recomendação recupera-se com uma conversa na
+  // secretaria — desfazer um pedido válido por causa disto seria trocar
+  // um problema pequeno por um grande.
+  if (recomendadoPor && professorPerfil?.adere_recomendacao) {
+    await supabase.from('indicacoes_recomendacao').insert({
+      matricula_id: matricula.id,
+      novo_aluno_id: alunoId,
+      novo_aluno_nome: aluno.nome,
+      professor_id: professorId,
+      recomendador_nome_indicado: recomendadoPor,
+      modalidade_indicada: recomendadoModalidade || null,
+    })
   }
 
   redirect('/dashboard')
