@@ -631,6 +631,111 @@ export async function apagarHorarioReposicao(formData: FormData) {
   revalidatePath('/dashboard/reposicoes')
 }
 
+// Aceitar um pedido: a vaga fica ocupada, a reposição entra nas duas
+// agendas e o aluno é avisado. Tudo dentro da mesma função da base de
+// dados — se a vaga for aceite por outro pedido entretanto, o `for
+// update` lá dentro é que decide quem chegou primeiro.
+export async function aceitarReposicao(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { error } = await supabase.rpc('aceitar_reposicao', {
+    p_pedido_id: Number(formData.get('pedidoId') ?? 0),
+    p_horario_reposicao_id: Number(formData.get('horarioId') ?? 0),
+  })
+
+  if (error) {
+    redirect(
+      `/dashboard/reposicoes/pedidos?erro=${encodeURIComponent(error.message || 'Não foi possível aceitar o pedido.')}`
+    )
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard/reposicoes')
+  revalidatePath('/dashboard/reposicoes/pedidos')
+  redirect('/dashboard/reposicoes/pedidos?agendada=1')
+}
+
+export async function recusarReposicao(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const resposta = String(formData.get('resposta') ?? '').trim()
+
+  const { error } = await supabase.rpc('recusar_reposicao', {
+    p_pedido_id: Number(formData.get('pedidoId') ?? 0),
+    p_resposta: resposta || null,
+  })
+
+  if (error) {
+    redirect(
+      `/dashboard/reposicoes/pedidos?erro=${encodeURIComponent(error.message || 'Não foi possível responder ao pedido.')}`
+    )
+  }
+
+  revalidatePath('/dashboard/reposicoes/pedidos')
+  redirect('/dashboard/reposicoes/pedidos?recusada=1')
+}
+
+// Marcar uma reposição à mão, sem passar por pedido nenhum. Serve o caso
+// em que o professor desmarcou a aula (e portanto não há pedido do
+// aluno), o caso do pedido expirado, e o de simplesmente combinarem por
+// fora. Se houver pedido ou cancelamento por resolver, a função fecha-os.
+export async function marcarReposicaoManual(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const aulaDesmarcadaId = Number(formData.get('aulaDesmarcadaId') ?? 0)
+  const data = String(formData.get('data') ?? '')
+  const horaInicio = String(formData.get('horaInicio') ?? '')
+  const horaFim = String(formData.get('horaFim') ?? '')
+
+  function voltarComErro(mensagem: string): never {
+    redirect(`/dashboard/reposicoes/pedidos?erro=${encodeURIComponent(mensagem)}`)
+  }
+
+  if (!data || !horaInicio || !horaFim) {
+    voltarComErro('Preenche a data e as horas.')
+  }
+
+  const { error } = await supabase.rpc('marcar_reposicao', {
+    p_matricula_id: Number(formData.get('matriculaId') ?? 0),
+    p_data: data,
+    p_hora_inicio: horaInicio,
+    p_hora_fim: horaFim,
+    p_aula_desmarcada_id: aulaDesmarcadaId || null,
+  })
+
+  if (error) {
+    voltarComErro(error.message || 'Não foi possível marcar a reposição.')
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard/reposicoes')
+  revalidatePath('/dashboard/reposicoes/pedidos')
+  redirect('/dashboard/reposicoes/pedidos?marcada=1')
+}
+
 // Desmarcar UMA aula. Não é desmatricular: a matrícula fica, e o que
 // deixa de existir é a ocorrência daquele dia.
 //

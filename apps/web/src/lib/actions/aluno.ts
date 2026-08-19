@@ -250,7 +250,61 @@ export async function desmarcarAula(formData: FormData) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/agenda')
   revalidatePath('/dashboard/avisos')
+  // A pergunta sobre a reposição vem a seguir, e não antes: primeiro
+  // resolve-se o que a pessoa veio fazer (não pode ir à aula), e só
+  // depois se pergunta se quer repô-la. Juntar as duas coisas num
+  // formulário só fazia de uma decisão simples uma escolha com ramos.
+  const { data: aulaId } = await supabase
+    .from('aulas_desmarcadas')
+    .select('id')
+    .eq('matricula_id', matriculaId)
+    .eq('data', data)
+    .maybeSingle()
+
+  if (aulaId) {
+    redirect(`/aluno/${alunoId}/reposicao/${aulaId.id}`)
+  }
   redirect(`/aluno/${alunoId}/horario?desmarcada=1`)
+}
+
+// O pedido de reposição. As vagas escolhidas NÃO ficam reservadas — só
+// ficam ocupadas quando o professor aceitar uma delas.
+export async function pedirReposicao(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const aulaId = Number(formData.get('aulaId') ?? 0)
+  const alunoId = String(formData.get('alunoId') ?? '')
+  const mensagem = String(formData.get('mensagem') ?? '').trim()
+  const horarios = formData.getAll('horarios').map((h) => Number(h))
+
+  if (horarios.length === 0) {
+    redirect(
+      `/aluno/${alunoId}/reposicao/${aulaId}?erro=${encodeURIComponent('Escolhe pelo menos um horário.')}`
+    )
+  }
+
+  const { error } = await supabase.rpc('pedir_reposicao', {
+    p_aula_desmarcada_id: aulaId,
+    p_horarios: horarios,
+    p_mensagem: mensagem || null,
+  })
+
+  if (error) {
+    redirect(
+      `/aluno/${alunoId}/reposicao/${aulaId}?erro=${encodeURIComponent(error.message || 'Não foi possível enviar o pedido.')}`
+    )
+  }
+
+  revalidatePath(`/aluno/${alunoId}/horario`)
+  revalidatePath('/dashboard/avisos')
+  redirect(`/aluno/${alunoId}/horario?pedido=1`)
 }
 
 // Tira um perfil de aluno da conta. Não o apaga: por trás dele estão

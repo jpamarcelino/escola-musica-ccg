@@ -1706,6 +1706,12 @@ body {
 /* Cada aluno passou a ser uma linha com duas coisas: a ligação para o
    dossier e o botão de desmarcar a próxima aula. O traço que separava as
    linhas mudou-se da ligação para o contentor, senão passava a meio. */
+/* Uma reposição é uma aula avulsa, fora da grelha semanal. A barra à
+   esquerda distingue-a das aulas normais na mesma lista, sem precisar de
+   ler a palavra "Reposição". */
+.aluno-aula-reposicao { border-left: 2px solid var(--color-azul-logo); padding: 10px 0 10px 14px; }
+.aluno-aula-reposicao p { font-size: 13px; color: var(--color-tinta-suave); }
+.aluno-aula-reposicao p strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 17px; color: var(--color-tinta); }
 .detalhe-aula-aluno { border-bottom: 1px solid var(--color-linha); padding-bottom: 10px; }
 .detalhe-aula-aluno > a { border-bottom: 0; }
 

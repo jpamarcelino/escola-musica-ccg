@@ -26,10 +26,10 @@ export default async function ConsultarHorarioPage({
   searchParams,
 }: {
   params: Promise<{ alunoId: string }>
-  searchParams: Promise<{ erro?: string; desmarcada?: string }>
+  searchParams: Promise<{ erro?: string; desmarcada?: string; pedido?: string }>
 }) {
   const { alunoId } = await params
-  const { erro, desmarcada } = await searchParams
+  const { erro, desmarcada, pedido } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -76,6 +76,17 @@ export default async function ConsultarHorarioPage({
     porMatricula.set(d.matricula_id, atual)
   }
 
+  // As reposições já marcadas. São aulas avulsas, fora da grelha semanal,
+  // e por isso vivem em tabela própria — mas na agenda do aluno aparecem
+  // ao lado das outras, identificadas.
+  const { data: reposicoesData } = await supabase
+    .from('reposicoes')
+    .select('id, data, hora_inicio, hora_fim, instrumento_nome')
+    .eq('aluno_id', alunoId)
+    .gte('data', hojeISO())
+    .order('data')
+  const reposicoes = reposicoesData ?? []
+
   const pendentes = matriculas.filter((m) => m.estado === 'a_escolher')
   const confirmadas = matriculas
     .filter((m) => m.estado === 'confirmado' && m.horarios)
@@ -108,8 +119,11 @@ export default async function ConsultarHorarioPage({
         </header>
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
-        {desmarcada && (
-          <MensagemInfo>Aula desmarcada. O professor foi avisado.</MensagemInfo>
+        {desmarcada && <MensagemInfo>Aula desmarcada. O professor foi avisado.</MensagemInfo>}
+        {pedido && (
+          <MensagemInfo>
+            Pedido enviado. O professor responde assim que puder.
+          </MensagemInfo>
         )}
 
         {pendentes.length > 0 && (
@@ -175,6 +189,25 @@ export default async function ConsultarHorarioPage({
             </div>
           )}
         </section>
+
+        {reposicoes.length > 0 && (
+          <section className="aluno-proximas-aulas">
+            <header><p className="partitura-indice">03</p><h2>Reposições marcadas</h2></header>
+            <div className="partitura-linha-tempo">
+              {reposicoes.map((r) => (
+                <div key={r.id} className="aluno-aula-registo aluno-aula-reposicao">
+                  <p>
+                    <strong>{r.instrumento_nome}</strong> · Reposição
+                  </p>
+                  <p>
+                    {formatarDataEscolar(r.data, { weekday: 'long', day: 'numeric', month: 'long' })}
+                    , {formatarHora(r.hora_inicio)}–{formatarHora(r.hora_fim)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <Link href={`/aluno/${alunoId}/pedido`} className="aluno-pedir-mais"><span><strong>Pedir outra aula</strong><small>Escolher disciplina, professor e disponibilidade</small></span><i aria-hidden="true">→</i></Link>
       </div>

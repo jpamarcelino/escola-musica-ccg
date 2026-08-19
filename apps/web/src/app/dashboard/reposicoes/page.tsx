@@ -89,6 +89,16 @@ export default async function ReposicoesPage({
         {erro && <MensagemErro>{erro}</MensagemErro>}
         {criada && <MensagemInfo>Vaga criada.</MensagemInfo>}
 
+        <nav className="pt-2">
+          <Link
+            href="/dashboard/reposicoes/pedidos"
+            className="inline-flex min-h-[44px] items-center text-[14px] font-medium underline [text-underline-offset:3px]"
+            style={{ color: 'var(--color-azul-fundo)' }}
+          >
+            Pedidos e marcação manual
+          </Link>
+        </nav>
+
         <section className="space-y-4 pt-6">
           <h2 className="font-semibold">Abrir uma vaga</h2>
           <p className="text-sm text-foreground/60">
