@@ -29,6 +29,7 @@ export default async function AdminPage() {
     { data: matriculasData },
     { count: recomendacoesPorValidar },
     { count: totalAlunos },
+    { count: avisosPorLer },
   ] = await Promise.all([
     supabase.from('profiles').select('nome').eq('id', user.id).single(),
     supabase.from('perfis_escola').select('tipo'),
@@ -43,6 +44,11 @@ export default async function AdminPage() {
     // isso contaria encarregados que nunca vão a uma aula, e deixaria de
     // fora todos os filhos.
     supabase.from('alunos').select('id', { count: 'exact', head: true }),
+    supabase
+      .from('notificacoes')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('lida', false),
   ])
 
   const primeiroNome = (nomeData?.nome ?? '').trim().split(/\s+/)[0] || 'bem-vindo'
@@ -77,6 +83,11 @@ export default async function AdminPage() {
             <Link href="/admin/recomendacoes"><strong>Programa de Recomendação</strong><span>{(recomendacoesPorValidar ?? 0) > 0 ? `${recomendacoesPorValidar} por validar` : 'Sem validações pendentes'}</span><i aria-hidden="true">→</i></Link>
             <Link href="/admin/alunos"><strong>Alunos</strong><span>Inscrições, contactos e disciplinas</span><i aria-hidden="true">→</i></Link>
             <Link href="/admin/professores"><strong>Professores</strong><span>Contas, horários e alunos</span><i aria-hidden="true">→</i></Link>
+            {/* A secretaria passou a receber avisos (migração 0029: um
+                cancelamento de matrícula tem de chegar a quem trata das
+                mensalidades). A barra de baixo já tem os cinco destinos
+                que cabem, por isso a porta é aqui. */}
+            <Link href="/admin/avisos"><strong>Avisos</strong><span>{(avisosPorLer ?? 0) > 0 ? `${avisosPorLer} por ler` : 'Sem avisos novos'}</span><i aria-hidden="true">→</i></Link>
             {perfilAtual.super_admin && <Link href="/admin/administradores"><strong>Administradores</strong><span>Acessos e permissões</span><i aria-hidden="true">→</i></Link>}
           </nav>
         </section>

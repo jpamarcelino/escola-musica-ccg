@@ -75,16 +75,17 @@ export const INSTRUMENTOPROGRAMA_VALORES = [
   'bebes',
 ] as const satisfies readonly InstrumentoPrograma[]
 
-// matriculas.estado — fixado em schema.sql
-export type MatriculaEstado = 'a_escolher' | 'confirmado'
+// matriculas.estado — fixado em 0029_cancelar_matricula.sql
+export type MatriculaEstado = 'a_escolher' | 'confirmado' | 'cancelado'
 
 export const MATRICULAESTADO_VALORES = [
   'a_escolher',
   'confirmado',
+  'cancelado',
 ] as const satisfies readonly MatriculaEstado[]
 
-// notificacoes.tipo — fixado em 0003_notificacoes.sql
-export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material'
+// notificacoes.tipo — fixado em 0029_cancelar_matricula.sql
+export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada'
 
 export const NOTIFICACAOTIPO_VALORES = [
   'pedido_aceite',
@@ -92,6 +93,7 @@ export const NOTIFICACAOTIPO_VALORES = [
   'lembrete_pagamento',
   'mudanca_horario',
   'novo_material',
+  'matricula_cancelada',
 ] as const satisfies readonly NotificacaoTipo[]
 
 // perfis_escola.programa — fixado em 0021_generalizar_perfis_escola.sql

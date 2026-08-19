@@ -145,8 +145,14 @@ export default async function ContaAvancadoPage({
                       <p className="lista-item-sub">com {m.profiles?.nome}</p>
                       <BotaoAcaoDestruir
                         label="Cancelar matrícula"
+                        titulo="Cancelar esta matrícula?"
                         variante="editorial"
-                        mensagem={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} de ${m.alunos?.nome}, com ${m.profiles?.nome}? Esta ação é irreversível.`}
+                        // A confirmação diz o que vai acontecer, e não
+                        // "tens a certeza?". Quem chega aqui já sabe que
+                        // tem a certeza — o que não sabe é que a
+                        // mensalidade do mês é cobrada na mesma, nem que
+                        // o acesso aos materiais acaba no mesmo instante.
+                        mensagem={`Cancelar a matrícula de ${m.instrumentos?.nome} de ${m.alunos?.nome}, com ${m.profiles?.nome}?\n\nO professor e a secretaria são avisados, e o horário deixa de estar reservado. ${m.alunos?.nome} perde o acesso aos materiais desta disciplina.\n\nA mensalidade deste mês é cobrada na mesma. O histórico de presenças e de pagamentos mantém-se.`}
                         action={cancelarMatricula}
                       >
                         <input type="hidden" name="matriculaId" value={m.id} />

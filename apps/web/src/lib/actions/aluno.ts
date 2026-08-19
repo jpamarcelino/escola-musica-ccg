@@ -198,17 +198,18 @@ export async function cancelarMatricula(formData: FormData) {
 
   const matriculaId = String(formData.get('matriculaId') ?? '')
 
-  await supabase
-    .from('matriculas')
-    .delete()
-    .eq('id', matriculaId)
-    .eq('estado', 'confirmado')
+  // Uma chamada à base de dados, e não um delete: cancelar guarda a
+  // matrícula em 'cancelado', liberta e bloqueia o horário, avisa o
+  // professor e avisa a secretaria. São efeitos que têm de acontecer
+  // juntos, e por isso vivem todos na função (migração 0029).
+  await supabase.rpc('cancelar_matricula', { p_matricula_id: Number(matriculaId) })
 
   revalidatePath('/dashboard')
   // O botão passou a viver aqui, e esta ação não navega para lado nenhum
   // — sem isto a lista ficava a mostrar a matrícula que se acabou de
   // cancelar até alguém recarregar a página à mão.
   revalidatePath('/dashboard/conta/avancado')
+  revalidatePath('/dashboard/avisos')
 }
 
 // Cria um perfil de aluno para a Conta CCG autenticada. O aluno pode ser

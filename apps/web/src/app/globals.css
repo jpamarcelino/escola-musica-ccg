@@ -1971,6 +1971,13 @@ body {
 .admin-mesa-barra > strong { flex: 1; font-size: 13px; }
 .admin-mesa-barra nav { display: flex; gap: 8px; }
 .admin-mesa-barra button { min-height: 36px; border: 1px solid var(--color-linha); background: transparent; padding: 0 12px; font-size: 11px; cursor: pointer; }
+/* Separadores da lista de alunos. Botões e não separadores em cápsula:
+   a mesa da secretaria é uma folha de papel, e o resto desta página não
+   tem um único canto redondo. */
+.admin-mesa-grupos { grid-column: 1; display: flex; gap: 8px; padding: 10px 18px; border-bottom: 1px solid var(--color-linha); }
+.admin-mesa-grupos button { min-height: 32px; border: 1px solid var(--color-linha); background: transparent; padding: 0 11px; font-size: 11px; color: var(--color-tinta-suave); cursor: pointer; }
+.admin-mesa-grupos button span { margin-left: 5px; font-variant-numeric: tabular-nums; opacity: .7; }
+.admin-mesa-grupos button[aria-pressed="true"] { border-color: var(--color-ink); background: var(--color-ink); color: var(--color-papel); }
 .admin-mesa-lista { grid-column: 1; min-width: 0; }
 .admin-mesa-colunas, .admin-mesa-linha { display: grid; grid-template-columns: 42px minmax(180px, 1.2fr) minmax(160px, 1fr) minmax(130px, .8fr); }
 .admin-mesa-colunas { position: sticky; top: 0; z-index: 2; min-height: 34px; align-items: center; border-bottom: 1px solid var(--color-linha); background: #f8f7f2; font-size: 9px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; color: var(--color-tinta-suave); }
@@ -2010,6 +2017,10 @@ body {
 .admin-dossier-registo { display: flex; flex-direction: column; padding: 13px 0; border-top: 1px solid var(--color-linha); }
 .admin-dossier-registo strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
 .admin-dossier-registo span, .admin-dossier-registo small { margin-top: 3px; font-size: 11px; color: var(--color-tinta-suave); }
+/* Uma matrícula cancelada continua no dossier — é isso que o torna um
+   histórico — mas não deve competir com a que está a decorrer. */
+.admin-dossier-registo[data-estado="cancelado"] strong { text-decoration: line-through; text-decoration-thickness: 1px; opacity: .6; }
+.admin-dossier-registo[data-estado="cancelado"] span, .admin-dossier-registo[data-estado="cancelado"] small { opacity: .75; }
 .admin-dossier dl > div { display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--color-linha); font-size: 12px; }
 .admin-dossier dt { color: var(--color-tinta-suave); }
 .admin-dossier dd { overflow-wrap: anywhere; }

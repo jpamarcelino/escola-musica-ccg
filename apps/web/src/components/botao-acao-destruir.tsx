@@ -77,8 +77,12 @@ export function BotaoAcaoDestruir({
           >
             {titulo}
           </AlertDialog.Title>
+          {/* whitespace-pre-line: as confirmações que explicam
+              consequências têm mais do que uma frase, e um bloco corrido
+              de quatro linhas não se lê antes de carregar num botão
+              vermelho. Quem não usa parágrafos não nota diferença. */}
           <AlertDialog.Description
-            className="mt-[8px] text-[14px] leading-[1.5]"
+            className="mt-[8px] whitespace-pre-line text-[14px] leading-[1.5]"
             style={{ color: 'var(--color-tinta-suave)' }}
           >
             {mensagem}

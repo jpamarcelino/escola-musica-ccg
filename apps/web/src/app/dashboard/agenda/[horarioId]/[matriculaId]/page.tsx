@@ -97,7 +97,7 @@ export default async function AlunoDaAulaPage({
           <BotaoAcaoDestruir
             label="Desmatricular aluno"
             variante="editorial"
-            mensagem={`Tens a certeza que queres desmatricular ${matricula.alunos?.nome} (${matricula.instrumentos?.nome})? Esta ação é irreversível.`}
+            mensagem={`Desmatricular ${matricula.alunos?.nome} de ${matricula.instrumentos?.nome}?\n\nA família e a secretaria são avisadas, e o horário fica bloqueado até o desbloqueares. O histórico de presenças e de pagamentos mantém-se.`}
             action={desmatricularAluno}
           >
             <input type="hidden" name="matriculaId" value={matricula.id} />

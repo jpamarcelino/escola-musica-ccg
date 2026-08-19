@@ -134,11 +134,10 @@ export async function cancelarMatricula(formData: FormData) {
 
   const matriculaId = String(formData.get('matriculaId') ?? '')
 
-  await supabase
-    .from('matriculas')
-    .delete()
-    .eq('id', matriculaId)
-    .eq('professor_id', user.id)
+  // A mesma função que a família usa (0029). Ela é que decide o que
+  // fazer: um pedido por responder é apagado, uma matrícula confirmada
+  // fica em 'cancelado' com a data e avisa o outro lado.
+  await supabase.rpc('cancelar_matricula', { p_matricula_id: Number(matriculaId) })
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/horarios')
@@ -571,11 +570,7 @@ export async function desmatricularAluno(formData: FormData) {
   const matriculaId = String(formData.get('matriculaId') ?? '')
   const horarioId = String(formData.get('horarioId') ?? '')
 
-  await supabase
-    .from('matriculas')
-    .delete()
-    .eq('id', matriculaId)
-    .eq('professor_id', user.id)
+  await supabase.rpc('cancelar_matricula', { p_matricula_id: Number(matriculaId) })
 
   revalidatePath('/dashboard/agenda')
   revalidatePath(`/dashboard/agenda/${horarioId}`)

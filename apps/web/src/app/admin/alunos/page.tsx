@@ -26,13 +26,13 @@ export default async function AdminAlunosPage() {
 
   const { data: alunosData } = await supabase
     .from('alunos')
-    .select('id, nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone), matriculas(estado, instrumentos(nome), professor:profiles!matriculas_professor_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim))')
+    .select('id, nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone), matriculas(estado, cancelada_em, instrumentos(nome), professor:profiles!matriculas_professor_id_fkey(nome), horarios(dia_semana, hora_inicio, hora_fim))')
     .order('nome')
   const alunos = (alunosData ?? []) as unknown as {
     id: string; nome: string; data_nascimento: string | null; encarregado: { email: string | null; telefone: string | null } | null
-    matriculas: { estado: string; instrumentos: { nome: string } | null; professor: { nome: string } | null; horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string } | null }[]
+    matriculas: { estado: string; cancelada_em: string | null; instrumentos: { nome: string } | null; professor: { nome: string } | null; horarios: { dia_semana: DiaSemana; hora_inicio: string; hora_fim: string } | null }[]
   }[]
-  const diretorio: AlunoDiretorio[] = alunos.map((aluno) => ({ id: aluno.id, nome: aluno.nome, dataNascimento: aluno.data_nascimento, email: aluno.encarregado?.email ?? null, telefone: aluno.encarregado?.telefone ?? null, matriculas: aluno.matriculas.map((m) => ({ estado: m.estado, instrumento: m.instrumentos?.nome ?? null, professor: m.professor?.nome ?? null, horario: m.horarios ? `${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}` : null })) }))
+  const diretorio: AlunoDiretorio[] = alunos.map((aluno) => ({ id: aluno.id, nome: aluno.nome, dataNascimento: aluno.data_nascimento, email: aluno.encarregado?.email ?? null, telefone: aluno.encarregado?.telefone ?? null, matriculas: aluno.matriculas.map((m) => ({ estado: m.estado, canceladaEm: m.cancelada_em, instrumento: m.instrumentos?.nome ?? null, professor: m.professor?.nome ?? null, horario: m.horarios ? `${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}` : null })) }))
 
   return (
     <main id="conteudo-principal" className="admin-mesa-pagina">
