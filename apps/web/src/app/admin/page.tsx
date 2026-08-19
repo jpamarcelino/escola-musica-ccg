@@ -28,22 +28,15 @@ export default async function AdminPage() {
     { data: perfisData },
     { data: matriculasData },
     { count: recomendacoesPorValidar },
-    { count: totalAlunos },
     { count: avisosPorLer },
   ] = await Promise.all([
     supabase.from('profiles').select('nome').eq('id', user.id).single(),
     supabase.from('perfis_escola').select('tipo'),
-    supabase.from('matriculas').select('estado'),
+    supabase.from('matriculas').select('aluno_id, estado'),
     supabase
       .from('recomendacoes')
       .select('id', { count: 'exact', head: true })
       .eq('estado', 'registada'),
-    // "Alunos" aqui é dimensão da escola, por isso conta perfis de aluno e
-    // não contas de login. Antes contava perfis_escola de tipo 'aluno', o
-    // que funcionava só enquanto conta e aluno eram a mesma coisa — agora
-    // isso contaria encarregados que nunca vão a uma aula, e deixaria de
-    // fora todos os filhos.
-    supabase.from('alunos').select('id', { count: 'exact', head: true }),
     supabase
       .from('notificacoes')
       .select('id', { count: 'exact', head: true })
@@ -52,7 +45,19 @@ export default async function AdminPage() {
   ])
 
   const primeiroNome = (nomeData?.nome ?? '').trim().split(/\s+/)[0] || 'bem-vindo'
-  const alunos = totalAlunos ?? 0
+  // "Alunos" é quem tem matrícula confirmada — quem anda cá e paga.
+  //
+  // Contava-se a tabela `alunos` inteira, que é outra coisa: um perfil de
+  // aluno cria-se numa conta antes de haver pedido nenhum, fica lá depois
+  // de a matrícula ser cancelada, e conta na mesma quem só chegou a pedir
+  // uma aula. O número aparece ao lado de "Professores" e "Aulas
+  // confirmadas", e a secretaria lia-o como dimensão real da escola.
+  //
+  // Por aluno e não por matrícula: quem anda em duas disciplinas é uma
+  // pessoa, e são duas aulas — o cartão do lado é que conta as aulas.
+  const alunos = new Set(
+    (matriculasData ?? []).filter((m) => m.estado === 'confirmado').map((m) => m.aluno_id)
+  ).size
   const professores = (perfisData ?? []).filter((p) => p.tipo === 'professor').length
   const totalConfirmadas = (matriculasData ?? []).filter((m) => m.estado === 'confirmado').length
   const totalPendentes = (matriculasData ?? []).filter((m) => m.estado === 'a_escolher').length
