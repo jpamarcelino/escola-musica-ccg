@@ -31,15 +31,15 @@ export default async function MateriaisPage({
   }
 
   // O metrónomo só faz sentido para alunos de música — dança e "Música para
-  // bebés" não usam este material. Basta uma matrícula (em qualquer estado)
-  // numa disciplina de programa 'musica'.
+  // bebés" não usam este material. Basta uma matrícula a decorrer numa
+  // disciplina de programa 'musica'.
   const { data: matriculas } = await supabase
     .from('matriculas')
     .select('instrumentos(programa)')
     .eq('aluno_id', alunoId)
-    // Os materiais são de quem anda nas aulas. Quem cancelou perde o
-    // acesso no mesmo instante — é o que a confirmação do cancelamento
-    // deixa implícito, e sem este filtro não era verdade.
+    // "A decorrer" e não "qualquer estado": quem cancelou perde o acesso
+    // aos materiais no mesmo instante. Antes da migração 0029 a matrícula
+    // cancelada era apagada e a distinção não existia.
     .eq('estado', 'confirmado')
 
   const temMusica = ((matriculas ?? []) as unknown as { instrumentos: { programa: string } | null }[]).some(
