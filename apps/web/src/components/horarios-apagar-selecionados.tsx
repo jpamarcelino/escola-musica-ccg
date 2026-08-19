@@ -42,7 +42,7 @@ export function BotaoApagarHorariosSelecionados({
       <AlertDialog.Root open={aberto} onOpenChange={setAberto}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay className="modal-fundo" />
-          <AlertDialog.Content className="modal-caixa fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
+          <AlertDialog.Content className="modal-caixa fixed left-1/2 top-1/2 z-50">
             <AlertDialog.Title className="text-[17px] font-semibold text-[var(--color-azul-fundo)]">
               Apagar {ids.length === 1 ? 'este horário' : `${ids.length} horários`}?
             </AlertDialog.Title>

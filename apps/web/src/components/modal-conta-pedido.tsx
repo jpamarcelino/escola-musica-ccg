@@ -41,7 +41,7 @@ function ModalShell({
             isso a centragem flex do overlay não chega até aqui — repete-se
             com position fixed + transform (ver botao-acao-destruir.tsx). */}
         <Dialog.Content
-          className="modal-caixa fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 space-y-4"
+          className="modal-caixa fixed left-1/2 top-1/2 z-50 space-y-4"
         >
           <Dialog.Close
             aria-label="Fechar"

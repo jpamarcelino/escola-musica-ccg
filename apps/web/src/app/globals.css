@@ -935,6 +935,16 @@ body {
    borda "--linha" e raio de cartão. A sombra é a exceção que um diálogo
    justifica — precisa de se separar do que está por trás. */
 .modal-caixa {
+  /* A centragem vive aqui, e em `transform`, porque é essa a propriedade
+     que as animações de abrir/fechar também mexem (motion-dialog-in).
+     Antes vinha das classes -translate-x-1/2 do Tailwind, que na versão 4
+     escrevem a propriedade `translate` — outra, independente de
+     `transform`. As duas somavam-se, e o diálogo abria deslocado meia
+     caixa para cima e para a esquerda, fora do centro do ecrã. */
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   max-width: 380px;
   max-height: calc(100vh - 32px);
