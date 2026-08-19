@@ -31,9 +31,10 @@ type BlocoAgenda = {
   sala: string | null
   alunos: string[]
   disciplinas: string[]
-  // Quem está neste bloco. Preciso para saber se a aula foi desmarcada:
-  // um bloco de grupo só desaparece quando todos desmarcaram.
-  matriculas: number[]
+  // Quem está neste bloco, com o nome ao lado do id. Preciso dos ids para
+  // saber quem desmarcou naquela data, e dos nomes para mostrar só os que
+  // vão mesmo aparecer.
+  matriculas: { id: number; nome: string; disciplina: string | null }[]
 }
 
 function somarUmDia(data: string): string {
@@ -134,7 +135,11 @@ export default async function AgendaPage({
       disciplinas: [],
       matriculas: [],
     }
-    bloco.matriculas.push(c.id)
+    bloco.matriculas.push({
+      id: c.id,
+      nome: c.alunos?.nome ?? '',
+      disciplina: c.instrumentos?.nome ?? null,
+    })
     bloco.alunos.push(c.alunos?.nome ?? '')
     // Uma aula de grupo partilha o horário mas pode juntar disciplinas
     // diferentes, por isso guarda-se cada uma só uma vez.
@@ -154,13 +159,27 @@ export default async function AgendaPage({
         // A interseção: as datas em que NENHUM dos alunos deste bloco tem
         // aula. Se um continuar inscrito, o professor tem de lá estar.
         new Set(
-          [...(canceladasPorMatricula.get(bloco.matriculas[0]) ?? new Set<string>())].filter(
-            (data) => bloco.matriculas.every((id) => canceladasPorMatricula.get(id)?.has(data))
+          [...(canceladasPorMatricula.get(bloco.matriculas[0].id) ?? new Set<string>())].filter(
+            (data) => bloco.matriculas.every((m) => canceladasPorMatricula.get(m.id)?.has(data))
           )
         )
       ),
     }))
     .filter((bloco): bloco is typeof bloco & { data: string } => bloco.data !== null)
+    // Quem desmarcou aquela data sai da linha. Sem isto, o professor
+    // continuava a ler "teste, antonio, oleola · 3 alunos" no dia em que
+    // um deles já tinha avisado que não vinha — e preparava a aula para
+    // três.
+    .map((bloco) => {
+      const vao = bloco.matriculas.filter(
+        (m) => !canceladasPorMatricula.get(m.id)?.has(bloco.data)
+      )
+      return {
+        ...bloco,
+        alunos: vao.map((m) => m.nome),
+        disciplinas: [...new Set(vao.map((m) => m.disciplina).filter((d): d is string => Boolean(d)))],
+      }
+    })
     .sort((a, b) =>
       a.data === b.data
         ? a.hora_inicio.localeCompare(b.hora_inicio)

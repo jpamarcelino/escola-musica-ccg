@@ -1251,7 +1251,12 @@ body {
   margin-bottom: 8px;
 }
 .partitura-dia-numero { font-family: var(--font-fraunces), ui-serif, serif; font-size: 38px; line-height: 1; color: var(--color-azul-fundo); }
-.partitura-dia header > span:last-child { display: flex; flex-direction: column; }
+/* :nth-of-type(2) e nao :last-child — o cabecalho passou a ter um
+   terceiro filho (o botao de desmarcar o dia) e o seletor antigo deixava
+   de apanhar o bloco de texto, que colapsava numa linha só
+   ("Amanhaquinta-feira · agosto"). Por posicao, funciona com botao e sem
+   ele. */
+.partitura-dia header > span:nth-of-type(2) { display: flex; flex-direction: column; }
 /* Sem text-transform: capitalize. Em portugues, capitalizar todas as
    palavras de uma data produz "Segunda-Feira, 19 De Agosto" — o CSS
    desfazia o trabalho do JavaScript, que ja devolve a forma correta
