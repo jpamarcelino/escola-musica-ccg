@@ -37,6 +37,10 @@ export default async function MateriaisPage({
     .from('matriculas')
     .select('instrumentos(programa)')
     .eq('aluno_id', alunoId)
+    // Os materiais são de quem anda nas aulas. Quem cancelou perde o
+    // acesso no mesmo instante — é o que a confirmação do cancelamento
+    // deixa implícito, e sem este filtro não era verdade.
+    .eq('estado', 'confirmado')
 
   const temMusica = ((matriculas ?? []) as unknown as { instrumentos: { programa: string } | null }[]).some(
     (m) => m.instrumentos?.programa === 'musica'

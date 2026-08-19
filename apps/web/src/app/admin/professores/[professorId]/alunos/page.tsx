@@ -52,6 +52,10 @@ export default async function AdminProfessorAlunosPage({
     .from('matriculas')
     .select('aluno_id, aluno:alunos(nome)')
     .eq('professor_id', professorId)
+    // Só quem tem aulas a decorrer. Sem isto, quem cancelou continuava a
+    // aparecer como aluno deste professor — antes da migração 0029 a
+    // matrícula era apagada e não havia diferença; agora há.
+    .eq('estado', 'confirmado')
   const matriculas = (matriculasData ?? []) as unknown as Matricula[]
 
   const alunosPorId = new Map<string, string>()

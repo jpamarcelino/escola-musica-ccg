@@ -96,7 +96,15 @@ export async function recusarPedido(
   supabase: ClienteCcg,
   matriculaId: number
 ): Promise<Resultado> {
-  const { error } = await supabase.from('matriculas').delete().eq('id', matriculaId)
+  // O estado no filtro, e não só na política de RLS: desde a migração
+  // 0029 que apagar uma matrícula CONFIRMADA deixou de ser possível (essa
+  // passa a "cancelado", pela função). Sem isto, o código continuava a
+  // pedir um apagar que a base de dados recusa em silêncio.
+  const { error } = await supabase
+    .from('matriculas')
+    .delete()
+    .eq('id', matriculaId)
+    .eq('estado', 'a_escolher')
   return { erro: error ? FALHA_GENERICA : null }
 }
 
