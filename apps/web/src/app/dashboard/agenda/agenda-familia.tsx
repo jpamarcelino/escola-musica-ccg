@@ -4,16 +4,20 @@ import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO,
 import { EmptyState } from '@/components/empty-state'
 
 type AulaFamilia = {
-  matriculaId: number
+  // Chave da linha. As aulas normais repetem-se, e a matrícula chega para
+  // as distinguir dentro de um dia; uma reposição é uma linha própria e
+  // traz o seu id com prefixo, para as duas famílias de ids não colidirem.
+  chave: string
   alunoId: string
   alunoNome: string
   disciplina: string
   professor: string
-  dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
   sala: string | null
   data: string
+  // Uma aula avulsa, fora da grelha semanal, marcada para repor outra.
+  reposicao: boolean
 }
 
 function somarUmDia(data: string): string {
@@ -64,7 +68,12 @@ export async function AgendaFamilia({
   userId: string
   alunoFiltro?: string
 }) {
-  const [{ data: matriculasData }, { data: alunosData }, { data: desmarcadasData }] = await Promise.all([
+  const [
+    { data: matriculasData },
+    { data: alunosData },
+    { data: desmarcadasData },
+    { data: reposicoesData },
+  ] = await Promise.all([
     supabase
       .from('matriculas')
       .select(
@@ -87,6 +96,11 @@ export async function AgendaFamilia({
       .from('aulas_desmarcadas')
       .select('matricula_id, data')
       .gte('data', hojeISO()),
+    supabase
+      .from('reposicoes')
+      .select('id, aluno_id, data, hora_inicio, hora_fim, instrumento_nome')
+      .gte('data', hojeISO())
+      .order('data'),
   ])
 
   const canceladas = new Map<number, Set<string>>()
@@ -97,6 +111,7 @@ export async function AgendaFamilia({
   }
 
   const alunos = alunosData ?? []
+  const nomePorAluno = new Map(alunos.map((a) => [a.id, a.nome]))
   const idsValidos = new Set(alunos.map((a) => a.id))
   // Um id de outra família não mostra nada — a lista já vem filtrada pelo
   // encarregado. Validar aqui serve só para o rótulo do estado vazio não
@@ -117,16 +132,15 @@ export async function AgendaFamilia({
     } | null
   }[]
 
-  const aulas: AulaFamilia[] = linhas
+  const aulasNormais: AulaFamilia[] = linhas
     .filter((m) => m.horarios)
     .filter((m) => !filtroValido || m.aluno_id === filtroValido)
     .map((m) => ({
-      matriculaId: m.id,
+      chave: `m${m.id}`,
       alunoId: m.aluno_id,
       alunoNome: m.alunos?.nome ?? '',
       disciplina: m.instrumentos?.nome ?? '',
       professor: m.professor?.nome ?? '',
-      dia_semana: m.horarios!.dia_semana,
       hora_inicio: m.horarios!.hora_inicio,
       hora_fim: m.horarios!.hora_fim,
       sala: formatarSala(m.horarios!.salas),
@@ -136,11 +150,32 @@ export async function AgendaFamilia({
         m.horarios!.hora_fim,
         canceladas.get(m.id) ?? new Set<string>()
       ),
+      reposicao: false,
     }))
     .filter((a): a is typeof a & { data: string } => a.data !== null)
-    .sort((a, b) =>
-      a.data === b.data ? a.hora_inicio.localeCompare(b.hora_inicio) : a.data.localeCompare(b.data)
-    )
+
+  // As reposições entram na mesma lista, e não numa secção à parte: quem
+  // olha para a agenda quer saber onde tem de estar naquele dia, e uma
+  // aula de reposição conta tanto como as outras. O que muda é a
+  // etiqueta.
+  const aulasReposicao: AulaFamilia[] = (reposicoesData ?? [])
+    .filter((r) => !filtroValido || r.aluno_id === filtroValido)
+    .map((r) => ({
+      chave: `r${r.id}`,
+      alunoId: r.aluno_id,
+      alunoNome: nomePorAluno.get(r.aluno_id) ?? '',
+      disciplina: r.instrumento_nome ?? '',
+      professor: '',
+      hora_inicio: r.hora_inicio,
+      hora_fim: r.hora_fim,
+      sala: null,
+      data: r.data,
+      reposicao: true,
+    }))
+
+  const aulas = [...aulasNormais, ...aulasReposicao].sort((a, b) =>
+    a.data === b.data ? a.hora_inicio.localeCompare(b.hora_inicio) : a.data.localeCompare(b.data)
+  )
 
   const porData = new Map<string, AulaFamilia[]>()
   for (const aula of aulas) {
@@ -222,7 +257,7 @@ export async function AgendaFamilia({
                           : 'futura'
                       return (
                         <Link
-                          key={aula.matriculaId}
+                          key={aula.chave}
                           href={`/aluno/${aula.alunoId}/horario`}
                           className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : ''}`}
                         >
@@ -236,6 +271,7 @@ export async function AgendaFamilia({
                                 família é ele que diz de quem é a aula. */}
                             <strong>{aula.alunoNome}</strong>
                             <span>
+                              {aula.reposicao ? 'Reposição · ' : ''}
                               {aula.disciplina}
                               {aula.professor ? ` · ${aula.professor}` : ''} ·{' '}
                               {formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}

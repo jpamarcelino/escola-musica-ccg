@@ -12,6 +12,7 @@ import { ehContaCCG } from '@/lib/navegacao'
 
 type Confirmado = {
   id: number
+  aluno_id: string
   horario_final_id: number | null
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
@@ -100,7 +101,7 @@ export default async function AgendaPage({
   const { data: confirmadosData } = await supabase
     .from('matriculas')
     .select(
-      'id, horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
+      'id, aluno_id, horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -185,11 +186,67 @@ export default async function AgendaPage({
         ? a.hora_inicio.localeCompare(b.hora_inicio)
         : a.data.localeCompare(b.data)
     )
-  const porData = new Map<string, typeof agendaTemporal>()
-  for (const bloco of agendaTemporal) {
-    const lista = porData.get(bloco.data) ?? []
-    lista.push(bloco)
-    porData.set(bloco.data, lista)
+  // A lista de dias junta as aulas da grelha semanal e as reposições, que
+  // são avulsas. Entram na mesma lista e não numa secção à parte: quem
+  // abre a agenda quer saber o que tem naquele dia, e uma reposição conta
+  // tanto como as outras. O que muda é a etiqueta e não haver para onde
+  // clicar — uma reposição não tem horário semanal por trás.
+  type EntradaDia = {
+    chave: string
+    horarioId: number | null
+    hora_inicio: string
+    hora_fim: string
+    sala: string | null
+    alunos: string[]
+    disciplinas: string[]
+    data: string
+    reposicao: boolean
+  }
+
+  const { data: reposicoesData } = await supabase
+    .from('reposicoes')
+    .select('id, data, hora_inicio, hora_fim, instrumento_nome, aluno_id')
+    .eq('professor_id', user.id)
+    .gte('data', hojeISO())
+    .order('data')
+
+  const nomePorAluno = new Map<string, string>()
+  for (const c of confirmados) {
+    if (c.alunos?.nome) nomePorAluno.set(c.aluno_id, c.alunos.nome)
+  }
+
+  const entradas: EntradaDia[] = [
+    ...agendaTemporal.map((b) => ({
+      chave: `h${b.horarioId}`,
+      horarioId: b.horarioId,
+      hora_inicio: b.hora_inicio,
+      hora_fim: b.hora_fim,
+      sala: b.sala,
+      alunos: b.alunos,
+      disciplinas: b.disciplinas,
+      data: b.data,
+      reposicao: false,
+    })),
+    ...(reposicoesData ?? []).map((r) => ({
+      chave: `r${r.id}`,
+      horarioId: null,
+      hora_inicio: r.hora_inicio,
+      hora_fim: r.hora_fim,
+      sala: null,
+      alunos: [nomePorAluno.get(r.aluno_id) ?? ''] as string[],
+      disciplinas: r.instrumento_nome ? [r.instrumento_nome] : [],
+      data: r.data,
+      reposicao: true,
+    })),
+  ].sort((a, b) =>
+    a.data === b.data ? a.hora_inicio.localeCompare(b.hora_inicio) : a.data.localeCompare(b.data)
+  )
+
+  const porData = new Map<string, EntradaDia[]>()
+  for (const entrada of entradas) {
+    const lista = porData.get(entrada.data) ?? []
+    lista.push(entrada)
+    porData.set(entrada.data, lista)
   }
 
   const horariosPorDia = new Map<string, BlocoAgenda[]>()
@@ -268,12 +325,16 @@ export default async function AgendaPage({
                   {/* A confirmação diz a data por extenso e quantas aulas
                       caem — é a diferença entre desmarcar um dia e
                       desmarcar o dia errado. */}
-                  {podeDesmarcar && (
+                  {/* Só se houver aulas da grelha semanal. Um dia que só
+                      tenha reposições não tem nada para "desmarcar o dia"
+                      apanhar — a função percorre matrículas, e o botão
+                      prometia uma coisa que não ia acontecer. */}
+                  {podeDesmarcar && aulas.some((a) => !a.reposicao) && (
                     <BotaoAcaoDestruir
                       label="Desmarcar o dia"
                       variante="editorial"
                       titulo="Desmarcar todas as aulas deste dia?"
-                      mensagem={`${formatarDataEscolar(data, { weekday: 'long', day: 'numeric', month: 'long' })} — ${aulas.length} ${aulas.length === 1 ? 'aula' : 'aulas'}.\n\nCada aluno é avisado de que vai haver reposição.`}
+                      mensagem={`${formatarDataEscolar(data, { weekday: 'long', day: 'numeric', month: 'long' })} — ${aulas.filter((a) => !a.reposicao).length} ${aulas.filter((a) => !a.reposicao).length === 1 ? 'aula' : 'aulas'}.\n\nCada aluno é avisado de que vai haver reposição.`}
                       action={desmarcarDiaProfessor}
                     >
                       <input type="hidden" name="data" value={data} />
@@ -285,16 +346,17 @@ export default async function AgendaPage({
                     const estadoTemporal = indice === 0
                       ? estadoTemporalAula(aula.data, aula.hora_inicio, aula.hora_fim, agora)
                       : 'futura'
-                    return (
-                    <Link
-                      key={aula.horarioId}
-                      href={`/dashboard/agenda/${aula.horarioId}`}
-                      className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : ''}`}
-                    >
+                    // Dois ramos e não um componente escolhido em
+                    // variável: uma reposição não tem horário semanal por
+                    // trás, logo não tem para onde levar, e um <Link> sem
+                    // destino não existe.
+                    const conteudo = (
+                      <>
                       <time>{formatarHora(aula.hora_inicio)}</time>
                       <span className="partitura-marca" aria-hidden="true" />
                       <span className="partitura-aula-conteudo">
                         {estadoTemporal === 'agora' && <small className="partitura-estado-temporal">Agora</small>}
+                        {aula.reposicao && <small className="partitura-estado-temporal">Reposição</small>}
                         {/* A disciplina em destaque e o aluno por baixo, como
                             no painel inicial. A agenda mostrava só o nome, e
                             quem ensina duas disciplinas ao mesmo aluno não
@@ -303,8 +365,19 @@ export default async function AgendaPage({
                         <span>{aula.alunos.join(', ')} · {formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}{aula.sala ? ` · ${aula.sala}` : ''}</span>
                       </span>
                       <span className="partitura-alunos">{aula.alunos.length} {aula.alunos.length === 1 ? 'aluno' : 'alunos'}</span>
-                      <span className="partitura-seta" aria-hidden="true">→</span>
-                    </Link>
+                      {!aula.reposicao && <span className="partitura-seta" aria-hidden="true">→</span>}
+                      </>
+                    )
+                    return aula.reposicao ? (
+                      <div key={aula.chave} className="partitura-aula">{conteudo}</div>
+                    ) : (
+                      <Link
+                        key={aula.chave}
+                        href={`/dashboard/agenda/${aula.horarioId}`}
+                        className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : ''}`}
+                      >
+                        {conteudo}
+                      </Link>
                     )
                   })}
                 </div>
