@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
 import { apagarConta, apagarContaSuperAdmin } from '@/lib/actions/auth'
 import { criarConviteMigracaoAluno, resgatarConvite } from '@/lib/actions/convites'
+import { cancelarMatricula } from '@/lib/actions/aluno'
 import { PageHeader } from '@/components/page-header'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
@@ -11,6 +12,11 @@ import { MensagemErro } from '@/components/mensagem'
 import { ehContaCCG } from '@/lib/navegacao'
 
 // As ações da conta que não se desfazem, uma página a seguir à Conta.
+//
+// O que as junta é serem todas saídas: terminar uma disciplina, passar um
+// aluno para outra conta, sair da escola de vez. Nenhuma delas se usa mais
+// do que uma ou duas vezes na vida de uma conta, e todas custam caro se
+// forem tocadas por engano.
 //
 // Estavam todas misturadas com o nome, o email e a password — coisas que
 // se mudam sem medo. Em particular, a caixa do código de convite abria a
@@ -79,18 +85,38 @@ export default async function ContaAvancadoPage({
         .order('criado_em')
     : { data: [] }
 
+  // As aulas a decorrer, de todos os alunos da conta. O filtro passa pelo
+  // join a "alunos" (!inner) em vez de uma segunda consulta com a lista de
+  // ids — é o mesmo padrão da Home.
+  const { data: matriculasData } = !ehProfessor
+    ? await supabase
+        .from('matriculas')
+        .select(
+          'id, alunos!inner(nome, encarregado_id), instrumentos(nome), profiles!matriculas_professor_id_fkey(nome)'
+        )
+        .eq('alunos.encarregado_id', user.id)
+        .eq('estado', 'confirmado')
+    : { data: [] }
+
   const outrosAdmins = (
     (outrosAdminsData ?? []) as unknown as { id: string; profiles: { nome: string } | null }[]
   ).map((p) => ({ id: p.id, nome: p.profiles?.nome ?? '' }))
 
   const meusAlunos = meusAlunosData ?? []
 
+  const matriculas = (matriculasData ?? []) as unknown as {
+    id: number
+    alunos: { nome: string } | null
+    instrumentos: { nome: string } | null
+    profiles: { nome: string } | null
+  }[]
+
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
         <PageHeader
           voltar="/dashboard/conta"
-          titulo="Transferir e apagar"
+          titulo="Cancelamentos e transferências"
           subtitulo="Ações que não se desfazem."
         />
 
@@ -99,6 +125,39 @@ export default async function ContaAvancadoPage({
         {!ehProfessor && (
           <>
             <section className="space-y-4">
+              <h2 className="font-semibold">Cancelar uma matrícula</h2>
+              {/* Estava escondido na agenda do aluno, debaixo do horário
+                  de cada aula — um sítio para consultar, não para desfazer
+                  uma inscrição. */}
+              <p className="text-sm text-foreground/60">
+                Termina as aulas de uma disciplina. O aluno mantém-se na tua conta, e o histórico
+                de presenças e de mensalidades não se apaga.
+              </p>
+              {matriculas.length === 0 ? (
+                <EmptyState titulo="Nenhuma aula a decorrer" />
+              ) : (
+                <div className="space-y-3">
+                  {matriculas.map((m) => (
+                    <div key={m.id} className="lista-item space-y-2">
+                      <p className="lista-item-titulo">
+                        {m.instrumentos?.nome} · {m.alunos?.nome}
+                      </p>
+                      <p className="lista-item-sub">com {m.profiles?.nome}</p>
+                      <BotaoAcaoDestruir
+                        label="Cancelar matrícula"
+                        variante="editorial"
+                        mensagem={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} de ${m.alunos?.nome}, com ${m.profiles?.nome}? Esta ação é irreversível.`}
+                        action={cancelarMatricula}
+                      >
+                        <input type="hidden" name="matriculaId" value={m.id} />
+                      </BotaoAcaoDestruir>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="space-y-4 border-t border-[var(--color-linha)] pt-6">
               <h2 className="font-semibold">Passar um aluno para outra conta</h2>
               {/* O caso real: um aluno cresce e passa a querer gerir as
                   suas próprias aulas. O link entrega o perfil inteiro —

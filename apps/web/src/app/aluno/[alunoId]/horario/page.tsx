@@ -1,7 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { cancelarPedido, cancelarMatricula } from '@/lib/actions/aluno'
+import { cancelarPedido } from '@/lib/actions/aluno'
 import { formatarSala, formatarHora, proximaOcorrenciaDeAula, formatarDataEscolar, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { EmptyState } from '@/components/empty-state'
@@ -119,7 +119,13 @@ export default async function ConsultarHorarioPage({
                 return (
                   <details key={m.id} className="aluno-aula-registo">
                     <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" /><span><small>{formatarDataEscolar(m.proxima, { weekday: 'long', day: 'numeric', month: 'long' })}</small><strong>{m.instrumentos?.nome}</strong><b>{m.profiles?.nome}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</b></span><i aria-hidden="true">+</i></summary>
-                    <div><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula semanal</p><BotaoAcaoDestruir label="Cancelar matrícula" variante="editorial" mensagem={`Tens a certeza que queres cancelar a matrícula de ${m.instrumentos?.nome} com ${m.profiles?.nome}? Esta ação é irreversível.`} action={cancelarMatricula}><input type="hidden" name="matriculaId" value={m.id} /></BotaoAcaoDestruir></div>
+                    {/* Cancelar a matrícula estava aqui, debaixo do horário de cada
+                          aula. Esta página é para consultar quando é a próxima
+                          aula — não é onde se desfaz uma inscrição, e a
+                          proximidade das duas coisas fazia com que abrir o
+                          horário mostrasse sempre um botão vermelho. Mudou-se
+                          para /dashboard/conta/avancado, com as outras saídas. */}
+                    <div><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula semanal</p></div>
                   </details>
                 )
               })}

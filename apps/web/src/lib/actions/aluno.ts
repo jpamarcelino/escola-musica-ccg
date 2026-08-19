@@ -205,6 +205,10 @@ export async function cancelarMatricula(formData: FormData) {
     .eq('estado', 'confirmado')
 
   revalidatePath('/dashboard')
+  // O botão passou a viver aqui, e esta ação não navega para lado nenhum
+  // — sem isto a lista ficava a mostrar a matrícula que se acabou de
+  // cancelar até alguém recarregar a página à mão.
+  revalidatePath('/dashboard/conta/avancado')
 }
 
 // Cria um perfil de aluno para a Conta CCG autenticada. O aluno pode ser

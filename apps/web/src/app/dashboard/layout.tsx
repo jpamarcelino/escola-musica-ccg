@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
-import { getSchoolProfileContext } from '@/lib/auth-context'
+import { getSchoolProfileContext, getAvisosPorLer } from '@/lib/auth-context'
 import { BottomNavigation } from '@/components/bottom-navigation'
-import { NAV_CONTA, NAV_PROFESSOR, ehContaCCG } from '@/lib/navegacao'
+import { NAV_CONTA, NAV_PROFESSOR, comAvisosPorLer, ehContaCCG } from '@/lib/navegacao'
 
 // A navegação inferior vive no layout para acompanhar o utilizador por
 // todas as páginas de /dashboard/* — não é um enfeite da Home. Os
@@ -17,8 +17,12 @@ async function DashboardNavigation() {
   const { user, profile } = await getSchoolProfileContext()
 
   if (!user) return null
+  // O professor não tem separador de avisos — a contagem não teria onde
+  // aparecer, e não vale uma consulta.
   if (profile?.tipo === 'professor') return <BottomNavigation itens={NAV_PROFESSOR} />
-  if (ehContaCCG(profile?.tipo)) return <BottomNavigation itens={NAV_CONTA} />
+  if (ehContaCCG(profile?.tipo)) {
+    return <BottomNavigation itens={comAvisosPorLer(NAV_CONTA, await getAvisosPorLer())} />
+  }
   return null
 }
 

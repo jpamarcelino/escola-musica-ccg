@@ -145,6 +145,9 @@ body {
 
 .bottom-nav-bar { border: 1px solid color-mix(in srgb, white 15%, transparent); }
 .bottom-nav-ativo { position: absolute; right: 18%; bottom: 4px; left: 18%; height: 2px; border-radius: 999px; background: var(--marca-ciano); }
+/* Encostado ao canto do ícone, com um anel da cor da barra para se
+   destacar mesmo quando cai por cima de um traço do ícone. */
+.bottom-nav-ponto { position: absolute; top: -2px; right: -3px; width: 8px; height: 8px; border-radius: 999px; background: #E0523F; box-shadow: 0 0 0 2px var(--color-ink); }
 .bottom-nav-marca { position: absolute; top: -15px; left: 50%; width: 25px; height: auto; padding: 4px; border-radius: 50%; background: var(--color-ink); color: var(--marca-ciano); transform: translateX(-50%); pointer-events: none; }
 
 .empty-editorial {

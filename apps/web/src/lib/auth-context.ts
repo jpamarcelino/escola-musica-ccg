@@ -1,4 +1,5 @@
 import { cache } from 'react'
+import { contarNotificacoesPorLer } from '@ccg/data'
 import { createClient } from '@/lib/supabase/server'
 import type { PerfisEscolaPrograma, PerfisEscolaTipo } from '@ccg/types'
 
@@ -11,6 +12,15 @@ export const getAuthContext = cache(async () => {
   } = await supabase.auth.getUser()
 
   return { supabase, user }
+})
+
+// Quantos avisos esperam por quem entrou. Em `cache` pela mesma razão
+// das outras: o layout pede-a e a página pode voltar a pedi-la no mesmo
+// pedido, e não vale a pena contar duas vezes.
+export const getAvisosPorLer = cache(async () => {
+  const { supabase, user } = await getAuthContext()
+  if (!user) return 0
+  return contarNotificacoesPorLer(supabase, user.id)
 })
 
 export type SchoolProfile = {

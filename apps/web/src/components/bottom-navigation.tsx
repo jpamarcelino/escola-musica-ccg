@@ -42,6 +42,12 @@ export type ItemNav = {
   label: string
   icone: keyof typeof ICONES
   correspondencia?: 'exata' | 'prefixo'
+  // Quantas coisas esperam por quem entrou (hoje: avisos por ler). Vira
+  // um ponto vermelho sobre o ícone. É um ponto e não um número: com
+  // cinco separadores a 375px não cabe um algarismo legível, e a
+  // pergunta que a barra responde é "há alguma coisa?", não "quantas?" —
+  // o número exato está na própria página.
+  distintivo?: number
 }
 
 export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
@@ -76,7 +82,19 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
               }}
             >
               {ativo && <span className="bottom-nav-ativo" aria-hidden="true" />}
-              <Icone className="bottom-nav-icon" size={20} strokeWidth={ativo ? 2 : 1.5} aria-hidden="true" />
+              <span className="relative">
+                <Icone className="bottom-nav-icon" size={20} strokeWidth={ativo ? 2 : 1.5} aria-hidden="true" />
+                {item.distintivo ? (
+                  <span className="bottom-nav-ponto" aria-hidden="true" />
+                ) : null}
+              </span>
+              {/* O ponto é visual. Para quem navega com leitor de ecrã, a
+                  contagem vai no texto — um ponto vermelho não se ouve. */}
+              {item.distintivo ? (
+                <span className="sr-only">
+                  {item.distintivo === 1 ? '1 por ler' : `${item.distintivo} por ler`}
+                </span>
+              ) : null}
               {/* 11px com tracking apertado, e não 12px: com cinco
                   separadores a 375px cada um fica com ~75px, e a
                   secretaria tem os rótulos mais compridos da app —

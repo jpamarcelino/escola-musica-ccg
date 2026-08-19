@@ -43,6 +43,19 @@ export function navAluno(alunoId: string): ItemNav[] {
   ]
 }
 
+// O separador dos avisos passa a ter ponto quando há coisas por ler.
+//
+// Fica aqui, e não em cada layout, porque são três os sítios que montam
+// a barra da Conta CCG (/dashboard, /aluno/(gerais) e /aluno/[alunoId]) —
+// e a última vez que uma regra destas viveu copiada nos três, as cópias
+// divergiram (ver o comentário no topo).
+export function comAvisosPorLer(itens: ItemNav[], quantidade: number): ItemNav[] {
+  if (quantidade <= 0) return itens
+  return itens.map((item) =>
+    item.href === '/dashboard/avisos' ? { ...item, distintivo: quantidade } : item
+  )
+}
+
 export const NAV_PROFESSOR: ItemNav[] = [
   { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
   { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },

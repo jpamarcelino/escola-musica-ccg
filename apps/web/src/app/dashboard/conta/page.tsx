@@ -217,12 +217,13 @@ export default async function ContaPage({
           </form>
         </section>
 
-        {/* Passar alunos para outra conta e apagar a conta mudaram-se
-            para uma página à parte: são raras, não se desfazem, e ao lado
-            do nome e da password liam-se como mais um campo a preencher. */}
+        {/* Cancelar matrículas, passar alunos para outra conta e apagar a
+            conta mudaram-se para uma página à parte: são raras, não se
+            desfazem, e ao lado do nome e da password liam-se como mais um
+            campo a preencher. */}
         <section className="space-y-2 border-t border-[var(--color-linha)] pt-6">
           <LigacaoTerciaria href="/dashboard/conta/avancado">
-            Transferir alunos ou apagar a conta
+            Cancelamentos e transferências
           </LigacaoTerciaria>
         </section>
       </div>

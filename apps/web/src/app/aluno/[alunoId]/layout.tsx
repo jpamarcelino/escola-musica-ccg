@@ -1,5 +1,6 @@
+import { getAvisosPorLer } from '@/lib/auth-context'
 import { BottomNavigation } from '@/components/bottom-navigation'
-import { navAluno } from '@/lib/navegacao'
+import { comAvisosPorLer, navAluno } from '@/lib/navegacao'
 
 // Nav da Conta CCG dentro da área de um aluno específico — os destinos de
 // agenda e de perfil apontam para ESTE aluno, tirado do URL. Fora daqui a
@@ -16,7 +17,7 @@ export default async function AlunoLayout({
   return (
     <>
       {children}
-      <BottomNavigation itens={navAluno(alunoId)} />
+      <BottomNavigation itens={comAvisosPorLer(navAluno(alunoId), await getAvisosPorLer())} />
     </>
   )
 }
