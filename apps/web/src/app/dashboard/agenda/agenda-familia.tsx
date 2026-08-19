@@ -200,6 +200,15 @@ export async function AgendaFamilia({
           </div>
         </header>
 
+        {/* A agenda responde a "o que tenho esta semana"; o calendário
+            responde a "há aula no dia 8?". São perguntas diferentes e é
+            aqui que a segunda aparece a quem veio fazer a primeira. */}
+        <nav className="pt-2">
+          <Link href="/dashboard/calendario" className="agenda-ligacao-calendario">
+            Calendário do ano letivo
+          </Link>
+        </nav>
+
         {/* Com um só aluno os separadores mostrariam sempre a mesma lista. */}
         {alunos.length > 1 && (
           <nav className="filtro-alunos" aria-label="Filtrar agenda por aluno">

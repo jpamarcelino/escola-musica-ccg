@@ -30,6 +30,19 @@ export { proximaAulaPorAcontecer } from './datas'
 
 export { MESES_ANO_LETIVO, rotuloMes } from './ano-letivo'
 
+export {
+  ANO_LETIVO_INICIO,
+  ANO_LETIVO_FIM,
+  INTERRUPCOES,
+  diasDeAulas,
+  domingoDePascoa,
+  ehDiaDeAulas,
+  estadoDoDia,
+  feriados,
+  mesesDoCalendario,
+} from './calendario-escolar'
+export type { DiaDoCalendario, EstadoDia, Interrupcao, MesDoCalendario } from './calendario-escolar'
+
 export { euros, eurosOuTexto, eurosParaInput } from './moeda'
 
 export { plural, palavra } from './plural'

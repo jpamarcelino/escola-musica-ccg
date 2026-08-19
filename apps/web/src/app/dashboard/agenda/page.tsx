@@ -302,6 +302,12 @@ export default async function AgendaPage({
           </div>
         </header>
 
+        <nav className="pt-2">
+          <Link href="/dashboard/calendario" className="agenda-ligacao-calendario">
+            Calendário do ano letivo
+          </Link>
+        </nav>
+
         {erro && <MensagemErro>{erro}</MensagemErro>}
         {dia && (
           <MensagemInfo>

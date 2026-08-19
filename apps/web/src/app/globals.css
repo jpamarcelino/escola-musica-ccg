@@ -3490,3 +3490,104 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   text-transform: uppercase;
   color: var(--marca-ciano-texto, var(--color-azul-fundo));
 }
+
+/* Calendário do ano letivo -------------------------------------------
+   Doze meses numa página. Cada mês é uma <table> porque é mesmo uma
+   tabela — dias em colunas de semana — e é assim que um leitor de ecrã
+   sabe anunciar "quinta-feira, 8". As casas são quadradas e nunca
+   descem dos 30px: abaixo disso o número deixa de se ler no telemóvel. */
+.calendario-meses {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+.calendario-mes {
+  border: 1px solid var(--color-linha);
+  border-radius: 14px;
+  padding: 12px;
+  background: var(--color-papel);
+}
+.calendario-mes h2 {
+  font-family: var(--font-fraunces), serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-azul-fundo);
+  margin-bottom: 8px;
+}
+.calendario-mes h2 span { color: var(--color-tinta-suave); font-weight: 400; }
+.calendario-mes table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.calendario-mes th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  padding-bottom: 4px;
+}
+.calendario-mes th abbr { text-decoration: none; }
+.calendario-mes td { padding: 1px; text-align: center; }
+
+.calendario-dia {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 30px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.calendario-dia-aula {
+  background: var(--color-azul-fundo);
+  color: #fff;
+  font-weight: 600;
+}
+.calendario-dia-fechado {
+  background: var(--color-papel-2);
+  color: var(--color-tinta-suave);
+}
+/* Hoje leva um anel e não outra cor: continua a ser um dia de aulas ou
+   um dia fechado, e essa informação não pode ser substituída. */
+.calendario-dia-hoje { outline: 2px solid var(--color-dourado); outline-offset: 1px; }
+
+.calendario-pontos { display: flex; gap: 2px; }
+.calendario-ponto {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-dourado);
+  display: inline-block;
+}
+.calendario-ponto[data-cor='1'] { background: var(--color-verde); }
+.calendario-ponto[data-cor='2'] { background: #E0523F; }
+.calendario-ponto[data-cor='3'] { background: var(--color-azul-logo); }
+/* Num dia azul, um ponto escuro desaparece no fundo. */
+.calendario-dia-aula .calendario-ponto { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55); }
+
+.calendario-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-size: 13px;
+  color: var(--color-tinta-suave);
+}
+.calendario-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.calendario-amostra {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+  min-height: 0;
+}
+.calendario-legenda .calendario-ponto { width: 8px; height: 8px; border-radius: 999px; }
+.agenda-ligacao-calendario {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-azul-texto);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
