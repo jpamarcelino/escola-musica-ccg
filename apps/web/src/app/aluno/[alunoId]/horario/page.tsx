@@ -4,13 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   cancelarPedido,
   desmarcarAula,
-  aceitarPropostaHorario,
-  recusarPropostaHorario,
-  aceitarReposicaoProposta,
-  recusarReposicaoProposta,
 } from '@/lib/actions/aluno'
-import { SubmitButton } from '@/components/submit-button'
-import { classesCampo } from '@/components/campo-formulario'
 import { formatarSala, formatarHora, proximaAulaPorAcontecer, formatarDataEscolar, hojeISO, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
@@ -111,36 +105,6 @@ export default async function ConsultarHorarioPage({
     .order('data')
   const reposicoes = reposicoesData ?? []
 
-  // As reposições que o professor marcou e ainda esperam resposta. Ficam
-  // ao lado da proposta de horário, e não na lista de aulas: uma aula
-  // que ainda pode não acontecer não é uma aula.
-  const { data: reposicoesPropostasData } = await supabase
-    .from('reposicoes')
-    .select('id, data, hora_inicio, hora_fim, instrumento_nome')
-    .eq('aluno_id', alunoId)
-    .eq('estado', 'proposta')
-    .order('data')
-  const reposicoesPropostas = reposicoesPropostasData ?? []
-
-  // A proposta de horário que o professor fez e ainda espera resposta.
-  // Uma por matrícula, garantido por índice único — por isso é uma lista
-  // curta e não uma caixa de entrada.
-  const { data: propostasData } = await supabase
-    .from('propostas_horario')
-    .select(
-      'id, mensagem, matricula_id, novo:horarios!propostas_horario_horario_novo_id_fkey(dia_semana, hora_inicio, hora_fim), atual:horarios!propostas_horario_horario_atual_id_fkey(dia_semana, hora_inicio, hora_fim), matriculas(instrumentos(nome))'
-    )
-    .eq('aluno_id', alunoId)
-    .eq('estado', 'pendente')
-  const propostas = (propostasData ?? []) as unknown as {
-    id: number
-    mensagem: string | null
-    matricula_id: number
-    novo: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
-    atual: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
-    matriculas: { instrumentos: { nome: string } | null } | null
-  }[]
-
   const pendentes = matriculas.filter((m) => m.estado === 'a_escolher')
   const confirmadas = matriculas
     .filter((m) => m.estado === 'confirmado' && m.horarios)
@@ -173,103 +137,6 @@ export default async function ConsultarHorarioPage({
         </header>
 
         {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
-
-        {/* A proposta vem primeiro, antes das aulas. É a única coisa
-            nesta página que está à espera de uma decisão — o resto é
-            informação. Aceitar e recusar têm o mesmo peso: recusar é uma
-            resposta legítima, e a aula fica onde está. */}
-        {reposicoesPropostas.map((r) => (
-          <section key={`rep-${r.id}`} className="proposta-horario">
-            <h2>Reposição proposta</h2>
-            <p>
-              O professor marcou uma reposição
-              {r.instrumento_nome ? ` de ${r.instrumento_nome}` : ''} para{' '}
-              <strong>
-                {formatarDataEscolar(r.data, { weekday: 'long', day: 'numeric', month: 'long' })},{' '}
-                {formatarHora(r.hora_inicio)}–{formatarHora(r.hora_fim)}
-              </strong>
-              .
-            </p>
-            <div className="proposta-horario-acoes">
-              <form action={aceitarReposicaoProposta}>
-                <input type="hidden" name="reposicaoId" value={r.id} />
-                <input type="hidden" name="alunoId" value={alunoId} />
-                <SubmitButton
-                  textoAGuardar="A aceitar…"
-                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-azul-fundo)] px-6 text-[15px] font-semibold text-white disabled:opacity-50"
-                >
-                  Aceitar
-                </SubmitButton>
-              </form>
-              {/* Recusar leva mensagem: quem não pode àquela hora quase
-                  sempre sabe dizer quando é que pode, e essa frase vale
-                  mais para o professor do que o "não". */}
-              <form action={recusarReposicaoProposta} className="proposta-horario-recusa">
-                <input type="hidden" name="reposicaoId" value={r.id} />
-                <input type="hidden" name="alunoId" value={alunoId} />
-                <label htmlFor={`resposta-${r.id}`} className="sr-only">
-                  Quando é que podes?
-                </label>
-                <input
-                  id={`resposta-${r.id}`}
-                  name="resposta"
-                  maxLength={500}
-                  placeholder="Quando é que podes? (opcional)"
-                  className={classesCampo}
-                />
-                <SubmitButton
-                  textoAGuardar="A responder…"
-                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-6 text-[15px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
-                >
-                  Não posso
-                </SubmitButton>
-              </form>
-            </div>
-          </section>
-        ))}
-
-        {propostas.map((p) => (
-          <section key={p.id} className="proposta-horario">
-            <h2>Mudança de horário proposta</h2>
-            <p>
-              O professor propõe mudar
-              {p.matriculas?.instrumentos?.nome ? ` ${p.matriculas.instrumentos.nome}` : ''} de{' '}
-              <strong>
-                {p.atual?.dia_semana}, {p.atual && formatarHora(p.atual.hora_inicio)}–
-                {p.atual && formatarHora(p.atual.hora_fim)}
-              </strong>{' '}
-              para{' '}
-              <strong>
-                {p.novo?.dia_semana}, {p.novo && formatarHora(p.novo.hora_inicio)}–
-                {p.novo && formatarHora(p.novo.hora_fim)}
-              </strong>
-              .
-            </p>
-            {p.mensagem && <p className="proposta-horario-mensagem">“{p.mensagem}”</p>}
-            <div className="proposta-horario-acoes">
-              <form action={aceitarPropostaHorario}>
-                <input type="hidden" name="propostaId" value={p.id} />
-                <input type="hidden" name="alunoId" value={alunoId} />
-                <SubmitButton
-                  textoAGuardar="A aceitar…"
-                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-azul-fundo)] px-6 text-[15px] font-semibold text-white disabled:opacity-50"
-                >
-                  Aceitar
-                </SubmitButton>
-              </form>
-              <form action={recusarPropostaHorario}>
-                <input type="hidden" name="propostaId" value={p.id} />
-                <input type="hidden" name="alunoId" value={alunoId} />
-                <SubmitButton
-                  textoAGuardar="A responder…"
-                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-6 text-[15px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
-                >
-                  Não posso
-                </SubmitButton>
-              </form>
-            </div>
-          </section>
-        ))}
         {desmarcada && <MensagemInfo>Aula desmarcada. O professor foi avisado.</MensagemInfo>}
         {pedido && (
           <MensagemInfo>
@@ -277,6 +144,10 @@ export default async function ConsultarHorarioPage({
           </MensagemInfo>
         )}
 
+        {/* A proposta vem primeiro, antes das aulas. É a única coisa
+            nesta página que está à espera de uma decisão — o resto é
+            informação. Aceitar e recusar têm o mesmo peso: recusar é uma
+            resposta legítima, e a aula fica onde está. */}
         {pendentes.length > 0 && (
           <section className="aluno-pedidos-curso">
             <header><p className="partitura-indice">01</p><h2>Pedidos em curso</h2><span>{pendentes.length}</span></header>

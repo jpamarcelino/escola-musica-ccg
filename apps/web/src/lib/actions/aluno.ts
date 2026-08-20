@@ -431,7 +431,7 @@ async function responderProposta(
   const propostaId = Number(formData.get('propostaId') ?? 0)
   const alunoId = String(formData.get('alunoId') ?? '')
   const resposta = String(formData.get('resposta') ?? '').trim()
-  const destino = `/aluno/${alunoId}/horario`
+  const destino = '/dashboard/agenda'
 
   const { error } = aceitar
     ? await supabase.rpc('aceitar_proposta_horario', { p_proposta_id: propostaId })
@@ -445,7 +445,7 @@ async function responderProposta(
   }
 
   revalidatePath(destino)
-  revalidatePath('/dashboard/agenda')
+  revalidatePath(`/aluno/${alunoId}/horario`)
   revalidatePath('/dashboard/avisos')
   redirect(destino)
 }
@@ -476,7 +476,8 @@ async function responderReposicao(formData: FormData, aceitar: boolean): Promise
   const reposicaoId = Number(formData.get('reposicaoId') ?? 0)
   const alunoId = String(formData.get('alunoId') ?? '')
   const resposta = String(formData.get('resposta') ?? '').trim()
-  const destino = `/aluno/${alunoId}/horario`
+  // De volta à agenda da família, que é de onde se responde.
+  const destino = '/dashboard/agenda'
 
   const { error } = aceitar
     ? await supabase.rpc('aceitar_reposicao_proposta', { p_reposicao_id: reposicaoId })
@@ -490,7 +491,7 @@ async function responderReposicao(formData: FormData, aceitar: boolean): Promise
   }
 
   revalidatePath(destino)
-  revalidatePath('/dashboard/agenda')
+  revalidatePath(`/aluno/${alunoId}/horario`)
   revalidatePath('/dashboard/reposicoes/pedidos')
   redirect(destino)
 }

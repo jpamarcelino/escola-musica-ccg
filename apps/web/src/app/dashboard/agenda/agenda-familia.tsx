@@ -2,6 +2,15 @@ import Link from 'next/link'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
+import { SubmitButton } from '@/components/submit-button'
+import { classesCampo } from '@/components/campo-formulario'
+import { formatarDataEscolar } from '@ccg/core'
+import {
+  aceitarPropostaHorario,
+  recusarPropostaHorario,
+  aceitarReposicaoProposta,
+  recusarReposicaoProposta,
+} from '@/lib/actions/aluno'
 
 type AulaFamilia = {
   // Chave da linha. As aulas normais repetem-se, e a matrícula chega para
@@ -103,6 +112,47 @@ export async function AgendaFamilia({
       .gte('data', hojeISO())
       .order('data'),
   ])
+
+  // O que espera decisão. Vive aqui, no topo da agenda da família, e não
+  // dentro do perfil de cada aluno: uma pergunta escondida a dois cliques
+  // de distância é uma pergunta sem resposta. A agenda é onde se vai ver
+  // "o que temos", e é aqui que tem de aparecer "e isto, podes?".
+  const idsDosAlunos = (alunosData ?? []).map((a) => a.id)
+  const [{ data: propostasData }, { data: reposicoesPropostasData }] =
+    idsDosAlunos.length > 0
+      ? await Promise.all([
+          supabase
+            .from('propostas_horario')
+            .select(
+              'id, mensagem, aluno_id, novo:horarios!propostas_horario_horario_novo_id_fkey(dia_semana, hora_inicio, hora_fim), atual:horarios!propostas_horario_horario_atual_id_fkey(dia_semana, hora_inicio, hora_fim), matriculas(instrumentos(nome))'
+            )
+            .in('aluno_id', idsDosAlunos)
+            .eq('estado', 'pendente'),
+          supabase
+            .from('reposicoes')
+            .select('id, aluno_id, data, hora_inicio, hora_fim, instrumento_nome')
+            .in('aluno_id', idsDosAlunos)
+            .eq('estado', 'proposta')
+            .order('data'),
+        ])
+      : [{ data: null }, { data: null }]
+
+  const propostas = (propostasData ?? []) as unknown as {
+    id: number
+    mensagem: string | null
+    aluno_id: string
+    novo: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    atual: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    matriculas: { instrumentos: { nome: string } | null } | null
+  }[]
+  const reposicoesPropostas = (reposicoesPropostasData ?? []) as {
+    id: number
+    aluno_id: string
+    data: string
+    hora_inicio: string
+    hora_fim: string
+    instrumento_nome: string | null
+  }[]
 
   const canceladas = new Map<number, Set<string>>()
   for (const d of desmarcadasData ?? []) {
@@ -209,6 +259,100 @@ export async function AgendaFamilia({
             Calendário do ano letivo
           </Link>
         </nav>
+
+        {/* Primeiro o que espera resposta, antes das aulas: é a única
+            coisa desta página que não é informação, é uma decisão. */}
+        {reposicoesPropostas.map((r) => (
+          <section key={`rep-${r.id}`} className="proposta-horario">
+            <h2>Reposição proposta</h2>
+            <p>
+              O professor marcou uma reposição
+              {r.instrumento_nome ? ` de ${r.instrumento_nome}` : ''} para{' '}
+              <strong>{nomePorAluno.get(r.aluno_id)}</strong>:{' '}
+              <strong>
+                {formatarDataEscolar(r.data, { weekday: 'long', day: 'numeric', month: 'long' })},{' '}
+                {formatarHora(r.hora_inicio)}–{formatarHora(r.hora_fim)}
+              </strong>
+              .
+            </p>
+            <div className="proposta-horario-acoes">
+              <form action={aceitarReposicaoProposta}>
+                <input type="hidden" name="reposicaoId" value={r.id} />
+                <input type="hidden" name="alunoId" value={r.aluno_id} />
+                <SubmitButton
+                  textoAGuardar="A aceitar…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-azul-fundo)] px-6 text-[15px] font-semibold text-white disabled:opacity-50"
+                >
+                  Aceitar
+                </SubmitButton>
+              </form>
+              <form action={recusarReposicaoProposta} className="proposta-horario-recusa">
+                <input type="hidden" name="reposicaoId" value={r.id} />
+                <input type="hidden" name="alunoId" value={r.aluno_id} />
+                <label htmlFor={`resposta-${r.id}`} className="sr-only">
+                  Quando é que podes?
+                </label>
+                <input
+                  id={`resposta-${r.id}`}
+                  name="resposta"
+                  maxLength={500}
+                  placeholder="Quando é que podes? (opcional)"
+                  className={classesCampo}
+                />
+                <SubmitButton
+                  textoAGuardar="A responder…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-6 text-[15px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
+                >
+                  Não posso
+                </SubmitButton>
+              </form>
+            </div>
+          </section>
+        ))}
+
+        {propostas.map((p) => (
+          <section key={`hor-${p.id}`} className="proposta-horario">
+            <h2>Mudança de horário proposta</h2>
+            <p>
+              O professor propõe mudar
+              {p.matriculas?.instrumentos?.nome ? ` ${p.matriculas.instrumentos.nome}` : ''} de{' '}
+              <strong>{nomePorAluno.get(p.aluno_id)}</strong> de{' '}
+              <strong>
+                {p.atual?.dia_semana}, {p.atual && formatarHora(p.atual.hora_inicio)}–
+                {p.atual && formatarHora(p.atual.hora_fim)}
+              </strong>{' '}
+              para{' '}
+              <strong>
+                {p.novo?.dia_semana}, {p.novo && formatarHora(p.novo.hora_inicio)}–
+                {p.novo && formatarHora(p.novo.hora_fim)}
+              </strong>
+              .
+            </p>
+            {p.mensagem && <p className="proposta-horario-mensagem">“{p.mensagem}”</p>}
+            <div className="proposta-horario-acoes">
+              <form action={aceitarPropostaHorario}>
+                <input type="hidden" name="propostaId" value={p.id} />
+                <input type="hidden" name="alunoId" value={p.aluno_id} />
+                <SubmitButton
+                  textoAGuardar="A aceitar…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-azul-fundo)] px-6 text-[15px] font-semibold text-white disabled:opacity-50"
+                >
+                  Aceitar
+                </SubmitButton>
+              </form>
+              <form action={recusarPropostaHorario}>
+                <input type="hidden" name="propostaId" value={p.id} />
+                <input type="hidden" name="alunoId" value={p.aluno_id} />
+                <SubmitButton
+                  textoAGuardar="A responder…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-6 text-[15px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
+                >
+                  Não posso
+                </SubmitButton>
+              </form>
+            </div>
+          </section>
+        ))}
 
         {/* Com um só aluno os separadores mostrariam sempre a mesma lista. */}
         {alunos.length > 1 && (

@@ -308,6 +308,29 @@ export default async function DashboardPage({
   const matriculas = (matriculasData ?? []) as unknown as MatriculaFilho[]
   const avisoMaisRecente = avisosData?.[0] ?? null
 
+  // Quantas decisões esperam por esta conta. O aviso do topo levava
+  // sempre aos Avisos, que repetem a mensagem e não deixam responder —
+  // ler duas vezes a mesma frase e continuar sem saber onde carregar.
+  // Havendo o que decidir, leva à agenda, que é onde se responde.
+  const idsDosAlunos = meusAlunos.map((a) => a.id)
+  const [{ count: propostasPendentes }, { count: reposicoesPropostas }] =
+    idsDosAlunos.length > 0
+      ? await Promise.all([
+          supabase
+            .from('propostas_horario')
+            .select('id', { count: 'exact', head: true })
+            .in('aluno_id', idsDosAlunos)
+            .eq('estado', 'pendente'),
+          supabase
+            .from('reposicoes')
+            .select('id', { count: 'exact', head: true })
+            .in('aluno_id', idsDosAlunos)
+            .eq('estado', 'proposta'),
+        ])
+      : [{ count: 0 }, { count: 0 }]
+
+  const porDecidir = (propostasPendentes ?? 0) + (reposicoesPropostas ?? 0)
+
   const { data: desmarcadasFamilia } = await supabase
     .from('aulas_desmarcadas')
     .select('matricula_id, data')
@@ -376,8 +399,20 @@ export default async function DashboardPage({
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
 
-        {avisoMaisRecente && (
-          <Link href="/dashboard/avisos" className="familia-aviso"><span>Novo aviso</span><strong>{avisoMaisRecente.mensagem}</strong><i aria-hidden="true">→</i></Link>
+        {porDecidir > 0 ? (
+          <Link href="/dashboard/agenda" className="familia-aviso familia-aviso-decidir">
+            <span>{porDecidir === 1 ? 'Precisa da tua resposta' : 'Precisam da tua resposta'}</span>
+            <strong>
+              {porDecidir === 1
+                ? 'O professor propôs uma alteração. Aceita ou diz que não podes.'
+                : `${porDecidir} propostas do professor à espera de resposta.`}
+            </strong>
+            <i aria-hidden="true">→</i>
+          </Link>
+        ) : (
+          avisoMaisRecente && (
+            <Link href="/dashboard/avisos" className="familia-aviso"><span>Novo aviso</span><strong>{avisoMaisRecente.mensagem}</strong><i aria-hidden="true">→</i></Link>
+          )
         )}
 
         <section className="familia-proxima" aria-labelledby="proxima-familia-titulo">

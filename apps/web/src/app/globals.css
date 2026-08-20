@@ -3722,3 +3722,7 @@ body:has(.auth-pagina) { background: var(--color-papel); }
    telemóvel — a caixa precisa de largura, o botão não. */
 .proposta-horario-recusa { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; min-width: 240px; }
 .proposta-horario-recusa input { flex: 1; min-width: 160px; }
+/* O aviso do topo quando há algo a decidir: mesma forma do aviso normal,
+   outra cor. Uma decisão por responder não é uma notícia. */
+.familia-aviso-decidir { border-color: var(--color-azul-fundo); }
+.familia-aviso-decidir span { color: var(--color-azul-texto); }
