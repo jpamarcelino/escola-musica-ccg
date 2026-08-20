@@ -101,9 +101,21 @@ export default async function PresencasPage() {
           </section>
         )}
 
+        {/* Havia aqui um "Confirmar agora" que ia dar exatamente ao
+            mesmo sítio que o cartão vermelho lá em cima — dois caminhos
+            para a mesma tarefa, a dois centímetros um do outro, e a
+            pergunta implícita de qual deles é o certo.
+            
+            Quando há aulas por confirmar, o caminho é o cartão: é maior,
+            diz quantas são e está primeiro. Quando não há nada por
+            confirmar, o cartão deixa de ser clicável — e é então que
+            esta lista precisa de levar lá, para se poderem rever
+            confirmações antigas. */}
         <nav className="presencas-destinos" aria-label="Ações de presenças">
-          <Link href="/dashboard/presencas/confirmar"><span><b>01</b><strong>{porConfirmar > 0 ? 'Confirmar agora' : 'Consultar confirmações'}</strong></span><small>Registar presente ou falta por aula</small><i aria-hidden="true">→</i></Link>
-          <Link href="/dashboard/presencas/historico"><span><b>02</b><strong>Histórico</strong></span><small>Consultar o percurso de cada aluno</small><i aria-hidden="true">→</i></Link>
+          {porConfirmar === 0 && (
+            <Link href="/dashboard/presencas/confirmar"><span><b>01</b><strong>Consultar confirmações</strong></span><small>Rever presenças e faltas já registadas</small><i aria-hidden="true">→</i></Link>
+          )}
+          <Link href="/dashboard/presencas/historico"><span><b>{porConfirmar === 0 ? '02' : '01'}</b><strong>Histórico</strong></span><small>Consultar o percurso de cada aluno</small><i aria-hidden="true">→</i></Link>
         </nav>
       </div>
     </main>
