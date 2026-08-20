@@ -105,20 +105,40 @@ describe('totalPorReceber', () => {
 
 describe('parteDoProfessor', () => {
   it('tira a retenção do CCG', () => {
-    expect(parteDoProfessor(50, 10)).toBe(40)
+    expect(parteDoProfessor({ valor: 50, retencao_ccg: 10 })).toBe(40)
   })
 
   it('trata a retenção em falta como zero', () => {
-    expect(parteDoProfessor(50, null)).toBe(50)
-    expect(parteDoProfessor(50, undefined)).toBe(50)
+    expect(parteDoProfessor({ valor: 50, retencao_ccg: null })).toBe(50)
+    expect(parteDoProfessor({ valor: 50 })).toBe(50)
+  })
+
+  it('a inscrição e o seguro do primeiro mês não são do professor', () => {
+    // Primeiro mês de música: 50 de mensalidade + 10 de inscrição + 10 de
+    // seguro = 70 para a família, 40 para o professor.
+    expect(
+      parteDoProfessor({ valor: 70, retencao_ccg: 10, inscricao: 10, seguro: 10 })
+    ).toBe(40)
+  })
+
+  it('o acréscimo por atraso é da escola', () => {
+    // 50 + 20% = 60 para a família; ao professor entra o mesmo de sempre.
+    expect(parteDoProfessor({ valor: 60, retencao_ccg: 10, acrescimo: 10 })).toBe(40)
+  })
+
+  it('acompanha um total corrigido à mão', () => {
+    // Entrou a meio do mês e a secretaria pôs metade. O CCG leva a sua
+    // retenção na mesma; ao professor entra o que sobra.
+    expect(parteDoProfessor({ valor: 25, retencao_ccg: 10 })).toBe(15)
   })
 
   it('nunca devolve negativo', () => {
     // Configuração errada: a retenção não pode pôr o professor a dever.
-    expect(parteDoProfessor(10, 15)).toBe(0)
+    expect(parteDoProfessor({ valor: 10, retencao_ccg: 15 })).toBe(0)
   })
 
   it('sem valor, não há parte nenhuma', () => {
-    expect(parteDoProfessor(null, 10)).toBe(0)
+    expect(parteDoProfessor({ valor: null, retencao_ccg: 10 })).toBe(0)
+    expect(parteDoProfessor(null)).toBe(0)
   })
 })

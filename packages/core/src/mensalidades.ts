@@ -61,20 +61,41 @@ export function totalPorReceber(
 
 // O que fica para o professor.
 //
-// A família paga a mensalidade inteira; uma parte dela é do CCG. Ao
-// professor interessa o que lhe entra, e mostrar-lhe o valor cheio é
-// prometer-lhe todos os meses mais do que vai receber.
+// A família paga um total; ao professor interessa o que lhe entra, e
+// mostrar-lhe o valor cheio é prometer-lhe todos os meses mais do que vai
+// receber. Sai-lhe do total tudo o que não é dele:
 //
-// A retenção vem guardada em cada mensalidade, e não da tabela de taxas:
-// o que valeu naquele mês não pode mudar quando os preços mudarem.
+//   * a retenção do CCG (os 10 € de cada mensalidade);
+//   * a inscrição e o seguro, que são da escola e passam uma vez por ano;
+//   * o acréscimo de 20% por atraso, que é uma penalização da escola e
+//     não uma aula a mais.
+//
+// Tudo isto vem guardado em cada mensalidade, e não da tabela de taxas: o
+// que valeu naquele mês não pode mudar quando os preços mudarem. E é por
+// subtração, e não por soma de uma parte guardada, para a conta continuar
+// certa quando a secretaria corrige o total à mão — um aluno que entrou a
+// meio do mês paga metade, e o professor recebe metade.
 //
 // Nunca devolve negativo. Uma retenção maior do que a mensalidade é um
 // engano de configuração, e a resposta certa a um engano é zero — não um
 // professor a dever dinheiro à escola.
-export function parteDoProfessor(
-  valor: number | null | undefined,
-  retencao: number | null | undefined
-): number {
+export type PartesDaMensalidade = {
+  valor: number | null | undefined
+  retencao_ccg?: number | null
+  inscricao?: number | null
+  seguro?: number | null
+  acrescimo?: number | null
+}
+
+export function parteDoProfessor(mensalidade: PartesDaMensalidade | null | undefined): number {
+  const valor = mensalidade?.valor
   if (valor == null) return 0
-  return Math.max(valor - (retencao ?? 0), 0)
+
+  const daEscola =
+    (mensalidade?.retencao_ccg ?? 0) +
+    (mensalidade?.inscricao ?? 0) +
+    (mensalidade?.seguro ?? 0) +
+    (mensalidade?.acrescimo ?? 0)
+
+  return Math.max(valor - daEscola, 0)
 }

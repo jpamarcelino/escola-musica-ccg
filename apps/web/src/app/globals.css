@@ -3933,3 +3933,57 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .aviso-accao:hover { background: var(--color-surface-raised); }
 .aviso-accao:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .aviso-accao { transition: none; } }
+
+/* ------------------------------------------------------------------ */
+/* Mensalidades, do lado da família (migração 0044)                    */
+/* ------------------------------------------------------------------ */
+
+.mensalidades-familia .partitura-folha { max-width: 680px; }
+
+.mensalidade-lista { margin-top: 26px; display: flex; flex-direction: column; gap: 12px; }
+.mensalidade-lista article {
+  border: 1px solid var(--color-linha);
+  border-radius: var(--radius-medium);
+  padding: 16px;
+}
+.mensalidade-lista article > header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+/* As parcelas do valor. Existem para a conta ser explicada e não
+   afirmada: quem recebe 70 € onde esperava 50 tem direito a ver de onde
+   vieram os outros 20. */
+.mensalidade-parcelas { display: flex; flex-direction: column; gap: 6px; }
+.mensalidade-parcelas > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+.mensalidade-parcelas dd { font-variant-numeric: tabular-nums; }
+.mensalidade-parcelas .mensalidade-total {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-linha);
+  font-weight: 650;
+  color: var(--color-text-primary);
+}
+
+.mensalidade-estado {
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+/* Só o que está por pagar ganha cor. "Paga" não precisa de dar nas
+   vistas — quem já pagou não tem nada a fazer com esta linha. */
+.mensalidade-lista article[data-estado="por_pagar"] .mensalidade-estado {
+  color: var(--color-azul-texto);
+}

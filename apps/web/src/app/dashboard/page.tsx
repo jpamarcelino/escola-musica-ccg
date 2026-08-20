@@ -460,6 +460,12 @@ export default async function DashboardPage({
             <Link href="/dashboard/alunos" className="familia-gerir">
               Gerir alunos<i aria-hidden="true">→</i>
             </Link>
+            {/* A barra de baixo já tem os cinco destinos que cabem, por
+                isso a porta para as mensalidades é aqui — a mesma solução
+                que os Avisos da secretaria tiveram. */}
+            <Link href="/dashboard/mensalidades" className="familia-gerir">
+              Mensalidades<i aria-hidden="true">→</i>
+            </Link>
           </div>
         )}
         <div className="partitura-instalacao"><InstalarCallout /></div>

@@ -47,6 +47,44 @@ export async function definirValorMensal(formData: FormData) {
   revalidatePath('/admin/pagamentos')
 }
 
+// A isenção dos 10 € que vão para o CCG.
+//
+// À mão, matrícula a matrícula, e não por uma regra automática: quem é
+// voluntário do rancho é coisa que a app não sabe nem tem como saber, e
+// uma regra que adivinhasse errado tirava ou punha dinheiro à pessoa
+// errada. A partir daqui, a geração do dia 1 respeita-a sozinha (0044).
+//
+// Não mexe em meses já gerados de propósito: cada mensalidade guarda a
+// retenção que valeu nesse mês, e reescrever o passado mudava contas de
+// professores que já foram fechadas.
+export async function definirIsencaoCcg(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { data: perfilAtual } = await supabase
+    .from('perfis_escola')
+    .select('admin')
+    .eq('id', user.id)
+    .single()
+
+  if (!perfilAtual?.admin) {
+    redirect('/dashboard')
+  }
+
+  const matriculaId = String(formData.get('matriculaId') ?? '')
+  const isento = String(formData.get('isento') ?? '') === 'true'
+
+  await supabase.from('matriculas').update({ isento_ccg: isento }).eq('id', matriculaId)
+
+  revalidatePath('/admin/pagamentos/confirmar')
+}
+
 export async function marcarMensalidadePaga(formData: FormData) {
   const supabase = await createClient()
   const {

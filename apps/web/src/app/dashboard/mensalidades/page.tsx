@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
+import { ehContaCCG } from '@/lib/navegacao'
+import { MensalidadesFamilia } from './mensalidades-familia'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
 import { MESES_ANO_LETIVO, euros, eurosOuTexto, parteDoProfessor } from '@ccg/core'
@@ -17,6 +19,9 @@ type MensalidadeDoMes = {
   aluno_id: string
   valor: number | null
   retencao_ccg: number | null
+  inscricao: number | null
+  seguro: number | null
+  acrescimo: number | null
   pago: boolean
   desistencia: boolean
   beneficio_id: number | null
@@ -68,13 +73,28 @@ export default async function MensalidadesProfessorPage({
       (m) => String(m.ano) === anoParam && String(m.mes) === mesParam
     ) ?? mesPredefinido()
 
-  const [{ data: perfilAtual }, { data: matriculasData }, { data: mensalidadesData }] =
+  // O papel decide-se antes de tudo, e sozinho: a mesma rota serve a
+  // família e o professor, e as consultas de um não fazem sentido para o
+  // outro. Era mais rápido pedir tudo ao mesmo tempo — e pedia-se a uma
+  // família as matrículas de um professor que ela não é.
+  const { data: perfilAtual } = await supabase
+    .from('perfis_escola')
+    .select('tipo, adere_recomendacao, programa')
+    .eq('id', user.id)
+    .single()
+
+  if (ehContaCCG(perfilAtual?.tipo)) {
+    return (
+      <MensalidadesFamilia supabase={supabase} userId={user.id} escolhido={escolhido} />
+    )
+  }
+
+  if (perfilAtual?.tipo !== 'professor') {
+    redirect('/dashboard')
+  }
+
+  const [{ data: matriculasData }, { data: mensalidadesData }] =
     await Promise.all([
-      supabase
-        .from('perfis_escola')
-        .select('tipo, adere_recomendacao, programa')
-        .eq('id', user.id)
-        .single(),
       supabase
         .from('matriculas')
         .select('id, aluno_id, valor_mensal, alunos(nome), instrumentos(nome)')
@@ -82,25 +102,24 @@ export default async function MensalidadesProfessorPage({
         .eq('estado', 'confirmado'),
       supabase
         .from('mensalidades')
-        .select('aluno_id, valor, retencao_ccg, pago, desistencia, beneficio_id, instrumento_nome')
+        .select('aluno_id, valor, retencao_ccg, inscricao, seguro, acrescimo, pago, desistencia, beneficio_id, instrumento_nome')
         .eq('professor_id', user.id)
         .eq('ano', escolhido.ano)
         .eq('mes', escolhido.mes),
     ])
-
-  if (perfilAtual?.tipo !== 'professor') {
-    redirect('/dashboard')
-  }
 
   // A retenção em vigor na escola deste professor, para as linhas que
   // ainda não têm mensalidade gerada. As que já têm trazem a sua, que é
   // a que valeu naquele mês.
   const { data: taxas } = await supabase
     .from('taxas_escola')
-    .select('retencao_ccg')
+    .select('retencao_ccg, mensalidade')
     .eq('programa', perfilAtual?.programa ?? '')
     .maybeSingle()
   const retencaoDaEscola = taxas?.retencao_ccg ?? 0
+  // O preço de tabela da escola (0044). Serve as linhas cuja matrícula
+  // não escreve nenhum valor por cima — que desde a 0044 são a maioria.
+  const precoDaEscola = taxas?.mensalidade ?? null
 
   const matriculas = (matriculasData ?? []) as unknown as MatriculaDoProfessor[]
   const mensalidades = (mensalidadesData ?? []) as MensalidadeDoMes[]
@@ -128,8 +147,14 @@ export default async function MensalidadesProfessorPage({
         // não existe, usa-se a retenção que a mensalidade mais recente
         // trouxe — e na falta dela, a da escola.
         valor: parteDoProfessor(
-          mensalidade?.valor ?? m.valor_mensal,
-          mensalidade?.retencao_ccg ?? retencaoDaEscola
+          mensalidade ?? {
+            // Enquanto a mensalidade do mês não existe, mostra-se o que
+            // ela virá a dar: o preço da matrícula (ou o de tabela) menos
+            // a retenção em vigor. Sem inscrição nem seguro — esses são
+            // da escola e nunca entram nesta conta.
+            valor: m.valor_mensal ?? precoDaEscola,
+            retencao_ccg: retencaoDaEscola,
+          }
         ),
         estado,
       }
