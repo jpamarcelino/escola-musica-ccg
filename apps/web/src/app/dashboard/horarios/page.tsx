@@ -8,7 +8,7 @@ import {
   bloquearHorarios,
   desbloquearHorarios,
 } from '@/lib/actions/professor'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
+import { DIAS_SEMANA, duracaoDaAula, professorCriaHorarios, HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
@@ -56,7 +56,7 @@ export default async function HorariosPage({
 
   const [{ data: profile }, { data: horariosData }, { data: confirmadosData }] =
     await Promise.all([
-      supabase.from('perfis_escola').select('tipo').eq('id', user.id).single(),
+      supabase.from('perfis_escola').select('tipo, programa').eq('id', user.id).single(),
       supabase
         .from('horarios')
         .select('id, dia_semana, hora_inicio, hora_fim, estado')
@@ -76,6 +76,9 @@ export default async function HorariosPage({
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
   }
+
+  const duracao = duracaoDaAula(profile?.programa)
+  const criaOsSeus = professorCriaHorarios(profile?.programa)
 
   const horarios = (horariosData ?? []) as unknown as HorarioProfessor[]
   const confirmados = (confirmadosData ?? []) as unknown as Confirmado[]
@@ -263,6 +266,27 @@ export default async function HorariosPage({
           )}
         </section>
 
+        {/* Em Bebés a grelha é montada pela secretaria: são aulas de
+            grupo, decididas para a escola inteira e não professor a
+            professor. Mostrar-lhe um formulário que a acção recusa era
+            deixá-lo escrever meia hora de horários para levar com um
+            erro no fim. */}
+        {!criaOsSeus && (
+          <section className="partitura-seccao">
+            <div className="partitura-seccao-cabecalho">
+              <div>
+                <p className="partitura-indice">02</p>
+                <h2>Criar horários</h2>
+              </div>
+            </div>
+            <p className="text-sm text-foreground/70">
+              Os horários da tua escola são definidos pela secretaria. Fala com ela para abrir ou
+              mudar horas.
+            </p>
+          </section>
+        )}
+
+        {criaOsSeus && (
         <details className="horarios-criar">
           <summary><span><b>02</b><strong>Criar horários</strong></span><small>Adicionar disponibilidade à semana</small></summary>
           <section className="horarios-criar-corpo">
@@ -270,6 +294,9 @@ export default async function HorariosPage({
             Os horários não são específicos de uma disciplina — servem para
             qualquer uma das que ensinas. Preenche só os dias em que dás
             aulas; deixa os outros em branco. Só entre as 10h e as 22h.
+            {duracao
+              ? ` Cada aula da tua escola dura ${duracao} minutos, e é assim que os blocos são criados.`
+              : ''}
           </p>
           <form
             action={criarHorarios}
@@ -298,23 +325,6 @@ export default async function HorariosPage({
               ))}
             </div>
 
-            <div className="space-y-1">
-              <label htmlFor="duracaoMinutos" className="block text-sm font-medium">
-                Duração de cada aula (minutos)
-              </label>
-              <input
-                id="duracaoMinutos"
-                name="duracaoMinutos"
-                type="number"
-                min={5}
-                step={5}
-                defaultValue={50}
-                required
-                inputMode="numeric"
-                className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-3 text-sm"
-              />
-            </div>
-
             <SubmitButton
               textoAGuardar="A criar…"
               className="horarios-criar-botao"
@@ -324,6 +334,7 @@ export default async function HorariosPage({
           </form>
           </section>
         </details>
+        )}
 
         <section className="partitura-seccao" aria-labelledby="alunos-titulo">
           <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">03</p><h2 id="alunos-titulo">Alunos confirmados <span className="horarios-contagem">{confirmados.length}</span></h2></div></div>

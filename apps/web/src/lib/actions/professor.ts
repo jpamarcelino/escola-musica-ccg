@@ -3,7 +3,14 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA, hojeISO, type DiaSemana } from '@ccg/core'
+import {
+  DIAS_SEMANA,
+  duracaoDaAula,
+  hojeISO,
+  minutosEntre,
+  professorCriaHorarios,
+  type DiaSemana,
+} from '@ccg/core'
 
 // Fora deste intervalo o Centro Cultural não abre — evita horários
 // disparatados (ex: 1h da manhã) por engano de fuso ou digitação.
@@ -314,14 +321,27 @@ export async function criarHorarios(formData: FormData) {
     redirect('/login')
   }
 
-  const duracaoMinutos = Number(formData.get('duracaoMinutos') ?? 0)
-
   function voltarComErro(mensagem: string): never {
     redirect(`/dashboard/horarios?erroHorarios=${encodeURIComponent(mensagem)}`)
   }
 
+  // A duração deixou de vir do formulário: é a da escola. Um campo que a
+  // pessoa preenchia era um campo onde ela podia escrever 30 — e ficava
+  // com aulas mais curtas do que as do colega do lado, pelo mesmo preço.
+  const { data: perfil } = await supabase
+    .from('perfis_escola')
+    .select('programa')
+    .eq('id', user.id)
+    .single()
+
+  if (!professorCriaHorarios(perfil?.programa)) {
+    voltarComErro('Os horários da tua escola são definidos pela secretaria.')
+  }
+
+  const duracaoMinutos = duracaoDaAula(perfil?.programa)
+
   if (!duracaoMinutos) {
-    voltarComErro('Indica a duração de cada aula.')
+    voltarComErro('A tua conta ainda não tem escola atribuída. Fala com a secretaria.')
   }
 
   const linhas: {
@@ -373,6 +393,32 @@ export async function criarHorarios(formData: FormData) {
   revalidatePath('/dashboard/horarios')
 }
 
+// Editar um horário à mão mexe nas horas — e as horas têm de continuar a
+// dar a duração da escola. Sem esta verificação, o campo de duração saía
+// do ecrã de criar e voltava a entrar por aqui.
+async function validarDuracao(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  horaInicio: string,
+  horaFim: string
+): Promise<string | null> {
+  const { data: perfil } = await supabase
+    .from('perfis_escola')
+    .select('programa')
+    .eq('id', userId)
+    .single()
+
+  const esperada = duracaoDaAula(perfil?.programa)
+  if (!esperada) return null
+
+  const minutos = minutosEntre(horaInicio, horaFim)
+  if (minutos === null) return 'Indica as horas de início e de fim.'
+  if (minutos !== esperada) {
+    return `As aulas da tua escola são de ${esperada} minutos.`
+  }
+  return null
+}
+
 export async function atualizarHorario(formData: FormData) {
   const supabase = await createClient()
   const {
@@ -399,6 +445,12 @@ export async function atualizarHorario(formData: FormData) {
   }
   if (horaFim <= horaInicio) {
     voltarComErro('A hora de fim tem de ser depois da hora de início.')
+  }
+
+
+  const erroDuracao = await validarDuracao(supabase, user.id, horaInicio, horaFim)
+  if (erroDuracao) {
+    voltarComErro(erroDuracao)
   }
   if (horaInicio < HORARIO_MIN || horaFim > HORARIO_MAX) {
     voltarComErro(`Os horários têm de estar entre as ${HORARIO_MIN} e as ${HORARIO_MAX}.`)

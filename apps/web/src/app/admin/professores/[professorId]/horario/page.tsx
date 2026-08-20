@@ -2,8 +2,19 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, type DiaSemana } from '@ccg/core'
+import {
+  DIAS_SEMANA,
+  HOUR_HEIGHT,
+  duracaoDaAula,
+  paraMinutos,
+  formatarHora,
+  formatarSala,
+  type DiaSemana,
+} from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
+import { SubmitButton } from '@/components/submit-button'
+import { MensagemErro, MensagemInfo } from '@/components/mensagem'
+import { criarHorariosDeProfessor } from '@/lib/actions/admin'
 import type { PerfisEscolaPrograma } from '@ccg/types'
 
 type Confirmado = {
@@ -29,10 +40,13 @@ type BlocoAgenda = {
 
 export default async function AdminProfessorHorarioPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ professorId: string }>
+  searchParams: Promise<{ erro?: string; criados?: string }>
 }) {
   const { professorId } = await params
+  const { erro, criados } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -140,6 +154,62 @@ export default async function AdminProfessorHorarioPage({
     <main id="conteudo-principal" className="partitura-pagina horarios-pagina admin-horario-professor">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho"><Link href={`/admin/professores/${professorId}`} className="partitura-voltar" aria-label="Voltar à ficha do professor">←</Link><div><p className="partitura-sobretitulo">Horário semanal</p><h1>{professorData.nome}</h1><p>{blocos.length} {blocos.length === 1 ? 'aula confirmada' : 'aulas confirmadas'}</p></div></header>
+
+        {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
+        {criados && (
+          <MensagemInfo>
+            {criados === '1' ? '1 horário criado.' : `${criados} horários criados.`}
+          </MensagemInfo>
+        )}
+
+        {/* Abrir horas em nome do professor. Existe por causa dos Bebés,
+            onde a grelha é da escola e não de cada professor — mas serve
+            para qualquer um: a secretaria pode ter de abrir uma hora a
+            quem não está à frente do computador. */}
+        <details className="horarios-criar">
+          <summary>
+            <span><b>+</b><strong>Abrir horários</strong></span>
+            <small>
+              Blocos de {duracaoDaAula(professorData.programa) ?? '—'} minutos, a duração desta
+              escola
+            </small>
+          </summary>
+          <section className="horarios-criar-corpo">
+            <p className="text-xs text-foreground/50">
+              Preenche só os dias com horas; os outros ficam em branco. Só entre as 10h e as 22h.
+            </p>
+            <form action={criarHorariosDeProfessor} className="space-y-3">
+              <input type="hidden" name="professorId" value={professorId} />
+              <div className="space-y-2">
+                {DIAS_SEMANA.map((dia, i) => (
+                  <div key={dia} className="grid grid-cols-[64px_1fr_24px_1fr] items-center gap-2">
+                    <span className="text-sm">{dia.slice(0, 3)}</span>
+                    <input
+                      type="time"
+                      name={`inicio_${i}`}
+                      min="10:00"
+                      max="22:00"
+                      aria-label={`${dia}, início`}
+                      className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-2 text-sm"
+                    />
+                    <span className="text-center text-sm text-foreground/40">–</span>
+                    <input
+                      type="time"
+                      name={`fim_${i}`}
+                      min="10:00"
+                      max="22:00"
+                      aria-label={`${dia}, fim`}
+                      className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-2 text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+              <SubmitButton textoAGuardar="A criar…" className="horarios-criar-botao">
+                Criar horários
+              </SubmitButton>
+            </form>
+          </section>
+        </details>
 
         {blocos.length === 0 ? (
           <EmptyState titulo="Ainda não tem aulas confirmadas" />

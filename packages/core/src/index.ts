@@ -55,6 +55,14 @@ export type { Sala } from './sala'
 export { HOUR_HEIGHT, paraMinutos, formatarHora } from './horarios-grade'
 
 export {
+  DURACAO_AULA,
+  duracaoDaAula,
+  professorCriaHorarios,
+  minutosEntre,
+} from './duracao-aulas'
+export type { ProgramaEscola } from './duracao-aulas'
+
+export {
   MUSICA_IDADE_MIN,
   MUSICA_IDADE_MAX,
   separarFaixaEtaria,
