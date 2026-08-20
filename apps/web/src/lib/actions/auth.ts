@@ -13,7 +13,28 @@ async function origem() {
   return `${protocolo}://${host}`
 }
 
-export type AuthState = { error?: string; info?: string } | undefined
+// Os valores que a pessoa escreveu, devolvidos com o erro.
+//
+// O React 19 limpa os campos de um formulário quando a acção termina.
+// Num registo com seis campos, isso transformava um engano num
+// algarismo do NIF em escrever tudo outra vez — e é exatamente no
+// momento em que a pessoa já está irritada que a app lhe pede mais
+// trabalho.
+//
+// A password não vem cá: é o único campo que o browser volta a preencher
+// sozinho (gestores de password) e o único que não deve andar a saltar
+// entre o servidor e o ecrã mais vezes do que as necessárias.
+export type ValoresRegisto = {
+  nome?: string
+  telefone?: string
+  nif?: string
+  dataNascimento?: string
+  email?: string
+}
+
+export type AuthState =
+  | { error?: string; info?: string; valores?: ValoresRegisto }
+  | undefined
 
 export async function signup(
   _prevState: AuthState,
@@ -35,12 +56,41 @@ export async function signup(
   // As mesmas regras que a app móvel usa, no mesmo ficheiro: campos
   // obrigatórios, password, telefone e data de nascimento, por esta
   // ordem. Estavam escritas à mão aqui e repetidas noutras cinco acções.
+  // Tudo o que a pessoa escreveu volta com o erro, para os campos serem
+  // repostos.
+  const valores = { nome, telefone, nif, dataNascimento, email }
+
   const erro = validarRegisto({ nome, email, password, telefone, dataNascimento, nif })
   if (erro) {
-    return { error: erro }
+    return { error: erro, valores }
   }
 
   const supabase = await createClient()
+
+  // Duas perguntas à base de dados antes de criar seja o que for.
+  //
+  // O email já era recusado, mas só pelo Supabase e em inglês. O
+  // telemóvel não era recusado por ninguém — e duas contas com o mesmo
+  // número é a secretaria a ligar para a pessoa errada.
+  const [{ data: emailUsado }, { data: telefoneUsado }] = await Promise.all([
+    supabase.rpc('email_ja_registado', { p_email: email }),
+    supabase.rpc('telefone_ja_registado', { p_telefone: telefone }),
+  ])
+
+  if (emailUsado) {
+    return {
+      error: 'Já existe uma conta com este email. Entra em vez de criar conta nova.',
+      valores,
+    }
+  }
+
+  if (telefoneUsado) {
+    return {
+      error: 'Já existe uma conta com este número de telemóvel.',
+      valores,
+    }
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -56,7 +106,7 @@ export async function signup(
   })
 
   if (error) {
-    return { error: error.message }
+    return { error: error.message, valores }
   }
 
   // Se a confirmação de email estiver ativa no Supabase, ainda não há sessão

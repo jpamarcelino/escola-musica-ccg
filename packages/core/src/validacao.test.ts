@@ -175,13 +175,15 @@ describe('validarRegisto', () => {
     )
   })
 
-  // A web nunca verificou o formato do email — aceita o que lá estiver e
-  // deixa o Supabase recusar. Este teste fixa esse comportamento, para
-  // que adoptar as validações partilhadas não mude a web sem querer.
-  it('não recusa um email mal formado, tal como a web', () => {
+  // Mudou de propósito: o formato do email passou a ser verificado aqui.
+  // Antes deixava-se passar e o Supabase recusava — em inglês, e só
+  // depois de a pessoa carregar em "Criar conta".
+  it('recusa um email mal formado', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 7, 17))
-    expect(validarRegisto({ ...bons, email: 'isto-nao-e-um-email' })).toBeNull()
+    expect(validarRegisto({ ...bons, email: 'isto-nao-e-um-email' })).toBe(
+      'Indica um email válido.'
+    )
   })
 })
 
@@ -213,5 +215,48 @@ describe('validarNIF', () => {
 describe('normalizarNIF', () => {
   it('guarda só os algarismos', () => {
     expect(normalizarNIF('123 456 789')).toBe('123456789')
+  })
+})
+
+describe('validarNome, com caracteres', () => {
+  it('aceita nomes portugueses', () => {
+    expect(validarNome('Conceição Gonçalves')).toBeNull()
+    expect(validarNome("Joana d'Arc")).toBeNull()
+    expect(validarNome('Ana-Maria Sá')).toBeNull()
+  })
+
+  it('recusa números', () => {
+    expect(validarNome('Maria123')).toBe('O nome não pode ter números.')
+  })
+
+  it('recusa pontuação e símbolos', () => {
+    expect(validarNome('Maria!')).toBe(
+      'O nome só pode ter letras, espaços, hífenes e apóstrofos.'
+    )
+    expect(validarNome('<script>')).toBe(
+      'O nome só pode ter letras, espaços, hífenes e apóstrofos.'
+    )
+  })
+})
+
+describe('validarRegisto, com nome e email', () => {
+  const base = {
+    nome: 'Maria Silva',
+    email: 'maria@exemplo.pt',
+    password: 'segredo123',
+    telefone: '912345678',
+    dataNascimento: '1990-05-05',
+  }
+
+  it('aceita o conjunto válido', () => {
+    expect(validarRegisto(base)).toBeNull()
+  })
+
+  it('trava um nome com números', () => {
+    expect(validarRegisto({ ...base, nome: 'Maria 2' })).toBe('O nome não pode ter números.')
+  })
+
+  it('trava um email sem arroba', () => {
+    expect(validarRegisto({ ...base, email: 'maria.exemplo.pt' })).toBe('Indica um email válido.')
   })
 })

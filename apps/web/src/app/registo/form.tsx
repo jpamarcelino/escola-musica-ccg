@@ -75,7 +75,10 @@ export default function RegistoForm({
           </MensagemNota>
         )}
 
-        <CampoTexto id="nome" name="nome" label="Nome" />
+        {/* defaultValue em todos: o React 19 limpa o formulário quando
+            a acção termina, e sem isto um engano num campo obrigava a
+            escrever os seis outra vez. */}
+        <CampoTexto id="nome" name="nome" label="Nome" defaultValue={state?.valores?.nome} />
 
         <CampoTexto
           id="telefone"
@@ -83,6 +86,7 @@ export default function RegistoForm({
           label="Número de telemóvel"
           type="tel"
           autoComplete="tel"
+          defaultValue={state?.valores?.telefone}
         />
 
         {/* O NIF vem a seguir ao telefone e antes da data: são os dois
@@ -94,6 +98,7 @@ export default function RegistoForm({
           inputMode="numeric"
           maxLength={11}
           autoComplete="off"
+          defaultValue={state?.valores?.nif}
         />
 
         <CampoTexto
@@ -102,9 +107,16 @@ export default function RegistoForm({
           label="Data de nascimento"
           type="date"
           max={hoje}
+          defaultValue={state?.valores?.dataNascimento}
         />
 
-        <CampoTexto id="email" name="email" label="Email" type="email" />
+        <CampoTexto
+          id="email"
+          name="email"
+          label="Email"
+          type="email"
+          defaultValue={state?.valores?.email}
+        />
 
         <Campo id="password" label="Password">
           <PasswordInput

@@ -118,10 +118,23 @@ export function validarEmail(email: string): Erro {
   return null
 }
 
+// Letras, espaços, hífenes e apóstrofos. Nada mais.
+//
+// A lista de letras inclui acentos e cedilha (\p{L} com a flag unicode),
+// porque um nome português sem "ç" e sem "ã" não é um nome. Ficam de
+// fora algarismos e pontuação: quem escreve "Maria123" ou "Maria!" está
+// a enganar-se, e o nome vai parar a uma pauta, a uma fatura e a um
+// certificado.
+const NOME_PERMITIDO = /^[\p{L}\p{M}'\u2019\- ]+$/u
+
 export function validarNome(nome: string): Erro {
   const limpo = nome.trim()
   if (!limpo) return MENSAGEM_CAMPOS_EM_FALTA
   if (limpo.length < 2) return 'Indica o nome completo.'
+  if (/\d/.test(limpo)) return 'O nome não pode ter números.'
+  if (!NOME_PERMITIDO.test(limpo)) {
+    return 'O nome só pode ter letras, espaços, hífenes e apóstrofos.'
+  }
   return null
 }
 
@@ -129,11 +142,9 @@ export function validarNome(nome: string): Erro {
 // primeiro o que falta, depois a password, depois o contacto, e só no fim
 // a data. A ordem decide qual é o erro que a pessoa vê primeiro.
 //
-// Repara que o formato do email NÃO entra aqui, embora o validarEmail
-// exista. A web nunca o verificou: aceita o que lá estiver e deixa o
-// Supabase recusar. Acrescentá-lo neste conjunto mudava o comportamento
-// da web em silêncio, e isso é decisão do dono do projeto, não minha —
-// fica disponível para quem o quiser usar de propósito.
+// O nome e o email passaram a entrar aqui. Antes, um "Maria123" ou um
+// email sem arroba só eram travados mais à frente — o email pelo
+// Supabase, com uma mensagem em inglês, e o nome por ninguém.
 export function validarRegisto(dados: {
   nome: string
   email: string
@@ -147,6 +158,8 @@ export function validarRegisto(dados: {
 }): Erro {
   return (
     validarObrigatorios(dados.nome, dados.email, dados.password) ??
+    validarNome(dados.nome) ??
+    validarEmail(dados.email) ??
     validarPassword(dados.password) ??
     validarTelefone(dados.telefone) ??
     validarDataNascimento(dados.dataNascimento, 'propria') ??
