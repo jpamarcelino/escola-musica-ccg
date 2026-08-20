@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
-import { MESES_ANO_LETIVO, euros, eurosOuTexto } from '@ccg/core'
+import { MESES_ANO_LETIVO, euros, eurosOuTexto, parteDoProfessor } from '@ccg/core'
 
 type MatriculaDoProfessor = {
   id: number
@@ -16,6 +16,7 @@ type MatriculaDoProfessor = {
 type MensalidadeDoMes = {
   aluno_id: string
   valor: number | null
+  retencao_ccg: number | null
   pago: boolean
   desistencia: boolean
   beneficio_id: number | null
@@ -71,7 +72,7 @@ export default async function MensalidadesProfessorPage({
     await Promise.all([
       supabase
         .from('perfis_escola')
-        .select('tipo, adere_recomendacao')
+        .select('tipo, adere_recomendacao, programa')
         .eq('id', user.id)
         .single(),
       supabase
@@ -81,7 +82,7 @@ export default async function MensalidadesProfessorPage({
         .eq('estado', 'confirmado'),
       supabase
         .from('mensalidades')
-        .select('aluno_id, valor, pago, desistencia, beneficio_id, instrumento_nome')
+        .select('aluno_id, valor, retencao_ccg, pago, desistencia, beneficio_id, instrumento_nome')
         .eq('professor_id', user.id)
         .eq('ano', escolhido.ano)
         .eq('mes', escolhido.mes),
@@ -90,6 +91,16 @@ export default async function MensalidadesProfessorPage({
   if (perfilAtual?.tipo !== 'professor') {
     redirect('/dashboard')
   }
+
+  // A retenção em vigor na escola deste professor, para as linhas que
+  // ainda não têm mensalidade gerada. As que já têm trazem a sua, que é
+  // a que valeu naquele mês.
+  const { data: taxas } = await supabase
+    .from('taxas_escola')
+    .select('retencao_ccg')
+    .eq('programa', perfilAtual?.programa ?? '')
+    .maybeSingle()
+  const retencaoDaEscola = taxas?.retencao_ccg ?? 0
 
   const matriculas = (matriculasData ?? []) as unknown as MatriculaDoProfessor[]
   const mensalidades = (mensalidadesData ?? []) as MensalidadeDoMes[]
@@ -112,7 +123,14 @@ export default async function MensalidadesProfessorPage({
         chave: m.id,
         nome: m.alunos?.nome ?? '',
         disciplina: m.instrumentos?.nome ?? mensalidade?.instrumento_nome ?? '',
-        valor: mensalidade?.valor ?? m.valor_mensal,
+        // O que entra ao professor, e não o que a família paga: uma
+        // parte da mensalidade é do CCG. Enquanto a mensalidade do mês
+        // não existe, usa-se a retenção que a mensalidade mais recente
+        // trouxe — e na falta dela, a da escola.
+        valor: parteDoProfessor(
+          mensalidade?.valor ?? m.valor_mensal,
+          mensalidade?.retencao_ccg ?? retencaoDaEscola
+        ),
         estado,
       }
     })
@@ -154,7 +172,13 @@ export default async function MensalidadesProfessorPage({
           <div className="mensalidades-total">
             <p>Por receber</p>
             <strong>{euros(totalPorReceber)}</strong>
-            <small>de {euros(totalDoMes)} previstos</small>
+            {/* Dito uma vez, aqui, e não repetido em cada linha: os
+                valores desta página são já a parte do professor. Sem
+                esta frase, quem soubesse que a mensalidade é 50 ficava
+                a olhar para 40 sem perceber de onde vem a diferença. */}
+            <small>
+              de {euros(totalDoMes)} previstos · já sem a parte do CCG
+            </small>
           </div>
           <dl>
             <div><dt>Pagas</dt><dd>{pagas.length}</dd></div>

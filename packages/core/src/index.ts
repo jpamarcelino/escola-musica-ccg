@@ -63,7 +63,12 @@ export {
   elegivelParaDisciplina,
 } from './idade-disciplinas'
 
-export { estadoMensalidade, ROTULO_MENSALIDADE, totalPorReceber } from './mensalidades'
+export {
+  estadoMensalidade,
+  ROTULO_MENSALIDADE,
+  totalPorReceber,
+  parteDoProfessor,
+} from './mensalidades'
 export type { EstadoMensalidade, MensalidadeParaEstado } from './mensalidades'
 
 export {

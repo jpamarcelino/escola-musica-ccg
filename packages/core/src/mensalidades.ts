@@ -58,3 +58,23 @@ export function totalPorReceber(
     .filter((l) => l.estado === 'por_pagar')
     .reduce((total, l) => total + (l.valor ?? 0), 0)
 }
+
+// O que fica para o professor.
+//
+// A família paga a mensalidade inteira; uma parte dela é do CCG. Ao
+// professor interessa o que lhe entra, e mostrar-lhe o valor cheio é
+// prometer-lhe todos os meses mais do que vai receber.
+//
+// A retenção vem guardada em cada mensalidade, e não da tabela de taxas:
+// o que valeu naquele mês não pode mudar quando os preços mudarem.
+//
+// Nunca devolve negativo. Uma retenção maior do que a mensalidade é um
+// engano de configuração, e a resposta certa a um engano é zero — não um
+// professor a dever dinheiro à escola.
+export function parteDoProfessor(
+  valor: number | null | undefined,
+  retencao: number | null | undefined
+): number {
+  if (valor == null) return 0
+  return Math.max(valor - (retencao ?? 0), 0)
+}

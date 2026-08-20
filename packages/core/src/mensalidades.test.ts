@@ -4,6 +4,7 @@ import {
   estadoMensalidade,
   totalPorReceber,
   type EstadoMensalidade,
+  parteDoProfessor,
 } from './mensalidades'
 
 const base = { desistencia: false, beneficio_id: null, pago: false }
@@ -99,5 +100,25 @@ describe('totalPorReceber', () => {
 
   it('devolve zero numa lista vazia', () => {
     expect(totalPorReceber([])).toBe(0)
+  })
+})
+
+describe('parteDoProfessor', () => {
+  it('tira a retenção do CCG', () => {
+    expect(parteDoProfessor(50, 10)).toBe(40)
+  })
+
+  it('trata a retenção em falta como zero', () => {
+    expect(parteDoProfessor(50, null)).toBe(50)
+    expect(parteDoProfessor(50, undefined)).toBe(50)
+  })
+
+  it('nunca devolve negativo', () => {
+    // Configuração errada: a retenção não pode pôr o professor a dever.
+    expect(parteDoProfessor(10, 15)).toBe(0)
+  })
+
+  it('sem valor, não há parte nenhuma', () => {
+    expect(parteDoProfessor(null, 10)).toBe(0)
   })
 })
