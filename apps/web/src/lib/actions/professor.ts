@@ -821,3 +821,46 @@ export async function desmatricularAluno(formData: FormData) {
   revalidatePath(`/dashboard/agenda/${horarioId}`)
   redirect(`/dashboard/agenda/${horarioId}`)
 }
+
+// Propor outro horário a um aluno que já é meu.
+//
+// Não muda nada sozinho: escreve uma proposta e avisa a família. A hora
+// da aula é um compromisso de duas partes, e um professor que mude a
+// terça das cinco para a quinta das sete pode estar a desfazer a tarde
+// inteira de uma casa — a app não tem como saber isso, quem sabe é quem
+// lá vai.
+export async function proporHorario(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = Number(formData.get('matriculaId') ?? 0)
+  const horarioId = Number(formData.get('horarioId') ?? 0)
+  const horarioAtualId = String(formData.get('horarioAtualId') ?? '')
+  const mensagem = String(formData.get('mensagem') ?? '').trim()
+
+  const destino = `/dashboard/agenda/${horarioAtualId}/${matriculaId}`
+
+  if (!horarioId) {
+    redirect(`${destino}?erro=${encodeURIComponent('Escolhe um horário.')}`)
+  }
+
+  const { error } = await supabase.rpc('propor_horario', {
+    p_matricula_id: matriculaId,
+    p_horario_id: horarioId,
+    p_mensagem: mensagem || null,
+  })
+
+  if (error) {
+    redirect(`${destino}?erro=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath(destino)
+  revalidatePath('/dashboard/horarios')
+  redirect(`${destino}?proposta=1`)
+}

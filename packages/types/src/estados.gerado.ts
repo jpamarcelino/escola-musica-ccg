@@ -112,8 +112,8 @@ export const MATRICULAESTADO_VALORES = [
   'cancelado',
 ] as const satisfies readonly MatriculaEstado[]
 
-// notificacoes.tipo — fixado em 0031_cancelamentos_e_reposicoes.sql
-export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada' | 'aula_desmarcada' | 'reposicao_pedida' | 'reposicao_agendada' | 'reposicao_nao_possivel' | 'reposicao_sem_opcoes' | 'reposicao_expirada' | 'reposicao_lembrete'
+// notificacoes.tipo — fixado em 0037_propostas_de_horario.sql
+export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada' | 'aula_desmarcada' | 'reposicao_pedida' | 'reposicao_agendada' | 'reposicao_nao_possivel' | 'reposicao_sem_opcoes' | 'reposicao_expirada' | 'reposicao_lembrete' | 'proposta_horario' | 'proposta_aceite' | 'proposta_recusada'
 
 export const NOTIFICACAOTIPO_VALORES = [
   'pedido_aceite',
@@ -129,6 +129,9 @@ export const NOTIFICACAOTIPO_VALORES = [
   'reposicao_sem_opcoes',
   'reposicao_expirada',
   'reposicao_lembrete',
+  'proposta_horario',
+  'proposta_aceite',
+  'proposta_recusada',
 ] as const satisfies readonly NotificacaoTipo[]
 
 // pedidos_reposicao.estado — fixado em 0031_cancelamentos_e_reposicoes.sql
@@ -184,6 +187,16 @@ export const PROFILETIPO_VALORES = [
   'professor',
   'admin',
 ] as const satisfies readonly ProfileTipo[]
+
+// propostas_horario.estado — fixado em 0037_propostas_de_horario.sql
+export type PropostasHorarioEstado = 'pendente' | 'aceite' | 'recusada' | 'cancelada'
+
+export const PROPOSTASHORARIOESTADO_VALORES = [
+  'pendente',
+  'aceite',
+  'recusada',
+  'cancelada',
+] as const satisfies readonly PropostasHorarioEstado[]
 
 // recomendacoes.estado — fixado em 0024_programa_recomendacao.sql
 export type RecomendacaoEstado = 'registada' | 'validada' | 'anulada'

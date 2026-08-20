@@ -3649,3 +3649,29 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Proposta de mudança de horário — o professor propõe, a família decide.
+   Fica em destaque no topo da agenda do aluno porque é a única coisa
+   naquela página que espera uma decisão; o resto é informação. */
+.proposta-horario {
+  border: 1.5px solid var(--color-azul-fundo);
+  border-radius: 14px;
+  padding: 16px;
+  background: var(--color-papel);
+}
+.proposta-horario h2 {
+  font-family: var(--font-fraunces), serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-azul-fundo);
+  margin-bottom: 6px;
+}
+.proposta-horario p { font-size: 14px; line-height: 1.5; }
+.proposta-horario-mensagem {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-linha);
+  color: var(--color-tinta-suave);
+  font-style: italic;
+}
+.proposta-horario-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }

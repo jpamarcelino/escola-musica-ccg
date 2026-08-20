@@ -409,3 +409,51 @@ export async function criarAluno(formData: FormData) {
   revalidatePath('/dashboard')
   redirect('/dashboard/alunos')
 }
+
+// A família responde à proposta do professor.
+//
+// Recusar não é um erro nem um beco: a aula fica exatamente onde estava,
+// e o professor é avisado de que aquele horário não dá. É por isso que
+// as duas ações vivem lado a lado e com o mesmo peso visual.
+async function responderProposta(
+  formData: FormData,
+  aceitar: boolean
+): Promise<never> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const propostaId = Number(formData.get('propostaId') ?? 0)
+  const alunoId = String(formData.get('alunoId') ?? '')
+  const resposta = String(formData.get('resposta') ?? '').trim()
+  const destino = `/aluno/${alunoId}/horario`
+
+  const { error } = aceitar
+    ? await supabase.rpc('aceitar_proposta_horario', { p_proposta_id: propostaId })
+    : await supabase.rpc('recusar_proposta_horario', {
+        p_proposta_id: propostaId,
+        p_resposta: resposta || null,
+      })
+
+  if (error) {
+    redirect(`${destino}?erro=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath(destino)
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard/avisos')
+  redirect(destino)
+}
+
+export async function aceitarPropostaHorario(formData: FormData) {
+  await responderProposta(formData, true)
+}
+
+export async function recusarPropostaHorario(formData: FormData) {
+  await responderProposta(formData, false)
+}

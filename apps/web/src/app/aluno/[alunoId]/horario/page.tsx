@@ -1,7 +1,13 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { cancelarPedido, desmarcarAula } from '@/lib/actions/aluno'
+import {
+  cancelarPedido,
+  desmarcarAula,
+  aceitarPropostaHorario,
+  recusarPropostaHorario,
+} from '@/lib/actions/aluno'
+import { SubmitButton } from '@/components/submit-button'
 import { formatarSala, formatarHora, proximaAulaPorAcontecer, formatarDataEscolar, hojeISO, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
@@ -101,6 +107,25 @@ export default async function ConsultarHorarioPage({
     .order('data')
   const reposicoes = reposicoesData ?? []
 
+  // A proposta de horário que o professor fez e ainda espera resposta.
+  // Uma por matrícula, garantido por índice único — por isso é uma lista
+  // curta e não uma caixa de entrada.
+  const { data: propostasData } = await supabase
+    .from('propostas_horario')
+    .select(
+      'id, mensagem, matricula_id, novo:horarios!propostas_horario_horario_novo_id_fkey(dia_semana, hora_inicio, hora_fim), atual:horarios!propostas_horario_horario_atual_id_fkey(dia_semana, hora_inicio, hora_fim), matriculas(instrumentos(nome))'
+    )
+    .eq('aluno_id', alunoId)
+    .eq('estado', 'pendente')
+  const propostas = (propostasData ?? []) as unknown as {
+    id: number
+    mensagem: string | null
+    matricula_id: number
+    novo: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    atual: { dia_semana: string; hora_inicio: string; hora_fim: string } | null
+    matriculas: { instrumentos: { nome: string } | null } | null
+  }[]
+
   const pendentes = matriculas.filter((m) => m.estado === 'a_escolher')
   const confirmadas = matriculas
     .filter((m) => m.estado === 'confirmado' && m.horarios)
@@ -132,7 +157,54 @@ export default async function ConsultarHorarioPage({
           <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Agenda</h1><p>{confirmadas[0] ? `A próxima aula é ${formatarDataEscolar(confirmadas[0].proxima, { weekday: 'long', day: 'numeric', month: 'long' })}, às ${formatarHora(confirmadas[0].horarios!.hora_inicio)}.` : 'Ainda não há aulas confirmadas.'}</p></div>
         </header>
 
-        {erro && <MensagemErro>{erro}</MensagemErro>}
+        {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
+
+        {/* A proposta vem primeiro, antes das aulas. É a única coisa
+            nesta página que está à espera de uma decisão — o resto é
+            informação. Aceitar e recusar têm o mesmo peso: recusar é uma
+            resposta legítima, e a aula fica onde está. */}
+        {propostas.map((p) => (
+          <section key={p.id} className="proposta-horario">
+            <h2>Mudança de horário proposta</h2>
+            <p>
+              O professor propõe mudar
+              {p.matriculas?.instrumentos?.nome ? ` ${p.matriculas.instrumentos.nome}` : ''} de{' '}
+              <strong>
+                {p.atual?.dia_semana}, {p.atual && formatarHora(p.atual.hora_inicio)}–
+                {p.atual && formatarHora(p.atual.hora_fim)}
+              </strong>{' '}
+              para{' '}
+              <strong>
+                {p.novo?.dia_semana}, {p.novo && formatarHora(p.novo.hora_inicio)}–
+                {p.novo && formatarHora(p.novo.hora_fim)}
+              </strong>
+              .
+            </p>
+            {p.mensagem && <p className="proposta-horario-mensagem">“{p.mensagem}”</p>}
+            <div className="proposta-horario-acoes">
+              <form action={aceitarPropostaHorario}>
+                <input type="hidden" name="propostaId" value={p.id} />
+                <input type="hidden" name="alunoId" value={alunoId} />
+                <SubmitButton
+                  textoAGuardar="A aceitar…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-azul-fundo)] px-6 text-[15px] font-semibold text-white disabled:opacity-50"
+                >
+                  Aceitar
+                </SubmitButton>
+              </form>
+              <form action={recusarPropostaHorario}>
+                <input type="hidden" name="propostaId" value={p.id} />
+                <input type="hidden" name="alunoId" value={alunoId} />
+                <SubmitButton
+                  textoAGuardar="A responder…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-6 text-[15px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
+                >
+                  Não posso
+                </SubmitButton>
+              </form>
+            </div>
+          </section>
+        ))}
         {desmarcada && <MensagemInfo>Aula desmarcada. O professor foi avisado.</MensagemInfo>}
         {pedido && (
           <MensagemInfo>
