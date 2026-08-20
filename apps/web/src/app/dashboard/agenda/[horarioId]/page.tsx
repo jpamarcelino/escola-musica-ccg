@@ -116,7 +116,7 @@ export default async function AgendaHorarioPage({
               const proxima = proximaDe(aluno.id)
               return (
                 <div key={aluno.id} className="detalhe-aula-aluno">
-                  <Link href={`/dashboard/agenda/${horarioId}/${aluno.id}`}>
+                  <Link href={`/dashboard/meus-alunos/${aluno.id}`}>
                     <strong>{aluno.alunos?.nome}</strong>
                     <span>{aluno.instrumentos?.nome}</span>
                     <i aria-hidden="true">→</i>

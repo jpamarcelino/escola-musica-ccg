@@ -10,6 +10,7 @@ import { MensagemErro, MensagemInfo, MensagemNota } from '@/components/mensagem'
 
 type Matricula = {
   id: number
+  horario_final_id: number | null
   instrumentos: { nome: string } | null
   alunos: {
     nome: string
@@ -22,10 +23,10 @@ export default async function AlunoDaAulaPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ horarioId: string; matriculaId: string }>
+  params: Promise<{ matriculaId: string }>
   searchParams: Promise<{ erro?: string; proposta?: string }>
 }) {
-  const { horarioId, matriculaId } = await params
+  const { matriculaId } = await params
   const { erro, proposta } = await searchParams
 
   const supabase = await createClient()
@@ -50,10 +51,9 @@ export default async function AlunoDaAulaPage({
   const { data: matriculaData } = await supabase
     .from('matriculas')
     .select(
-      'id, instrumentos(nome), alunos(nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone))'
+      'id, horario_final_id, instrumentos(nome), alunos(nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone))'
     )
     .eq('id', Number(matriculaId))
-    .eq('horario_final_id', Number(horarioId))
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
     .maybeSingle()
@@ -65,10 +65,12 @@ export default async function AlunoDaAulaPage({
 
   const idade = calcularIdade(matricula.alunos?.data_nascimento)
 
+  const horarioId = matricula.horario_final_id
+
   const { data: horarioData } = await supabase
     .from('horarios')
     .select('dia_semana, hora_inicio, hora_fim')
-    .eq('id', Number(horarioId))
+    .eq('id', horarioId ?? 0)
     .maybeSingle()
   const labelHorario = horarioData
     ? `${horarioData.dia_semana}, ${formatarHora(horarioData.hora_inicio)}–${formatarHora(horarioData.hora_fim)}`
@@ -84,7 +86,7 @@ export default async function AlunoDaAulaPage({
       .select('id, dia_semana, hora_inicio, hora_fim')
       .eq('professor_id', user.id)
       .eq('estado', 'aberto')
-      .neq('id', Number(horarioId)),
+      .neq('id', horarioId ?? 0),
     supabase
       .from('matriculas')
       .select('horario_final_id')
@@ -123,7 +125,7 @@ export default async function AlunoDaAulaPage({
     <main id="conteudo-principal" className="partitura-pagina detalhe-aluno-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href={`/dashboard/agenda/${horarioId}`} className="partitura-voltar" aria-label="Voltar à aula">←</Link>
+          <Link href="/dashboard/meus-alunos" className="partitura-voltar" aria-label="Voltar aos alunos">←</Link>
           <div><p className="partitura-sobretitulo">{labelHorario}</p><h1>{matricula.alunos?.nome}</h1><p>{matricula.instrumentos?.nome}</p></div>
         </header>
 
@@ -180,7 +182,7 @@ export default async function AlunoDaAulaPage({
           ) : (
             <form action={proporHorario} className="space-y-3 pt-2">
               <input type="hidden" name="matriculaId" value={matricula.id} />
-              <input type="hidden" name="horarioAtualId" value={horarioId} />
+              <input type="hidden" name="horarioAtualId" value={horarioId ?? ''} />
 
               <fieldset className="space-y-2">
                 <legend className="text-[13px] font-medium">Horário a propor</legend>
@@ -231,7 +233,7 @@ export default async function AlunoDaAulaPage({
             action={desmatricularAluno}
           >
             <input type="hidden" name="matriculaId" value={matricula.id} />
-            <input type="hidden" name="horarioId" value={horarioId} />
+            <input type="hidden" name="horarioId" value={horarioId ?? ''} />
           </BotaoAcaoDestruir>
         </section>
       </div>

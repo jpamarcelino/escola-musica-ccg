@@ -245,6 +245,7 @@ export default async function DashboardPage({
               <div><p className="partitura-indice">02</p><h2 id="titulo-gestao">Gestão</h2></div>
             </div>
             <nav className="partitura-links" aria-label="Ferramentas de gestão">
+              <Link href="/dashboard/meus-alunos"><span>Alunos</span><small>Quem ensinas, e os seus dados</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/presencas"><span>Presenças</span><small>Registar e consultar</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/horarios"><span>Horários</span><small>Disponibilidade semanal</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/mensalidades"><span>Mensalidades</span><small>Estado dos pagamentos</small><b aria-hidden="true">→</b></Link>

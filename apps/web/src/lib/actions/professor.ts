@@ -818,8 +818,9 @@ export async function desmatricularAluno(formData: FormData) {
   await supabase.rpc('cancelar_matricula', { p_matricula_id: Number(matriculaId) })
 
   revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard/meus-alunos')
   revalidatePath(`/dashboard/agenda/${horarioId}`)
-  redirect(`/dashboard/agenda/${horarioId}`)
+  redirect(horarioId ? `/dashboard/agenda/${horarioId}` : '/dashboard/meus-alunos')
 }
 
 // Propor outro horário a um aluno que já é meu.
@@ -841,10 +842,9 @@ export async function proporHorario(formData: FormData) {
 
   const matriculaId = Number(formData.get('matriculaId') ?? 0)
   const horarioId = Number(formData.get('horarioId') ?? 0)
-  const horarioAtualId = String(formData.get('horarioAtualId') ?? '')
   const mensagem = String(formData.get('mensagem') ?? '').trim()
 
-  const destino = `/dashboard/agenda/${horarioAtualId}/${matriculaId}`
+  const destino = `/dashboard/meus-alunos/${matriculaId}`
 
   if (!horarioId) {
     redirect(`${destino}?erro=${encodeURIComponent('Escolhe um horário.')}`)
@@ -862,5 +862,6 @@ export async function proporHorario(formData: FormData) {
 
   revalidatePath(destino)
   revalidatePath('/dashboard/horarios')
+  revalidatePath('/dashboard/meus-alunos')
   redirect(`${destino}?proposta=1`)
 }
