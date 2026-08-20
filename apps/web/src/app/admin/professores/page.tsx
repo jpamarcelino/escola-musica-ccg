@@ -36,6 +36,11 @@ export default async function AdminProfessoresPage() {
     .select('id, profiles(nome)')
     .eq('tipo', 'professor')
     .order('nome', { referencedTable: 'profiles' })
+  const { count: pedidosPorResponder } = await supabase
+    .from('pedidos_instrumento')
+    .select('id', { count: 'exact', head: true })
+    .eq('estado', 'pendente')
+
   const professores = (
     (professoresData ?? []) as unknown as { id: string; profiles: { nome: string } | null }[]
   ).map((p) => ({
@@ -47,6 +52,15 @@ export default async function AdminProfessoresPage() {
     <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Diretório escolar</p><h1>Professores</h1><p>{professores.length} {professores.length === 1 ? 'registo' : 'registos'}</p></div></header>
+
+        {/* Os pedidos vêm antes do convite: é a única coisa desta
+            página que está à espera de alguém. */}
+        <nav className="pt-2">
+          <Link href="/admin/professores/disciplinas" className="agenda-ligacao-calendario">
+            Pedidos de disciplina
+            {(pedidosPorResponder ?? 0) > 0 ? ` (${pedidosPorResponder})` : ''}
+          </Link>
+        </nav>
 
         <ConvidarProfessorForm action={criarConviteProfessor} />
 

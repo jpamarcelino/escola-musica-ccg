@@ -162,3 +162,43 @@ function blocosDe(horaInicio: string, horaFim: string, duracao: number) {
   }
   return blocos
 }
+
+// A secretaria responde a um pedido de disciplina. Aceitar é o único
+// caminho que acrescenta a disciplina ao professor — a tabela deixou de
+// aceitar escrita dele (migração 0040).
+async function responderDisciplina(formData: FormData, aceitar: boolean): Promise<never> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const pedidoId = Number(formData.get('pedidoId') ?? 0)
+  const resposta = String(formData.get('resposta') ?? '').trim()
+  const destino = '/admin/professores/disciplinas'
+
+  const { error } = await supabase.rpc('responder_pedido_instrumento', {
+    p_pedido_id: pedidoId,
+    p_aceitar: aceitar,
+    p_resposta: resposta || null,
+  })
+
+  if (error) {
+    redirect(`${destino}?erro=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath(destino)
+  revalidatePath('/admin/professores')
+  redirect(destino)
+}
+
+export async function aceitarDisciplina(formData: FormData) {
+  await responderDisciplina(formData, true)
+}
+
+export async function recusarDisciplina(formData: FormData) {
+  await responderDisciplina(formData, false)
+}

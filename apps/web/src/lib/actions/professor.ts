@@ -196,7 +196,14 @@ export async function alternarEstadoHorario(formData: FormData) {
   revalidatePath('/dashboard')
 }
 
-export async function atualizarInstrumentos(formData: FormData) {
+// Pedir para ensinar uma disciplina.
+//
+// Substitui `atualizarInstrumentos`, que gravava as caixas marcadas
+// diretamente: quem ensinava guitarra acrescentava canto num clique, e a
+// secretaria só dava por isso quando aparecesse um aluno de canto na
+// lista dele. Tirar uma disciplina também deixou de ser do professor —
+// pode ter lá alunos inscritos.
+export async function pedirInstrumento(formData: FormData) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -206,40 +213,24 @@ export async function atualizarInstrumentos(formData: FormData) {
     redirect('/login')
   }
 
-  const instrumentoIds = formData.getAll('instrumentos').map(String)
+  const instrumentoId = Number(formData.get('instrumentoId') ?? 0)
+  const mensagem = String(formData.get('mensagem') ?? '').trim()
 
-  const { data: perfil } = await supabase
-    .from('perfis_escola')
-    .select('programa')
-    .eq('id', user.id)
-    .single()
-
-  await supabase.from('professor_instrumentos').delete().eq('professor_id', user.id)
-
-  if (instrumentoIds.length > 0 && perfil?.programa) {
-    // Confirma que os ids pertencem mesmo à escola (programa) do professor,
-    // para não aceitar disciplinas da outra escola por manipulação do formulário.
-    const { data: instrumentosValidos } = await supabase
-      .from('instrumentos')
-      .select('id')
-      .eq('programa', perfil.programa)
-      .in('id', instrumentoIds.map(Number))
-
-    const idsValidos = (instrumentosValidos ?? []).map((i) => i.id)
-
-    if (idsValidos.length > 0) {
-      await supabase.from('professor_instrumentos').insert(
-        idsValidos.map((id) => ({
-          professor_id: user.id,
-          instrumento_id: id,
-          especialidade: String(formData.get(`especialidade_${id}`) ?? '').trim() || null,
-        }))
-      )
-    }
+  if (!instrumentoId) {
+    redirect(`/dashboard/conta?erro=${encodeURIComponent('Escolhe uma disciplina.')}`)
   }
 
-  revalidatePath('/dashboard')
+  const { error } = await supabase.rpc('pedir_instrumento', {
+    p_instrumento_id: instrumentoId,
+    p_mensagem: mensagem || null,
+  })
+
+  if (error) {
+    redirect(`/dashboard/conta?erro=${encodeURIComponent(error.message)}`)
+  }
+
   revalidatePath('/dashboard/conta')
+  redirect('/dashboard/conta?pedido=disciplina')
 }
 
 export async function atualizarFoto(formData: FormData) {
