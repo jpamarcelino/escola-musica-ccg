@@ -88,6 +88,8 @@ export function CampoTexto({
   autoComplete,
   max,
   defaultValue,
+  inputMode,
+  maxLength,
 }: {
   id: string
   name: string
@@ -97,6 +99,10 @@ export function CampoTexto({
   autoComplete?: string
   max?: string
   defaultValue?: string
+  // Para campos de algarismos (NIF): teclado numérico no telemóvel sem
+  // usar type="number", que traz setas e aceita notação científica.
+  inputMode?: 'numeric' | 'tel'
+  maxLength?: number
 }) {
   return (
     <Campo id={id} label={label}>
@@ -108,6 +114,8 @@ export function CampoTexto({
         autoComplete={autoComplete}
         max={max}
         defaultValue={defaultValue}
+        inputMode={inputMode}
+        maxLength={maxLength}
         className={classesCampo}
       />
     </Campo>

@@ -52,6 +52,37 @@ export function validarTelefone(telefone: string): Erro {
     : null
 }
 
+// O NIF tem nove algarismos e um dígito de controlo — o último é a
+// verificação dos oito primeiros. Validar a soma aqui apanha o engano de
+// teclado no momento em que ele acontece, em vez de ir dar a uma fatura
+// recusada pelas Finanças semanas depois.
+//
+// Guarda-se e compara-se só os algarismos: quem escreve "123 456 789"
+// está a dar um NIF válido, e recusá-lo pela pontuação é fazer a pessoa
+// adivinhar o formato.
+export function normalizarNIF(nif: string): string {
+  return nif.replace(/[^0-9]/g, '')
+}
+
+export function validarNIF(nif: string): Erro {
+  const digitos = normalizarNIF(nif)
+
+  if (!digitos) return MENSAGEM_CAMPOS_EM_FALTA
+  if (digitos.length !== 9) return 'O NIF tem de ter nove algarismos.'
+
+  // Módulo 11: cada algarismo pesa a sua posição, de 9 a 2.
+  let soma = 0
+  for (let i = 0; i < 8; i += 1) {
+    soma += Number(digitos[i]) * (9 - i)
+  }
+  const resto = soma % 11
+  // Restos 0 e 1 dão dígito de controlo 0 — a fórmula 11 - resto daria
+  // 11 ou 10, que não são algarismos.
+  const controlo = resto < 2 ? 0 : 11 - resto
+
+  return controlo === Number(digitos[8]) ? null : 'Esse NIF não é válido. Confirma os algarismos.'
+}
+
 // `dono` muda a frase entre "a tua data de nascimento" e "a data de
 // nascimento" — a mesma regra serve para quem se regista e para quem
 // inscreve um filho, e a frase tem de saber de quem fala.
@@ -109,11 +140,16 @@ export function validarRegisto(dados: {
   password: string
   telefone: string
   dataNascimento: string
+  // Opcional na assinatura, obrigatório quando vem: a app móvel ainda
+  // não pede NIF, e passar a rejeitar lá os registos sem ele seria
+  // partir o registo na app sem lá ter posto o campo.
+  nif?: string
 }): Erro {
   return (
     validarObrigatorios(dados.nome, dados.email, dados.password) ??
     validarPassword(dados.password) ??
     validarTelefone(dados.telefone) ??
-    validarDataNascimento(dados.dataNascimento, 'propria')
+    validarDataNascimento(dados.dataNascimento, 'propria') ??
+    (dados.nif === undefined ? null : validarNIF(dados.nif))
   )
 }

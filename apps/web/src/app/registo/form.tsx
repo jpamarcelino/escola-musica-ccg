@@ -85,6 +85,17 @@ export default function RegistoForm({
           autoComplete="tel"
         />
 
+        {/* O NIF vem a seguir ao telefone e antes da data: são os dois
+            dados de faturação, e é assim que a pessoa os tem à mão. */}
+        <CampoTexto
+          id="nif"
+          name="nif"
+          label="NIF"
+          inputMode="numeric"
+          maxLength={11}
+          autoComplete="off"
+        />
+
         <CampoTexto
           id="dataNascimento"
           name="dataNascimento"

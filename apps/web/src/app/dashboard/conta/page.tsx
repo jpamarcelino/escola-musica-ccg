@@ -3,6 +3,7 @@ import { getAuthContext } from '@/lib/auth-context'
 import { atualizarInstrumentos, atualizarFoto } from '@/lib/actions/professor'
 import {
   atualizarNomeConta,
+  atualizarNifConta,
   atualizarEmailConta,
   atualizarPasswordConta,
   logout,
@@ -13,6 +14,7 @@ import { SubmitButton } from '@/components/submit-button'
 import { FotoConta } from '@/components/foto-conta'
 import {
   EditarNomeForm,
+  EditarNifForm,
   EditarEmailForm,
   AlterarPasswordForm,
 } from '@/components/conta-forms'
@@ -34,12 +36,13 @@ export default async function ContaPage({
 
   const { data: profileRowData } = await supabase
     .from('profiles')
-    .select('nome, foto_url, perfis_escola(tipo, programa, admin)')
+    .select('nome, nif, foto_url, perfis_escola(tipo, programa, admin)')
     .eq('id', user.id)
     .single()
 
   const profileRow = profileRowData as {
     nome: string
+    nif: string | null
     foto_url: string | null
     perfis_escola: {
       tipo: string
@@ -51,6 +54,7 @@ export default async function ContaPage({
   const profile = profileRow
     ? {
         nome: profileRow.nome,
+        nif: profileRow.nif,
         foto_url: profileRow.foto_url,
         tipo: profileRow.perfis_escola?.tipo,
         programa: profileRow.perfis_escola?.programa,
@@ -116,6 +120,7 @@ export default async function ContaPage({
         <section className="space-y-4">
           <h2 className="font-semibold">Dados</h2>
           <EditarNomeForm action={atualizarNomeConta} nomeAtual={profile.nome} />
+          <EditarNifForm action={atualizarNifConta} nifAtual={profile.nif ?? ''} />
           {!ehProfessor && (
             <EditarEmailForm action={atualizarEmailConta} emailAtual={user.email ?? ''} />
           )}

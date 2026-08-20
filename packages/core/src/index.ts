@@ -73,6 +73,8 @@ export {
   validarObrigatorios,
   validarPassword,
   validarTelefone,
+  validarNIF,
+  normalizarNIF,
   validarDataNascimento,
   validarEmail,
   validarNome,

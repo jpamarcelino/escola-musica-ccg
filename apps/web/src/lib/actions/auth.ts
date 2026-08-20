@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { validarPassword, validarRegisto } from '@ccg/core'
+import { normalizarNIF, validarNIF, validarPassword, validarRegisto } from '@ccg/core'
 
 async function origem() {
   const headersList = await headers()
@@ -24,6 +24,9 @@ export async function signup(
   const password = String(formData.get('password') ?? '')
   const telefone = String(formData.get('telefone') ?? '').trim()
   const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+  // Só os algarismos, para a coluna nunca guardar "123 456 789" e
+  // "123456789" como se fossem NIFs diferentes.
+  const nif = normalizarNIF(String(formData.get('nif') ?? ''))
   // Presente só quando se vem de um link de convite (professor, admin ou
   // migração de um perfil de aluno) — o próprio código é revalidado no
   // servidor pelo trigger handle_new_user, nunca confiado por si só.
@@ -32,7 +35,7 @@ export async function signup(
   // As mesmas regras que a app móvel usa, no mesmo ficheiro: campos
   // obrigatórios, password, telefone e data de nascimento, por esta
   // ordem. Estavam escritas à mão aqui e repetidas noutras cinco acções.
-  const erro = validarRegisto({ nome, email, password, telefone, dataNascimento })
+  const erro = validarRegisto({ nome, email, password, telefone, dataNascimento, nif })
   if (erro) {
     return { error: erro }
   }
@@ -46,6 +49,7 @@ export async function signup(
         nome,
         data_nascimento: dataNascimento,
         telefone,
+        nif,
         convite_codigo: conviteCodigo,
       },
     },
@@ -144,6 +148,41 @@ export async function atualizarPassword(
   }
 
   redirect('/dashboard')
+}
+
+// As contas criadas antes do NIF passar a ser pedido ficaram sem ele, e
+// a secretaria precisa dele para faturar. Sem um sítio onde o escrever,
+// a única saída era criar outra conta.
+export async function atualizarNifConta(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const nif = normalizarNIF(String(formData.get('nif') ?? ''))
+
+  const erro = validarNIF(nif)
+  if (erro) {
+    return { error: erro }
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { error } = await supabase.from('profiles').update({ nif }).eq('id', user.id)
+
+  if (error) {
+    return { error: 'Não foi possível guardar o NIF. Tenta novamente.' }
+  }
+
+  revalidatePath('/dashboard/conta')
+  revalidatePath('/admin/alunos')
+
+  return { info: 'NIF guardado.' }
 }
 
 export async function atualizarNomeConta(

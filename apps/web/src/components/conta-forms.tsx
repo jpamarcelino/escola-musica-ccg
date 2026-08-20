@@ -48,6 +48,34 @@ export function EditarNomeForm({ action, nomeAtual }: { action: Action; nomeAtua
   )
 }
 
+// O NIF é do titular da conta — é a ele que a fatura sai. Fica ao lado
+// do nome e do email pela mesma razão: são os dados que a secretaria
+// precisa de ter certos.
+export function EditarNifForm({ action, nifAtual }: { action: Action; nifAtual: string }) {
+  const [state, formAction] = useActionState(action, undefined)
+
+  return (
+    <form action={formAction} className="space-y-[6px]">
+      <Rotulo htmlFor="nif">NIF</Rotulo>
+      <div className="flex gap-[8px]">
+        <input
+          id="nif"
+          name="nif"
+          defaultValue={nifAtual}
+          inputMode="numeric"
+          maxLength={11}
+          required
+          className={classesCampo}
+        />
+        <SubmitButton textoAGuardar="A guardar…" className={CLASSES_GUARDAR}>
+          Guardar
+        </SubmitButton>
+      </div>
+      <Mensagens state={state} />
+    </form>
+  )
+}
+
 export function EditarEmailForm({ action, emailAtual }: { action: Action; emailAtual: string }) {
   const [state, formAction] = useActionState(action, undefined)
 

@@ -8,7 +8,7 @@ import type { MatriculaEstado, PresencaEstado } from '@ccg/types'
 type AlunoPerfil = {
   nome: string
   data_nascimento: string | null
-  encarregado: { email: string | null; telefone: string | null } | null
+  encarregado: { email: string | null; telefone: string | null; nif: string | null } | null
 }
 
 type Matricula = {
@@ -102,7 +102,7 @@ export default async function AdminAlunoPage({
 
   const { data: alunoData } = await supabase
     .from('alunos')
-    .select('nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone)')
+    .select('nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone, nif)')
     .eq('id', alunoId)
     .maybeSingle()
   const aluno = alunoData as unknown as AlunoPerfil | null
@@ -183,10 +183,13 @@ export default async function AdminAlunoPage({
             {aluno.encarregado?.telefone && (
               <p className="lista-item-sub">Telemóvel: {aluno.encarregado.telefone}</p>
             )}
+            {/* O NIF é o de quem paga, e é o que vai na fatura. Aparece
+                sempre, mesmo em falta: uma linha ausente lê-se como "não
+                é preciso", e esta é a que trava a faturação. */}
+            <p className="lista-item-sub">
+              NIF: {aluno.encarregado?.nif ?? <strong>por preencher</strong>}
+            </p>
             {idade !== null && <p className="lista-item-sub">Idade: {idade} anos</p>}
-            {!aluno.encarregado?.email && !aluno.encarregado?.telefone && idade === null && (
-              <p className="lista-item-sub">Sem informação adicional.</p>
-            )}
           </div>
         </section>
 

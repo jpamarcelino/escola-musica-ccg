@@ -8,6 +8,8 @@ import {
   validarPassword,
   validarRegisto,
   validarTelefone,
+  validarNIF,
+  normalizarNIF,
 } from './validacao'
 
 afterEach(() => {
@@ -180,5 +182,36 @@ describe('validarRegisto', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 7, 17))
     expect(validarRegisto({ ...bons, email: 'isto-nao-e-um-email' })).toBeNull()
+  })
+})
+
+describe('validarNIF', () => {
+  it('aceita NIFs com dígito de controlo certo', () => {
+    expect(validarNIF('501442600')).toBeNull()
+    expect(validarNIF('123456789')).toBeNull()
+  })
+
+  it('ignora espaços e pontuação', () => {
+    expect(validarNIF('123 456 789')).toBeNull()
+    expect(validarNIF('123-456-789')).toBeNull()
+  })
+
+  it('recusa o dígito de controlo errado', () => {
+    expect(validarNIF('123456780')).toBe('Esse NIF não é válido. Confirma os algarismos.')
+  })
+
+  it('recusa comprimentos que não sejam nove', () => {
+    expect(validarNIF('12345678')).toBe('O NIF tem de ter nove algarismos.')
+    expect(validarNIF('1234567890')).toBe('O NIF tem de ter nove algarismos.')
+  })
+
+  it('trata o vazio como campo por preencher', () => {
+    expect(validarNIF('')).toBe(MENSAGEM_CAMPOS_EM_FALTA)
+  })
+})
+
+describe('normalizarNIF', () => {
+  it('guarda só os algarismos', () => {
+    expect(normalizarNIF('123 456 789')).toBe('123456789')
   })
 })
