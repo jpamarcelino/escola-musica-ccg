@@ -67,25 +67,6 @@ export function ConvidarProfessorForm({ action }: { action: Action }) {
   )
 }
 
-export function ConvidarAdminForm({ action }: { action: Action }) {
-  const [state, formAction] = useActionState(action, undefined)
-
-  return (
-    <form action={formAction} className="space-y-3">
-      <SubmitButton
-        textoAGuardar="A gerar…"
-        className="rounded border border-foreground/20 px-3 py-2 text-sm"
-      >
-        Convidar administrador
-      </SubmitButton>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.link && <LinkGerado link={state.link} />}
-    </form>
-  )
-}
-
-// O lado de quem entrega. O link leva a /registo?convite=…, para servir
-// tanto a quem já tem conta como a quem ainda a vai criar.
 export function GerarLinkMigracaoForm({ action, alunoId }: { action: Action; alunoId: string }) {
   const [state, formAction] = useActionState(action, undefined)
 

@@ -53,35 +53,10 @@ export async function criarConviteProfessor(
   return { link: `${await origem()}/registo?convite=${codigo}` }
 }
 
-export async function criarConviteAdmin(
-  _prevState: ConviteState,
-  _formData: FormData
-): Promise<ConviteState> {
-  void _prevState
-  void _formData
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  const codigo = gerarCodigo()
-  const { error } = await supabase.from('convites').insert({
-    codigo,
-    tipo: 'admin',
-    criado_por: user.id,
-  })
-
-  if (error) {
-    return { error: 'Não foi possível criar o convite. Tenta novamente.' }
-  }
-
-  revalidatePath('/admin/administradores')
-  return { link: `${await origem()}/registo?convite=${codigo}` }
-}
+// O convite de administrador deixou de existir. Dar acesso à
+// administração passou a ser um ato sobre uma pessoa que já tem conta,
+// feito em /admin/administradores — e não um link que anda a circular e
+// que dá poderes totais a quem o abrir primeiro.
 
 export async function criarConviteMigracaoAluno(
   _prevState: ConviteState,
