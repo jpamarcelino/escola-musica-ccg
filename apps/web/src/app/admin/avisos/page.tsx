@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/empty-state'
 
 type Notificacao = {
   id: number
+  titulo: string | null
   mensagem: string
   lida: boolean
   criado_em: string
@@ -40,7 +41,7 @@ export default async function AdminAvisosPage() {
 
   const { data: avisosData } = await supabase
     .from('notificacoes')
-    .select('id, mensagem, lida, criado_em')
+    .select('id, titulo, mensagem, lida, criado_em')
     .eq('user_id', user.id)
     .order('criado_em', { ascending: false })
 
@@ -84,6 +85,7 @@ export default async function AdminAvisosPage() {
               <article key={n.id} data-lida={n.lida}>
                 <time>{new Date(n.criado_em).toLocaleDateString('pt-PT')}</time>
                 <div className="avisos-corpo">
+                  {n.titulo && <strong className="avisos-titulo">{n.titulo}</strong>}
                   <p>{n.mensagem}</p>
                 </div>
                 {!n.lida && (

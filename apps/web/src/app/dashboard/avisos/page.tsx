@@ -8,6 +8,7 @@ import { ehContaCCG } from '@/lib/navegacao'
 type Notificacao = {
   id: number
   tipo: string
+  titulo: string | null
   mensagem: string
   lida: boolean
   criado_em: string
@@ -45,7 +46,7 @@ export default async function AvisosPage({
   const [{ data: avisosData }, { data: alunosData }, { data: tiposData }] = await Promise.all([
     supabase
       .from('notificacoes')
-      .select('id, tipo, mensagem, lida, criado_em, aluno_id')
+      .select('id, tipo, titulo, mensagem, lida, criado_em, aluno_id')
       .eq('user_id', user.id)
       .order('criado_em', { ascending: false }),
     // Os separadores por aluno só fazem sentido a quem tem alunos. Para
@@ -152,6 +153,12 @@ export default async function AvisosPage({
                     {/* Avisos antigos (e os gerais da conta) não têm aluno
                         associado e continuam a aparecer, sem etiqueta. */}
                     {nomeAluno && <span className="avisos-aluno">{nomeAluno}</span>}
+                    {/* Só as mensagens escritas à mão têm título: é a
+                        assinatura de quem as escreveu (migração 0042).
+                        Nos avisos automáticos, o título é sempre igual ao
+                        do tipo e repeti-lo por cima do texto não
+                        acrescentava nada. */}
+                    {n.titulo && <strong className="avisos-titulo">{n.titulo}</strong>}
                     <p>{n.mensagem}</p>
                     {/* O mesmo destino que a push usa. Um aviso que diz
                         "precisa da tua resposta" e não leva a lado nenhum

@@ -1623,6 +1623,16 @@ body {
 }
 .avisos-lista article[data-lida="true"] .avisos-aluno { color: var(--color-tinta-suave); }
 
+/* Quem assina uma mensagem escrita à mão. Fica por cima do texto, com o
+   peso de um nome e não de uma etiqueta — é a diferença entre "a escola
+   avisa" e "o presidente da direção escreveu". */
+.avisos-titulo {
+  font-size: 14.5px;
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--color-text-primary);
+}
+
 /* Filtro por aluno, no topo dos avisos. São links e não botões porque o
    estado vive no URL (?aluno=…) — funciona sem JavaScript e dá para
    partilhar ou guardar nos favoritos. */
@@ -3739,3 +3749,130 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ------------------------------------------------------------------ */
+/* Mensagens da escola (migração 0042)                                 */
+/* ------------------------------------------------------------------ */
+
+.mensagens-pagina .partitura-folha { max-width: 720px; }
+.mensagens-nova { margin-top: 34px; }
+.mensagens-historico { margin-top: 46px; }
+.mensagens-historico > header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.mensagens-historico-corpo {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+}
+
+.mensagem-legenda {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-tinta-suave);
+}
+
+/* Escolhas em linha. São botões e não radios porque o estado muda a
+   forma do resto do formulário — trocar de público troca os filtros — e
+   um radio nativo não deixa reagir a isso sem JavaScript na mesma. O
+   aria-pressed é o que diz aos leitores de ecrã qual está escolhido. */
+.mensagem-opcoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.mensagem-opcao {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 15px;
+  border: 1px solid var(--color-linha);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.mensagem-opcao:hover { background: var(--color-surface-raised); }
+.mensagem-opcao[aria-pressed="true"] {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: #fff;
+}
+@media (prefers-reduced-motion: reduce) { .mensagem-opcao { transition: none; } }
+
+/* A lista de quem recebe. Altura limitada de propósito: com trezentos
+   alunos, uma lista inteira empurrava a caixa da mensagem e o botão de
+   enviar para fora do ecrã. */
+.mensagem-escolha {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--color-linha);
+  border-radius: var(--radius-medium);
+}
+.mensagem-escolha-linha {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+.mensagem-escolha-linha + .mensagem-escolha-linha { border-top: 1px solid var(--color-linha); }
+.mensagem-escolha-linha:hover { background: var(--color-surface-raised); }
+.mensagem-escolha-linha input { margin-top: 3px; }
+
+.mensagem-sem-nome {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.mensagem-sem-nome input { margin-top: 3px; }
+
+/* O que a pessoa vai ver, com o mesmo desenho do aviso na caixa dela —
+   é a única forma de perceber, antes de enviar, que "sem nome" não é um
+   detalhe técnico mas uma mensagem sem remetente. */
+.mensagem-previsao {
+  border: 1px dashed var(--color-linha);
+  border-radius: var(--radius-medium);
+  padding: 14px 16px;
+}
+.mensagem-previsao-etiqueta {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+  margin-bottom: 8px;
+}
+.mensagem-previsao strong {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 650;
+  color: var(--color-text-primary);
+}
+.mensagem-previsao p {
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+}
+
+.mensagem-enviar {
+  display: flex;
+  height: 56px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 15.5px;
+  font-weight: 600;
+}
+.mensagem-enviar:disabled { opacity: .45; }

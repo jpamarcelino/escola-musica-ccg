@@ -112,8 +112,26 @@ export const MATRICULAESTADO_VALORES = [
   'cancelado',
 ] as const satisfies readonly MatriculaEstado[]
 
-// notificacoes.tipo — fixado em 0040_pedidos_de_disciplina.sql
-export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada' | 'aula_desmarcada' | 'reposicao_pedida' | 'reposicao_agendada' | 'reposicao_nao_possivel' | 'reposicao_sem_opcoes' | 'reposicao_expirada' | 'reposicao_lembrete' | 'proposta_horario' | 'proposta_aceite' | 'proposta_recusada' | 'reposicao_proposta' | 'reposicao_proposta_recusada' | 'disciplina_pedida' | 'disciplina_aceite' | 'disciplina_recusada'
+// mensagens_escola.filtro — fixado em 0042_mensagens_da_escola.sql
+export type MensagensEscolaFiltro = 'todos' | 'por_professor' | 'por_escola' | 'selecionados'
+
+export const MENSAGENSESCOLAFILTRO_VALORES = [
+  'todos',
+  'por_professor',
+  'por_escola',
+  'selecionados',
+] as const satisfies readonly MensagensEscolaFiltro[]
+
+// mensagens_escola.publico — fixado em 0042_mensagens_da_escola.sql
+export type MensagensEscolaPublico = 'alunos' | 'professores'
+
+export const MENSAGENSESCOLAPUBLICO_VALORES = [
+  'alunos',
+  'professores',
+] as const satisfies readonly MensagensEscolaPublico[]
+
+// notificacoes.tipo — fixado em 0042_mensagens_da_escola.sql
+export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada' | 'aula_desmarcada' | 'reposicao_pedida' | 'reposicao_agendada' | 'reposicao_nao_possivel' | 'reposicao_sem_opcoes' | 'reposicao_expirada' | 'reposicao_lembrete' | 'proposta_horario' | 'proposta_aceite' | 'proposta_recusada' | 'reposicao_proposta' | 'reposicao_proposta_recusada' | 'disciplina_pedida' | 'disciplina_aceite' | 'disciplina_recusada' | 'mensagem_escola'
 
 export const NOTIFICACAOTIPO_VALORES = [
   'pedido_aceite',
@@ -137,6 +155,7 @@ export const NOTIFICACAOTIPO_VALORES = [
   'disciplina_pedida',
   'disciplina_aceite',
   'disciplina_recusada',
+  'mensagem_escola',
 ] as const satisfies readonly NotificacaoTipo[]
 
 // pedidos_instrumento.estado — fixado em 0040_pedidos_de_disciplina.sql

@@ -88,6 +88,7 @@ export default async function AdminPage() {
             <Link href="/admin/recomendacoes"><strong>Programa de Recomendação</strong><span>{(recomendacoesPorValidar ?? 0) > 0 ? `${recomendacoesPorValidar} por validar` : 'Sem validações pendentes'}</span><i aria-hidden="true">→</i></Link>
             <Link href="/admin/alunos"><strong>Alunos</strong><span>Inscrições, contactos e disciplinas</span><i aria-hidden="true">→</i></Link>
             <Link href="/admin/professores"><strong>Professores</strong><span>Contas, horários e alunos</span><i aria-hidden="true">→</i></Link>
+            <Link href="/admin/mensagens"><strong>Mensagens</strong><span>Escrever a alunos e professores</span><i aria-hidden="true">→</i></Link>
             {/* A secretaria passou a receber avisos (migração 0029: um
                 cancelamento de matrícula tem de chegar a quem trata das
                 mensalidades). A barra de baixo já tem os cinco destinos

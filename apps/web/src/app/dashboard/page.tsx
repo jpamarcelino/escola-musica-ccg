@@ -248,6 +248,7 @@ export default async function DashboardPage({
               <Link href="/dashboard/meus-alunos"><span>Alunos</span><small>Quem ensinas, e os seus dados</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/presencas"><span>Presenças</span><small>Registar e consultar</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/horarios"><span>Horários</span><small>Disponibilidade semanal</small><b aria-hidden="true">→</b></Link>
+              <Link href="/dashboard/mensagens"><span>Mensagens</span><small>Escrever aos teus alunos</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/mensalidades"><span>Mensalidades</span><small>Estado dos pagamentos</small><b aria-hidden="true">→</b></Link>
               {/* Só música tem reposições — em dança o separador levava a
                   um formulário que não serve para nada. */}
