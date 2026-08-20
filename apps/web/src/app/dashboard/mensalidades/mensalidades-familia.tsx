@@ -24,6 +24,7 @@ type Linha = {
   id: number
   aluno_id: string
   valor: number | null
+  desconto: number | null
   acrescimo: number | null
   inscricao: number | null
   seguro: number | null
@@ -55,7 +56,7 @@ export async function MensalidadesFamilia({
     supabase
       .from('mensalidades')
       .select(
-        'id, aluno_id, valor, acrescimo, inscricao, seguro, pago, desistencia, beneficio_id, instrumento_nome'
+        'id, aluno_id, valor, desconto, acrescimo, inscricao, seguro, pago, desistencia, beneficio_id, instrumento_nome'
       )
       .eq('ano', escolhido.ano)
       .eq('mes', escolhido.mes),
@@ -121,7 +122,12 @@ export async function MensalidadesFamilia({
                 { nome: 'Seguro', valor: l.seguro ?? 0 },
               ].filter((e) => e.valor > 0)
 
-              const mensalidade = (l.valor ?? 0) - extras.reduce((s, e) => s + e.valor, 0)
+              // A mensalidade cheia, antes de qualquer desconto: é o que
+              // permite mostrar o desconto como uma linha própria em vez
+              // de um número mais baixo sem explicação.
+              const desconto = l.desconto ?? 0
+              const mensalidade =
+                (l.valor ?? 0) - extras.reduce((s, e) => s + e.valor, 0) + desconto
 
               return (
                 <article key={l.id} data-estado={estado}>
@@ -137,6 +143,12 @@ export async function MensalidadesFamilia({
                       <dt>Mensalidade</dt>
                       <dd>{euros(mensalidade)}</dd>
                     </div>
+                    {desconto > 0 && (
+                      <div className="mensalidade-desconto">
+                        <dt>Desconto</dt>
+                        <dd>−{euros(desconto)}</dd>
+                      </div>
+                    )}
                     {extras.map((e) => (
                       <div key={e.nome}>
                         <dt>{e.nome}</dt>

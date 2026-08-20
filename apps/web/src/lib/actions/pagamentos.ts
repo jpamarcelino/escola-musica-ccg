@@ -99,6 +99,10 @@ export async function marcarMensalidadePaga(formData: FormData) {
   const alunoId = String(formData.get('alunoId') ?? '')
   const professorId = String(formData.get('professorId') ?? '')
   const instrumentoNome = String(formData.get('instrumentoNome') ?? '') || null
+  // A disciplina passa a fazer parte da identidade de uma mensalidade
+  // (0045). Sem ela, gravar a segunda disciplina de um aluno com o mesmo
+  // professor escrevia por cima da primeira.
+  const instrumentoId = Number(formData.get('instrumentoId') ?? 0)
   const ano = Number(formData.get('ano') ?? 0)
   const mes = Number(formData.get('mes') ?? 0)
   const valor = Number(formData.get('valor') ?? 0)
@@ -113,6 +117,7 @@ export async function marcarMensalidadePaga(formData: FormData) {
       aluno_id: alunoId,
       aluno_nome: nomes.get(alunoId) ?? null,
       professor_id: professorId,
+      instrumento_id: instrumentoId,
       instrumento_nome: instrumentoNome,
       ano,
       mes,
@@ -122,7 +127,7 @@ export async function marcarMensalidadePaga(formData: FormData) {
       marcado_por: user.id,
       numero_fatura: numeroFatura,
     },
-    { onConflict: 'aluno_id,professor_id,ano,mes' }
+    { onConflict: 'aluno_id,professor_id,instrumento_id,ano,mes' }
   )
 
   revalidatePath('/admin/pagamentos')
@@ -142,6 +147,10 @@ export async function definirNumeroFatura(formData: FormData) {
   const alunoId = String(formData.get('alunoId') ?? '')
   const professorId = String(formData.get('professorId') ?? '')
   const instrumentoNome = String(formData.get('instrumentoNome') ?? '') || null
+  // A disciplina passa a fazer parte da identidade de uma mensalidade
+  // (0045). Sem ela, gravar a segunda disciplina de um aluno com o mesmo
+  // professor escrevia por cima da primeira.
+  const instrumentoId = Number(formData.get('instrumentoId') ?? 0)
   const ano = Number(formData.get('ano') ?? 0)
   const mes = Number(formData.get('mes') ?? 0)
   const valor = Number(formData.get('valor') ?? 0)
@@ -156,6 +165,7 @@ export async function definirNumeroFatura(formData: FormData) {
       aluno_id: alunoId,
       aluno_nome: nomes.get(alunoId) ?? null,
       professor_id: professorId,
+      instrumento_id: instrumentoId,
       instrumento_nome: instrumentoNome,
       ano,
       mes,
@@ -163,7 +173,7 @@ export async function definirNumeroFatura(formData: FormData) {
       pago,
       numero_fatura: numeroFatura,
     },
-    { onConflict: 'aluno_id,professor_id,ano,mes' }
+    { onConflict: 'aluno_id,professor_id,instrumento_id,ano,mes' }
   )
 
   revalidatePath('/admin/pagamentos')
@@ -194,7 +204,21 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
   }
 
   const professorId = String(formData.get('professorId') ?? '')
-  const alunoIds = formData.getAll('alunoIds').map(String)
+
+  // Cada linha da grelha é um par aluno+disciplina ("uuid:12"), e não um
+  // aluno: desde a 0045 a disciplina faz parte da identidade de uma
+  // mensalidade, e quem anda em duas disciplinas com o mesmo professor
+  // tem duas linhas por mês.
+  const linhas = formData
+    .getAll('linhas')
+    .map(String)
+    .map((chave) => {
+      const [alunoId, instrumento] = chave.split(':')
+      return { chave, alunoId, instrumentoId: Number(instrumento ?? 0) }
+    })
+    .filter((l) => l.alunoId)
+
+  const alunoIds = linhas.map((l) => l.alunoId)
 
   // Esta grelha inclui de propósito alunos que já se desmatricularam ou
   // apagaram a conta — para esses já não há linha em "alunos", por isso o
@@ -211,10 +235,23 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
     if (!nomes.has(m.aluno_id)) nomes.set(m.aluno_id, m.aluno_nome)
   }
 
+  // O nome da disciplina, para as linhas gravadas aqui ficarem com o
+  // mesmo snapshot que a geração automática escreve.
+  const idsDisciplina = [...new Set(linhas.map((l) => l.instrumentoId).filter((i) => i > 0))]
+  const { data: disciplinasData } =
+    idsDisciplina.length > 0
+      ? await supabase.from('instrumentos').select('id, nome').in('id', idsDisciplina)
+      : { data: [] }
+  const nomeDaDisciplina = new Map(
+    ((disciplinasData ?? []) as { id: number; nome: string }[]).map((i) => [i.id, i.nome])
+  )
+
   const paraGuardar: {
     aluno_id: string
     aluno_nome: string | null
     professor_id: string
+    instrumento_id: number
+    instrumento_nome: string | null
     ano: number
     mes: number
     valor: number
@@ -224,12 +261,12 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
     marcado_por: string
   }[] = []
 
-  for (const alunoId of alunoIds) {
+  for (const { chave, alunoId, instrumentoId } of linhas) {
     for (const { ano, mes } of MESES_ANO_LETIVO) {
-      const valorTexto = String(formData.get(`v_${alunoId}_${ano}_${mes}`) ?? '')
+      const valorTexto = String(formData.get(`v_${chave}_${ano}_${mes}`) ?? '')
         .trim()
         .replace(',', '.')
-      const faturaTexto = String(formData.get(`f_${alunoId}_${ano}_${mes}`) ?? '').trim()
+      const faturaTexto = String(formData.get(`f_${chave}_${ano}_${mes}`) ?? '').trim()
 
       if (valorTexto === '') {
         await supabase
@@ -237,6 +274,7 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
           .delete()
           .eq('aluno_id', alunoId)
           .eq('professor_id', professorId)
+          .eq('instrumento_id', instrumentoId)
           .eq('ano', ano)
           .eq('mes', mes)
         continue
@@ -248,6 +286,8 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
       paraGuardar.push({
         aluno_id: alunoId,
         aluno_nome: nomes.get(alunoId) ?? null,
+        instrumento_id: instrumentoId,
+        instrumento_nome: nomeDaDisciplina.get(instrumentoId) ?? null,
         professor_id: professorId,
         ano,
         mes,
@@ -263,7 +303,7 @@ export async function atualizarHistoricoMensalidades(formData: FormData) {
   if (paraGuardar.length > 0) {
     await supabase
       .from('mensalidades')
-      .upsert(paraGuardar, { onConflict: 'aluno_id,professor_id,ano,mes' })
+      .upsert(paraGuardar, { onConflict: 'aluno_id,professor_id,instrumento_id,ano,mes' })
   }
 
   revalidatePath(`/admin/pagamentos/historico/${professorId}`)

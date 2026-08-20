@@ -10,6 +10,7 @@ import { MESES_ANO_LETIVO, euros, eurosOuTexto, parteDoProfessor } from '@ccg/co
 type MatriculaDoProfessor = {
   id: number
   aluno_id: string
+  instrumento_id: number | null
   valor_mensal: number | null
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
@@ -17,6 +18,7 @@ type MatriculaDoProfessor = {
 
 type MensalidadeDoMes = {
   aluno_id: string
+  instrumento_id: number | null
   valor: number | null
   retencao_ccg: number | null
   inscricao: number | null
@@ -97,12 +99,12 @@ export default async function MensalidadesProfessorPage({
     await Promise.all([
       supabase
         .from('matriculas')
-        .select('id, aluno_id, valor_mensal, alunos(nome), instrumentos(nome)')
+        .select('id, aluno_id, instrumento_id, valor_mensal, alunos(nome), instrumentos(nome)')
         .eq('professor_id', user.id)
         .eq('estado', 'confirmado'),
       supabase
         .from('mensalidades')
-        .select('aluno_id, valor, retencao_ccg, inscricao, seguro, acrescimo, pago, desistencia, beneficio_id, instrumento_nome')
+        .select('aluno_id, instrumento_id, valor, retencao_ccg, inscricao, seguro, acrescimo, pago, desistencia, beneficio_id, instrumento_nome')
         .eq('professor_id', user.id)
         .eq('ano', escolhido.ano)
         .eq('mes', escolhido.mes),
@@ -124,13 +126,17 @@ export default async function MensalidadesProfessorPage({
   const matriculas = (matriculasData ?? []) as unknown as MatriculaDoProfessor[]
   const mensalidades = (mensalidadesData ?? []) as MensalidadeDoMes[]
 
-  // A identidade de uma mensalidade é (aluno, professor, ano, mês) desde
-  // a 0008 — não a matrícula. Por isso a chave aqui é o aluno.
-  const mensalidadePorAluno = new Map(mensalidades.map((m) => [m.aluno_id, m]))
+  // A identidade de uma mensalidade passou a incluir a disciplina (0045):
+  // um aluno com Piano e Bateria com o mesmo professor tem duas
+  // mensalidades por mês, e mapeá-las só pelo aluno perdia uma delas —
+  // que era exatamente o erro que a 0045 foi corrigir.
+  const mensalidadePorAluno = new Map(
+    mensalidades.map((m) => [`${m.aluno_id}:${m.instrumento_id ?? 0}`, m])
+  )
 
   const linhas = matriculas
     .map((m) => {
-      const mensalidade = mensalidadePorAluno.get(m.aluno_id)
+      const mensalidade = mensalidadePorAluno.get(`${m.aluno_id}:${m.instrumento_id ?? 0}`)
       let estado: EstadoLinha
       if (!mensalidade) estado = 'por_gerar'
       else if (mensalidade.desistencia) estado = 'desistencia'

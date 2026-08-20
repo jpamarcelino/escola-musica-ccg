@@ -12,6 +12,7 @@ import {
 type MatriculaResumo = {
   id: number
   aluno_id: string
+  instrumento_id: number | null
   valor_mensal: number | null
   isento_ccg: boolean
   aluno: { nome: string } | null
@@ -72,7 +73,7 @@ export default async function ConfirmarMensalidadesProfessorPage({
   const { data: matriculasData } = await supabase
     .from('matriculas')
     .select(
-      'id, aluno_id, valor_mensal, isento_ccg, aluno:alunos(nome), instrumentos(nome, programa)'
+      'id, aluno_id, instrumento_id, valor_mensal, isento_ccg, aluno:alunos(nome), instrumentos(nome, programa)'
     )
     .eq('professor_id', professorId)
     .eq('estado', 'confirmado')
@@ -204,6 +205,10 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       name="instrumentoNome"
                       value={m.instrumentos?.nome ?? ''}
                     />
+                    {/* A disciplina faz parte da identidade da mensalidade
+                        desde a 0045 — sem ela, gravar Bateria escrevia por
+                        cima de Piano do mesmo aluno e professor. */}
+                    <input type="hidden" name="instrumentoId" value={m.instrumento_id ?? 0} />
                     <input type="hidden" name="ano" value={ano} />
                     <input type="hidden" name="mes" value={mes} />
                     <input type="hidden" name="valor" value={valor ?? 0} />
@@ -234,6 +239,10 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       name="instrumentoNome"
                       value={m.instrumentos?.nome ?? ''}
                     />
+                    {/* A disciplina faz parte da identidade da mensalidade
+                        desde a 0045 — sem ela, gravar Bateria escrevia por
+                        cima de Piano do mesmo aluno e professor. */}
+                    <input type="hidden" name="instrumentoId" value={m.instrumento_id ?? 0} />
                     <input type="hidden" name="ano" value={ano} />
                     <input type="hidden" name="mes" value={mes} />
                     <input type="hidden" name="valor" value={valor ?? 0} />

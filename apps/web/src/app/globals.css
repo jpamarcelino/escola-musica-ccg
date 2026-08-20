@@ -3966,6 +3966,9 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   color: var(--color-text-secondary);
 }
 .mensalidade-parcelas dd { font-variant-numeric: tabular-nums; }
+/* O desconto é a única parcela que baixa a conta — e a única que vale a
+   pena dar nas vistas. */
+.mensalidade-parcelas .mensalidade-desconto { color: var(--color-azul-texto); }
 .mensalidade-parcelas .mensalidade-total {
   margin-top: 6px;
   padding-top: 8px;
@@ -3986,4 +3989,14 @@ body:has(.auth-pagina) { background: var(--color-papel); }
    vistas — quem já pagou não tem nada a fazer com esta linha. */
 .mensalidade-lista article[data-estado="por_pagar"] .mensalidade-estado {
   color: var(--color-azul-texto);
+}
+
+/* Na grelha do histórico, a disciplina por baixo do nome: desde a 0045
+   há uma linha por aluno E disciplina, e sem isto duas linhas seguidas
+   com o mesmo nome não se distinguiam. */
+.td-aluno-disciplina {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-tinta-suave);
 }

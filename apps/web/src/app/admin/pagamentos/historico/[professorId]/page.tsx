@@ -8,12 +8,16 @@ import { MESES_ANO_LETIVO, rotuloMes } from '@ccg/core'
 
 type MatriculaAtual = {
   aluno_id: string
+  instrumento_id: number | null
   aluno: { nome: string } | null
+  instrumentos: { nome: string } | null
 }
 
 type MensalidadeHistorico = {
   aluno_id: string
   aluno_nome: string | null
+  instrumento_id: number | null
+  instrumento_nome: string | null
   ano: number
   mes: number
   valor: number | null
@@ -67,14 +71,14 @@ export default async function HistoricoPagamentosProfessorPage({
   // desmatriculou continua a aparecer, com o histórico intacto.
   const { data: matriculasData } = await supabase
     .from('matriculas')
-    .select('aluno_id, aluno:alunos(nome)')
+    .select('aluno_id, instrumento_id, aluno:alunos(nome), instrumentos(nome)')
     .eq('professor_id', professorId)
     .eq('estado', 'confirmado')
   const matriculasAtuais = (matriculasData ?? []) as unknown as MatriculaAtual[]
 
   const { data: mensalidadesData } = await supabase
     .from('mensalidades')
-    .select('aluno_id, aluno_nome, ano, mes, valor, numero_fatura, desistencia')
+    .select('aluno_id, aluno_nome, instrumento_id, instrumento_nome, ano, mes, valor, numero_fatura, desistencia')
     .eq('professor_id', professorId)
   const mensalidades = (mensalidadesData ?? []) as unknown as MensalidadeHistorico[]
 
@@ -82,23 +86,54 @@ export default async function HistoricoPagamentosProfessorPage({
   // aparecer, com o histórico intacto — o nome vem do snapshot guardado
   // em cada mensalidade (aluno_nome), já que a matrícula (ou a própria
   // conta) pode já não existir.
-  const nomePorAluno = new Map<string, string>()
+  // Uma linha por aluno E disciplina, e não por aluno. Desde a 0045 a
+  // disciplina faz parte da identidade de uma mensalidade: quem anda em
+  // Piano e Bateria com o mesmo professor tem duas mensalidades por mês,
+  // e uma linha só não tinha onde as pôr — escrevia uma por cima da
+  // outra.
+  const linhaPorChave = new Map<
+    string,
+    { chave: string; alunoId: string; instrumentoId: number; nome: string; disciplina: string }
+  >()
+
+  function juntar(
+    alunoId: string,
+    instrumentoId: number | null,
+    nome: string | null,
+    disciplina: string | null
+  ) {
+    const id = instrumentoId ?? 0
+    const chave = `${alunoId}:${id}`
+    if (linhaPorChave.has(chave) || !nome) return
+    linhaPorChave.set(chave, {
+      chave,
+      alunoId,
+      instrumentoId: id,
+      nome,
+      disciplina: disciplina ?? '',
+    })
+  }
+
   for (const m of matriculasAtuais) {
-    if (m.aluno) nomePorAluno.set(m.aluno_id, m.aluno.nome)
+    juntar(m.aluno_id, m.instrumento_id, m.aluno?.nome ?? null, m.instrumentos?.nome ?? null)
   }
+  // Quem já se desmatriculou (ou apagou a conta) continua a aparecer: o
+  // nome e a disciplina vêm do que ficou gravado na própria mensalidade.
   for (const m of mensalidades) {
-    if (m.aluno_nome && !nomePorAluno.has(m.aluno_id)) nomePorAluno.set(m.aluno_id, m.aluno_nome)
+    juntar(m.aluno_id, m.instrumento_id, m.aluno_nome, m.instrumento_nome)
   }
-  const alunos = [...nomePorAluno.entries()]
-    .map(([id, nome]) => ({ id, nome }))
-    .sort((a, b) => a.nome.localeCompare(b.nome))
+
+  const linhas = [...linhaPorChave.values()].sort(
+    (a, b) => a.nome.localeCompare(b.nome) || a.disciplina.localeCompare(b.disciplina)
+  )
+  const alunos = new Set(linhas.map((l) => l.alunoId))
 
   const valorPorCelula = new Map<
     string,
     { valor: number | null; numero_fatura: string | null; desistencia: boolean }
   >()
   for (const m of mensalidades) {
-    valorPorCelula.set(`${m.aluno_id}_${m.ano}_${m.mes}`, {
+    valorPorCelula.set(`${m.aluno_id}:${m.instrumento_id ?? 0}_${m.ano}_${m.mes}`, {
       valor: m.valor,
       numero_fatura: m.numero_fatura,
       desistencia: m.desistencia,
@@ -108,15 +143,15 @@ export default async function HistoricoPagamentosProfessorPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-historico-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos/historico" className="partitura-voltar" aria-label="Voltar ao histórico">←</Link><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>{professorData.nome}</h1><p>Ano letivo completo · {alunos.length} {alunos.length === 1 ? 'aluno' : 'alunos'}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos/historico" className="partitura-voltar" aria-label="Voltar ao histórico">←</Link><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>{professorData.nome}</h1><p>Ano letivo completo · {alunos.size} {alunos.size === 1 ? 'aluno' : 'alunos'}{linhas.length !== alunos.size && ` · ${linhas.length} disciplinas`}</p></div></header>
 
-        {alunos.length === 0 ? (
+        {linhas.length === 0 ? (
           <EmptyState titulo="Ainda não há histórico de mensalidades" />
         ) : (
           <form action={atualizarHistoricoMensalidades} className="admin-historico-form">
             <input type="hidden" name="professorId" value={professorId} />
-            {alunos.map((a) => (
-              <input key={a.id} type="hidden" name="alunoIds" value={a.id} />
+            {linhas.map((l) => (
+              <input key={l.chave} type="hidden" name="linhas" value={l.chave} />
             ))}
 
             <div className="tabela-historico-wrap">
@@ -142,11 +177,16 @@ export default async function HistoricoPagamentosProfessorPage({
                   </tr>
                 </thead>
                 <tbody>
-                  {alunos.map((aluno) => (
-                    <tr key={aluno.id}>
-                      <td className="td-aluno">{aluno.nome}</td>
+                  {linhas.map((aluno) => (
+                    <tr key={aluno.chave}>
+                      <td className="td-aluno">
+                        {aluno.nome}
+                        {aluno.disciplina && (
+                          <span className="td-aluno-disciplina">{aluno.disciplina}</span>
+                        )}
+                      </td>
                       {MESES_ANO_LETIVO.map(({ ano, mes }) => {
-                        const celula = valorPorCelula.get(`${aluno.id}_${ano}_${mes}`)
+                        const celula = valorPorCelula.get(`${aluno.chave}_${ano}_${mes}`)
                         if (celula?.desistencia) {
                           return (
                             <Fragment key={`${ano}-${mes}`}>
@@ -154,7 +194,7 @@ export default async function HistoricoPagamentosProfessorPage({
                                 <input
                                   type="text"
                                   readOnly
-                                  name={`v_${aluno.id}_${ano}_${mes}`}
+                                  name={`v_${aluno.chave}_${ano}_${mes}`}
                                   value="DT"
                                   aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: desistência`}
                                   title="Desistência — aluno saiu antes deste mês."
@@ -165,7 +205,7 @@ export default async function HistoricoPagamentosProfessorPage({
                                 <input
                                   type="text"
                                   readOnly
-                                  name={`f_${aluno.id}_${ano}_${mes}`}
+                                  name={`f_${aluno.chave}_${ano}_${mes}`}
                                   value=""
                                   aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: sem fatura`}
                                 />
@@ -179,7 +219,7 @@ export default async function HistoricoPagamentosProfessorPage({
                               <input
                                 type="text"
                                 inputMode="decimal"
-                                name={`v_${aluno.id}_${ano}_${mes}`}
+                                name={`v_${aluno.chave}_${ano}_${mes}`}
                                 defaultValue={celula?.valor != null ? celula.valor.toFixed(2) : ''}
                                 placeholder="--"
                                 aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: valor em euros`}
@@ -189,7 +229,7 @@ export default async function HistoricoPagamentosProfessorPage({
                               <input
                                 type="text"
                                 maxLength={10}
-                                name={`f_${aluno.id}_${ano}_${mes}`}
+                                name={`f_${aluno.chave}_${ano}_${mes}`}
                                 defaultValue={celula?.numero_fatura ?? ''}
                                 placeholder="--"
                                 aria-label={`${aluno.nome}, ${rotuloMes(ano, mes)}: número de fatura`}
