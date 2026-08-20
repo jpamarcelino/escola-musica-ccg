@@ -1592,27 +1592,47 @@ body {
   background: var(--marca-ciano);
 }
 .avisos-lista article[data-lida="true"]::before { background: var(--color-linha); }
+/* A linha acende quando o rato está sobre a parte que abre o aviso — e
+   não quando está sobre o atalho "Ver", que leva a outro sítio. Acender
+   a linha toda prometia que qualquer ponto dela fazia a mesma coisa. */
+.avisos-lista article:has(.avisos-corpo:hover) { background: var(--color-surface-raised); }
+@media (hover: none) { .avisos-lista article:has(.avisos-corpo:hover) { background: none; } }
 .avisos-lista time { padding-top: 3px; font-size: 11px; font-weight: 700; color: var(--color-tinta-suave); font-variant-numeric: tabular-nums; }
 .avisos-lista p { font-size: 14px; line-height: 1.5; color: var(--color-tinta); }
 .avisos-lista article[data-lida="true"] p { color: var(--color-tinta-suave); }
-.avisos-marcar-um {
-  min-height: 40px;
-  padding-inline: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--color-azul-fundo);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  white-space: nowrap;
-}
+/* O botão de "marcar como lida" linha a linha desapareceu: abrir um
+   aviso passou a marcá-lo. Fica o "marcar todas", para quem chega a uma
+   lista cheia e quer limpá-la sem abrir nada. */
 .avisos-marcar-todos:focus-visible,
-.avisos-marcar-um:focus-visible,
+.avisos-destino:focus-visible,
 .materiais-separador:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
 
 /* Etiqueta com o nome do aluno a que o aviso diz respeito. Os avisos
    gerais da conta (e todos os antigos, anteriores à migração 0025) não a
    têm — a linha fica só com a mensagem, como sempre esteve. */
-.avisos-corpo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* Agora é uma ligação: a linha inteira abre o aviso. Sem sublinhado nem
+   azul — quem lê uma lista de avisos não quer ver dez links, quer ver
+   dez avisos; o que diz que se abre é a linha inteira reagir ao toque. */
+.avisos-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.avisos-corpo:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 4px; }
+
+/* Três linhas e ponto. Uma mensagem de mil caracteres — e agora podem
+   existir, escritas à mão pela secretaria — empurrava as outras para
+   fora do ecrã e transformava o arquivo num muro de texto. */
+.avisos-resumo {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
 .avisos-aluno {
   align-self: flex-start;
   font-size: 10px;
@@ -1674,7 +1694,7 @@ body {
   .avisos-lista article { grid-template-columns: 1fr auto; gap: 5px 12px; }
   .avisos-lista time { grid-column: 1; }
   .avisos-corpo { grid-column: 1; }
-  .avisos-lista form { grid-column: 2; grid-row: 1 / span 2; }
+  .avisos-lista .avisos-destino { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
 }
 
 /* Detalhes do professor — prolongam a hierarquia temporal até às rotas
@@ -3741,8 +3761,8 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .avisos-destino {
   display: inline-flex;
   align-items: center;
-  min-height: 32px;
-  margin-top: 2px;
+  min-height: 40px;
+  white-space: nowrap;
   font-size: 13px;
   font-weight: 500;
   color: var(--color-azul-texto);
@@ -3876,3 +3896,40 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   font-weight: 600;
 }
 .mensagem-enviar:disabled { opacity: .45; }
+
+/* ------------------------------------------------------------------ */
+/* Um aviso, sozinho na sua página                                     */
+/* ------------------------------------------------------------------ */
+
+.aviso-pagina .partitura-folha { max-width: 680px; }
+
+/* A mensagem, com espaço para ser lida. pre-wrap porque quem a escreveu
+   pode ter deixado parágrafos, e uma mensagem de boas festas escrita em
+   três blocos não pode chegar como um bloco só. */
+.aviso-corpo {
+  display: block;
+  margin-top: 30px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.aviso-accao {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  margin-top: 30px;
+  padding-inline: 24px;
+  border: 1.5px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: background-color .15s ease;
+}
+.aviso-accao:hover { background: var(--color-surface-raised); }
+.aviso-accao:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .aviso-accao { transition: none; } }

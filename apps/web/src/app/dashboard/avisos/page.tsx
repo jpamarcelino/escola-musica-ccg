@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { marcarNotificacaoLida, marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
+import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
 import { ehContaCCG } from '@/lib/navegacao'
+import { accaoDoAviso } from '@/lib/avisos'
 
 type Notificacao = {
   id: number
@@ -48,7 +49,11 @@ export default async function AvisosPage({
       .from('notificacoes')
       .select('id, tipo, titulo, mensagem, lida, criado_em, aluno_id')
       .eq('user_id', user.id)
-      .order('criado_em', { ascending: false }),
+      .order('criado_em', { ascending: false })
+      // Desempate pelo id: dois avisos criados na mesma
+      // transação têm o mesmo instante ao microssegundo, e sem
+      // isto trocavam de lugar entre visitas.
+      .order('id', { ascending: false }),
     // Os separadores por aluno só fazem sentido a quem tem alunos. Para
     // um professor, a consulta devolve vazio e a barra não aparece.
     familia
@@ -145,11 +150,16 @@ export default async function AvisosPage({
               return (
                 <article key={n.id} data-lida={n.lida}>
                   <time>{new Date(n.criado_em).toLocaleDateString('pt-PT')}</time>
-                  {/* A etiqueta e a mensagem vão juntas num só filho: o
+                  {/* A linha inteira abre o aviso. A lista serve para
+                      varrer — a mensagem vem cortada a três linhas, e
+                      quem quiser ler o resto entra. Antes, uma mensagem
+                      comprida desfazia a lista toda.
+
+                      A etiqueta e a mensagem vão juntas num só filho: o
                       article é uma grelha de três colunas com posições
                       fixas (ver globals.css), e um quarto filho solto
                       desalinhava a linha toda no telemóvel. */}
-                  <div className="avisos-corpo">
+                  <Link href={`/dashboard/avisos/${n.id}`} className="avisos-corpo">
                     {/* Avisos antigos (e os gerais da conta) não têm aluno
                         associado e continuam a aparecer, sem etiqueta. */}
                     {nomeAluno && <span className="avisos-aluno">{nomeAluno}</span>}
@@ -159,24 +169,21 @@ export default async function AvisosPage({
                         do tipo e repeti-lo por cima do texto não
                         acrescentava nada. */}
                     {n.titulo && <strong className="avisos-titulo">{n.titulo}</strong>}
-                    <p>{n.mensagem}</p>
-                    {/* O mesmo destino que a push usa. Um aviso que diz
-                        "precisa da tua resposta" e não leva a lado nenhum
-                        obriga a pessoa a adivinhar em que separador é que
-                        se responde. */}
-                    {tipos.get(n.tipo)?.destino && (
-                      <Link href={tipos.get(n.tipo)!.destino!} className="avisos-destino">
-                        Ver
-                      </Link>
-                    )}
-                  </div>
-                  {!n.lida && (
-                    <form action={marcarNotificacaoLida}>
-                      <input type="hidden" name="notificacaoId" value={n.id} />
-                      <button type="submit" className="avisos-marcar-um">
-                        Marcar como lida
-                      </button>
-                    </form>
+                    <p className="avisos-resumo">{n.mensagem}</p>
+                  </Link>
+                  {/* O mesmo destino que a push usa, à parte da ligação
+                      que abre o aviso — não pode ir lá dentro, um link
+                      dentro de outro link não é marcação válida. Fica
+                      quem quer ler de quem quer responder já. */}
+                  {/* Nada de "Ver" quando o destino é este mesmo arquivo:
+                      era uma ligação para a página onde a pessoa já está. */}
+                  {accaoDoAviso(tipos.get(n.tipo)?.destino) && (
+                    <Link
+                      href={accaoDoAviso(tipos.get(n.tipo)?.destino)!.href}
+                      className="avisos-destino"
+                    >
+                      Ver
+                    </Link>
                   )}
                 </article>
               )
