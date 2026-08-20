@@ -3675,3 +3675,45 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   font-style: italic;
 }
 .proposta-horario-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+/* "Escolher outro horário" — fechado até ser preciso.
+   Um professor com muitas horas livres tinha a ficha do aluno soterrada
+   por uma lista de rádios; quem entra aqui vem quase sempre ver o
+   contacto do encarregado. A seta é a do <details> do browser, que já
+   sabe anunciar-se aos leitores de ecrã. */
+.escolher-horario { border-block: 1px solid var(--color-linha); }
+.escolher-horario summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 12px 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--color-azul-fundo);
+}
+.escolher-horario-conta {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-tinta-suave);
+}
+/* O triângulo por omissão do <details> desaparece quando o summary é
+   flex. Fica esta seta, à direita, que roda ao abrir — e roda só quando
+   o sistema não pede movimento reduzido. */
+.escolher-horario summary::-webkit-details-marker { display: none; }
+.escolher-horario summary::marker { content: ''; }
+.escolher-horario summary::after {
+  content: '›';
+  margin-left: auto;
+  font-size: 20px;
+  line-height: 1;
+  transform: rotate(90deg);
+  transition: transform 160ms ease;
+}
+.escolher-horario[open] summary::after { transform: rotate(-90deg); }
+@media (prefers-reduced-motion: reduce) {
+  .escolher-horario summary::after { transition: none; }
+}
+.escolher-horario[open] summary { border-bottom: 1px solid var(--color-linha); }
+.escolher-horario fieldset { padding-top: 12px; }

@@ -184,8 +184,19 @@ export default async function AlunoDaAulaPage({
               <input type="hidden" name="matriculaId" value={matricula.id} />
               <input type="hidden" name="horarioAtualId" value={horarioId ?? ''} />
 
-              <fieldset className="space-y-2">
-                <legend className="text-[13px] font-medium">Horário a propor</legend>
+              {/* Fechado por omissão: um professor com vinte horas livres
+                  tinha vinte linhas de rádio abertas por baixo da ficha,
+                  e o que ele veio ver era o telemóvel do encarregado. A
+                  seta abre quando for preciso. */}
+              <details className="escolher-horario">
+                <summary>
+                  Escolher outro horário
+                  <span className="escolher-horario-conta">
+                    {livres.length} {livres.length === 1 ? 'livre' : 'livres'}
+                  </span>
+                </summary>
+                <fieldset className="space-y-2">
+                <legend className="sr-only">Horário a propor</legend>
                 {livres.map((h) => (
                   <label key={h.id} className="lista-item flex items-center gap-[12px]">
                     <input
@@ -205,7 +216,7 @@ export default async function AlunoDaAulaPage({
                 ))}
               </fieldset>
 
-              <div className="space-y-1">
+              <div className="space-y-1 pt-3">
                 <label htmlFor="mensagem" className="block text-[13px] font-medium">
                   Mensagem <span className="text-foreground/50">(opcional)</span>
                 </label>
@@ -218,6 +229,7 @@ export default async function AlunoDaAulaPage({
               >
                 Propor este horário
               </SubmitButton>
+              </details>
             </form>
           )}
         </section>
