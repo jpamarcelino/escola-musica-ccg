@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { CabecalhoPublico } from "@/components/cabecalho-publico";
 import { NavigationFeedback } from "@/components/navigation-feedback";
 import { PageTransition } from "@/components/page-transition";
+import { RegistarServiceWorker } from "@/components/registar-service-worker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -50,6 +51,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <RegistarServiceWorker />
         <a
           href="#conteudo-principal"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-[var(--radius-botao)] focus:bg-[var(--color-azul-fundo)] focus:px-4 focus:py-2 focus:text-white focus:no-underline"

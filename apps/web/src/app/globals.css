@@ -3726,3 +3726,16 @@ body:has(.auth-pagina) { background: var(--color-papel); }
    outra cor. Uma decisão por responder não é uma notícia. */
 .familia-aviso-decidir { border-color: var(--color-azul-fundo); }
 .familia-aviso-decidir span { color: var(--color-azul-texto); }
+/* A ligação de um aviso para o sítio onde se age sobre ele. Discreta:
+   a mensagem é que manda, isto é a saída. */
+.avisos-destino {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-azul-texto);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

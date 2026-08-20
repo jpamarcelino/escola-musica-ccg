@@ -17,9 +17,11 @@ async function DashboardNavigation() {
   const { user, profile } = await getSchoolProfileContext()
 
   if (!user) return null
-  // O professor não tem separador de avisos — a contagem não teria onde
-  // aparecer, e não vale uma consulta.
-  if (profile?.tipo === 'professor') return <BottomNavigation itens={NAV_PROFESSOR} />
+  // O professor passou a ter separador de avisos, e portanto a contagem
+  // passou a ter onde aparecer.
+  if (profile?.tipo === 'professor') {
+    return <BottomNavigation itens={comAvisosPorLer(NAV_PROFESSOR, await getAvisosPorLer())} />
+  }
   if (ehContaCCG(profile?.tipo)) {
     return <BottomNavigation itens={comAvisosPorLer(NAV_CONTA, await getAvisosPorLer())} />
   }

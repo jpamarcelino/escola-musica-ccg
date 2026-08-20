@@ -11,6 +11,7 @@ import { EditarNomeForm, AlterarPasswordForm } from '@/components/conta-forms'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
+import { AtivarNotificacoes } from '@/components/ativar-notificacoes'
 
 export default async function AdminContaPage({
   searchParams,
@@ -74,6 +75,17 @@ export default async function AdminContaPage({
     nome: p.profiles?.nome ?? '',
   }))
 
+  // Os aparelhos desta conta que já têm notificações ligadas. Vai só
+  // como lista de endpoints: é o que o componente precisa para saber se
+  // ESTE aparelho já está ligado, e não há motivo para mandar as chaves
+  // de cada um para o browser.
+  const { data: subscricoesData } = await supabase
+    .from('push_subscricoes')
+    .select('endpoint')
+    .eq('user_id', user.id)
+  const endpoints = (subscricoesData ?? []).map((s) => s.endpoint)
+  const chavePublica = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ''
+
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-conta-pagina">
       <div className="partitura-folha">
@@ -107,6 +119,21 @@ export default async function AdminContaPage({
             <LigacaoTerciaria href="/dashboard">Voltar ao painel de professor</LigacaoTerciaria>
           </section>
         )}
+
+        {/* As notificações são da CONTA, não do papel: quem é
+            professor e da secretaria ao mesmo tempo liga uma vez e
+            recebe tudo. Por isso esta secção está fora do bloco de
+            professor. */}
+        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+          <h2 className="font-semibold">Notificações no telemóvel</h2>
+          {chavePublica ? (
+            <AtivarNotificacoes chavePublica={chavePublica} endpointsGuardados={endpoints} />
+          ) : (
+            <p className="text-sm text-foreground/60">
+              As notificações ainda não estão configuradas nesta instalação.
+            </p>
+          )}
+        </section>
 
         <section className="border-t border-[var(--color-linha)] pt-6">
           <form action={logout}>

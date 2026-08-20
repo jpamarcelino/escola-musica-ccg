@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
-import { atualizarInstrumentos, atualizarFoto } from '@/lib/actions/professor'
+import { pedirInstrumento, atualizarFoto } from '@/lib/actions/professor'
 import {
   atualizarNomeConta,
   atualizarNifConta,
@@ -9,7 +9,8 @@ import {
   logout,
 } from '@/lib/actions/auth'
 import { PageHeader } from '@/components/page-header'
-import { classesCampo } from '@/components/campo-formulario'
+import { Rotulo, classesCampo } from '@/components/campo-formulario'
+import { AtivarNotificacoes } from '@/components/ativar-notificacoes'
 import { SubmitButton } from '@/components/submit-button'
 import { FotoConta } from '@/components/foto-conta'
 import {
@@ -106,6 +107,40 @@ export default async function ContaPage({
     .filter((r) => r.instrumentos !== null)
     .map((r) => ({ ...r.instrumentos!, especialidade: r.especialidade }))
 
+  // Os pedidos que já fez, e o que lhe falta pedir. Uma disciplina com
+  // pedido pendente sai da lista de escolha: pedir duas vezes a mesma
+  // coisa não a aproxima de ser aceite.
+  const { data: pedidosData } = ehProfessor
+    ? await supabase
+        .from('pedidos_instrumento')
+        .select('id, estado, resposta, instrumento_id, instrumentos(nome)')
+        .eq('professor_id', user.id)
+        .order('criado_em', { ascending: false })
+    : { data: null }
+
+  const pedidos = (pedidosData ?? []) as unknown as {
+    id: number
+    estado: string
+    resposta: string | null
+    instrumento_id: number
+    instrumentos: { nome: string } | null
+  }[]
+
+  const jaTenho = new Set(meusInstrumentos.map((i) => i.id))
+  const jaPedi = new Set(pedidos.filter((p) => p.estado === 'pendente').map((p) => p.instrumento_id))
+  const porPedir = todosInstrumentos.filter((i) => !jaTenho.has(i.id) && !jaPedi.has(i.id))
+
+  // Os aparelhos desta conta que já têm notificações ligadas. Vai só
+  // como lista de endpoints: é o que o componente precisa para saber se
+  // ESTE aparelho já está ligado, e não há motivo para mandar as chaves
+  // de cada um para o browser.
+  const { data: subscricoesData } = await supabase
+    .from('push_subscricoes')
+    .select('endpoint')
+    .eq('user_id', user.id)
+  const endpoints = (subscricoesData ?? []).map((s) => s.endpoint)
+  const chavePublica = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ''
+
   return (
     <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
       <div className="w-full max-w-2xl space-y-6">
@@ -162,59 +197,106 @@ export default async function ContaPage({
 
             <section className="space-y-3">
               <h2 className="font-semibold">Disciplinas que ensinas</h2>
+              {meusInstrumentos.length === 0 ? (
+                <p className="text-sm text-foreground/60">
+                  Ainda não tens nenhuma disciplina atribuída.
+                </p>
+              ) : (
+                <ul className="space-y-1 text-sm">
+                  {meusInstrumentos.map((i) => (
+                    <li key={i.id}>
+                      <strong className="font-medium">{i.nome}</strong>
+                      {i.especialidade ? ` · ${i.especialidade}` : ''}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {/* Deixou de ser uma lista de caixas que o professor
+                  gravava: quem ensinava guitarra acrescentava canto num
+                  clique. Tirar também não é dele — uma disciplina pode
+                  ter alunos inscritos, e a matrícula não pode ficar sem
+                  o professor que a dá. */}
               <p className="text-xs text-foreground/50">
-                A especialidade é opcional — usa-a quando ensinas uma disciplina
-                de forma diferente de outros professores (ex: &quot;Piano
-                clássico&quot; vs. &quot;Piano jazz/rock&quot;). Aparece por baixo
-                do teu nome quando um aluno escolher essa disciplina.
+                Para deixar de dar uma destas, fala com a secretaria.
               </p>
-              {/* Esta secção tinha ficado fora da migração para o design
-                  system: os campos eram Tailwind cru com py-1 (30px de
-                  altura) e a etiqueta do visto tinha um alvo de toque de
-                  20px — metade do mínimo recomendado. Passa a usar
-                  classesCampo, e em ecrã estreito cada disciplina empilha
-                  em vez de espremer nome e especialidade na mesma linha. */}
-              <form action={atualizarInstrumentos} className="space-y-4">
-                <div className="space-y-3">
-                  {todosInstrumentos.map((i) => {
-                    const meu = meusInstrumentos.find((m) => m.id === i.id)
-                    return (
-                      <div
-                        key={i.id}
-                        className="flex flex-col gap-[6px] sm:flex-row sm:items-center sm:gap-3"
-                      >
-                        <label className="flex min-h-[44px] shrink-0 items-center gap-[10px] text-[15px] sm:w-44">
-                          <input
-                            type="checkbox"
-                            name="instrumentos"
-                            value={i.id}
-                            defaultChecked={meu !== undefined}
-                            className="h-[20px] w-[20px] shrink-0 accent-[var(--color-azul-fundo)]"
-                          />
+
+              {porPedir.length > 0 && (
+                <form action={pedirInstrumento} className="space-y-3 pt-2">
+                  <div className="space-y-[6px]">
+                    <Rotulo htmlFor="instrumentoId">Pedir para ensinar</Rotulo>
+                    <select
+                      id="instrumentoId"
+                      name="instrumentoId"
+                      required
+                      defaultValue=""
+                      className={classesCampo}
+                    >
+                      <option value="" disabled>
+                        Escolhe uma disciplina
+                      </option>
+                      {porPedir.map((i) => (
+                        <option key={i.id} value={i.id}>
                           {i.nome}
-                        </label>
-                        <input
-                          type="text"
-                          name={`especialidade_${i.id}`}
-                          defaultValue={meu?.especialidade ?? ''}
-                          placeholder="Especialidade (opcional)"
-                          aria-label={`Especialidade de ${i.nome}`}
-                          className={classesCampo}
-                        />
-                      </div>
-                    )
-                  })}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-[6px]">
+                    <Rotulo htmlFor="mensagem-disciplina">
+                      Mensagem para a secretaria (opcional)
+                    </Rotulo>
+                    <textarea
+                      id="mensagem-disciplina"
+                      name="mensagem"
+                      rows={2}
+                      maxLength={500}
+                      className={classesCampo}
+                    />
+                  </div>
+                  <SubmitButton
+                    textoAGuardar="A enviar…"
+                    className="flex h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] text-[15px] font-semibold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-surface-raised)] disabled:opacity-50 motion-reduce:transition-none sm:w-auto sm:px-7"
+                  >
+                    Enviar pedido
+                  </SubmitButton>
+                </form>
+              )}
+
+              {pedidos.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  <h3 className="text-[13px] font-semibold">Pedidos</h3>
+                  {pedidos.map((p) => (
+                    <div key={p.id} className="lista-item">
+                      <p className="lista-item-titulo">{p.instrumentos?.nome}</p>
+                      <p className="lista-item-sub">
+                        {p.estado === 'pendente'
+                          ? 'À espera da resposta da secretaria.'
+                          : p.estado === 'aceite'
+                            ? 'Aceite.'
+                            : `Não aceite.${p.resposta ? ` ${p.resposta}` : ''}`}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <SubmitButton
-                  textoAGuardar="A guardar disciplinas…"
-                  className="flex h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] text-[15px] font-semibold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-surface-raised)] disabled:opacity-50 motion-reduce:transition-none sm:w-auto sm:px-7"
-                >
-                  Guardar disciplinas
-                </SubmitButton>
-              </form>
+              )}
             </section>
           </>
         )}
+
+        {/* As notificações são da CONTA, não do papel: quem é
+            professor e da secretaria ao mesmo tempo liga uma vez e
+            recebe tudo. Por isso esta secção está fora do bloco de
+            professor. */}
+        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+          <h2 className="font-semibold">Notificações no telemóvel</h2>
+          {chavePublica ? (
+            <AtivarNotificacoes chavePublica={chavePublica} endpointsGuardados={endpoints} />
+          ) : (
+            <p className="text-sm text-foreground/60">
+              As notificações ainda não estão configuradas nesta instalação.
+            </p>
+          )}
+        </section>
 
         <section className="border-t border-[var(--color-linha)] pt-6">
           <form action={logout}>

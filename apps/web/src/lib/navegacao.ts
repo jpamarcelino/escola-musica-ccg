@@ -56,10 +56,16 @@ export function comAvisosPorLer(itens: ItemNav[], quantidade: number): ItemNav[]
   )
 }
 
+// O professor passou a ter Avisos. Recebia-os desde sempre — horário
+// aceite, pedido de reposição, disciplina respondida — e não tinha onde
+// os ler: as linhas ficavam na base de dados a acumular. Com push a
+// entrar, um aviso que chega ao telemóvel tem de ter um sítio na app
+// para onde levar.
 export const NAV_PROFESSOR: ItemNav[] = [
   { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
   { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },
   { href: '/dashboard/presencas', label: 'Presenças', icone: 'presencas' },
   { href: '/dashboard/pedidos', label: 'Pedidos', icone: 'pedidos' },
+  { href: '/dashboard/avisos', label: 'Avisos', icone: 'notificacoes' },
   { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
 ]

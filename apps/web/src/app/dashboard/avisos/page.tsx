@@ -7,6 +7,7 @@ import { ehContaCCG } from '@/lib/navegacao'
 
 type Notificacao = {
   id: number
+  tipo: string
   mensagem: string
   lida: boolean
   criado_em: string
@@ -34,22 +35,39 @@ export default async function AvisosPage({
     redirect('/login')
   }
 
-  if (!ehContaCCG(profile?.tipo)) {
-    redirect('/dashboard')
-  }
+  // Esta página mandava embora quem não fosse Conta CCG — e os
+  // professores recebem avisos desde sempre (horário aceite, pedido de
+  // reposição, disciplina respondida). Tinham as linhas na base de dados
+  // e nenhum sítio onde as ler. Agora serve qualquer papel: a tabela
+  // `notificacoes` sempre foi de contas, não de papéis.
+  const familia = ehContaCCG(profile?.tipo)
 
-  const [{ data: avisosData }, { data: alunosData }] = await Promise.all([
+  const [{ data: avisosData }, { data: alunosData }, { data: tiposData }] = await Promise.all([
     supabase
       .from('notificacoes')
-      .select('id, mensagem, lida, criado_em, aluno_id')
+      .select('id, tipo, mensagem, lida, criado_em, aluno_id')
       .eq('user_id', user.id)
       .order('criado_em', { ascending: false }),
-    supabase
-      .from('alunos')
-      .select('id, nome')
-      .eq('encarregado_id', user.id)
-      .order('criado_em'),
+    // Os separadores por aluno só fazem sentido a quem tem alunos. Para
+    // um professor, a consulta devolve vazio e a barra não aparece.
+    familia
+      ? supabase
+          .from('alunos')
+          .select('id, nome')
+          .eq('encarregado_id', user.id)
+          .order('criado_em')
+      : Promise.resolve({ data: [] }),
+    supabase.from('tipos_aviso').select('tipo, titulo, destino'),
   ])
+
+  // Título e destino de cada tipo, para o aviso dentro da app dizer o
+  // mesmo que a push e levar ao mesmo sítio.
+  const tipos = new Map(
+    ((tiposData ?? []) as { tipo: string; titulo: string; destino: string | null }[]).map((t) => [
+      t.tipo,
+      t,
+    ])
+  )
 
   const todos = (avisosData ?? []) as Notificacao[]
   const alunos = alunosData ?? []
@@ -71,7 +89,7 @@ export default async function AvisosPage({
             ←
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Arquivo familiar</p>
+            <p className="partitura-sobretitulo">{familia ? 'Arquivo familiar' : 'O que aconteceu'}</p>
             <h1>Avisos</h1>
             <p>
               {porLer > 0
@@ -135,6 +153,15 @@ export default async function AvisosPage({
                         associado e continuam a aparecer, sem etiqueta. */}
                     {nomeAluno && <span className="avisos-aluno">{nomeAluno}</span>}
                     <p>{n.mensagem}</p>
+                    {/* O mesmo destino que a push usa. Um aviso que diz
+                        "precisa da tua resposta" e não leva a lado nenhum
+                        obriga a pessoa a adivinhar em que separador é que
+                        se responde. */}
+                    {tipos.get(n.tipo)?.destino && (
+                      <Link href={tipos.get(n.tipo)!.destino!} className="avisos-destino">
+                        Ver
+                      </Link>
+                    )}
                   </div>
                   {!n.lida && (
                     <form action={marcarNotificacaoLida}>
