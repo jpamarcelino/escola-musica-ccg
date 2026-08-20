@@ -109,6 +109,7 @@ export async function calendarioDaFamilia(
       supabase
         .from('reposicoes')
         .select('id, aluno_id, data, hora_inicio, hora_fim, instrumento_nome')
+        .eq('estado', 'confirmada')
         .gte('data', ANO_LETIVO_INICIO)
         .lte('data', ANO_LETIVO_FIM),
     ])
@@ -221,6 +222,7 @@ export async function calendarioDoProfessor(
       supabase
         .from('reposicoes')
         .select('id, aluno_id, data, hora_inicio, hora_fim, instrumento_nome')
+        .eq('estado', 'confirmada')
         .eq('professor_id', professorId)
         .gte('data', ANO_LETIVO_INICIO)
         .lte('data', ANO_LETIVO_FIM),

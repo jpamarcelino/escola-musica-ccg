@@ -206,6 +206,7 @@ export default async function AgendaPage({
   const { data: reposicoesData } = await supabase
     .from('reposicoes')
     .select('id, data, hora_inicio, hora_fim, instrumento_nome, aluno_id')
+    .eq('estado', 'confirmada')
     .eq('professor_id', user.id)
     .gte('data', hojeISO())
     .order('data')

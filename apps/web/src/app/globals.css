@@ -3717,3 +3717,8 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 }
 .escolher-horario[open] summary { border-bottom: 1px solid var(--color-linha); }
 .escolher-horario fieldset { padding-top: 12px; }
+/* O "não posso" de uma reposição leva uma caixa para dizer quando é que
+   se pode. Fica na mesma linha do botão em ecrã largo e por cima dele no
+   telemóvel — a caixa precisa de largura, o botão não. */
+.proposta-horario-recusa { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; min-width: 240px; }
+.proposta-horario-recusa input { flex: 1; min-width: 160px; }

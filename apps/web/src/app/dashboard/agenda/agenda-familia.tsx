@@ -99,6 +99,7 @@ export async function AgendaFamilia({
     supabase
       .from('reposicoes')
       .select('id, aluno_id, data, hora_inicio, hora_fim, instrumento_nome')
+      .eq('estado', 'confirmada')
       .gte('data', hojeISO())
       .order('data'),
   ])

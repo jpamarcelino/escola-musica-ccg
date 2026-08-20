@@ -457,3 +457,48 @@ export async function aceitarPropostaHorario(formData: FormData) {
 export async function recusarPropostaHorario(formData: FormData) {
   await responderProposta(formData, false)
 }
+
+// A família responde à reposição que o professor marcou.
+//
+// Só as marcadas à mão passam por aqui. Quando é a família que pede e
+// escolhe as horas, o professor limita-se a aceitar uma delas — e voltar
+// a perguntar seria perguntar duas vezes o mesmo.
+async function responderReposicao(formData: FormData, aceitar: boolean): Promise<never> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const reposicaoId = Number(formData.get('reposicaoId') ?? 0)
+  const alunoId = String(formData.get('alunoId') ?? '')
+  const resposta = String(formData.get('resposta') ?? '').trim()
+  const destino = `/aluno/${alunoId}/horario`
+
+  const { error } = aceitar
+    ? await supabase.rpc('aceitar_reposicao_proposta', { p_reposicao_id: reposicaoId })
+    : await supabase.rpc('recusar_reposicao_proposta', {
+        p_reposicao_id: reposicaoId,
+        p_resposta: resposta || null,
+      })
+
+  if (error) {
+    redirect(`${destino}?erro=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath(destino)
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard/reposicoes/pedidos')
+  redirect(destino)
+}
+
+export async function aceitarReposicaoProposta(formData: FormData) {
+  await responderReposicao(formData, true)
+}
+
+export async function recusarReposicaoProposta(formData: FormData) {
+  await responderReposicao(formData, false)
+}

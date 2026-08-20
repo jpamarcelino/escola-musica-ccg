@@ -74,7 +74,12 @@ export default async function PedidosReposicaoPage({
     redirect('/dashboard')
   }
 
-  const [{ data: pedidosData }, { data: porReporData }, { data: alunosData }] = await Promise.all([
+  const [
+    { data: pedidosData },
+    { data: porReporData },
+    { data: alunosData },
+    { data: propostasData },
+  ] = await Promise.all([
     supabase
       .from('pedidos_reposicao')
       .select(
@@ -92,9 +97,16 @@ export default async function PedidosReposicaoPage({
       .order('data'),
     supabase
       .from('matriculas')
-      .select('id, alunos(nome), instrumentos(nome)')
+      .select('id, aluno_id, alunos(nome), instrumentos(nome)')
       .eq('professor_id', user.id)
       .eq('estado', 'confirmado'),
+    // As que marcaste à mão e ainda esperam o sim da família.
+    supabase
+      .from('reposicoes')
+      .select('id, data, hora_inicio, hora_fim, instrumento_nome, aluno_id')
+      .eq('professor_id', user.id)
+      .eq('estado', 'proposta')
+      .order('data'),
   ])
 
   const pedidos = (pedidosData ?? []) as unknown as Pedido[]
@@ -109,6 +121,7 @@ export default async function PedidosReposicaoPage({
   }[]
   const matriculas = (alunosData ?? []) as unknown as {
     id: number
+    aluno_id: string
     alunos: { nome: string } | null
     instrumentos: { nome: string } | null
   }[]
@@ -117,6 +130,9 @@ export default async function PedidosReposicaoPage({
   // aluno, e juntar mais um join à consulta principal por causa do nome
   // não valia a linha.
   const nomePorMatricula = new Map(matriculas.map((m) => [m.id, m.alunos?.nome ?? '']))
+  // As reposições guardam o aluno e não a matrícula, por isso precisam
+  // do mesmo nome indexado da outra maneira.
+  const nomePorAluno = new Map(matriculas.map((m) => [m.aluno_id, m.alunos?.nome ?? '']))
 
   const pendentes = pedidos.filter((p) => p.estado === 'pendente')
   const resolvidos = pedidos.filter((p) => p.estado !== 'pendente')
@@ -142,7 +158,12 @@ export default async function PedidosReposicaoPage({
         {erro && <MensagemErro>{erro}</MensagemErro>}
         {agendada && <MensagemInfo>Reposição marcada. O aluno foi avisado.</MensagemInfo>}
         {recusada && <MensagemInfo>Resposta enviada ao aluno.</MensagemInfo>}
-        {marcada && <MensagemInfo>Reposição marcada. O aluno foi avisado.</MensagemInfo>}
+        {/* Marcar à mão deixou de marcar: propõe. Dizer "marcada" aqui
+            punha o professor a contar com uma aula que a família ainda
+            pode recusar. */}
+        {marcada && (
+          <MensagemInfo>Proposta enviada. A família tem de a aceitar.</MensagemInfo>
+        )}
 
         <section className="space-y-4 pt-6">
           <h2 className="font-semibold">Por responder</h2>
@@ -261,11 +282,34 @@ export default async function PedidosReposicaoPage({
           </section>
         )}
 
+        {/* Marcadas por ti, ainda sem resposta. Ficam antes do
+            formulário de marcar: antes de marcar outra, convém ver as
+            que já estão à espera. */}
+        {(propostasData ?? []).length > 0 && (
+          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+            <h2 className="font-semibold">À espera da resposta da família</h2>
+            <div className="space-y-2">
+              {(propostasData ?? []).map((r) => (
+                <div key={r.id} className="lista-item">
+                  <p className="lista-item-titulo">
+                    {nomePorAluno.get(r.aluno_id) ?? 'Aluno'}
+                    {r.instrumento_nome ? ` · ${r.instrumento_nome}` : ''}
+                  </p>
+                  <p className="lista-item-sub">
+                    {formatarDataEscolar(r.data, { weekday: 'long', day: 'numeric', month: 'long' })}
+                    , {formatarHora(r.hora_inicio)}–{formatarHora(r.hora_fim)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="space-y-4 border-t border-[var(--color-linha)] pt-6">
           <h2 className="font-semibold">Marcar uma reposição à mão</h2>
           <p className="text-sm text-foreground/60">
             Sem pedido, com o prazo passado, ou para uma aula que desmarcaste. Não precisa de vaga
-            criada antes.
+            criada antes. A família recebe a proposta e tem de a aceitar — só depois fica marcada.
           </p>
           <form action={marcarReposicaoManual} className="space-y-3">
             <div className="space-y-[6px]">

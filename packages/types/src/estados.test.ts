@@ -52,8 +52,8 @@ describe('extração das constraints', () => {
   })
 
   it('encontra todas as colunas com valores fixos', () => {
-    // 20 desde a 0037 (propostas_horario.estado).
-    expect(unioes).toHaveLength(20)
+    // 21 desde a 0039 (reposicoes.estado).
+    expect(unioes).toHaveLength(21)
   })
 
   it('nenhuma união vem vazia', () => {

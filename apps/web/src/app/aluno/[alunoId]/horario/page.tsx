@@ -6,8 +6,11 @@ import {
   desmarcarAula,
   aceitarPropostaHorario,
   recusarPropostaHorario,
+  aceitarReposicaoProposta,
+  recusarReposicaoProposta,
 } from '@/lib/actions/aluno'
 import { SubmitButton } from '@/components/submit-button'
+import { classesCampo } from '@/components/campo-formulario'
 import { formatarSala, formatarHora, proximaAulaPorAcontecer, formatarDataEscolar, hojeISO, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
@@ -102,10 +105,22 @@ export default async function ConsultarHorarioPage({
   const { data: reposicoesData } = await supabase
     .from('reposicoes')
     .select('id, data, hora_inicio, hora_fim, instrumento_nome')
+    .eq('estado', 'confirmada')
     .eq('aluno_id', alunoId)
     .gte('data', hojeISO())
     .order('data')
   const reposicoes = reposicoesData ?? []
+
+  // As reposições que o professor marcou e ainda esperam resposta. Ficam
+  // ao lado da proposta de horário, e não na lista de aulas: uma aula
+  // que ainda pode não acontecer não é uma aula.
+  const { data: reposicoesPropostasData } = await supabase
+    .from('reposicoes')
+    .select('id, data, hora_inicio, hora_fim, instrumento_nome')
+    .eq('aluno_id', alunoId)
+    .eq('estado', 'proposta')
+    .order('data')
+  const reposicoesPropostas = reposicoesPropostasData ?? []
 
   // A proposta de horário que o professor fez e ainda espera resposta.
   // Uma por matrícula, garantido por índice único — por isso é uma lista
@@ -163,6 +178,56 @@ export default async function ConsultarHorarioPage({
             nesta página que está à espera de uma decisão — o resto é
             informação. Aceitar e recusar têm o mesmo peso: recusar é uma
             resposta legítima, e a aula fica onde está. */}
+        {reposicoesPropostas.map((r) => (
+          <section key={`rep-${r.id}`} className="proposta-horario">
+            <h2>Reposição proposta</h2>
+            <p>
+              O professor marcou uma reposição
+              {r.instrumento_nome ? ` de ${r.instrumento_nome}` : ''} para{' '}
+              <strong>
+                {formatarDataEscolar(r.data, { weekday: 'long', day: 'numeric', month: 'long' })},{' '}
+                {formatarHora(r.hora_inicio)}–{formatarHora(r.hora_fim)}
+              </strong>
+              .
+            </p>
+            <div className="proposta-horario-acoes">
+              <form action={aceitarReposicaoProposta}>
+                <input type="hidden" name="reposicaoId" value={r.id} />
+                <input type="hidden" name="alunoId" value={alunoId} />
+                <SubmitButton
+                  textoAGuardar="A aceitar…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-azul-fundo)] px-6 text-[15px] font-semibold text-white disabled:opacity-50"
+                >
+                  Aceitar
+                </SubmitButton>
+              </form>
+              {/* Recusar leva mensagem: quem não pode àquela hora quase
+                  sempre sabe dizer quando é que pode, e essa frase vale
+                  mais para o professor do que o "não". */}
+              <form action={recusarReposicaoProposta} className="proposta-horario-recusa">
+                <input type="hidden" name="reposicaoId" value={r.id} />
+                <input type="hidden" name="alunoId" value={alunoId} />
+                <label htmlFor={`resposta-${r.id}`} className="sr-only">
+                  Quando é que podes?
+                </label>
+                <input
+                  id={`resposta-${r.id}`}
+                  name="resposta"
+                  maxLength={500}
+                  placeholder="Quando é que podes? (opcional)"
+                  className={classesCampo}
+                />
+                <SubmitButton
+                  textoAGuardar="A responder…"
+                  className="flex h-[48px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-6 text-[15px] font-semibold text-[var(--color-ink)] disabled:opacity-50"
+                >
+                  Não posso
+                </SubmitButton>
+              </form>
+            </div>
+          </section>
+        ))}
+
         {propostas.map((p) => (
           <section key={p.id} className="proposta-horario">
             <h2>Mudança de horário proposta</h2>

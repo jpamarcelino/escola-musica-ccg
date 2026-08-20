@@ -41,6 +41,18 @@ const ADD_CHECK = new RegExp(
     String.raw`check\s*\(\s*([a-z_]+)\s+${LISTA}([^)\]]*)`,
   'gi'
 )
+// Uma coluna nova com a lista já colada nela:
+//
+//   alter table reposicoes add column estado text ... check (estado in (...))
+//
+// É SQL legal e o projeto usa-o (0039). Sem esta leitura, o estado novo
+// não chegava aos tipos e o TypeScript continuava a aceitar literais
+// inventados para a coluna.
+const ADD_COLUMN_CHECK = new RegExp(
+  String.raw`alter\s+table\s+(?:public\.)?([a-z_]+)[\s\S]{0,200}?add\s+column\s+([a-z_]+)\s+text[^;]*?` +
+    String.raw`check\s*\(\s*\2\s+${LISTA}([^)\]]*)`,
+  'gi'
+)
 const DROP_CHECK = new RegExp(
   String.raw`alter\s+table\s+(?:public\.)?([a-z_]+)\s+drop\s+constraint\s+(?:if\s+exists\s+)?([a-z_]+)`,
   'gi'
@@ -90,6 +102,12 @@ export function extrairEstados(pastaSupabase: string): Uniao[] {
         valores.delete(k)
         porConstraint.delete(`${d[1]}.${d[2]}`)
       }
+    }
+
+    for (const c of sql.matchAll(ADD_COLUMN_CHECK)) {
+      const k = chave(c[1], c[2])
+      valores.set(k, literais(c[3]))
+      origem.set(k, nome)
     }
 
     for (const a of sql.matchAll(ADD_CHECK)) {
