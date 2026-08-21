@@ -24,14 +24,21 @@ const ENVIO_INICIAL: EstadoEnvio = {}
 // professor cola, o servidor vai buscar o título ao YouTube e devolve-o
 // já escrito. Só depois disso é que aparece o resto — assim ninguém
 // escolhe alunos para um link que afinal está errado.
-export function EnviarVideoForm({ alunos }: { alunos: AlunoEscolhivel[] }) {
+export function EnviarVideoForm({
+  alunos,
+  alunoInicial,
+}: {
+  alunos: AlunoEscolhivel[]
+  // Vindo da ficha de um aluno, chega já escolhido.
+  alunoInicial?: string
+}) {
   const [procura, procurar] = useActionState(procurarVideo, PROCURA_INICIAL)
   const [envio, enviar] = useActionState(publicarVideo, ENVIO_INICIAL)
 
   const [video, setVideo] = useState<VideoEncontrado | null>(null)
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
-  const [escolhidos, setEscolhidos] = useState<string[]>([])
+  const [escolhidos, setEscolhidos] = useState<string[]>(alunoInicial ? [alunoInicial] : [])
 
   // O título vem do YouTube já preenchido, mas é editável: "Aula 3 —
   // escala de Sol" diz mais ao aluno do que o nome com que o professor

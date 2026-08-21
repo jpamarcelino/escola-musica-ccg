@@ -9,7 +9,13 @@ import { EscolhaMaterial } from './escolha-material'
 // Dois tipos, com caminhos bem diferentes: o vídeo é um link para o
 // YouTube, e a partitura é um ficheiro que fica connosco. O que têm em
 // comum é o destino — o caderno de um ou dois alunos escolhidos a dedo.
-export default async function EnviarMaterialPage() {
+export default async function EnviarMaterialPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ aluno?: string }>
+}) {
+  const { aluno: alunoPedido } = await searchParams
+
   const { supabase, user, profile } = await getSchoolProfileContext()
 
   if (!user) {
@@ -39,7 +45,14 @@ export default async function EnviarMaterialPage() {
           </div>
         </header>
 
-        <EscolhaMaterial alunos={alunos.map((a) => ({ id: a.id, nome: a.nome, sub: a.sub }))} />
+        {/* Vindo da ficha de um aluno, ele já vem escolhido. Só vale se
+            for mesmo aluno deste professor — um id qualquer no endereço
+            não pré-seleciona ninguém, e a função de publicar recusá-lo-ia
+            de qualquer forma. */}
+        <EscolhaMaterial
+          alunos={alunos.map((a) => ({ id: a.id, nome: a.nome, sub: a.sub }))}
+          alunoInicial={alunos.some((a) => a.id === alunoPedido) ? alunoPedido : undefined}
+        />
       </div>
     </main>
   )

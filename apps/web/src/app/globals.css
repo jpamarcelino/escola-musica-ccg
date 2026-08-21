@@ -1635,6 +1635,43 @@ body {
 .material-partituras a:hover .material-pdf-icone { background: color-mix(in srgb, var(--color-azul-logo) 26%, transparent); }
 .material-partituras a:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
 .material-previsao-pdf { grid-template-columns: auto minmax(0, 1fr); }
+
+/* Histórico de material enviado, na ficha do aluno do professor. */
+.detalhe-materiais { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--color-linha); }
+.detalhe-materiais li {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-linha);
+}
+.detalhe-material-tipo { font-size: 11px; font-weight: 750; letter-spacing: .05em; text-transform: uppercase; color: var(--color-tinta-suave); }
+.detalhe-materiais strong { display: block; font-size: 15px; line-height: 1.35; color: var(--color-azul-fundo); }
+.detalhe-materiais small { display: block; margin-top: 3px; font-size: 12.5px; line-height: 1.5; color: var(--color-tinta-suave); }
+.detalhe-materiais time { font-size: 12px; color: var(--color-tinta-suave); white-space: nowrap; }
+.detalhe-materiais-vazio { font-size: 13.5px; color: var(--color-tinta-suave); }
+.detalhe-material-enviar {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  margin-top: 18px;
+  padding-inline: 20px;
+  border: 1.5px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.detalhe-material-enviar:hover { background: var(--color-surface-raised); }
+.detalhe-material-enviar:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+
+@media (max-width: 560px) {
+  .detalhe-materiais li { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
+  .detalhe-material-tipo { grid-column: 1; }
+  .detalhe-materiais li > span:nth-child(2) { grid-column: 1 / span 2; }
+  .detalhe-materiais time { grid-column: 2; grid-row: 1; }
+}
 .material-previsao-pdf > span {
   display: grid;
   place-items: center;

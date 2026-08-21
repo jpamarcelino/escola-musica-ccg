@@ -20,7 +20,14 @@ function tamanhoLegivel(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`
 }
 
-export function EnviarPartituraForm({ alunos }: { alunos: AlunoEscolhivel[] }) {
+export function EnviarPartituraForm({
+  alunos,
+  alunoInicial,
+}: {
+  alunos: AlunoEscolhivel[]
+  // Vindo da ficha de um aluno, chega já escolhido.
+  alunoInicial?: string
+}) {
   const [estado, enviar] = useActionState(publicarPartitura, INICIAL)
 
   const [ficheiro, setFicheiro] = useState<{
@@ -32,7 +39,7 @@ export function EnviarPartituraForm({ alunos }: { alunos: AlunoEscolhivel[] }) {
   const [erroFicheiro, setErroFicheiro] = useState<string | null>(null)
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
-  const [escolhidos, setEscolhidos] = useState<string[]>([])
+  const [escolhidos, setEscolhidos] = useState<string[]>(alunoInicial ? [alunoInicial] : [])
   const campo = useRef<HTMLInputElement>(null)
 
   useEffect(() => {

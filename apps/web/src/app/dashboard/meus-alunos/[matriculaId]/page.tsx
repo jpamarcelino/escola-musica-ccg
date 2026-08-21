@@ -1,7 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA, calcularIdade, formatarHora, type DiaSemana } from '@ccg/core'
+import { DIAS_SEMANA, calcularIdade, formatarDataEscolar, formatarHora, type DiaSemana } from '@ccg/core'
 import { desmatricularAluno, proporHorario } from '@/lib/actions/professor'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { SubmitButton } from '@/components/submit-button'
@@ -10,6 +10,7 @@ import { MensagemErro, MensagemInfo, MensagemNota } from '@/components/mensagem'
 
 type Matricula = {
   id: number
+  aluno_id: string
   horario_final_id: number | null
   instrumentos: { nome: string } | null
   alunos: {
@@ -51,7 +52,7 @@ export default async function AlunoDaAulaPage({
   const { data: matriculaData } = await supabase
     .from('matriculas')
     .select(
-      'id, horario_final_id, instrumentos(nome), alunos(nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone))'
+      'id, aluno_id, horario_final_id, instrumentos(nome), alunos(nome, data_nascimento, encarregado:profiles!alunos_encarregado_id_fkey(email, telefone))'
     )
     .eq('id', Number(matriculaId))
     .eq('professor_id', user.id)
@@ -64,6 +65,29 @@ export default async function AlunoDaAulaPage({
   }
 
   const idade = calcularIdade(matricula.alunos?.data_nascimento)
+
+  // O que este professor já deixou no caderno deste aluno. Só o dele: a
+  // policy de 0048 limita a `professor_id = auth.uid()`, e um aluno com
+  // dois professores tem dois históricos separados — cada um vê o seu.
+  const { data: materiaisData } = await supabase
+    .from('materiais_alunos')
+    .select('materiais!inner(id, tipo, titulo, descricao, youtube_id, criado_em, professor_id)')
+    .eq('aluno_id', matricula.aluno_id)
+
+  const materiais = ((materiaisData ?? []) as unknown as {
+    materiais: {
+      id: number
+      tipo: string
+      titulo: string
+      descricao: string | null
+      youtube_id: string | null
+      criado_em: string
+      professor_id: string
+    }
+  }[])
+    .map((l) => l.materiais)
+    .filter((m) => m.professor_id === user.id)
+    .sort((a, b) => b.criado_em.localeCompare(a.criado_em))
 
   const horarioId = matricula.horario_final_id
 
@@ -232,6 +256,46 @@ export default async function AlunoDaAulaPage({
               </details>
             </form>
           )}
+        </section>
+
+        <section className="detalhe-aluno-ficha" aria-labelledby="materiais-titulo">
+          <header><p className="partitura-indice">03</p><h2 id="materiais-titulo">Materiais enviados</h2></header>
+
+          {materiais.length === 0 ? (
+            <p className="detalhe-materiais-vazio">
+              Ainda não enviaste material a {matricula.alunos?.nome.split(' ')[0]}.
+            </p>
+          ) : (
+            <ul className="detalhe-materiais">
+              {materiais.map((m) => (
+                <li key={m.id}>
+                  <span className="detalhe-material-tipo">
+                    {m.tipo === 'partitura' ? 'Partitura' : 'Vídeo'}
+                  </span>
+                  <span>
+                    <strong>{m.titulo}</strong>
+                    {m.descricao && <small>{m.descricao}</small>}
+                  </span>
+                  <time dateTime={m.criado_em}>
+                    {formatarDataEscolar(m.criado_em.slice(0, 10), {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </time>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Leva à ferramenta de envio com este aluno já escolhido — a
+              pergunta "a quem?" já foi respondida por se estar na ficha
+              dele. */}
+          <Link
+            href={`/dashboard/enviar-material?aluno=${matricula.aluno_id}`}
+            className="detalhe-material-enviar"
+          >
+            Enviar material novo
+          </Link>
         </section>
 
         <section className="detalhe-zona-perigo">

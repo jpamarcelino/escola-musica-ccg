@@ -8,7 +8,13 @@ import type { AlunoEscolhivel } from '@/components/seletor-alunos'
 // Os mesmos dois nomes que o aluno vê no caderno. Se aqui se chamasse
 // "Ficheiros" e lá "Partituras", o professor tinha de adivinhar onde é que
 // o que enviou foi parar.
-export function EscolhaMaterial({ alunos }: { alunos: AlunoEscolhivel[] }) {
+export function EscolhaMaterial({
+  alunos,
+  alunoInicial,
+}: {
+  alunos: AlunoEscolhivel[]
+  alunoInicial?: string
+}) {
   const [tipo, setTipo] = useState<'video' | 'partitura'>('video')
 
   return (
@@ -38,9 +44,9 @@ export function EscolhaMaterial({ alunos }: { alunos: AlunoEscolhivel[] }) {
 
       <div key={tipo} className="motion-content-swap">
         {tipo === 'video' ? (
-          <EnviarVideoForm alunos={alunos} />
+          <EnviarVideoForm alunos={alunos} alunoInicial={alunoInicial} />
         ) : (
-          <EnviarPartituraForm alunos={alunos} />
+          <EnviarPartituraForm alunos={alunos} alunoInicial={alunoInicial} />
         )}
       </div>
     </div>
