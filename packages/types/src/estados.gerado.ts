@@ -103,11 +103,12 @@ export const INSTRUMENTOPROGRAMA_VALORES = [
   'bebes',
 ] as const satisfies readonly InstrumentoPrograma[]
 
-// materiais.tipo — fixado em 0048_materiais_de_estudo.sql
-export type MateriaiTipo = 'video'
+// materiais.tipo — fixado em 0049_partituras.sql
+export type MateriaiTipo = 'video' | 'partitura'
 
 export const MATERIAITIPO_VALORES = [
   'video',
+  'partitura',
 ] as const satisfies readonly MateriaiTipo[]
 
 // matriculas.estado — fixado em 0029_cancelar_matricula.sql

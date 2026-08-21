@@ -2,12 +2,13 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { carregarAlunosAlvo } from '@/lib/alvos-mensagem'
-import { EnviarVideoForm } from './enviar-video-form'
+import { EscolhaMaterial } from './escolha-material'
 
 // Onde o professor deixa material de estudo.
 //
-// Por agora só vídeos. As partituras vêm a seguir e não vão ser links do
-// YouTube — daí a página ter nome de material e não de vídeo.
+// Dois tipos, com caminhos bem diferentes: o vídeo é um link para o
+// YouTube, e a partitura é um ficheiro que fica connosco. O que têm em
+// comum é o destino — o caderno de um ou dois alunos escolhidos a dedo.
 export default async function EnviarMaterialPage() {
   const { supabase, user, profile } = await getSchoolProfileContext()
 
@@ -34,13 +35,11 @@ export default async function EnviarMaterialPage() {
           <div>
             <p className="partitura-sobretitulo">Caderno dos teus alunos</p>
             <h1>Enviar material</h1>
-            <p>Um vídeo do YouTube, para um aluno ou para vários.</p>
+            <p>Um vídeo do YouTube ou uma partitura em PDF, para um aluno ou para vários.</p>
           </div>
         </header>
 
-        <EnviarVideoForm
-          alunos={alunos.map((a) => ({ id: a.id, nome: a.nome, sub: a.sub }))}
-        />
+        <EscolhaMaterial alunos={alunos.map((a) => ({ id: a.id, nome: a.nome, sub: a.sub }))} />
       </div>
     </main>
   )

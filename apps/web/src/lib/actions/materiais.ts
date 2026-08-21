@@ -120,3 +120,65 @@ export async function publicarVideo(
 
   return { enviadoA: alunos.length }
 }
+
+export type EstadoPartitura = {
+  erro?: string
+  enviadoA?: number
+}
+
+// A partitura já está no Storage quando esta ação corre: o ficheiro vai do
+// browser DIRETO para a Supabase, sem passar por aqui. Não é preferência —
+// o Vercier corta pedidos acima de 4,5 MB no plano gratuito, e uma
+// partitura digitalizada a cores passa disso sem esforço. O que chega aqui
+// é só o caminho de onde ficou.
+export async function publicarPartitura(
+  _prevState: EstadoPartitura,
+  formData: FormData
+): Promise<EstadoPartitura> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { erro: 'Sessão expirada. Entra outra vez.' }
+  }
+
+  const ficheiro = String(formData.get('ficheiro') ?? '')
+  const ficheiroNome = String(formData.get('ficheiroNome') ?? '').slice(0, 200)
+  const ficheiroBytes = Number(formData.get('ficheiroBytes') ?? 0)
+  const titulo = String(formData.get('titulo') ?? '').trim().slice(0, 160)
+  const descricao = String(formData.get('descricao') ?? '').trim().slice(0, 600)
+  const alunos = formData.getAll('alunos').map(String).filter(Boolean)
+
+  if (!ficheiro) {
+    return { erro: 'Falta o ficheiro. Escolhe a partitura outra vez.' }
+  }
+  if (titulo === '') {
+    return { erro: 'A partitura precisa de um título.' }
+  }
+  if (alunos.length === 0) {
+    return { erro: 'Escolhe pelo menos um aluno.' }
+  }
+
+  const { error } = await supabase.rpc('publicar_partitura', {
+    p_ficheiro: ficheiro,
+    p_ficheiro_nome: ficheiroNome,
+    p_ficheiro_bytes: Number.isFinite(ficheiroBytes) ? ficheiroBytes : 0,
+    p_titulo: titulo,
+    p_descricao: descricao,
+    p_alunos: alunos,
+  })
+
+  if (error) {
+    // O ficheiro já subiu e a linha não foi criada: fica um órfão no
+    // Storage. Apaga-se aqui — a policy só deixa apagar o que está na
+    // pasta de quem chama, portanto isto não serve para mais nada.
+    await supabase.storage.from('partituras').remove([ficheiro])
+    return { erro: error.message }
+  }
+
+  revalidatePath('/dashboard/enviar-material')
+
+  return { enviadoA: alunos.length }
+}

@@ -2,10 +2,23 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Play } from 'lucide-react'
+import { Play, FileText, Download } from 'lucide-react'
 import { miniaturaYoutube, urlDoVideoYoutube, formatarDataEscolar } from '@ccg/core'
 import { Metronomo } from '@/components/metronomo'
 import { EmptyState } from '@/components/empty-state'
+
+export type PartituraDoAluno = {
+  id: number
+  titulo: string
+  descricao: string | null
+  ficheiro_nome: string | null
+  ficheiro_bytes: number | null
+  criado_em: string
+  professor: { nome: string } | null
+  // Link assinado, gerado no servidor a cada visita: o bucket é privado e
+  // o endereço direto não abre.
+  url: string | null
+}
 
 export type VideoDoAluno = {
   id: number
@@ -25,12 +38,20 @@ type Separador = 'videos' | 'partituras' | 'metronomo'
 // visíveis desde já é intencional — quem abre o caderno percebe o que a
 // escola tenciona pôr lá, em vez de encontrar um metrónomo solitário e
 // concluir que é só isso.
+function tamanhoLegivel(bytes: number | null): string | null {
+  if (!bytes) return null
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`
+}
+
 export function MateriaisClient({
   temMusica,
   videos,
+  partituras,
 }: {
   temMusica: boolean
   videos: VideoDoAluno[]
+  partituras: PartituraDoAluno[]
 }) {
   // O metrónomo continua a ser só para música: a dança e a "Música para
   // bebés" não o usam, e um separador que não serve para nada é pior do
@@ -121,12 +142,43 @@ export function MateriaisClient({
               ))}
             </ul>
           ))}
-        {ativo === 'partituras' && (
-          <EmptyState
-            titulo="Ainda não há partituras"
-            descricao="É aqui que vão ficar as partituras e os trabalhos de casa do professor."
-          />
-        )}
+        {ativo === 'partituras' &&
+          (partituras.length === 0 ? (
+            <EmptyState
+              titulo="Ainda não há partituras"
+              descricao="É aqui que vão ficar as partituras e os trabalhos de casa do professor."
+            />
+          ) : (
+            <ul className="material-partituras">
+              {partituras.map((p) => (
+                <li key={p.id}>
+                  <a href={p.url ?? '#'} target="_blank" rel="noopener noreferrer">
+                    <span className="material-pdf-icone" aria-hidden="true">
+                      <FileText size={22} strokeWidth={1.5} />
+                    </span>
+                    <span className="material-video-texto">
+                      <strong>{p.titulo}</strong>
+                      {p.descricao && <span>{p.descricao}</span>}
+                      <small>
+                        {p.professor?.nome ?? 'O teu professor'} ·{' '}
+                        {formatarDataEscolar(p.criado_em.slice(0, 10), {
+                          day: 'numeric',
+                          month: 'long',
+                        })}
+                        {tamanhoLegivel(p.ficheiro_bytes)
+                          ? ` · ${tamanhoLegivel(p.ficheiro_bytes)}`
+                          : ''}
+                      </small>
+                    </span>
+                    <span className="material-pdf-abrir" aria-hidden="true">
+                      <Download size={18} strokeWidth={1.5} />
+                    </span>
+                    <span className="sr-only">(abre o PDF)</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ))}
         {ativo === 'metronomo' && <Metronomo />}
       </div>
     </div>

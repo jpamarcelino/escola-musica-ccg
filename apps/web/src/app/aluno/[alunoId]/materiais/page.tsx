@@ -67,23 +67,79 @@ export default async function MateriaisPage({
   // Os vídeos que os professores deste aluno lhe deixaram. A RLS (0048)
   // já limita a quem é educando de quem entrou; o filtro por aluno é o
   // que separa os cadernos de dois irmãos.
-  const { data: videosData } = await supabase
+  const { data: materiaisData } = await supabase
     .from('materiais_alunos')
-    .select('materiais!inner(id, youtube_id, titulo, descricao, criado_em, professor:profiles!materiais_professor_id_fkey(nome))')
+    .select(
+      'materiais!inner(id, tipo, youtube_id, ficheiro, ficheiro_nome, ficheiro_bytes, titulo, descricao, criado_em, professor:profiles!materiais_professor_id_fkey(nome))'
+    )
     .eq('aluno_id', alunoId)
 
-  const videos = ((videosData ?? []) as unknown as {
-    materiais: {
-      id: number
-      youtube_id: string
-      titulo: string
-      descricao: string | null
-      criado_em: string
-      professor: { nome: string } | null
-    }
-  }[])
+  type LinhaMaterial = {
+    id: number
+    tipo: string
+    youtube_id: string | null
+    ficheiro: string | null
+    ficheiro_nome: string | null
+    ficheiro_bytes: number | null
+    titulo: string
+    descricao: string | null
+    criado_em: string
+    professor: { nome: string } | null
+  }
+
+  const todosOsMateriais = ((materiaisData ?? []) as unknown as { materiais: LinhaMaterial }[])
     .map((l) => l.materiais)
     .sort((a, b) => b.criado_em.localeCompare(a.criado_em))
+
+  const videos = todosOsMateriais
+    .filter((m) => m.tipo === 'video' && m.youtube_id)
+    .map((m) => ({ ...m, youtube_id: m.youtube_id as string }))
+
+  const partiturasBrutas = todosOsMateriais.filter((m) => m.tipo === 'partitura' && m.ficheiro)
+
+  // O bucket é privado: o endereço direto não serve para nada. Gera-se um
+  // link assinado por partitura, válido por uma hora — tempo de sobra
+  // para abrir, e curto o suficiente para um link reencaminhado por
+  // engano deixar de funcionar no mesmo dia.
+  const assinaturas =
+    partiturasBrutas.length > 0
+      ? await supabase.storage
+          .from('partituras')
+          .createSignedUrls(
+            partiturasBrutas.map((m) => m.ficheiro as string),
+            60 * 60
+          )
+      : { data: [] }
+
+  const urlPorCaminho = new Map(
+    ((assinaturas.data ?? []) as { path: string | null; signedUrl: string }[])
+      .filter((a) => a.path)
+      .map((a) => [a.path as string, a.signedUrl])
+  )
+
+  const partituras = partiturasBrutas
+    .map((m) => ({ ...m, url: urlPorCaminho.get(m.ficheiro as string) ?? null }))
+    // Sem link assinado não há nada para mostrar — melhor não a listar do
+    // que oferecer um cartão que não abre.
+    .filter((m) => m.url !== null)
+
+  // O subtítulo diz o que há mesmo lá dentro. Prometer material que não
+  // existe era o que fazia esta página desiludir.
+  const partes: string[] = []
+  if (videos.length > 0) {
+    partes.push(`${videos.length} ${videos.length === 1 ? 'vídeo' : 'vídeos'}`)
+  }
+  if (partituras.length > 0) {
+    partes.push(`${partituras.length} ${partituras.length === 1 ? 'partitura' : 'partituras'}`)
+  }
+  if (temMusica) partes.push('o metrónomo')
+
+  const resumoDoCaderno =
+    partes.length === 0
+      ? 'Ainda sem material. O que o professor deixar aparece aqui.'
+      : partes.length === 1
+        ? `Tens ${partes[0]}.`
+        : `Tens ${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}.`
 
   return (
     <main id="conteudo-principal" className="partitura-pagina materiais-pagina">
@@ -93,10 +149,10 @@ export default async function MateriaisPage({
           {/* O subtítulo diz o que está cá dentro. Vídeos e partituras já
               têm separador, mas ainda estão vazios — prometer material
               que não existe é o que fazia esta página desiludir. */}
-          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Materiais</h1><p>{!temAulas ? 'Sem aulas a decorrer.' : temMusica ? 'O metrónomo já funciona. Vídeos e partituras chegam quando o professor os deixar.' : 'Vídeos e partituras chegam quando o professor os deixar.'}</p></div>
+          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Materiais</h1><p>{!temAulas ? 'Sem aulas a decorrer.' : resumoDoCaderno}</p></div>
         </header>
         {temAulas ? (
-          <MateriaisClient temMusica={temMusica} videos={videos} />
+          <MateriaisClient temMusica={temMusica} videos={videos} partituras={partituras} />
         ) : (
           <EmptyState
             titulo={`${aluno.nome.split(' ')[0]} ainda não tem aulas`}
