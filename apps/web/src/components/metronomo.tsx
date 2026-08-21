@@ -29,44 +29,74 @@ const SCHEDULE_AHEAD_SEC = 0.1
 // "Quintina" e "sextina" são os nomes portugueses destes grupos. Uma
 // "quinta" é um intervalo, e num ecrã de música dizer "quintas" mandava
 // o aluno pensar noutra coisa.
-const SUBDIVISOES = [
-  { valor: 1, nome: 'Off', descricao: 'Sem subdivisão' },
-  { valor: 2, nome: 'Colcheias', descricao: 'Duas por tempo' },
-  { valor: 3, nome: 'Tercinas', descricao: 'Três por tempo' },
-  { valor: 4, nome: 'Semicolcheias', descricao: 'Quatro por tempo' },
-  { valor: 5, nome: 'Quintinas', descricao: 'Cinco por tempo' },
-  { valor: 6, nome: 'Sextinas', descricao: 'Seis por tempo' },
-] as const
+//
+// Cada subdivisão tem duas coisas separadas: em quantas partes se divide
+// o tempo (`divisao`) e quais dessas partes soam (`toques`). Enquanto
+// todas soavam, um número chegava; o swing obriga a separá-las, porque
+// divide o tempo em três mas só toca a 1.ª e a 3.ª.
+type Subdivisao = {
+  id: string
+  divisao: number
+  toques: number[]
+  nome: string
+  descricao: string
+}
 
-type Subdivisao = (typeof SUBDIVISOES)[number]['valor']
+const todos = (n: number) => Array.from({ length: n }, (_, i) => i)
 
-// O desenho de cada subdivisão: N cabeças de nota unidas por uma barra,
-// com o algarismo por cima quando o grupo é irregular (3, 5, 6).
+const SUBDIVISOES: Subdivisao[] = [
+  { id: 'off', divisao: 1, toques: [0], nome: 'Off', descricao: 'Sem subdivisão' },
+  { id: '2', divisao: 2, toques: todos(2), nome: 'Colcheias', descricao: 'Duas por tempo' },
+  { id: '3', divisao: 3, toques: todos(3), nome: 'Tercinas', descricao: 'Três por tempo' },
+  { id: '4', divisao: 4, toques: todos(4), nome: 'Semicolcheias', descricao: 'Quatro por tempo' },
+  { id: '5', divisao: 5, toques: todos(5), nome: 'Quintinas', descricao: 'Cinco por tempo' },
+  { id: '6', divisao: 6, toques: todos(6), nome: 'Sextinas', descricao: 'Seis por tempo' },
+  { id: '7', divisao: 7, toques: todos(7), nome: 'Septinas', descricao: 'Sete por tempo' },
+  { id: '8', divisao: 8, toques: todos(8), nome: 'Fusas', descricao: 'Oito por tempo' },
+  {
+    id: 'swing',
+    divisao: 3,
+    toques: [0, 2],
+    nome: 'Swing',
+    descricao: 'Colcheia swingada — 1.ª e 3.ª da tercina',
+  },
+]
+
+// O desenho de cada subdivisão: as cabeças de nota que soam, unidas por
+// uma barra, com o algarismo por cima quando o grupo é irregular.
 //
 // Desenhado à mão e não em texto porque o Unicode só tem ♪ ♫ ♬ — não há
 // glifo para tercina nem para sextina, e misturar glifos com números
-// sobrescritos dava seis símbolos com seis aspetos diferentes.
-function SimboloSubdivisao({ n }: { n: Subdivisao }) {
+// sobrescritos dava nove símbolos com nove aspetos diferentes.
+//
+// As cabeças ficam na posição da grelha a que pertencem, não espalhadas
+// por igual: no swing isso deixa o buraco visível a meio, que é o que
+// distingue o símbolo do da colcheia normal.
+function SimboloSubdivisao({ sub }: { sub: Subdivisao }) {
+  const n = sub.divisao
   const inicio = 5
   const fim = 33
-  const passo = n > 1 ? (fim - inicio) / (n - 1) : 0
-  const xs = Array.from({ length: n }, (_, i) => (n === 1 ? 19 : inicio + i * passo))
+  const largura = n > 1 ? (fim - inicio) / (n - 1) : 0
+  const xs = sub.toques.map((t) => (n === 1 ? 19 : inicio + t * largura))
   const topoHaste = 7
   const baseNota = 17
-  // As cabeças encolhem à medida que são mais: com seis do mesmo tamanho
+  // As cabeças encolhem à medida que são mais: com oito do mesmo tamanho
   // das duas da colcheia, sobrepunham-se num borrão preto e o símbolo
   // deixava de se distinguir do da quintina.
-  const raio = n <= 3 ? 2.5 : n === 4 ? 2.1 : 1.75
-  // Duas barras a partir da semicolcheia, como na pauta: quatro, cinco e
-  // seis por tempo escrevem-se com colchete duplo.
-  const barraDupla = n >= 4
-  const numero = n === 3 || n === 5 || n === 6
+  const raio = n <= 3 ? 2.5 : n === 4 ? 2.1 : n <= 6 ? 1.75 : 1.4
+  // Barras como na pauta: uma na colcheia, duas da semicolcheia à
+  // septina, três na fusa.
+  const barras = n === 1 ? 0 : n <= 3 ? 1 : n <= 7 ? 2 : 3
+  // O algarismo marca os grupos irregulares. No swing é 3 e não 2, porque
+  // o que está escrito continua a ser uma tercina — só com a nota do meio
+  // por tocar.
+  const numero = [3, 5, 6, 7].includes(n) ? n : null
 
   return (
     <svg viewBox="0 0 38 22" className="h-[22px] w-[38px]" aria-hidden="true" fill="currentColor">
-      {numero && (
+      {numero !== null && (
         <text x="19" y="4.5" textAnchor="middle" fontSize="6.5" fontWeight="700">
-          {n}
+          {numero}
         </text>
       )}
       {xs.map((x, i) => (
@@ -81,19 +111,16 @@ function SimboloSubdivisao({ n }: { n: Subdivisao }) {
           <rect x={x + raio - 0.6} y={topoHaste} width="0.8" height={baseNota - topoHaste} />
         </g>
       ))}
-      {n > 1 && (
-        <>
-          <rect x={xs[0] + raio - 0.6} y={topoHaste} width={xs[n - 1] - xs[0] + 0.8} height="1.6" />
-          {barraDupla && (
-            <rect
-              x={xs[0] + raio - 0.6}
-              y={topoHaste + 2.9}
-              width={xs[n - 1] - xs[0] + 0.8}
-              height="1.6"
-            />
-          )}
-        </>
-      )}
+      {xs.length > 1 &&
+        Array.from({ length: barras }, (_, b) => (
+          <rect
+            key={b}
+            x={xs[0] + raio - 0.6}
+            y={topoHaste + b * 2.9}
+            width={xs[xs.length - 1] - xs[0] + 0.8}
+            height="1.6"
+          />
+        ))}
     </svg>
   )
 }
@@ -105,7 +132,7 @@ export function Metronomo() {
   const [numeradorTexto, setNumeradorTexto] = useState('4')
   const [denominador, setDenominador] = useState<(typeof DENOMINADORES)[number]>(4)
   const [acentuar, setAcentuar] = useState(true)
-  const [subdivisao, setSubdivisao] = useState<Subdivisao>(1)
+  const [subdivisao, setSubdivisao] = useState<Subdivisao>(SUBDIVISOES[0])
   const [aTocar, setATocar] = useState(false)
   const [batidaAtual, setBatidaAtual] = useState<number | null>(null)
 
@@ -164,8 +191,8 @@ export function Metronomo() {
     gain.gain.setValueAtTime(acento ? 0.9 : naBatida ? 0.55 : 0.18, tempo)
 
     // O clique nunca pode ser mais comprido do que o espaço que tem. A
-    // 900 bpm com sextinas há um toque a cada 11ms, e sem isto cada som
-    // pisava os cinco seguintes até virar um zumbido contínuo.
+    // 900 bpm com fusas há um toque a cada 8ms, e sem isto cada som
+    // pisava os seguintes até virar um zumbido contínuo.
     const duracao = Math.min(naBatida ? 0.06 : 0.035, intervalo * 0.6)
     gain.gain.exponentialRampToValueAtTime(0.001, tempo + duracao)
 
@@ -188,14 +215,19 @@ export function Metronomo() {
       // Se a subdivisão encolheu enquanto tocava, o passo onde íamos pode
       // já não existir. Nesse caso passa-se ao tempo seguinte em vez de
       // tocar um toque fantasma fora da grelha.
-      const passo = passoDentroDaBatidaRef.current < sub ? passoDentroDaBatidaRef.current : 0
-      const intervalo = 60 / bpmRef.current / sub
+      const passo = passoDentroDaBatidaRef.current < sub.divisao ? passoDentroDaBatidaRef.current : 0
+      const intervalo = 60 / bpmRef.current / sub.divisao
 
-      tocarSom(proximaBatidaNumeroRef.current, passo, intervalo, proximaBatidaTempoRef.current)
+      // Os passos calados do swing contam na mesma para o relógio: é o
+      // silêncio no meio da tercina que atrasa a segunda colcheia. Só o
+      // som é que se salta, nunca o avanço do tempo.
+      if (sub.toques.includes(passo)) {
+        tocarSom(proximaBatidaNumeroRef.current, passo, intervalo, proximaBatidaTempoRef.current)
+      }
 
       proximaBatidaTempoRef.current += intervalo
       const seguinte = passo + 1
-      if (seguinte >= sub) {
+      if (seguinte >= sub.divisao) {
         passoDentroDaBatidaRef.current = 0
         proximaBatidaNumeroRef.current = (proximaBatidaNumeroRef.current + 1) % numeradorRef.current
       } else {
@@ -319,8 +351,8 @@ export function Metronomo() {
 
       <div className="space-y-[6px]">
         <Rotulo htmlFor="metronomo-subdivisao">Subdivisão</Rotulo>
-        {/* radiogroup e não seis botões soltos: só uma pode estar ligada,
-            e é isso que faz o leitor de ecrã anunciar "1 de 6" e as setas
+        {/* radiogroup e não nove botões soltos: só uma pode estar ligada,
+            e é isso que faz o leitor de ecrã anunciar "1 de 9" e as setas
             do teclado andarem entre elas. */}
         <div
           id="metronomo-subdivisao"
@@ -329,14 +361,14 @@ export function Metronomo() {
           className="grid grid-cols-3 gap-[6px]"
         >
           {SUBDIVISOES.map((s) => {
-            const ativa = subdivisao === s.valor
+            const ativa = subdivisao.id === s.id
             return (
               <button
-                key={s.valor}
+                key={s.id}
                 type="button"
                 role="radio"
                 aria-checked={ativa}
-                onClick={() => setSubdivisao(s.valor)}
+                onClick={() => setSubdivisao(s)}
                 title={s.descricao}
                 className="flex min-h-[62px] flex-col items-center justify-center gap-[3px] rounded-[13px] border-[1.5px] px-[4px] transition-colors"
                 style={
@@ -349,7 +381,7 @@ export function Metronomo() {
                     : { borderColor: 'var(--color-linha)', color: 'var(--color-tinta-suave)' }
                 }
               >
-                <SimboloSubdivisao n={s.valor} />
+                <SimboloSubdivisao sub={s} />
                 {/* O nome por baixo do desenho, e não só no title: uma
                     tercina e uma quintina distinguem-se por um algarismo
                     de 6px, e quem está a aprender não deve ter de o
