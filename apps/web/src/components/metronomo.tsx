@@ -19,6 +19,19 @@ const DENOMINADORES = [2, 4, 8] as const
 const LOOKAHEAD_MS = 25
 const SCHEDULE_AHEAD_SEC = 0.1
 
+// Os faders andam de 0 a 100 e o valor é a amplitude em percentagem —
+// 55 é 0.55 de ganho. Estes três números eram os que estavam escritos à
+// mão dentro do tocarSom, agora são só o ponto de partida.
+const VOL_ACENTO_INICIAL = 90
+const VOL_TEMPO_INICIAL = 55
+const VOL_SUB_INICIAL = 18
+
+// Abaixo disto o som é inaudível e a rampa de fim deixa de fazer
+// sentido: ela desce até 0.001, e uma descida exponencial que comece
+// por baixo do próprio destino sobe em vez de descer. Nesse caso não se
+// chega a criar o oscilador.
+const VOL_MINIMO = 0.003
+
 // Subdivisões: quantos toques cabem dentro de cada tempo.
 //
 // "Off" é 1 — o tempo por dividir. Guardar o desligado como mais um
@@ -125,6 +138,59 @@ function SimboloSubdivisao({ sub }: { sub: Subdivisao }) {
   )
 }
 
+// Um fader. <input type="range"> nativo e não uma barra desenhada à mão:
+// no telemóvel o arrasto, o toque a meio da barra e o VoiceOver já vêm
+// resolvidos, e nada disso se reescreve bem.
+//
+// "inativo" não desliga o fader, só o esbate: quem baixa o volume da
+// subdivisão com a subdivisão em Off tem de perceber que o que fez não
+// se ouve por causa disso, e um controlo bloqueado não explica porquê.
+function Fader({
+  id,
+  rotulo,
+  valor,
+  aoMudar,
+  inativo,
+  nota,
+}: {
+  id: string
+  rotulo: string
+  valor: number
+  aoMudar: (v: number) => void
+  inativo?: boolean
+  nota?: string
+}) {
+  return (
+    <div className="space-y-[4px]" style={{ opacity: inativo ? 0.5 : 1 }}>
+      <div className="flex items-baseline justify-between gap-[10px]">
+        <Rotulo htmlFor={id}>{rotulo}</Rotulo>
+        <span
+          className="text-[12px] font-semibold tabular-nums"
+          style={{ color: 'var(--color-tinta-suave)' }}
+        >
+          {valor}
+        </span>
+      </div>
+      <input
+        id={id}
+        type="range"
+        min={0}
+        max={100}
+        step={1}
+        value={valor}
+        onChange={(e) => aoMudar(Number(e.target.value))}
+        className="h-[24px] w-full cursor-pointer"
+        style={{ accentColor: 'var(--color-azul-fundo)' }}
+      />
+      {nota && (
+        <p className="text-[11px] leading-[1.35]" style={{ color: 'var(--color-tinta-suave)' }}>
+          {nota}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export function Metronomo() {
   const [bpm, setBpm] = useState(100)
   const [bpmTexto, setBpmTexto] = useState('100')
@@ -132,6 +198,9 @@ export function Metronomo() {
   const [numeradorTexto, setNumeradorTexto] = useState('4')
   const [denominador, setDenominador] = useState<(typeof DENOMINADORES)[number]>(4)
   const [acentuar, setAcentuar] = useState(true)
+  const [volAcento, setVolAcento] = useState(VOL_ACENTO_INICIAL)
+  const [volTempo, setVolTempo] = useState(VOL_TEMPO_INICIAL)
+  const [volSub, setVolSub] = useState(VOL_SUB_INICIAL)
   const [subdivisao, setSubdivisao] = useState<Subdivisao>(SUBDIVISOES[0])
   const [aTocar, setATocar] = useState(false)
   const [batidaAtual, setBatidaAtual] = useState<number | null>(null)
@@ -143,6 +212,9 @@ export function Metronomo() {
   const bpmRef = useRef(bpm)
   const numeradorRef = useRef(numerador)
   const acentuarRef = useRef(acentuar)
+  const volAcentoRef = useRef(volAcento)
+  const volTempoRef = useRef(volTempo)
+  const volSubRef = useRef(volSub)
   const subdivisaoRef = useRef<Subdivisao>(subdivisao)
   // Dois contadores em vez de um só: qual o tempo do compasso, e em que
   // ponto do tempo vamos. Um contador único (0..numerador*subdivisão)
@@ -158,6 +230,18 @@ export function Metronomo() {
   useEffect(() => {
     acentuarRef.current = acentuar
   }, [acentuar])
+  // Pelos refs e não pelas variáveis do render: o agendador corre dentro
+  // de um setTimeout que ficou preso ao render em que arrancou, por isso
+  // mexer num fader a tocar não chegava lá.
+  useEffect(() => {
+    volAcentoRef.current = volAcento
+  }, [volAcento])
+  useEffect(() => {
+    volTempoRef.current = volTempo
+  }, [volTempo])
+  useEffect(() => {
+    volSubRef.current = volSub
+  }, [volSub])
   useEffect(() => {
     subdivisaoRef.current = subdivisao
   }, [subdivisao])
@@ -175,20 +259,26 @@ export function Metronomo() {
     const naBatida = passoNaBatida === 0
     const acento = acentuarRef.current && naBatida && numeroBatida === 0
 
+    const volume =
+      (acento ? volAcentoRef.current : naBatida ? volTempoRef.current : volSubRef.current) / 100
+    // Um fader no fundo cala mesmo aquele som, em vez de o deixar a
+    // roçar: sem isto, o oscilador continuava a ser criado e agendado
+    // para nada.
+    if (volume < VOL_MINIMO) return
+
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
     gain.connect(ctx.destination)
 
     // A subdivisão tem de se ouvir por baixo do tempo, e não ao lado
-    // dele: outra forma de onda (triangular, mais abafada), mais aguda
-    // para não se confundir com a batida, e a um terço do volume. Todas
-    // as subdivisões dentro do tempo soam igual — o que marca o tempo é
-    // a batida, e acentuar uma subdivisão a meio dava um segundo pulso
-    // a competir com ela.
+    // dele: outra forma de onda (triangular, mais abafada) e mais aguda
+    // para não se confundir com a batida. Todas as subdivisões dentro do
+    // tempo soam igual — o que marca o tempo é a batida, e acentuar uma
+    // subdivisão a meio dava um segundo pulso a competir com ela.
     osc.type = naBatida ? 'sine' : 'triangle'
     osc.frequency.value = acento ? 1600 : naBatida ? 950 : 1350
-    gain.gain.setValueAtTime(acento ? 0.9 : naBatida ? 0.55 : 0.18, tempo)
+    gain.gain.setValueAtTime(volume, tempo)
 
     // O clique nunca pode ser mais comprido do que o espaço que tem. A
     // 900 bpm com fusas há um toque a cada 8ms, e sem isto cada som
@@ -418,6 +508,41 @@ export function Metronomo() {
           {acentuar ? '● ligado' : '○ desligado'}
         </span>
       </button>
+
+      {/* Cabeçalho e não <Rotulo>: um rótulo aponta para um controlo, e
+          este está por cima de três. Apontado ao primeiro, o leitor de
+          ecrã anunciava esse fader como "Volumes 1.º tempo". */}
+      <div role="group" aria-labelledby="metronomo-volumes" className="space-y-[14px]">
+        <p
+          id="metronomo-volumes"
+          className="text-[12.5px] font-medium"
+          style={{ color: 'var(--color-tinta-suave)' }}
+        >
+          Volumes
+        </p>
+        <Fader
+          id="metronomo-vol-acento"
+          rotulo="1.º tempo"
+          valor={volAcento}
+          aoMudar={setVolAcento}
+          inativo={!acentuar}
+          nota={acentuar ? undefined : 'Sem acento, o 1.º tempo soa como os outros.'}
+        />
+        <Fader
+          id="metronomo-vol-tempo"
+          rotulo="Tempos"
+          valor={volTempo}
+          aoMudar={setVolTempo}
+        />
+        <Fader
+          id="metronomo-vol-sub"
+          rotulo="Subdivisão"
+          valor={volSub}
+          aoMudar={setVolSub}
+          inativo={subdivisao.id === 'off'}
+          nota={subdivisao.id === 'off' ? 'Só se ouve com uma subdivisão escolhida.' : undefined}
+        />
+      </div>
 
       <div className="flex justify-center gap-[6px]">
         {Array.from({ length: numerador }, (_, i) => (
