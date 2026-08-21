@@ -28,8 +28,12 @@ export type ValoresRegisto = {
   nome?: string
   telefone?: string
   nif?: string
-  dataNascimento?: string
   email?: string
+  // As declarações voltam com o erro, para não se perderem quando outro
+  // campo falha. Uma checkbox que se desmarca sozinha faz a pessoa
+  // aceitar duas vezes sem perceber porquê.
+  aceitaTermos?: boolean
+  declaraMaioridade?: boolean
 }
 
 export type AuthState =
@@ -44,7 +48,10 @@ export async function signup(
   const email = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
   const telefone = String(formData.get('telefone') ?? '').trim()
-  const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+  // Declarações do formulário. A data de nascimento do titular deixou de
+  // ser pedida — ver validarRegisto e a migração 0025.
+  const aceitaTermos = formData.get('aceitaTermos') === 'on'
+  const declaraMaioridade = formData.get('declaraMaioridade') === 'on'
   // Só os algarismos, para a coluna nunca guardar "123 456 789" e
   // "123456789" como se fossem NIFs diferentes.
   const nif = normalizarNIF(String(formData.get('nif') ?? ''))
@@ -54,18 +61,47 @@ export async function signup(
   const conviteCodigo = String(formData.get('conviteCodigo') ?? '').trim() || null
 
   // As mesmas regras que a app móvel usa, no mesmo ficheiro: campos
-  // obrigatórios, password, telefone e data de nascimento, por esta
-  // ordem. Estavam escritas à mão aqui e repetidas noutras cinco acções.
-  // Tudo o que a pessoa escreveu volta com o erro, para os campos serem
-  // repostos.
-  const valores = { nome, telefone, nif, dataNascimento, email }
+  // obrigatórios, password, telefone e as duas declarações, por esta
+  // ordem. Tudo o que a pessoa escreveu volta com o erro, para os campos
+  // serem repostos.
+  const valores = { nome, telefone, nif, email, aceitaTermos, declaraMaioridade }
 
-  const erro = validarRegisto({ nome, email, password, telefone, dataNascimento, nif })
+  const erro = validarRegisto({
+    nome,
+    email,
+    password,
+    telefone,
+    aceitaTermos,
+    declaraMaioridade,
+    nif,
+  })
   if (erro) {
     return { error: erro, valores }
   }
 
   const supabase = await createClient()
+
+  // A versão dos Termos que está EM VIGOR, lida da base. O formulário não
+  // a envia e não podia: uma versão vinda do cliente é uma versão que o
+  // cliente escolheu, e prova de aceitação assim não prova nada.
+  const { data: docTermos } = await supabase
+    .from('documentos_legais')
+    .select('versao')
+    .eq('tipo', 'termos')
+    .eq('ativo', true)
+    .maybeSingle()
+
+  const versaoTermos = docTermos?.versao ?? null
+
+  if (!versaoTermos) {
+    // Sem Termos publicados não se criam contas. É uma situação de
+    // configuração — alguém desativou a versão em vigor sem publicar
+    // outra — e deixar passar registos sem aceitação era pior.
+    return {
+      error: 'Não é possível criar conta neste momento. Contacta a secretaria.',
+      valores,
+    }
+  }
 
   // Duas perguntas à base de dados antes de criar seja o que for.
   //
@@ -97,10 +133,15 @@ export async function signup(
     options: {
       data: {
         nome,
-        data_nascimento: dataNascimento,
         telefone,
         nif,
         convite_codigo: conviteCodigo,
+        // A versão dos Termos vem do SERVIDOR, não do formulário: é lida
+        // acima da base, e o trigger handle_new_user volta a confirmá-la
+        // contra a versão em vigor antes de registar a aceitação. Assim a
+        // prova fica guardada mesmo com confirmação de email ativa, em
+        // que ainda não há sessão para chamar registar_aceitacao.
+        termos_versao: versaoTermos,
       },
     },
   })

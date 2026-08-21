@@ -42,23 +42,41 @@ export async function registoModal(
   const email = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
   const telefone = String(formData.get('telefone') ?? '').trim()
-  const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+  const aceitaTermos = formData.get('aceitaTermos') === 'on'
+  const declaraMaioridade = formData.get('declaraMaioridade') === 'on'
 
-  // Mesmas regras do registo em auth.ts — literalmente as mesmas, agora.
-  // Este ficheiro avisa no topo que replicava a validação de lá; era
-  // verdade, e as duas cópias já diziam coisas diferentes sobre a data
-  // de nascimento.
-  const erro = validarRegisto({ nome, email, password, telefone, dataNascimento })
+  // Mesmas regras do registo em auth.ts — literalmente as mesmas.
+  const erro = validarRegisto({
+    nome,
+    email,
+    password,
+    telefone,
+    aceitaTermos,
+    declaraMaioridade,
+  })
   if (erro) {
     return { error: erro }
   }
 
   const supabase = await createClient()
+
+  const { data: docTermos } = await supabase
+    .from('documentos_legais')
+    .select('versao')
+    .eq('tipo', 'termos')
+    .eq('ativo', true)
+    .maybeSingle()
+
+  if (!docTermos?.versao) {
+    return { error: 'Não é possível criar conta neste momento. Contacta a secretaria.' }
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { nome, data_nascimento: dataNascimento, telefone },
+      // A versão vem da base, nunca do formulário. Ver auth.ts.
+      data: { nome, telefone, termos_versao: docTermos.versao },
     },
   })
 

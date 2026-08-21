@@ -146,13 +146,38 @@ describe('validarRegisto', () => {
     email: 'ana@exemplo.pt',
     password: 'segredo1',
     telefone: '912345678',
-    dataNascimento: '1990-05-20',
+    aceitaTermos: true,
+    declaraMaioridade: true,
   }
 
   it('aceita um registo completo', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date(2026, 7, 17))
     expect(validarRegisto(bons)).toBeNull()
+  })
+
+  // O registo comum DEIXOU de pedir data de nascimento (0025 + Pacote
+  // Jurídico): a data do titular não era usada para nada, e continuar a
+  // recolhê-la era um dado pessoal sem finalidade.
+  it('não pede data de nascimento ao titular da conta', () => {
+    expect(validarRegisto(bons)).toBeNull()
+    expect(Object.keys(bons)).not.toContain('dataNascimento')
+  })
+
+  it('recusa quem não aceita os Termos', () => {
+    expect(validarRegisto({ ...bons, aceitaTermos: false })).toContain(
+      'Termos de Utilização'
+    )
+  })
+
+  it('recusa quem não declara ser maior de idade', () => {
+    expect(validarRegisto({ ...bons, declaraMaioridade: false })).toContain('18 anos')
+  })
+
+  // A maioridade vem antes dos Termos: sem 18 anos não se cria conta,
+  // aceitem-se os Termos ou não.
+  it('mostra a idade antes dos Termos quando faltam as duas', () => {
+    expect(
+      validarRegisto({ ...bons, declaraMaioridade: false, aceitaTermos: false })
+    ).toContain('18 anos')
   })
 
   // A ordem decide qual é o erro que a pessoa vê primeiro, e é a mesma
@@ -169,18 +194,16 @@ describe('validarRegisto', () => {
     )
   })
 
-  it('mostra o telefone antes da data', () => {
-    expect(validarRegisto({ ...bons, telefone: '1', dataNascimento: 'x' })).toContain(
-      'telemóvel'
-    )
+  it('mostra o telefone antes das declarações', () => {
+    expect(
+      validarRegisto({ ...bons, telefone: '1', declaraMaioridade: false })
+    ).toContain('telemóvel')
   })
 
   // Mudou de propósito: o formato do email passou a ser verificado aqui.
   // Antes deixava-se passar e o Supabase recusava — em inglês, e só
   // depois de a pessoa carregar em "Criar conta".
   it('recusa um email mal formado', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date(2026, 7, 17))
     expect(validarRegisto({ ...bons, email: 'isto-nao-e-um-email' })).toBe(
       'Indica um email válido.'
     )
@@ -245,7 +268,8 @@ describe('validarRegisto, com nome e email', () => {
     email: 'maria@exemplo.pt',
     password: 'segredo123',
     telefone: '912345678',
-    dataNascimento: '1990-05-05',
+    aceitaTermos: true,
+    declaraMaioridade: true,
   }
 
   it('aceita o conjunto válido', () => {

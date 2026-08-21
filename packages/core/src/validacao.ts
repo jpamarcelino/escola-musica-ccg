@@ -145,12 +145,26 @@ export function validarNome(nome: string): Erro {
 // O nome e o email passaram a entrar aqui. Antes, um "Maria123" ou um
 // email sem arroba só eram travados mais à frente — o email pelo
 // Supabase, com uma mensagem em inglês, e o nome por ninguém.
+// O registo de uma Conta CCG.
+//
+// DEIXOU de pedir data de nascimento. Desde a migração 0025 que a data do
+// TITULAR não é usada para nada: quem tem aulas é um perfil de aluno, e é
+// aí que a data vive e serve — para verificar a adequação etária das
+// modalidades. Continuar a pedi-la no registo era recolher um dado
+// pessoal sem finalidade, contra o artigo 5.º.
+//
+// A maioridade passa a ser uma DECLARAÇÃO, e não uma data. Para saber que
+// alguém tem 18 anos não é preciso saber que dia faz anos: a data exata é
+// mais dado do que a pergunta exige. Uma declaração falsa é falsa na mesma
+// com data — a data não a verifica, só dá a ilusão de verificar.
 export function validarRegisto(dados: {
   nome: string
   email: string
   password: string
   telefone: string
-  dataNascimento: string
+  // Declarações do formulário. Ambas obrigatórias.
+  aceitaTermos: boolean
+  declaraMaioridade: boolean
   // Opcional na assinatura, obrigatório quando vem: a app móvel ainda
   // não pede NIF, e passar a rejeitar lá os registos sem ele seria
   // partir o registo na app sem lá ter posto o campo.
@@ -162,7 +176,12 @@ export function validarRegisto(dados: {
     validarEmail(dados.email) ??
     validarPassword(dados.password) ??
     validarTelefone(dados.telefone) ??
-    validarDataNascimento(dados.dataNascimento, 'propria') ??
+    (dados.declaraMaioridade
+      ? null
+      : 'A Conta CCG destina-se a maiores de 18 anos. Para inscrever um menor, a conta deve ser criada pelo respetivo encarregado ou representante legítimo.') ??
+    (dados.aceitaTermos
+      ? null
+      : 'Tens de aceitar os Termos de Utilização e as Regras do Serviço para criares conta.') ??
     (dados.nif === undefined ? null : validarNIF(dados.nif))
   )
 }

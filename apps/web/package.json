@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "verificar": "NEXT_DIST_DIR=.next-verificacao next build"
+    "verificar": "NEXT_DIST_DIR=.next-verificacao next build",
+    "test": "vitest run"
   },
   "dependencies": {
     "@ccg/core": "workspace:*",
@@ -35,6 +36,7 @@
     "eslint-config-next": "15.5.21",
     "eslint-plugin-react-hooks": "^5.2.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

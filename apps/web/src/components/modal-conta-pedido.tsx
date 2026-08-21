@@ -7,6 +7,7 @@ import { PasswordInput } from '@/components/password-input'
 import { classesCampo } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
 import { BotaoPrimario } from '@/components/botao-primario'
+import { TEXTOS_LEGAIS } from '@ccg/core'
 import {
   loginModal,
   registoModal,
@@ -98,7 +99,6 @@ export function ModalContaPedido({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estadoLogin?.sucesso, estadoRegisto?.sucesso])
 
-  const hoje = new Date().toISOString().slice(0, 10)
 
   return (
     <ModalShell onFechar={onFechar}>
@@ -181,20 +181,6 @@ export function ModalContaPedido({
                 type="tel"
                 autoComplete="tel"
                 required
-                className={classesCampo}
-              />
-            </div>
-            <div className="space-y-1">
-              <label htmlFor="mcp-dataNascimento" className="block text-[12.5px] font-medium"
-                style={{ color: 'var(--color-tinta-suave)' }}>
-                A tua data de nascimento
-              </label>
-              <input
-                id="mcp-dataNascimento"
-                name="dataNascimento"
-                type="date"
-                required
-                max={hoje}
                 className={classesCampo}
               />
             </div>
@@ -375,9 +361,44 @@ function EscolherAluno({
               id="mcp-aluno-dataNascimento"
               name="dataNascimento"
               type="date"
+              required
               className={classesCampo}
             />
+            <p className="registo-nota">{TEXTOS_LEGAIS.porqueDataNascimento}</p>
           </div>
+          <fieldset className="registo-declaracoes">
+            <legend className="sr-only">Declaração</legend>
+            <label>
+              <input type="checkbox" name="declaraLegitimidade" defaultChecked={false} />
+              <span>{TEXTOS_LEGAIS.declaracaoPerfilAluno}</span>
+            </label>
+          </fieldset>
+          <fieldset className="registo-declaracoes">
+            <legend className="sr-only">Declarações</legend>
+            <label>
+              <input type="checkbox" name="declaraMaioridade" defaultChecked={false} />
+              <span>Confirmo que tenho 18 ou mais anos.</span>
+            </label>
+            <label>
+              <input type="checkbox" name="aceitaTermos" defaultChecked={false} />
+              <span>
+                Li e aceito os{' '}
+                <a href="/legal/termos" target="_blank" rel="noopener noreferrer">
+                  Termos de Utilização e as Regras do Serviço
+                </a>
+                .
+              </span>
+            </label>
+            <p className="registo-nota">{TEXTOS_LEGAIS.avisoIdade}</p>
+            <p className="registo-nota">
+              Consulta a{' '}
+              <a href="/legal/privacidade" target="_blank" rel="noopener noreferrer">
+                Política de Privacidade
+              </a>{' '}
+              para saberes como o CCG utiliza os teus dados.
+            </p>
+          </fieldset>
+
           {estado?.error && <MensagemErro>{estado.error}</MensagemErro>}
           <BotaoPrimario disabled={pendente}>{pendente ? 'A criar…' : 'Continuar'}
           </BotaoPrimario>

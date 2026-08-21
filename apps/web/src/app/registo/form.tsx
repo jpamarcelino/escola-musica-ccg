@@ -9,6 +9,8 @@ import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { Campo, CampoTexto, classesCampo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemInfo, MensagemNota } from '@/components/mensagem'
 import type { ConvitePrograma, ConviteTipo } from '@ccg/types'
+import { TEXTOS_LEGAIS } from '@ccg/core'
+import Link from 'next/link'
 
 type ConviteInfo = {
   tipo: ConviteTipo
@@ -32,7 +34,6 @@ export default function RegistoForm({
   const [state, action, pending] = useActionState(signup, undefined)
 
   // Impede escolher uma data futura no próprio seletor do browser.
-  const hoje = new Date().toISOString().slice(0, 10)
 
   const conviteInvalido = conviteCodigo && (!conviteInfo || !conviteInfo.valido)
 
@@ -102,15 +103,6 @@ export default function RegistoForm({
         />
 
         <CampoTexto
-          id="dataNascimento"
-          name="dataNascimento"
-          label="Data de nascimento"
-          type="date"
-          max={hoje}
-          defaultValue={state?.valores?.dataNascimento}
-        />
-
-        <CampoTexto
           id="email"
           name="email"
           label="Email"
@@ -127,6 +119,42 @@ export default function RegistoForm({
             className={classesCampo}
           />
         </Campo>
+
+        {/* Duas declarações separadas, ambas desmarcadas.
+            Nunca uma checkbox só: juntar Termos, Privacidade, marketing e
+            imagem numa caixa faz de todas elas um consentimento inválido —
+            não é específico nem informado. E a Política de Privacidade não
+            tem checkbox nenhuma: informa-se, não se aceita. */}
+        <fieldset className="registo-declaracoes">
+          <legend className="sr-only">Declarações</legend>
+
+          <label>
+            <input type="checkbox" name="declaraMaioridade" defaultChecked={false} />
+            <span>Confirmo que tenho 18 ou mais anos.</span>
+          </label>
+
+          <label>
+            <input type="checkbox" name="aceitaTermos" defaultChecked={false} />
+            <span>
+              Li e aceito os{' '}
+              <Link href="/legal/termos" target="_blank">
+                Termos de Utilização e as Regras do Serviço
+              </Link>
+              .
+            </span>
+          </label>
+
+          <p className="registo-nota">
+            {TEXTOS_LEGAIS.avisoIdade}
+          </p>
+          <p className="registo-nota">
+            Consulta a{' '}
+            <Link href="/legal/privacidade" target="_blank">
+              Política de Privacidade
+            </Link>{' '}
+            para saberes como o Centro Cultural da Guarda utiliza os teus dados.
+          </p>
+        </fieldset>
 
         {state?.error && <MensagemErro>{state.error}</MensagemErro>}
         {state?.info && <MensagemInfo>{state.info}</MensagemInfo>}

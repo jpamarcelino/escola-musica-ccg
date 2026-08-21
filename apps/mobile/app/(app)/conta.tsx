@@ -27,6 +27,7 @@ import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
 import { cores, espaco, raio, texto } from '../../lib/tema'
+import { TEXTOS_LEGAIS } from '@ccg/core'
 
 type Secao = 'nome' | 'email' | 'password' | null
 
@@ -106,13 +107,17 @@ export default function Conta() {
   }
 
   function apagar() {
-    // Duas confirmações, e a primeira diz o que se perde. Uma conta
-    // apagada leva os alunos, as matrículas e as presenças — não há
-    // volta e não há cópia.
+    // Duas confirmações, e a primeira diz o que ACONTECE MESMO.
+    //
+    // O texto anterior — "apaga os alunos, as matrículas e o histórico de
+    // presenças, não há forma de recuperar" — era falso: a base conserva
+    // presenças e mensalidades por obrigação contabilística e legal.
+    // Prometer no ecrã um apagamento que a base não executa é pior do que
+    // não prometer nada. O texto é agora o mesmo da web, vindo de
+    // @ccg/core para não voltarem a divergir.
     Alert.alert(
       'Apagar a tua conta?',
-      'Apaga também os alunos a teu cargo, as matrículas e o histórico de presenças. ' +
-        'Não há forma de recuperar.',
+      TEXTOS_LEGAIS.apagarConta,
       [
         { text: 'Manter conta', style: 'cancel' },
         {
@@ -122,7 +127,7 @@ export default function Conta() {
             Alert.alert('Tens a certeza?', 'Esta é a última pergunta.', [
               { text: 'Não', style: 'cancel' },
               {
-                text: 'Apagar tudo',
+                text: 'Apagar conta',
                 style: 'destructive',
                 onPress: async () => {
                   setOcupado(true)

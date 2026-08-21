@@ -4401,3 +4401,13 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   .legal-corpo h2 { font-size: 18px; }
   .legal-corpo p, .legal-corpo li { font-size: 15px; }
 }
+
+/* Declarações do registo. Duas caixas separadas, alvo de toque grande, e
+   as notas informativas por baixo sem caixa nenhuma. */
+.registo-declaracoes { display: grid; gap: 12px; margin-top: 4px; }
+.registo-declaracoes label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; min-height: 44px; padding: 4px 0; cursor: pointer; }
+.registo-declaracoes input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--color-azul-fundo); }
+.registo-declaracoes label span { font-size: 14px; line-height: 1.5; color: var(--color-tinta); }
+.registo-declaracoes a { color: var(--color-azul-texto); text-decoration: underline; text-underline-offset: 3px; }
+.registo-nota { font-size: 12.5px; line-height: 1.55; color: var(--color-tinta-suave); }
+.registo-nota a { color: var(--color-azul-texto); text-decoration: underline; text-underline-offset: 2px; }

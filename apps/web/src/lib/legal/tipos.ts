@@ -33,3 +33,23 @@ export type DocumentoLegal = {
   entradaEmVigor: string | null
   seccoes: Seccao[]
 }
+
+// Serialização canónica de um documento, para hash.
+//
+// É o texto e a estrutura, sem espaços acidentais nem ordem de chaves —
+// duas leituras do mesmo documento têm de dar sempre a mesma string. O
+// hash disto é o que a base guarda em `documentos_legais.hash_texto`, e é
+// o que permite provar, anos depois, que a versão 1.0 dizia isto e não
+// outra coisa.
+export function textoCanonico(doc: DocumentoLegal): string {
+  const partes: string[] = [doc.tipo, doc.versao, doc.titulo]
+  for (const s of doc.seccoes) {
+    partes.push(`§${s.numero ?? ''}|${s.titulo}`)
+    for (const b of s.blocos) {
+      if (b.tipo === 'paragrafo') partes.push(`p|${b.texto}`)
+      else if (b.tipo === 'lista') partes.push(`l|${b.itens.join('¶')}`)
+      else partes.push(`t|${b.colunas.join('¶')}|${b.linhas.map((l) => l.join('¶')).join('§')}`)
+    }
+  }
+  return partes.join('\n')
+}

@@ -54,6 +54,8 @@ export { plural, palavra } from './plural'
 
 export { calcularIdade } from './idade'
 
+export { TEXTOS_LEGAIS, IDADE_MINIMA_CONTA } from './textos-legais'
+
 export { formatarSala } from './sala'
 export type { Sala } from './sala'
 

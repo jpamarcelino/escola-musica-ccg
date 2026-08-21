@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/empty-state'
 import { GerarLinkMigracaoForm, ReceberAlunoForm } from '@/components/convite-forms'
 import { MensagemErro } from '@/components/mensagem'
 import { ehContaCCG } from '@/lib/navegacao'
+import { TEXTOS_LEGAIS } from '@ccg/core'
 
 // As ações da conta que não se desfazem, uma página a seguir à Conta.
 //
@@ -268,7 +269,7 @@ export default async function ContaAvancadoPage({
           ) : (
             <BotaoAcaoDestruir
               label="Apagar conta"
-              mensagem="Perdes o acesso e os dados da conta são apagados. Não há como voltar atrás."
+              mensagem={TEXTOS_LEGAIS.apagarConta}
               action={apagarConta}
             />
           )}
