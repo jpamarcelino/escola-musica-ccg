@@ -9,6 +9,22 @@
 // isso uma migração que mude os valores permitidos e se esqueça de
 // regenerar faz falhar a suite em vez de divergir em silêncio.
 
+// aceitacoes_legais.accao — fixado em 0052_documentos_legais.sql
+export type AceitacoesLegaiAccao = 'aceite' | 'visto'
+
+export const ACEITACOESLEGAIACCAO_VALORES = [
+  'aceite',
+  'visto',
+] as const satisfies readonly AceitacoesLegaiAccao[]
+
+// aceitacoes_legais.origem — fixado em 0052_documentos_legais.sql
+export type AceitacoesLegaiOrigem = 'web' | 'mobile'
+
+export const ACEITACOESLEGAIORIGEM_VALORES = [
+  'web',
+  'mobile',
+] as const satisfies readonly AceitacoesLegaiOrigem[]
+
 // aulas_desmarcadas.origem — fixado em 0031_cancelamentos_e_reposicoes.sql
 export type AulasDesmarcadaOrigem = 'aluno' | 'professor'
 
@@ -55,6 +71,16 @@ export const CONVITETIPO_VALORES = [
   'admin',
   'migracao_aluno',
 ] as const satisfies readonly ConviteTipo[]
+
+// documentos_legais.tipo — fixado em 0052_documentos_legais.sql
+export type DocumentosLegaiTipo = 'privacidade' | 'termos' | 'cookies' | 'informacao'
+
+export const DOCUMENTOSLEGAITIPO_VALORES = [
+  'privacidade',
+  'termos',
+  'cookies',
+  'informacao',
+] as const satisfies readonly DocumentosLegaiTipo[]
 
 // horarios_reposicao.estado — fixado em 0031_cancelamentos_e_reposicoes.sql
 export type HorariosReposicaoEstado = 'disponivel' | 'ocupado'

@@ -20,6 +20,8 @@ import {
 } from '@/components/conta-forms'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { ehContaCCG } from '@/lib/navegacao'
+import Link from 'next/link'
+import { DOCUMENTOS, CCG } from '@/lib/legal'
 
 export default async function ContaPage({
   searchParams,
@@ -296,6 +298,27 @@ export default async function ContaPage({
           <form action={logout}>
             <LigacaoTerciaria>Sair da conta</LigacaoTerciaria>
           </form>
+        </section>
+
+        {/* As mesmas ligações do rodapé público, aqui dentro. Quem já
+            entrou não passa pelo rodapé das páginas de entrada, e tem de
+            continuar a chegar aos documentos — e ao contacto para
+            exercer direitos — sem sair da app. */}
+        <section className="conta-legal space-y-2 border-t border-[var(--color-linha)] pt-6">
+          <h2 className="font-semibold">Privacidade e informação legal</h2>
+          <ul>
+            {DOCUMENTOS.map((d) => (
+              <li key={d.tipo}>
+                <Link href={d.caminho}>{d.titulo}</Link>
+              </li>
+            ))}
+          </ul>
+          <p className="conta-legal-nota">
+            Para exercer direitos sobre os teus dados — acesso, retificação, apagamento,
+            oposição, portabilidade — escreve para{' '}
+            <a href={`mailto:${CCG.email}`}>{CCG.email}</a>. O encerramento da conta faz-se na
+            página abaixo.
+          </p>
         </section>
 
         {/* Cancelar matrículas, passar alunos para outra conta e apagar a

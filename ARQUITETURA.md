@@ -452,3 +452,84 @@ Ver `.env.example`. Uma nota que lá está e vale repetir:
 
 E a regra permanente do `README.md`: **não publicar sem perguntar ao
 dono do projeto.** Mesmo quando a alteração parece inofensiva.
+
+## 12. Informação jurídica e aceitação dos Termos
+
+Adicionado com o Pacote Jurídico v1 (agosto de 2026).
+
+### Onde vive o texto
+
+Os quatro documentos — Privacidade, Termos, Cookies, Informação Legal —
+são **dados em ficheiros**, em `apps/web/src/lib/legal/`. Não estão na
+base de dados: são conteúdo do produto, entram no controlo de versões e
+revêem-se num diff, como o resto.
+
+`hash.test.ts` fixa o SHA-256 de cada documento. Editar uma vírgula sem
+subir a versão faz o teste falhar — e obriga a decidir se a alteração é
+editorial (basta avisar) ou material (exige nova aceitação). A pergunta
+passa a ser feita sempre, em vez de nunca.
+
+### Onde vive a prova
+
+Duas tabelas (migração 0052):
+
+- **`documentos_legais`** — tipo, versão, datas, `hash_texto`, se a
+  alteração é material, e qual está `ativo`. Um índice único parcial
+  garante uma só versão em vigor por tipo.
+- **`aceitacoes_legais`** — quem, que versão, `aceite` ou `visto`, e de
+  onde (`web`/`mobile`). Sem IP, sem user-agent: a conta autenticada já
+  identifica a pessoa. Sem `update` nem `delete` — prova que se pode
+  reescrever não é prova.
+
+A distinção `aceite`/`visto` é deliberada. Os Termos aceitam-se; a
+Política de Privacidade **vê-se**. Aceitar uma política de privacidade
+transformaria em consentimento um tratamento que assenta em contrato e
+obrigação legal — e esse consentimento seria inválido, por não ser livre.
+
+### A versão nunca vem do cliente
+
+`registar_aceitacao()` lê a versão em vigor da base e recusa se não bater
+certo com a que lhe passaram. No registo, a ação lê a versão da base
+**antes** do `signUp` e mete-a nos metadados; `handle_new_user` (0053)
+volta a confirmá-la e recusa o registo se divergir.
+
+Isto existe porque, com confirmação de email ativa, o `signUp` não devolve
+sessão: a pessoa aceita, sai, e só volta horas depois pelo link. Sem o
+trigger, a prova ficava por registar ou registada com a data errada.
+
+### O portão
+
+`PortaoTermos` (no layout de `/dashboard`) bloqueia quem tem Termos por
+aceitar. **Tem sempre saída**: resumo do que mudou, versão completa,
+contacto do CCG, gestão/encerramento da conta e botão de sair. Um ecrã só
+com "Aceitar" tornaria a aceitação não-livre.
+
+`AvisoPrivacidade` não bloqueia e nunca diz "Aceito" — só "Ver política" e
+"Fechar".
+
+Se a consulta de estado falhar, **não bloqueia**: uma falha de rede não
+pode trancar a app a toda a gente.
+
+### Minimização
+
+O registo da Conta CCG **deixou de pedir data de nascimento**. Desde a
+0025 que a data do titular não era usada para nada — a data que serve é a
+do perfil de aluno, para verificar a adequação etária das modalidades.
+
+A maioridade é uma **declaração**, não uma data: para saber que alguém tem
+18 anos não é preciso saber que dia faz anos, e uma declaração falsa é
+falsa na mesma com data.
+
+### Cookies
+
+Só cookies técnicos de autenticação do Supabase. **Não há banner**, de
+propósito: não há nada a consentir, e pedir consentimento para o que não
+precisa dele ensina as pessoas a carregar em "aceitar" sem ler. A regra
+para adicionar qualquer script de terceiros está em
+`docs/CHECKLIST_LANCAMENTO.md`.
+
+### Documentos de apoio
+
+- `docs/CHECKLIST_LANCAMENTO.md` — bloqueadores antes de abrir ao público
+- `docs/CONSERVACAO.md` — prazos prometidos vs. executados
+- `docs/APAGAMENTO_DE_CONTA.md` — o que sai e o que fica, tabela a tabela

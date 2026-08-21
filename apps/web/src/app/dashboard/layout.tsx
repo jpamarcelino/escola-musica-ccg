@@ -1,5 +1,7 @@
 import { Suspense } from 'react'
 import { getSchoolProfileContext, getAvisosPorLer } from '@/lib/auth-context'
+import { getEstadoLegal } from '@/lib/estado-legal'
+import { PortaoTermos, AvisoPrivacidade } from '@/components/portao-legal'
 import { BottomNavigation } from '@/components/bottom-navigation'
 import { NAV_CONTA, NAV_PROFESSOR, comAvisosPorLer, ehContaCCG } from '@/lib/navegacao'
 
@@ -28,6 +30,21 @@ async function DashboardNavigation() {
   return null
 }
 
+// O portão legal vive no layout, e não em cada página: quem tem Termos
+// por aceitar tem de o ver entre onde quer que esteja na área
+// autenticada, não só na Home.
+async function PortaoLegalDoDashboard() {
+  const estado = await getEstadoLegal()
+
+  if (estado.termosPorAceitar && estado.termosVersao) {
+    return <PortaoTermos versao={estado.termosVersao} resumo={estado.termosResumo} />
+  }
+  if (estado.privacidadePorVer && estado.privacidadeVersao) {
+    return <AvisoPrivacidade versao={estado.privacidadeVersao} />
+  }
+  return null
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -37,6 +54,11 @@ export default function DashboardLayout({
   // (comBottomNav), e as interiores usam o seu próprio padding.
   return (
     <>
+      {/* Fora do Suspense da navegação: não deve piscar depois do
+          conteúdo aparecer. */}
+      <Suspense fallback={null}>
+        <PortaoLegalDoDashboard />
+      </Suspense>
       {children}
       {/* A navegação depende do perfil, mas não deve bloquear o loading da
           página. O Suspense permite enviar o fallback imediatamente enquanto

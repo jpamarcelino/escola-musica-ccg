@@ -52,8 +52,9 @@ describe('extração das constraints', () => {
   })
 
   it('encontra todas as colunas com valores fixos', () => {
-    // 25 desde a 0048 (materiais.tipo).
-    expect(unioes).toHaveLength(25)
+    // 28 desde a 0052 (documentos_legais.tipo, aceitacoes_legais.accao
+    // e .origem).
+    expect(unioes).toHaveLength(28)
   })
 
   it('nenhuma união vem vazia', () => {

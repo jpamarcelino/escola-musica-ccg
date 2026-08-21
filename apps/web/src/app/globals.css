@@ -4411,3 +4411,68 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .registo-declaracoes a { color: var(--color-azul-texto); text-decoration: underline; text-underline-offset: 3px; }
 .registo-nota { font-size: 12.5px; line-height: 1.55; color: var(--color-tinta-suave); }
 .registo-nota a { color: var(--color-azul-texto); text-decoration: underline; text-underline-offset: 2px; }
+
+/* Portão dos Termos atualizados. Tapa a app, mas tem sempre saída:
+   contacto, gestão da conta e sair. Um ecrã só com "Aceitar" tornaria a
+   aceitação não-livre — e uma aceitação não-livre não vale nada. */
+.portao-legal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(36, 31, 28, .55);
+  overflow-y: auto;
+}
+.portao-legal-caixa {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  border-radius: var(--radius-cartao);
+  background: var(--background);
+  box-shadow: var(--shadow-flutuante);
+}
+.portao-legal-caixa h1 { margin-top: 6px; font-family: var(--font-fraunces), ui-serif, serif; font-size: 26px; font-weight: 650; color: var(--color-azul-fundo); }
+.portao-legal-texto { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--color-tinta); }
+.portao-legal-resumo { margin-top: 18px; padding: 14px 16px; border-radius: 8px; background: var(--color-papel-2); }
+.portao-legal-resumo h2 { font-size: 12px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: var(--color-tinta-suave); }
+.portao-legal-resumo p { margin-top: 6px; font-size: 14px; line-height: 1.6; color: var(--color-tinta); }
+.portao-legal-accoes { display: grid; gap: 10px; margin-top: 22px; }
+.portao-legal-ler { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; border: 1.5px solid var(--color-ink); border-radius: var(--radius-pill); font-size: 15px; font-weight: 600; color: var(--color-ink); }
+.portao-legal-aceitar { min-height: 52px; border-radius: var(--radius-pill); background: var(--color-azul-fundo); color: #fff; font-size: 15px; font-weight: 700; }
+.portao-legal-aceitar:disabled { opacity: .6; }
+.portao-legal-erro { margin-top: 12px; font-size: 13.5px; color: var(--color-error); }
+.portao-legal-saidas { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--color-linha); }
+.portao-legal-saidas a,
+.portao-legal-saidas button { min-height: 44px; display: inline-flex; align-items: center; font-size: 13px; color: var(--color-tinta-suave); text-decoration: underline; text-underline-offset: 3px; }
+.portao-legal :is(a, button):focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+
+/* Aviso da Política atualizada. Não bloqueia, e não diz "Aceito". */
+.aviso-privacidade {
+  position: fixed;
+  z-index: 90;
+  left: 12px;
+  right: 12px;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  max-width: 430px;
+  margin-inline: auto;
+  padding: 14px 16px;
+  border: 1px solid var(--color-linha);
+  border-radius: var(--radius-cartao);
+  background: var(--background);
+  box-shadow: var(--shadow-flutuante);
+}
+.aviso-privacidade p { font-size: 13.5px; line-height: 1.5; color: var(--color-tinta); }
+.aviso-privacidade > div { display: flex; gap: 16px; margin-top: 10px; }
+.aviso-privacidade a,
+.aviso-privacidade button { min-height: 44px; display: inline-flex; align-items: center; font-size: 13.5px; font-weight: 650; color: var(--color-azul-fundo); }
+
+/* Privacidade e informação legal, na área de Conta. */
+.conta-legal ul { margin: 8px 0 0; padding: 0; list-style: none; }
+.conta-legal li { border-bottom: 1px solid var(--color-linha); }
+.conta-legal li a { display: flex; align-items: center; min-height: 48px; font-size: 14.5px; color: var(--color-azul-fundo); }
+.conta-legal-nota { margin-top: 14px; font-size: 12.5px; line-height: 1.55; color: var(--color-tinta-suave); }
+.conta-legal-nota a { color: var(--color-azul-texto); text-decoration: underline; text-underline-offset: 2px; }
