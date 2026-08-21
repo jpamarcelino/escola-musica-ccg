@@ -10,6 +10,16 @@ const NUMERADOR_MIN = 2
 const NUMERADOR_MAX = 15
 const DENOMINADORES = [2, 4, 8] as const
 
+// O BPM conta sempre semínimas, seja qual for o compasso — é a convenção
+// das partituras ("♩ = 100") e é o que faz um número de metrónomo querer
+// dizer o mesmo em todo o lado.
+//
+// O denominador diz que figura leva um tempo, e é isso que estica ou
+// encolhe a batida: em 2 cada tempo é uma mínima, dura o dobro, e as
+// batidas vêm a metade da velocidade; em 8 é uma colcheia, dura metade,
+// e vêm ao dobro. Daí o 4/denominador.
+const DENOMINADOR_DE_REFERENCIA = 4
+
 // Agendamento com "lookahead" (técnica standard para metrónomos em Web
 // Audio — ver "A Tale of Two Clocks" da Web Audio API): em vez de tocar o
 // som diretamente num setInterval (que sofre do jitter do event loop do
@@ -211,6 +221,7 @@ export function Metronomo() {
   const proximaBatidaNumeroRef = useRef(0)
   const bpmRef = useRef(bpm)
   const numeradorRef = useRef(numerador)
+  const denominadorRef = useRef(denominador)
   const acentuarRef = useRef(acentuar)
   const volAcentoRef = useRef(volAcento)
   const volTempoRef = useRef(volTempo)
@@ -227,6 +238,9 @@ export function Metronomo() {
   useEffect(() => {
     numeradorRef.current = numerador
   }, [numerador])
+  useEffect(() => {
+    denominadorRef.current = denominador
+  }, [denominador])
   useEffect(() => {
     acentuarRef.current = acentuar
   }, [acentuar])
@@ -306,7 +320,9 @@ export function Metronomo() {
       // já não existir. Nesse caso passa-se ao tempo seguinte em vez de
       // tocar um toque fantasma fora da grelha.
       const passo = passoDentroDaBatidaRef.current < sub.divisao ? passoDentroDaBatidaRef.current : 0
-      const intervalo = 60 / bpmRef.current / sub.divisao
+      const segundosPorTempo =
+        (60 / bpmRef.current) * (DENOMINADOR_DE_REFERENCIA / denominadorRef.current)
+      const intervalo = segundosPorTempo / sub.divisao
 
       // Os passos calados do swing contam na mesma para o relógio: é o
       // silêncio no meio da tercina que atrasa a segunda colcheia. Só o
@@ -384,10 +400,22 @@ export function Metronomo() {
     return t !== '' && Number.isFinite(n)
   }
 
+  // Uma casa decimal só quando é preciso: em 2/2 um BPM ímpar dá meias
+  // batidas (101 → 50,5), e arredondar mostrava um número que não era o
+  // que se estava a ouvir.
+  const batidasCruas = (bpm * denominador) / DENOMINADOR_DE_REFERENCIA
+  const batidasPorMinuto = Number.isInteger(batidasCruas)
+    ? batidasCruas
+    : batidasCruas.toFixed(1).replace('.', ',')
+
   return (
     <div className="max-w-[380px] space-y-[22px]">
       <div className="space-y-[6px]">
-        <Rotulo htmlFor="metronomo-bpm">BPM ({BPM_MIN}–{BPM_MAX})</Rotulo>
+        {/* "da semínima" e não só "BPM": agora que o denominador muda a
+            velocidade, é preciso dizer a que figura é que o número se
+            refere, senão parece que o metrónomo se desregulou sozinho ao
+            passar de 4 para 8. */}
+        <Rotulo htmlFor="metronomo-bpm">BPM da semínima ({BPM_MIN}–{BPM_MAX})</Rotulo>
         <input
           id="metronomo-bpm"
           type="number"
@@ -437,6 +465,15 @@ export function Metronomo() {
             ))}
           </div>
         </div>
+        {/* Só quando o denominador não é 4, que é o caso em que o número
+            do BPM e o das batidas deixam de coincidir. Em 4/4 dizer as
+            duas coisas era repetir o mesmo número. */}
+        {denominador !== DENOMINADOR_DE_REFERENCIA && (
+          <p className="text-[11px] leading-[1.35]" style={{ color: 'var(--color-tinta-suave)' }}>
+            Cada tempo é {denominador === 2 ? 'uma mínima' : 'uma colcheia'} — {batidasPorMinuto}{' '}
+            batidas por minuto.
+          </p>
+        )}
       </div>
 
       <div className="space-y-[6px]">
