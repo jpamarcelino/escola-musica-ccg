@@ -103,3 +103,24 @@ export {
 export type { Erro } from './validacao'
 
 export { validarDataDePresenca } from './presencas'
+
+export {
+  A4_PADRAO,
+  A4_MIN,
+  A4_MAX,
+  CENTS_AFINADO,
+  CENTS_ESCALA,
+  midiDaFrequencia,
+  frequenciaDoMidi,
+  notaDaFrequencia,
+  afinacaoRelativa,
+  direcaoDaAfinacao,
+  textoDaDirecao,
+} from './afinacao'
+export type { Acidente, Nota, Direcao } from './afinacao'
+
+export { detetarTom, RMS_MINIMO, CLAREZA_MINIMA, FREQ_MIN, FREQ_MAX } from './deteccao-tom'
+export type { Leitura } from './deteccao-tom'
+
+export { criarEstabilizador, SEGURAR_MS } from './estabilizador-afinacao'
+export type { Estabilizador, SaidaAfinador } from './estabilizador-afinacao'

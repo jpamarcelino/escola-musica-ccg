@@ -31,6 +31,17 @@ export const TEXTOS_LEGAIS = {
   porqueDataNascimento:
     'Usamos a data de nascimento para confirmar que as modalidades escolhidas são adequadas à idade do aluno.',
 
+  // Afinador — mostrado ANTES de se pedir o microfone, e outra vez numa
+  // ajuda dentro da ferramenta.
+  //
+  // Não está na Política de Privacidade porque essa é versionada e o seu
+  // hash está fixado em código e gravado em documentos_legais: mexer-lhe
+  // sem subir a versão parte a verificação. Fica aqui, no ponto de
+  // recolha, que é onde a informação tem de estar de qualquer forma —
+  // e a política ganha uma secção quando houver uma v1.1.
+  microfoneAfinador:
+    'O afinador utiliza o microfone apenas enquanto está ativo. O áudio é processado localmente no dispositivo e não é gravado, guardado ou enviado para o Centro Cultural da Guarda ou para terceiros.',
+
   // Atualização MATERIAL dos Termos — bloqueia até aceitar.
   termosAtualizados:
     'Atualizámos os Termos de Utilização. Consulta o resumo das alterações e a versão completa antes de continuares. Ao selecionar “Aceitar e continuar”, ficas vinculado à nova versão a partir da data indicada.',

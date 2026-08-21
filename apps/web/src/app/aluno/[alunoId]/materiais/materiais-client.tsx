@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Play, FileText, Download } from 'lucide-react'
 import { miniaturaYoutube, urlDoVideoYoutube, formatarDataEscolar } from '@ccg/core'
 import { Metronomo } from '@/components/metronomo'
+import { Afinador } from '@/components/afinador'
 import { EmptyState } from '@/components/empty-state'
 
 export type PartituraDoAluno = {
@@ -29,7 +30,7 @@ export type VideoDoAluno = {
   professor: { nome: string } | null
 }
 
-type Separador = 'videos' | 'partituras' | 'metronomo'
+type Separador = 'videos' | 'partituras' | 'metronomo' | 'afinador'
 
 // Separadores dentro do caderno do aluno.
 //
@@ -59,7 +60,16 @@ export function MateriaisClient({
   const separadores: { id: Separador; nome: string }[] = [
     { id: 'videos', nome: 'Vídeos' },
     { id: 'partituras', nome: 'Partituras' },
-    ...(temMusica ? [{ id: 'metronomo' as const, nome: 'Metrónomo' }] : []),
+    // O metrónomo e o afinador andam juntos e pela mesma razão: são
+    // ferramentas de música. Numa aula de dança ou na "Música para
+    // bebés" não servem para nada, e um separador que não serve para
+    // nada é pior do que separador nenhum.
+    ...(temMusica
+      ? [
+          { id: 'metronomo' as const, nome: 'Metrónomo' },
+          { id: 'afinador' as const, nome: 'Afinador' },
+        ]
+      : []),
   ]
 
   const [ativo, setAtivo] = useState<Separador>(separadores[0].id)
@@ -180,6 +190,9 @@ export function MateriaisClient({
             </ul>
           ))}
         {ativo === 'metronomo' && <Metronomo />}
+        {/* Montado só quando o separador está ativo: mudar de separador
+            desmonta-o, e é a desmontagem que larga o microfone. */}
+        {ativo === 'afinador' && <Afinador />}
       </div>
     </div>
   )
