@@ -22,7 +22,7 @@ async function NavegacaoGeral() {
 
   // Sem aluno no URL, a barra é a de família — a mesma de /dashboard.
   // Nenhum separador abre um aluno escolhido por nós.
-  return <BottomNavigation itens={comAvisosPorLer(NAV_CONTA, await getAvisosPorLer())} />
+  return <BottomNavigation itens={comAvisosPorLer(NAV_CONTA, await getAvisosPorLer('familia'))} />
 }
 
 export default function AlunoGeraisLayout({ children }: { children: React.ReactNode }) {

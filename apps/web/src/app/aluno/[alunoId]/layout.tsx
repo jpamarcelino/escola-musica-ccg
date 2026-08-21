@@ -17,7 +17,7 @@ export default async function AlunoLayout({
   return (
     <>
       {children}
-      <BottomNavigation itens={comAvisosPorLer(navAluno(alunoId), await getAvisosPorLer())} />
+      <BottomNavigation itens={comAvisosPorLer(navAluno(alunoId), await getAvisosPorLer('familia'))} />
     </>
   )
 }

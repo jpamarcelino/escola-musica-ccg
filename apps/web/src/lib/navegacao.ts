@@ -61,11 +61,16 @@ export function comAvisosPorLer(itens: ItemNav[], quantidade: number): ItemNav[]
 // os ler: as linhas ficavam na base de dados a acumular. Com push a
 // entrar, um aviso que chega ao telemóvel tem de ter um sítio na app
 // para onde levar.
+//
+// Não tem "Pedidos": com seis separadores a 375px cada um ficava com
+// ~58px, e a barra deixava de se ler. Pedidos é a única das seis que não
+// é um sítio onde se está — é uma fila que se despacha e fica vazia —,
+// por isso passou para a lista de Gestão do "Hoje", que é onde o
+// professor já vê quantos há por responder.
 export const NAV_PROFESSOR: ItemNav[] = [
   { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
   { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },
   { href: '/dashboard/presencas', label: 'Presenças', icone: 'presencas' },
-  { href: '/dashboard/pedidos', label: 'Pedidos', icone: 'pedidos' },
   { href: '/dashboard/avisos', label: 'Avisos', icone: 'notificacoes' },
   { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
 ]

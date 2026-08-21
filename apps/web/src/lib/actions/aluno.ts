@@ -146,6 +146,16 @@ export async function escolherDisponibilidades(formData: FormData) {
     }
   }
 
+  // O professor fica a saber que tem um pedido à espera. Vai por uma
+  // função `security definer` (0046) porque a família não pode escrever
+  // na caixa de avisos de um professor — e depois das disponibilidades,
+  // para que o aviso não chegue antes de haver horários para ver.
+  //
+  // Falhar aqui não desfaz o pedido, pela mesma razão da recomendação
+  // logo abaixo: o pedido está feito e válido, e a página de Pedidos
+  // mostra-o na mesma.
+  await supabase.rpc('avisar_professor_de_pedido', { p_matricula_id: matricula.id })
+
   // A indicação de quem recomendou entra depois da matrícula, porque é
   // dela que depende (ver 0026). Falhar aqui não desfaz o pedido: a aula
   // pedida vale por si, e a recomendação recupera-se com uma conversa na

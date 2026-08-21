@@ -1571,6 +1571,26 @@ body {
   font-size: 13px;
   font-weight: 700;
 }
+
+/* Ponte para a outra caixa de avisos da mesma conta (professor ↔
+   secretaria). Só aparece a quem acumula os dois papéis. */
+.avisos-outra-caixa {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  margin-top: 22px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-linha);
+  border-bottom: 1px solid var(--color-linha);
+  color: var(--color-azul-fundo);
+}
+.avisos-outra-caixa span { font-size: 14px; font-weight: 650; }
+.avisos-outra-caixa small { font-size: 12px; color: var(--color-tinta-suave); }
+.avisos-outra-caixa b { font-weight: 400; color: var(--color-tinta-suave); }
+.avisos-outra-caixa:hover { background: color-mix(in srgb, var(--color-azul-logo) 8%, transparent); }
+.avisos-outra-caixa:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
 .avisos-lista { margin-top: 30px; border-top: 1px solid var(--color-linha); }
 .avisos-lista article {
   position: relative;
@@ -3011,6 +3031,26 @@ body {
 .admin-professor-programa > h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 23px; font-weight: 650; color: var(--color-azul-fundo); }
 .admin-professor-programa > div { margin-top: 14px; border: 0; border-radius: 0; padding: 0; }
 .admin-professor-programa form button { min-height: 44px; border-radius: 4px; border-color: var(--color-azul-fundo); }
+
+.admin-professor-evolucao { margin-top: 46px; padding-top: 24px; border-top: 1px solid var(--color-linha); }
+.admin-professor-evolucao > h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 23px; font-weight: 650; color: var(--color-azul-fundo); }
+.admin-professor-evolucao > p { margin-top: 6px; font-size: 13px; line-height: 1.55; color: var(--color-tinta-suave); }
+
+.grafico-alunos { margin: 18px 0 0; }
+.grafico-alunos svg { display: block; width: 100%; height: auto; overflow: visible; }
+.grafico-alunos-grelha { stroke: var(--color-linha); stroke-width: 1; }
+.grafico-alunos-eixo,
+.grafico-alunos-mes { fill: var(--color-tinta-suave); font-size: 9px; font-weight: 600; }
+.grafico-alunos-valor { fill: var(--color-azul-fundo); font-size: 10px; font-weight: 750; }
+.grafico-alunos-area { fill: color-mix(in srgb, var(--color-azul-logo) 26%, transparent); }
+.grafico-alunos-linha { fill: none; stroke: var(--color-azul-fundo); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.grafico-alunos-linha-prevista { stroke: var(--color-azul); stroke-dasharray: 4 4; }
+.grafico-alunos-ponto { fill: var(--color-azul-fundo); }
+.grafico-alunos-ponto-previsto { fill: var(--color-papel); stroke: var(--color-azul); stroke-width: 1.5; }
+.grafico-alunos-legenda { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: 12px; color: var(--color-tinta-suave); }
+.grafico-alunos-legenda span { display: inline-flex; align-items: center; gap: 7px; }
+.grafico-alunos-legenda span::before { content: ""; width: 16px; height: 0; border-top: 2px solid var(--color-azul-fundo); }
+.grafico-alunos-legenda span.prevista::before { border-top-style: dashed; border-color: var(--color-azul); }
 
 .recomendacao-passo { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 0 18px; padding: 30px 0; border-bottom: 1px solid var(--color-linha); }
 .recomendacao-passo-professor { margin-top: 28px; border-top: 1px solid var(--color-linha); }

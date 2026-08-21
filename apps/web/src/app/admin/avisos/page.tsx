@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getAuthContext } from '@/lib/auth-context'
+import { getAuthContext, getAvisosPorLer } from '@/lib/auth-context'
 import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
-import { accaoDoAviso } from '@/lib/avisos'
+import { accaoDoAviso, avisoDoPapel, type TipoAviso } from '@/lib/avisos'
 
 type Notificacao = {
   id: number
@@ -33,7 +33,7 @@ export default async function AdminAvisosPage() {
 
   const { data: perfilAtual } = await supabase
     .from('perfis_escola')
-    .select('admin')
+    .select('admin, tipo')
     .eq('id', user.id)
     .single()
 
@@ -51,16 +51,24 @@ export default async function AdminAvisosPage() {
       // transação têm o mesmo instante ao microssegundo, e sem
       // isto trocavam de lugar entre visitas.
       .order('id', { ascending: false }),
-    supabase.from('tipos_aviso').select('tipo, destino'),
+    supabase.from('tipos_aviso').select('tipo, destino, papeis'),
   ])
 
   // O destino de cada tipo, para a lista poder oferecer o atalho para
   // onde se age sobre o aviso — o mesmo sítio para onde a push leva.
-  const tipos = new Map(
-    ((tiposData ?? []) as { tipo: string; destino: string | null }[]).map((t) => [t.tipo, t])
+  const tipos = new Map(((tiposData ?? []) as TipoAviso[]).map((t) => [t.tipo, t]))
+
+  // Só o que é da secretaria. Quem é professor e está na direção recebe
+  // os dois tipos de aviso na mesma conta — os de professor ficam em
+  // /dashboard/avisos, e não misturados com estes.
+  const avisos = ((avisosData ?? []) as Notificacao[]).filter((n) =>
+    avisoDoPapel(tipos.get(n.tipo), 'secretaria')
   )
 
-  const avisos = (avisosData ?? []) as Notificacao[]
+  // A outra metade da ponte que existe em /dashboard/avisos: quem também
+  // dá aulas tem lá os seus avisos de professor, e daqui não os via.
+  const ehProfessor = perfilAtual.tipo === 'professor'
+  const naDocencia = ehProfessor ? await getAvisosPorLer('professor') : 0
   const porLer = avisos.filter((n) => !n.lida).length
 
   return (
@@ -81,8 +89,17 @@ export default async function AdminAvisosPage() {
           </div>
         </header>
 
+        {ehProfessor && (
+          <Link href="/dashboard/avisos" className="avisos-outra-caixa">
+            <span>Avisos de professor</span>
+            <small>{naDocencia > 0 ? `${naDocencia} por ler` : 'Em dia'}</small>
+            <b aria-hidden="true">→</b>
+          </Link>
+        )}
+
         {porLer > 0 && (
           <form action={marcarTodasNotificacoesLidas}>
+            <input type="hidden" name="papel" value="secretaria" />
             <button type="submit" className="avisos-marcar-todos">
               Marcar todas como lidas
             </button>

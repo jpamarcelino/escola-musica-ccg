@@ -245,6 +245,12 @@ export default async function DashboardPage({
               <div><p className="partitura-indice">02</p><h2 id="titulo-gestao">Gestão</h2></div>
             </div>
             <nav className="partitura-links" aria-label="Ferramentas de gestão">
+              {/* Primeiro da lista, e sempre presente: desde que "Pedidos"
+                  saiu da barra de baixo, este link é a única entrada para
+                  a fila. Escondê-lo quando está vazia deixava a página
+                  inalcançável — e o professor sem forma de perceber que
+                  não tem nada por responder. */}
+              <Link href="/dashboard/pedidos"><span>Pedidos</span><small>{(pedidosPendentes ?? 0) > 0 ? `${pedidosPendentes} por responder` : 'Pedidos de aula, nada por responder'}</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/meus-alunos"><span>Alunos</span><small>Quem ensinas, e os seus dados</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/presencas"><span>Presenças</span><small>Registar e consultar</small><b aria-hidden="true">→</b></Link>
               <Link href="/dashboard/horarios"><span>Horários</span><small>Disponibilidade semanal</small><b aria-hidden="true">→</b></Link>
@@ -254,9 +260,6 @@ export default async function DashboardPage({
                   um formulário que não serve para nada. */}
               {profile.programa === 'musica' && (
                 <Link href="/dashboard/reposicoes"><span>Reposições</span><small>Vagas para repor aulas</small><b aria-hidden="true">→</b></Link>
-              )}
-              {(pedidosPendentes ?? 0) > 0 && (
-                <Link href="/dashboard/pedidos"><span>Pedidos</span><small>{pedidosPendentes} por responder</small><b aria-hidden="true">→</b></Link>
               )}
             </nav>
           </section>

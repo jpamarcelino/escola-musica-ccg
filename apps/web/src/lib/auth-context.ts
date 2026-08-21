@@ -1,6 +1,7 @@
 import { cache } from 'react'
 import { contarNotificacoesPorLer } from '@ccg/data'
 import { createClient } from '@/lib/supabase/server'
+import { tiposForaDoPapel, type PapelAviso } from '@/lib/avisos'
 import type { PerfisEscolaPrograma, PerfisEscolaTipo } from '@ccg/types'
 
 // React mantém este resultado apenas durante o render atual. Layout e página
@@ -17,10 +18,14 @@ export const getAuthContext = cache(async () => {
 // Quantos avisos esperam por quem entrou. Em `cache` pela mesma razão
 // das outras: o layout pede-a e a página pode voltar a pedi-la no mesmo
 // pedido, e não vale a pena contar duas vezes.
-export const getAvisosPorLer = cache(async () => {
+// `papel` diz de que caixa se está a contar. Sem isto, quem é professor
+// e está na direção via o ponto vermelho do separador de Avisos aceso por
+// causa de um pedido de disciplina que só aparece em /admin/avisos — e
+// que portanto nunca conseguiria apagar dali.
+export const getAvisosPorLer = cache(async (papel: PapelAviso) => {
   const { supabase, user } = await getAuthContext()
   if (!user) return 0
-  return contarNotificacoesPorLer(supabase, user.id)
+  return contarNotificacoesPorLer(supabase, user.id, await tiposForaDoPapel(papel))
 })
 
 export type SchoolProfile = {

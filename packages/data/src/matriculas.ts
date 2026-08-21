@@ -43,15 +43,27 @@ export async function listarMatriculasDoAluno(
 
 // Quantas notificações a pessoa ainda não leu. `head: true` pede só a
 // contagem — não traz as linhas, que aqui não servem para nada.
+//
+// `tiposExcluidos` deixa de fora os avisos de outro papel da mesma conta
+// (migração 0047): quem é professor e secretaria vê duas caixas, e o
+// ponto vermelho de uma não pode acender por causa da outra — seria um
+// ponto que nunca apagava, por mais que se lesse.
 export async function contarNotificacoesPorLer(
   supabase: ClienteCcg,
-  userId: string
+  userId: string,
+  tiposExcluidos: string[] = []
 ): Promise<number> {
-  const { count } = await supabase
+  let consulta = supabase
     .from('notificacoes')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
     .eq('lida', false)
+
+  if (tiposExcluidos.length > 0) {
+    consulta = consulta.not('tipo', 'in', `(${tiposExcluidos.join(',')})`)
+  }
+
+  const { count } = await consulta
 
   return count ?? 0
 }

@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getSchoolProfileContext } from '@/lib/auth-context'
+import { getSchoolProfileContext, getAvisosPorLer } from '@/lib/auth-context'
 import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
 import { ehContaCCG } from '@/lib/navegacao'
-import { accaoDoAviso } from '@/lib/avisos'
+import { accaoDoAviso, avisoDoPapel, type PapelAviso, type TipoAviso } from '@/lib/avisos'
 
 type Notificacao = {
   id: number
@@ -63,19 +63,21 @@ export default async function AvisosPage({
           .eq('encarregado_id', user.id)
           .order('criado_em')
       : Promise.resolve({ data: [] }),
-    supabase.from('tipos_aviso').select('tipo, titulo, destino'),
+    supabase.from('tipos_aviso').select('tipo, titulo, destino, papeis'),
   ])
 
   // Título e destino de cada tipo, para o aviso dentro da app dizer o
   // mesmo que a push e levar ao mesmo sítio.
-  const tipos = new Map(
-    ((tiposData ?? []) as { tipo: string; titulo: string; destino: string | null }[]).map((t) => [
-      t.tipo,
-      t,
-    ])
-  )
+  const tipos = new Map(((tiposData ?? []) as TipoAviso[]).map((t) => [t.tipo, t]))
 
-  const todos = (avisosData ?? []) as Notificacao[]
+  // Esta caixa é a do papel de quem entrou — família ou professor. Os
+  // avisos que só dizem respeito à secretaria ficam em /admin/avisos,
+  // mesmo quando é a mesma conta a receber os dois.
+  const papel: PapelAviso = familia ? 'familia' : 'professor'
+
+  const todos = ((avisosData ?? []) as Notificacao[]).filter((n) =>
+    avisoDoPapel(tipos.get(n.tipo), papel)
+  )
   const alunos = alunosData ?? []
   const nomePorAluno = new Map(alunos.map((a) => [a.id, a.nome]))
 
@@ -86,6 +88,11 @@ export default async function AvisosPage({
   const avisos = filtroValido ? todos.filter((n) => n.aluno_id === filtroValido) : todos
 
   const porLer = avisos.filter((n) => !n.lida).length
+
+  // Quem é professor E está na direção tem duas caixas. Separá-las sem
+  // dizer onde está a outra seria trocar avisos misturados por avisos
+  // perdidos — daí esta ponte, que só aparece a quem tem os dois papéis.
+  const naSecretaria = profile?.admin ? await getAvisosPorLer('secretaria') : 0
 
   return (
     <main id="conteudo-principal" className="partitura-pagina avisos-pagina">
@@ -104,6 +111,18 @@ export default async function AvisosPage({
             </p>
           </div>
         </header>
+
+        {profile?.admin && (
+          <Link href="/admin/avisos" className="avisos-outra-caixa">
+            <span>Avisos da secretaria</span>
+            <small>
+              {naSecretaria > 0
+                ? `${naSecretaria} por ler`
+                : 'Em dia'}
+            </small>
+            <b aria-hidden="true">→</b>
+          </Link>
+        )}
 
         {/* Só vale a pena filtrar quando há mais do que um aluno — com um
             só, os dois separadores mostrariam a mesma lista. */}
@@ -126,6 +145,7 @@ export default async function AvisosPage({
 
         {porLer > 0 && (
           <form action={marcarTodasNotificacoesLidas}>
+            <input type="hidden" name="papel" value={papel} />
             <button type="submit" className="avisos-marcar-todos">
               Marcar todas como lidas
             </button>

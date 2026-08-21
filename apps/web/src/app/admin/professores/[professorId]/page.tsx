@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
+import { evolucaoDeAlunos, hojeISO, type MatriculaParaEvolucao } from '@ccg/core'
 import { createClient } from '@/lib/supabase/server'
+import { GraficoEvolucaoAlunos } from '@/components/grafico-evolucao-alunos'
 import { LinhaLista, GrupoLista } from '@/components/lista'
 import { SubmitButton } from '@/components/submit-button'
 import { definirAdesaoRecomendacao } from '@/lib/actions/recomendacoes'
@@ -50,6 +52,20 @@ export default async function AdminProfessorPage({
 
   const professorData = { nome: professorPerfil.profiles?.nome ?? '' }
 
+  // Todas as matrículas deste professor, incluindo as canceladas: é
+  // justamente a saída de um aluno que o gráfico tem de mostrar.
+  const { data: matriculasData } = await supabase
+    .from('matriculas')
+    .select('aluno_id, estado, criado_em, cancelada_em')
+    .eq('professor_id', professorId)
+
+  const pontos = evolucaoDeAlunos(
+    (matriculasData ?? []) as MatriculaParaEvolucao[],
+    hojeISO(),
+  )
+  const haPrevisao = pontos.some((p) => p.previsto)
+  const haPassado = pontos.some((p) => !p.previsto)
+
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-professor-pagina">
       <div className="partitura-folha">
@@ -60,6 +76,23 @@ export default async function AdminProfessorPage({
           <LinhaLista href={`/admin/professores/${professorId}/alunos`} titulo="Alunos" />
           <LinhaLista href={`/admin/professores/${professorId}/horario`} titulo="Horário" />
         </GrupoLista></div>
+
+        <section className="admin-professor-evolucao">
+          <h2 className="secao-titulo">Evolução de alunos</h2>
+          <p>
+            Alunos com aulas a decorrer em cada mês do ano letivo 2026/27. Um aluno com
+            duas disciplinas conta uma vez; quem cancela ainda conta no mês em que saiu.
+          </p>
+          <GraficoEvolucaoAlunos pontos={pontos} />
+          {haPrevisao && (
+            <p className="grafico-alunos-legenda">
+              {haPassado && <span>Já decorrido</span>}
+              <span className="prevista">
+                Previsto, com as matrículas de hoje
+              </span>
+            </p>
+          )}
+        </section>
 
         <section className="admin-professor-programa">
           <h2 className="secao-titulo">Programa de Recomendação</h2>

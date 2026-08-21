@@ -20,10 +20,10 @@ async function DashboardNavigation() {
   // O professor passou a ter separador de avisos, e portanto a contagem
   // passou a ter onde aparecer.
   if (profile?.tipo === 'professor') {
-    return <BottomNavigation itens={comAvisosPorLer(NAV_PROFESSOR, await getAvisosPorLer())} />
+    return <BottomNavigation itens={comAvisosPorLer(NAV_PROFESSOR, await getAvisosPorLer('professor'))} />
   }
   if (ehContaCCG(profile?.tipo)) {
-    return <BottomNavigation itens={comAvisosPorLer(NAV_CONTA, await getAvisosPorLer())} />
+    return <BottomNavigation itens={comAvisosPorLer(NAV_CONTA, await getAvisosPorLer('familia'))} />
   }
   return null
 }

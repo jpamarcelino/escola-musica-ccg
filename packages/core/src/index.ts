@@ -30,6 +30,9 @@ export { proximaAulaPorAcontecer } from './datas'
 
 export { MESES_ANO_LETIVO, rotuloMes } from './ano-letivo'
 
+export { MESES_DE_AULAS, evolucaoDeAlunos } from './evolucao-alunos'
+export type { MatriculaParaEvolucao, PontoEvolucao } from './evolucao-alunos'
+
 export {
   ANO_LETIVO_INICIO,
   ANO_LETIVO_FIM,
