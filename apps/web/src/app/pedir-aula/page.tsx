@@ -59,6 +59,7 @@ export default async function PedirAulaPage({
   if (idadeNum === null) {
     return (
       <Wizard
+        publico
         voltar="/"
         passo={2}
         escolhas={[{ valor: NOME_ESCOLA[programa] ?? programa, href: '/' }]}
@@ -129,6 +130,7 @@ export default async function PedirAulaPage({
 
     return (
       <Wizard
+        publico
         title={
           programa === 'musica'
             ? 'Que instrumento queres aprender?'
@@ -209,6 +211,7 @@ export default async function PedirAulaPage({
 
     return (
       <Wizard
+        publico
         title="Escolhe o professor"
         voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}
         passo={4}
@@ -283,6 +286,7 @@ export default async function PedirAulaPage({
 
   return (
     <Wizard
+        publico
       title="Seleciona os vários horários em que há disponibilidade"
       voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`}
       passo={5}

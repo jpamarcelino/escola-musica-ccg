@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PublicHomeExperience } from '@/components/public-home-experience'
+import { RodapeLegal } from '@/components/rodape-legal'
 
 // As três escolas. A cor tinge o fundo da caixa de ícone do cartão (na
 // v1 era uma barra de 3px ao lado, que ninguém lia); o href entra no
@@ -16,5 +17,10 @@ export default async function Home() {
     redirect('/dashboard')
   }
 
-  return <PublicHomeExperience />
+  return (
+    <>
+      <PublicHomeExperience />
+      <RodapeLegal />
+    </>
+  )
 }

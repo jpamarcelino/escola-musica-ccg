@@ -5,6 +5,7 @@ import { PageHeader } from '@/components/page-header'
 import { FundoPapel } from '@/components/fundo-papel'
 import { Cartao } from '@/components/cartao'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
+import { RodapeLegal } from '@/components/rodape-legal'
 
 type SistemaId = 'ios' | 'android'
 
@@ -156,6 +157,7 @@ export default function InstalarPage() {
           <LigacaoTerciaria href="/login">Voltar ao login</LigacaoTerciaria>
         </div>
       </div>
+      <RodapeLegal />
     </FundoPapel>
   )
 }

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { FundoPapel } from '@/components/fundo-papel'
 import RegistoForm from './form'
 import type { ConvitePrograma, ConviteTipo } from '@ccg/types'
+import { RodapeLegal } from '@/components/rodape-legal'
 
 type ConviteInfo = {
   tipo: ConviteTipo
@@ -30,6 +31,7 @@ export default async function RegistoPage({
       <Suspense>
         <RegistoForm conviteCodigo={convite ?? null} conviteInfo={conviteInfo} />
       </Suspense>
+      <RodapeLegal />
     </FundoPapel>
   )
 }

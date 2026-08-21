@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { RodapeLegal } from '@/components/rodape-legal'
 
 // Casca dos dois wizards de pedir aula — o público (/pedir-aula) e o
 // autenticado (/aluno/[alunoId]/pedido). Os passos são os mesmos nos dois,
@@ -12,6 +13,7 @@ export type EscolhaFeita = {
 }
 
 export function Wizard({
+  publico = false,
   title,
   voltar,
   passo,
@@ -19,6 +21,8 @@ export function Wizard({
   escolhas,
   children,
 }: {
+  // O rodapé com as ligações jurídicas só entra no percurso público.
+  publico?: boolean
   title?: string
   voltar?: string
   // Em que ponto do percurso estamos. Sem isto (ecrãs de erro, becos),
@@ -87,6 +91,11 @@ export function Wizard({
         )}
 
         <div className="wizard-partitura-conteudo">{children}</div>
+
+        {/* Só no percurso público: quem está a explorar sem conta tem de
+            conseguir ler os termos e a privacidade antes de se registar.
+            Na área autenticada as mesmas ligações vivem em Conta. */}
+        {publico && <RodapeLegal />}
       </div>
     </main>
   )
