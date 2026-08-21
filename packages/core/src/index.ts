@@ -30,6 +30,8 @@ export { proximaAulaPorAcontecer } from './datas'
 
 export { MESES_ANO_LETIVO, rotuloMes } from './ano-letivo'
 
+export { extrairIdYoutube, miniaturaYoutube, urlDoVideoYoutube } from './youtube'
+
 export { MESES_DE_AULAS, evolucaoDeAlunos } from './evolucao-alunos'
 export type { MatriculaParaEvolucao, PontoEvolucao } from './evolucao-alunos'
 

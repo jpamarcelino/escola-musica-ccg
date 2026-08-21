@@ -13,6 +13,7 @@ import {
   Users,
   ClipboardCheck,
   Inbox,
+  BookOpen,
   Menu,
   type LucideIcon,
 } from 'lucide-react'
@@ -34,6 +35,7 @@ const ICONES: Record<string, LucideIcon> = {
   professores: Users,
   presencas: ClipboardCheck,
   pedidos: Inbox,
+  materiais: BookOpen,
   mais: Menu,
 }
 

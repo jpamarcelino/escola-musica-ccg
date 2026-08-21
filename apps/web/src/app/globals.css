@@ -1329,7 +1329,7 @@ body {
 .familia-proxima b { margin-top: 3px; font-size: 12px; font-weight: 500; color: var(--color-tinta-suave); }
 .familia-proxima i { font-style: normal; color: var(--color-azul-texto); }
 .familia-alunos > div:last-child { border-top: 1px solid var(--color-linha); }
-.familia-alunos a {
+.familia-alunos :is(a, .familia-aluno-sem) {
   display: grid;
   grid-template-columns: minmax(140px, .6fr) 1fr auto auto;
   gap: 14px;
@@ -1340,8 +1340,12 @@ body {
   text-decoration: none;
 }
 .familia-alunos strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 18px; }
-.familia-alunos a > span { font-size: 13px; color: var(--color-tinta-suave); }
-.familia-alunos a > small { padding-left: 10px; border-left: 3px solid var(--color-warning); font-size: 11px; color: var(--color-warning); }
+.familia-alunos :is(a, .familia-aluno-sem) > span { font-size: 13px; color: var(--color-tinta-suave); }
+.familia-alunos :is(a, .familia-aluno-sem) > small { padding-left: 10px; border-left: 3px solid var(--color-warning); font-size: 11px; color: var(--color-warning); }
+/* Aluno sem matrícula: continua na lista, para se ver que existe, mas não
+   é destino. Sem seta e sem hover — não há para onde ir. */
+.familia-aluno-sem { cursor: default; }
+.familia-aluno-sem strong { color: var(--color-tinta-suave); }
 .familia-alunos i { font-style: normal; color: var(--color-azul-texto); }
 .familia-adicionar { margin-top: 34px; border-block: 1px solid var(--color-linha); }
 .familia-adicionar > summary { min-height: 56px; padding: 18px 0; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--color-azul-fundo); }
@@ -1467,9 +1471,9 @@ body {
 .aluno-pedir-mais i { font-style: normal; color: var(--color-azul-texto); }
 
 @media (max-width: 560px) {
-  .familia-alunos a { grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 10px; }
-  .familia-alunos a > span { grid-column: 1; }
-  .familia-alunos a > small { grid-column: 1; margin-top: 4px; }
+  .familia-alunos :is(a, .familia-aluno-sem) { grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 10px; }
+  .familia-alunos :is(a, .familia-aluno-sem) > span { grid-column: 1; }
+  .familia-alunos :is(a, .familia-aluno-sem) > small { grid-column: 1; margin-top: 4px; }
   .familia-alunos i { grid-column: 2; grid-row: 1 / span 3; }
   .aluno-hub-links a { grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 12px; }
   .aluno-hub-links small { grid-column: 1; }
@@ -1549,7 +1553,7 @@ body {
 .wizard-partitura .horario-bloco { border-radius: 3px; }
 
 .materiais-conteudo { margin-top: 34px; }
-.materiais-separadores { display: flex; border-bottom: 1px solid var(--color-linha); }
+.materiais-separadores { display: flex; gap: 24px; border-bottom: 1px solid var(--color-linha); }
 .materiais-separador {
   min-height: 48px;
   border-bottom: 3px solid transparent;
@@ -1561,6 +1565,167 @@ body {
 .materiais-pagina input,
 .materiais-pagina button { border-radius: 4px !important; }
 .materiais-pagina .rounded-full { border-radius: 50% !important; }
+
+/* Lista de vídeos no caderno do aluno. A miniatura manda: é por ela que
+   se reconhece o vídeo, muito antes de se ler o título. */
+.material-videos { margin: 0; padding: 0; list-style: none; }
+.material-videos li + li { border-top: 1px solid var(--color-linha); }
+.material-videos a {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 16px 0;
+}
+.material-videos a:hover .material-video-imagem img { transform: scale(1.03); }
+.material-video-imagem {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--color-papel-2);
+  aspect-ratio: 16 / 9;
+}
+.material-video-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--motion-normal) var(--ease-suave);
+}
+.material-video-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+}
+.material-video-play svg {
+  padding: 7px 6px 7px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .62);
+  box-sizing: content-box;
+}
+.material-video-texto { display: grid; gap: 4px; min-width: 0; }
+.material-video-texto strong { font-family: var(--font-fraunces), ui-serif, serif; font-size: 17px; line-height: 1.3; color: var(--color-azul-fundo); }
+.material-video-texto > span { font-size: 13px; line-height: 1.5; color: var(--color-tinta); }
+.material-video-texto small { font-size: 11.5px; color: var(--color-tinta-suave); }
+.material-videos a:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+
+/* Ferramenta de envio, do lado do professor. */
+.material-link-linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.material-procurar {
+  min-height: 44px;
+  padding-inline: 18px;
+  border: 1px solid var(--color-azul-fundo);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-azul-fundo);
+}
+.material-ajuda { font-size: 12px; line-height: 1.5; color: var(--color-tinta-suave); }
+.material-ajuda strong { font-weight: 700; color: var(--color-tinta); }
+.material-previsao {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--color-linha);
+  border-radius: 8px;
+  background: var(--color-papel-2);
+}
+.material-previsao img { width: 100%; height: auto; border-radius: 6px; }
+.material-previsao small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--color-tinta-suave); }
+.material-previsao strong { display: block; margin-top: 4px; font-size: 15px; line-height: 1.35; color: var(--color-azul-fundo); }
+
+/* Escolher alunos por pesquisa. */
+.seletor-alunos { position: relative; }
+.seletor-alunos-topo { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.seletor-alunos-campo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 12px;
+  border: 1px solid var(--color-linha);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--color-tinta-suave);
+}
+.seletor-alunos-campo input { min-height: 42px; border: 0; background: transparent; font-size: 14px; color: var(--color-tinta); outline: none; }
+.seletor-alunos-campo:focus-within { border-color: var(--color-azul); }
+.seletor-alunos-todos {
+  min-height: 44px;
+  padding-inline: 12px;
+  border-bottom: 1px solid var(--color-azul-logo);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-azul-fundo);
+  white-space: nowrap;
+}
+.seletor-alunos-resultados {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--color-linha);
+  border-radius: 8px;
+  background: var(--background);
+  box-shadow: var(--shadow-flutuante);
+  max-height: 264px;
+  overflow-y: auto;
+}
+.seletor-alunos-resultados button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  text-align: left;
+}
+.seletor-alunos-resultados button:hover { background: var(--color-papel-2); }
+.seletor-alunos-resultados strong { font-size: 14px; font-weight: 650; color: var(--color-tinta); }
+.seletor-alunos-resultados small { font-size: 12px; color: var(--color-tinta-suave); }
+.seletor-alunos-vazio { padding: 12px 10px; font-size: 13px; color: var(--color-tinta-suave); }
+.seletor-alunos-escolhidos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.seletor-alunos-nenhum { font-size: 13px; color: var(--color-tinta-suave); }
+.seletor-aluno-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 4px 6px 4px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-azul-logo) 24%, transparent);
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--color-azul-fundo);
+}
+.seletor-aluno-etiqueta button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: var(--color-azul-fundo);
+}
+.seletor-aluno-etiqueta button:hover { background: rgba(255, 255, 255, .6); }
+.seletor-aluno-etiqueta button:focus-visible,
+.seletor-alunos-todos:focus-visible,
+.seletor-alunos-resultados button:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 2px; }
+
+@media (max-width: 560px) {
+  .material-videos a { grid-template-columns: 108px minmax(0, 1fr); gap: 12px; }
+  .material-link-linha { grid-template-columns: 1fr; }
+  .material-previsao { grid-template-columns: 120px minmax(0, 1fr); }
+  .seletor-alunos-topo { grid-template-columns: 1fr; }
+  .seletor-alunos-todos { justify-self: start; padding-inline: 0; }
+}
 
 .avisos-marcar-todos {
   min-height: 44px;

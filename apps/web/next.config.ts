@@ -28,9 +28,22 @@ const nextConfig: NextConfig = {
   // no Metro/Expo é o comportamento por omissão dentro do workspace.
   transpilePackages: ['@ccg/core', '@ccg/data', '@ccg/types'],
   images: {
-    remotePatterns: supabaseHost
-      ? [{ protocol: 'https', hostname: supabaseHost, pathname: '/storage/v1/object/public/**' }]
-      : [],
+    remotePatterns: [
+      ...(supabaseHost
+        ? [
+            {
+              protocol: 'https' as const,
+              hostname: supabaseHost,
+              pathname: '/storage/v1/object/public/**',
+            },
+          ]
+        : []),
+      // Miniaturas do YouTube. É um endereço público e direto, sem chave
+      // nem pedido à API — e funciona com vídeos não listados. Vão com
+      // `unoptimized`: passá-las pelo otimizador do Next gastaria quota
+      // do Vercel para reduzir uma imagem que já vem com 480 de largura.
+      { protocol: 'https' as const, hostname: 'i.ytimg.com', pathname: '/vi/**' },
+    ],
   },
   experimental: {
     // Por omissão as Server Actions só aceitam 1MB — pouco para uma foto

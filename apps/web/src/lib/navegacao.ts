@@ -22,22 +22,34 @@ export function ehContaCCG(tipo: string | undefined | null): boolean {
 // não tivesse nenhum ia parar a /dashboard disfarçado de outro separador.
 
 // Conta CCG fora da área de um aluno. Todos os destinos são de família.
+//
+// O separador do meio era "Alunos" e abria a gestão de perfis — uma lista
+// com um formulário de "adicionar aluno" por baixo. Isso é administração,
+// e faz-se uma vez por ano; o que se abre todas as semanas é o material
+// da aula. Passou a ser "Materiais", e a gestão de perfis continua a
+// chegar-se pela Home e pela agenda, onde já estava ligada.
 export const NAV_CONTA: ItemNav[] = [
   { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
   { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },
-  { href: '/dashboard/alunos', label: 'Alunos', icone: 'alunos' },
+  { href: '/dashboard/materiais', label: 'Materiais', icone: 'materiais' },
   { href: '/dashboard/avisos', label: 'Avisos', icone: 'notificacoes' },
   { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
 ]
 
-// Dentro da área de um aluno, "Agenda" e "Aluno" passam a apontar
-// explicitamente para ESSE aluno — o alunoId vem do URL, não de uma
-// consulta à base de dados.
+// Dentro da área de um aluno, o separador do meio é o que muda: aponta
+// para o caderno DESSE aluno — o alunoId vem do URL, não de uma consulta
+// à base de dados.
+//
+// A agenda deixou de ser individual. Uma família com dois filhos quer ver
+// a semana inteira de uma vez, não saltar entre duas agendas para saber
+// quem tem aula a seguir; e com um filho só, a agenda individual e a da
+// conta mostravam exatamente a mesma coisa. O que ganha em ser por aluno
+// é o material — esse é de quem tem a aula.
 export function navAluno(alunoId: string): ItemNav[] {
   return [
     { href: '/dashboard', label: 'Hoje', icone: 'inicio', correspondencia: 'exata' },
-    { href: `/aluno/${alunoId}/horario`, label: 'Agenda', icone: 'calendario' },
-    { href: `/aluno/${alunoId}`, label: 'Aluno', icone: 'alunos', correspondencia: 'exata' },
+    { href: '/dashboard/agenda', label: 'Agenda', icone: 'calendario' },
+    { href: `/aluno/${alunoId}/materiais`, label: 'Materiais', icone: 'materiais' },
     { href: '/dashboard/avisos', label: 'Avisos', icone: 'notificacoes' },
     { href: '/dashboard/conta', label: 'Conta', icone: 'perfil' },
   ]
