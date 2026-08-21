@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Info } from 'lucide-react'
 import { Distintivo } from '@/components/distintivo'
 
 // Cartão navegável grande (DESIGN_SYSTEM_V2 secção 8) — escolha de
@@ -22,6 +22,8 @@ export function CartaoLink({
   contagem,
   bloqueado = false,
   iconeCobre = false,
+  infoHref,
+  infoRotulo,
 }: {
   href: string
   nome: string
@@ -47,6 +49,12 @@ export function CartaoLink({
   // aqui: dentro do wizard as linhas levam `background: transparent
   // !important`, e classes utilitárias soltas perdiam essa disputa.
   bloqueado?: boolean
+  // Um "i" ao lado da seta, que leva à ficha de quem está no cartão.
+  // Fica FORA do link principal: um link dentro de outro link não é
+  // marcação válida, e o browser resolve-o como lhe apetece — o teclado
+  // salta um dos dois, e o leitor de ecrã anuncia um destino errado.
+  infoHref?: string
+  infoRotulo?: string
 }) {
   const classesBase =
     'entrada-esquerda group flex items-center gap-[16px] rounded-[var(--radius-large)] px-[18px] py-[18px]'
@@ -136,7 +144,7 @@ export function CartaoLink({
     )
   }
 
-  return (
+  const principal = (
     <Link
       href={href}
       className={`${classesBase} cartao-opcao cartao-disponivel transition-[transform,background-color] duration-150 hover:bg-[#EDEFF3] motion-safe:active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-mid)] motion-reduce:transition-none`}
@@ -144,5 +152,20 @@ export function CartaoLink({
     >
       {conteudo}
     </Link>
+  )
+
+  if (!infoHref) return principal
+
+  return (
+    <div className="cartao-com-info">
+      {principal}
+      <Link
+        href={infoHref}
+        className="cartao-info"
+        aria-label={infoRotulo ?? `Saber mais sobre ${nome}`}
+      >
+        <Info aria-hidden="true" strokeWidth={1.75} className="h-[17px] w-[17px]" />
+      </Link>
+    </div>
   )
 }

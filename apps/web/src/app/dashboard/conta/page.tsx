@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
-import { pedirInstrumento, atualizarFoto } from '@/lib/actions/professor'
+import { pedirInstrumento } from '@/lib/actions/professor'
 import {
   atualizarNomeConta,
   atualizarNifConta,
@@ -12,7 +12,6 @@ import { PageHeader } from '@/components/page-header'
 import { Rotulo, classesCampo } from '@/components/campo-formulario'
 import { AtivarNotificacoes } from '@/components/ativar-notificacoes'
 import { SubmitButton } from '@/components/submit-button'
-import { FotoConta } from '@/components/foto-conta'
 import {
   EditarNomeForm,
   EditarNifForm,
@@ -190,11 +189,6 @@ export default async function ContaPage({
 
         {ehProfessor && (
           <>
-            <section className="space-y-3">
-              <h2 className="font-semibold">A tua foto</h2>
-              <FotoConta action={atualizarFoto} fotoUrl={profile.foto_url} nome={profile.nome} />
-            </section>
-
             <section className="space-y-3">
               <h2 className="font-semibold">Disciplinas que ensinas</h2>
               {meusInstrumentos.length === 0 ? (

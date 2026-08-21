@@ -233,52 +233,10 @@ export async function pedirInstrumento(formData: FormData) {
   redirect('/dashboard/conta?pedido=disciplina')
 }
 
-export async function atualizarFoto(formData: FormData) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  function voltarComErro(mensagem: string): never {
-    redirect(`/dashboard/conta?erroHorarios=${encodeURIComponent(mensagem)}`)
-  }
-
-  const ficheiro = formData.get('foto')
-  if (!(ficheiro instanceof File) || ficheiro.size === 0) {
-    voltarComErro('Escolhe uma foto para carregar.')
-  }
-  // Margem abaixo do limite de tamanho das Server Actions (10mb, em
-  // next.config.ts) — para dar um erro claro em vez de a próprria
-  // plataforma rejeitar o pedido a meio.
-  if (ficheiro.size > 9 * 1024 * 1024) {
-    voltarComErro('Essa foto é demasiado grande (máximo 9MB). Tenta outra ou reduz o tamanho.')
-  }
-
-  const caminho = `${user.id}/foto`
-  const { error: erroUpload } = await supabase.storage
-    .from('fotos-professores')
-    .upload(caminho, ficheiro, { upsert: true, contentType: ficheiro.type })
-
-  if (erroUpload) {
-    voltarComErro('Não foi possível carregar a foto. Tenta novamente.')
-  }
-
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from('fotos-professores').getPublicUrl(caminho)
-
-  // Query string para a foto atualizar de imediato (o caminho no storage é sempre o mesmo).
-  const fotoUrl = `${publicUrl}?v=${Date.now()}`
-
-  await supabase.from('profiles').update({ foto_url: fotoUrl }).eq('id', user.id)
-
-  revalidatePath('/dashboard')
-  revalidatePath('/dashboard/conta')
-}
+// `atualizarFoto` foi apagada aqui: a foto do professor passou a ser
+// gerida pela secretaria (0050), e uma Server Action exportada continua a
+// ser um endereço de rede mesmo depois de o botão desaparecer do ecrã.
+// Ver `guardarFichaProfessor` em lib/actions/ficha-professor.ts.
 
 function gerarBlocos(horaInicio: string, horaFim: string, duracaoMinutos: number) {
   const paraMinutos = (hhmm: string) => {

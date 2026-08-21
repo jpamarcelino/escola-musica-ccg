@@ -16,10 +16,13 @@ type InstrumentoProfessor = {
 
 export default async function AdminProfessorContaPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ professorId: string }>
+  searchParams: Promise<{ erro?: string; guardado?: string }>
 }) {
   const { professorId } = await params
+  const { erro, guardado } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -42,7 +45,7 @@ export default async function AdminProfessorContaPage({
 
   const { data: professorPerfilData } = await supabase
     .from('perfis_escola')
-    .select('programa, admin, profiles(nome, email, telefone)')
+    .select('programa, admin, bio, profiles(nome, email, telefone, foto_url)')
     .eq('id', professorId)
     .eq('tipo', 'professor')
     .maybeSingle()
@@ -50,7 +53,13 @@ export default async function AdminProfessorContaPage({
   const professorPerfil = professorPerfilData as {
     programa: PerfisEscolaPrograma | null
     admin: boolean
-    profiles: { nome: string; email: string | null; telefone: string | null } | null
+    bio: string | null
+    profiles: {
+      nome: string
+      email: string | null
+      telefone: string | null
+      foto_url: string | null
+    } | null
   } | null
 
   if (!professorPerfil) {
@@ -97,9 +106,67 @@ export default async function AdminProfessorContaPage({
               : 'Sem disciplinas definidas'}
           </p>
         </div>
+
+        {/* A ficha que o público vê ao carregar no "i" dos cartões de
+            escolha de professor. Está aqui, e não na conta do próprio,
+            porque a foto e a apresentação representam a escola a quem
+            ainda não é aluno. */}
+        <section className="admin-ficha-publica">
+          <h2 className="secao-titulo">Ficha pública</h2>
+          <p>
+            O que aparece a quem está a escolher professor. Sem contactos — quem quiser falar
+            com ele fala com a secretaria.
+          </p>
+
+          {erro && <MensagemErro>{erro}</MensagemErro>}
+          {guardado && <MensagemInfo>Ficha guardada.</MensagemInfo>}
+
+          <form action={guardarFichaProfessor} className="space-y-[16px]">
+            <input type="hidden" name="professorId" value={professorId} />
+
+            <div className="admin-ficha-foto">
+              {professorPerfil.profiles?.foto_url ? (
+                <Image
+                  src={professorPerfil.profiles.foto_url}
+                  alt={`Retrato de ${professor.nome}`}
+                  width={96}
+                  height={96}
+                />
+              ) : (
+                <span aria-hidden="true">Sem foto</span>
+              )}
+              <div>
+                <Rotulo htmlFor="foto">Substituir a foto</Rotulo>
+                <input id="foto" name="foto" type="file" accept="image/*" className={classesCampo} />
+              </div>
+            </div>
+
+            <div>
+              <Rotulo htmlFor="bio">Apresentação</Rotulo>
+              <textarea
+                id="bio"
+                name="bio"
+                defaultValue={professorPerfil.bio ?? ''}
+                className={classesCampo}
+                maxLength={1200}
+                rows={7}
+                placeholder="Formação, percurso, o que gosta de ensinar…"
+              />
+            </div>
+
+            <SubmitButton textoAGuardar="A guardar…" className="recomendacao-submeter">
+              Guardar ficha
+            </SubmitButton>
+          </form>
+        </section>
       </div>
     </main>
   )
 }
 import Link from 'next/link'
+import Image from 'next/image'
 import type { PerfisEscolaPrograma } from '@ccg/types'
+import { guardarFichaProfessor } from '@/lib/actions/ficha-professor'
+import { classesCampo, Rotulo } from '@/components/campo-formulario'
+import { MensagemErro, MensagemInfo } from '@/components/mensagem'
+import { SubmitButton } from '@/components/submit-button'

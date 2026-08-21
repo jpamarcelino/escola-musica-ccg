@@ -261,6 +261,10 @@ export default async function PedidoPage({
                 icone={p.profiles?.foto_url ?? undefined}
                 iconeTamanho={46}
                 iconeCobre
+                infoHref={`/professor/${p.professor_id}?voltar=${encodeURIComponent(
+                  `/aluno/${alunoId}/pedido?programa=${programa}&instrumento=${instrumento}`
+                )}`}
+                infoRotulo={`Conhecer ${p.profiles?.nome ?? 'o professor'}`}
               />
             ))}
           </ListaEscolhas>

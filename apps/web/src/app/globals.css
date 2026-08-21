@@ -3573,6 +3573,56 @@ body:has(.auth-pagina) { background: var(--color-papel); }
    uma animação de entrada que anima a opacidade, e no cascata as
    animações ganham a declarações normais — a regra era escrita e
    ignorada. */
+/* Cartão com um "i" ao lado: o link principal e o botão de informação são
+   irmãos, nunca aninhados — o "i" cresce até ao tamanho do cartão para dar
+   uma área de toque decente sem roubar espaço ao nome. */
+.cartao-com-info { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: 6px; }
+.cartao-com-info > a:first-child { min-width: 0; }
+.cartao-info {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  border-radius: var(--radius-large);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  transition: background-color 150ms var(--ease-suave), color 150ms var(--ease-suave);
+}
+.cartao-info:hover { background: #EDEFF3; color: var(--color-primary); }
+.cartao-info:focus-visible { outline: 2px solid var(--color-primary-mid); outline-offset: 2px; }
+
+/* Ficha pública do professor. */
+.ficha-professor-retrato { margin-top: 30px; overflow: hidden; border-radius: var(--radius-large); background: var(--color-papel-2); }
+.ficha-professor-retrato img { display: block; width: 100%; height: auto; max-height: 460px; object-fit: cover; object-position: center top; }
+.ficha-professor-bio {
+  display: block;
+  margin-top: 26px;
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 1.68;
+  color: var(--color-tinta);
+  white-space: pre-wrap;
+}
+.ficha-professor-sem-bio { margin-top: 26px; font-size: 14px; color: var(--color-tinta-suave); }
+
+/* Editor da ficha, do lado da secretaria. */
+.admin-ficha-publica { margin-top: 46px; padding-top: 24px; border-top: 1px solid var(--color-linha); }
+.admin-ficha-publica > h2 { font-family: var(--font-fraunces), ui-serif, serif; font-size: 23px; font-weight: 650; color: var(--color-azul-fundo); }
+.admin-ficha-publica > p { margin: 6px 0 18px; font-size: 13px; line-height: 1.55; color: var(--color-tinta-suave); }
+.admin-ficha-publica textarea { min-height: 150px; }
+.admin-ficha-foto { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
+.admin-ficha-foto img { width: 96px; height: 96px; border-radius: var(--radius-medium); object-fit: cover; }
+.admin-ficha-foto > span {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-medium);
+  background: var(--color-papel-2);
+  font-size: 11px;
+  color: var(--color-tinta-suave);
+}
+.admin-ficha-foto input[type="file"] { margin-top: 6px; padding: 10px 12px; font-size: 13px; }
+
 .cartao-bloqueado { filter: grayscale(1) opacity(0.55); cursor: default; }
 .cartao-bloqueado span[class*="text-[17px]"] { color: var(--color-tinta-suave) !important; }
 

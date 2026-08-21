@@ -228,6 +228,10 @@ export default async function PedirAulaPage({
                 icone={p.foto_url ?? undefined}
                 iconeTamanho={46}
                 iconeCobre
+                infoHref={`/professor/${p.professor_id}?voltar=${encodeURIComponent(
+                  `/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`
+                )}`}
+                infoRotulo={`Conhecer ${p.nome}`}
               />
             ))}
           </ListaEscolhas>
