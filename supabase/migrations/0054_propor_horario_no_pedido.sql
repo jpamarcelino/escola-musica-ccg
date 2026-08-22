@@ -7,7 +7,7 @@
 -- depois ele confirmava uma hora que a família nunca tinha visto no ecrã.
 -- Funcionava por acordo verbal e não deixava rasto.
 --
--- Não há tabela nova. A `propostas_horario` (0037) já é exatamente isto
+-- Não há tabela nova. A "propostas_horario" (0037) já é exatamente isto
 -- — o professor propõe, a família aceita ou recusa, os dois são avisados
 -- — só que estava fechada a matrículas confirmadas, para servir a
 -- mudança de horário a meio do ano. Abre-se ao pedido ainda por
@@ -255,7 +255,7 @@ begin
     raise exception 'Sem permissão para responder a esta proposta.';
   end if;
 
-  -- `for update` porque entre propor e aceitar pode ter passado uma
+  -- "for update" porque entre propor e aceitar pode ter passado uma
   -- semana, e a vaga não estava reservada. Quem chega primeiro fica com
   -- ela; o segundo tem de levar com um "já não está livre" e não com
   -- duas matrículas na mesma hora.
@@ -367,12 +367,29 @@ $$;
 grant execute on function public.aceitar_proposta_horario(bigint) to authenticated;
 
 -- ---------------------------------------------------------------------
--- 4. O título da push
+-- 4. Tirar estas funções às mãos de quem não tem sessão
+-- ---------------------------------------------------------------------
+--
+-- O Postgres concede execute a "public" por omissão, e a Supabase
+-- concede-o ainda ao anon em tudo o que vive no schema public — por isso
+-- é preciso tirar os dois, e tirar só o "public" não muda nada. Nenhuma
+-- destas funções fazia o que quer que fosse a um visitante: a primeira
+-- linha de cada uma recusa quem não tem sessão. Mas depender dessa linha
+-- é depender de uma verificação só. A 0052 já revoga assim.
+revoke execute on function public.propor_horario(bigint, bigint, text) from public, anon;
+revoke execute on function public.propor_horario_novo(bigint, text, time, time, text) from public, anon;
+revoke execute on function public.aceitar_proposta_horario(bigint) from public, anon;
+grant execute on function public.propor_horario(bigint, bigint, text) to authenticated;
+grant execute on function public.propor_horario_novo(bigint, text, time, time, text) to authenticated;
+grant execute on function public.aceitar_proposta_horario(bigint) to authenticated;
+
+-- ---------------------------------------------------------------------
+-- 5. O título da push
 -- ---------------------------------------------------------------------
 --
 -- Era "Mudança de horário", que deixou de estar certo: numa proposta
 -- feita dentro de um pedido não há horário nenhum a ser mudado. O título
--- vive na `tipos_aviso` e é um por tipo, não um por aviso, portanto tem
+-- vive na "tipos_aviso" e é um por tipo, não um por aviso, portanto tem
 -- de servir os dois casos — e "Proposta de horário" serve, enquanto
 -- "Mudança" só servia um deles.
 update tipos_aviso set titulo = 'Proposta de horario' where tipo = 'proposta_horario';
