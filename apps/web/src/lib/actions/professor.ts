@@ -866,3 +866,70 @@ export async function proporHorario(formData: FormData) {
   revalidatePath('/dashboard/meus-alunos')
   redirect(`${destino}?proposta=1`)
 }
+
+// O professor propõe um horário à escolha dele dentro de um pedido.
+//
+// É o caso de quem combinou por telefone: a família escolheu horas que
+// não dão, falam-se, e o professor precisa de pôr no ecrã a hora nova
+// para ela ficar registada e aceite. Sem isto, ele confirmava uma vaga
+// que a família nunca viu, e o acordo ficava só na memória dos dois.
+//
+// Uma só ação para os dois casos — escolher uma vaga que já existe ou
+// escrever uma hora nova. Quem está a preencher não pensa nisso como
+// duas operações diferentes, e separá-las obrigava o ecrã a perguntar
+// primeiro "qual dos dois?" antes de deixar fazer seja o que for.
+export async function proporHorarioNoPedido(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const matriculaId = Number(formData.get('matriculaId') ?? 0)
+  const horarioId = Number(formData.get('horarioId') ?? 0)
+  const diaSemana = String(formData.get('diaSemana') ?? '').trim()
+  const horaInicio = String(formData.get('horaInicio') ?? '').trim()
+  const horaFim = String(formData.get('horaFim') ?? '').trim()
+  const mensagem = String(formData.get('mensagem') ?? '').trim()
+
+  function voltarComErro(m: string): never {
+    redirect(`/dashboard/pedidos?erro=${encodeURIComponent(m)}`)
+  }
+
+  // A hora escrita ganha à vaga escolhida: quem preencheu os campos
+  // depois de ter clicado numa opção quis a hora que escreveu. O
+  // contrário obrigava a desfazer a escolha antes de poder escrever.
+  const escreveuHora = Boolean(diaSemana && horaInicio && horaFim)
+
+  const { error } = escreveuHora
+    ? await supabase.rpc('propor_horario_novo', {
+        p_matricula_id: matriculaId,
+        p_dia_semana: diaSemana,
+        p_hora_inicio: horaInicio,
+        p_hora_fim: horaFim,
+        p_mensagem: mensagem || null,
+      })
+    : horarioId
+      ? await supabase.rpc('propor_horario', {
+          p_matricula_id: matriculaId,
+          p_horario_id: horarioId,
+          p_mensagem: mensagem || null,
+        })
+      : { error: { message: 'Escolhe um horário ou escreve o dia e as horas.' } }
+
+  if (error) {
+    voltarComErro(error.message)
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/pedidos')
+  revalidatePath('/dashboard/horarios')
+  redirect(
+    `/dashboard/pedidos?guardado=${encodeURIComponent(
+      'Horário proposto. O encarregado vai ser avisado e tem de aceitar.'
+    )}`
+  )
+}

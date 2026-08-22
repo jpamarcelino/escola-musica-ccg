@@ -312,22 +312,40 @@ export async function AgendaFamilia({
 
         {propostas.map((p) => (
           <section key={`hor-${p.id}`} className="proposta-horario">
-            <h2>Mudança de horário proposta</h2>
-            <p>
-              O professor propõe mudar
-              {p.matriculas?.instrumentos?.nome ? ` ${p.matriculas.instrumentos.nome}` : ''} de{' '}
-              <strong>{nomePorAluno.get(p.aluno_id)}</strong> de{' '}
-              <strong>
-                {p.atual?.dia_semana}, {p.atual && formatarHora(p.atual.hora_inicio)}–
-                {p.atual && formatarHora(p.atual.hora_fim)}
-              </strong>{' '}
-              para{' '}
-              <strong>
-                {p.novo?.dia_semana}, {p.novo && formatarHora(p.novo.hora_inicio)}–
-                {p.novo && formatarHora(p.novo.hora_fim)}
-              </strong>
-              .
-            </p>
+            {/* Sem horário de origem é um pedido ainda por responder, e
+                não uma mudança: o professor não pode nenhuma das horas
+                escolhidas e propõe outra. Dizer "mudar de … para …" a
+                quem ainda não tem aula nomeia um horário que nunca
+                existiu. */}
+            <h2>{p.atual ? 'Mudança de horário proposta' : 'Horário proposto pelo professor'}</h2>
+            {p.atual ? (
+              <p>
+                O professor propõe mudar
+                {p.matriculas?.instrumentos?.nome ? ` ${p.matriculas.instrumentos.nome}` : ''} de{' '}
+                <strong>{nomePorAluno.get(p.aluno_id)}</strong> de{' '}
+                <strong>
+                  {p.atual.dia_semana}, {formatarHora(p.atual.hora_inicio)}–
+                  {formatarHora(p.atual.hora_fim)}
+                </strong>{' '}
+                para{' '}
+                <strong>
+                  {p.novo?.dia_semana}, {p.novo && formatarHora(p.novo.hora_inicio)}–
+                  {p.novo && formatarHora(p.novo.hora_fim)}
+                </strong>
+                .
+              </p>
+            ) : (
+              <p>
+                Para o pedido
+                {p.matriculas?.instrumentos?.nome ? ` de ${p.matriculas.instrumentos.nome}` : ''} de{' '}
+                <strong>{nomePorAluno.get(p.aluno_id)}</strong>, o professor propõe{' '}
+                <strong>
+                  {p.novo?.dia_semana}, {p.novo && formatarHora(p.novo.hora_inicio)}–
+                  {p.novo && formatarHora(p.novo.hora_fim)}
+                </strong>
+                . Ao aceitares, a inscrição fica confirmada nesse horário.
+              </p>
+            )}
             {p.mensagem && <p className="proposta-horario-mensagem">“{p.mensagem}”</p>}
             <div className="proposta-horario-acoes">
               <form action={aceitarPropostaHorario}>

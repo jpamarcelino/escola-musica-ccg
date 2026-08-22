@@ -2796,13 +2796,89 @@ body {
   border-top: 1px solid var(--color-linha);
 }
 
+/* Propor uma hora à escolha do professor.
+   Dobrado num <details> e não aberto de raiz: na maioria dos pedidos o
+   professor aceita uma das horas que o encarregado indicou, e um
+   formulário de seis campos permanentemente aberto entre a decisão e o
+   botão de recusar empurrava a decisão normal para fora do ecrã. O
+   <details> abre sem JavaScript e já é anunciado como expansível. */
+.pedido-propor { margin: 18px 0 0 56px; }
+.pedido-propor > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-azul-texto);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.pedido-propor > summary:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
+.pedido-propor-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 46ch;
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--color-linha);
+  border-radius: 4px;
+}
+.pedido-propor-ajuda { font-size: 13px; line-height: 1.5; color: var(--color-tinta-suave); }
+.pedido-propor fieldset { border: 0; }
+.pedido-propor legend {
+  margin-bottom: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+.pedido-propor-vagas { display: flex; flex-direction: column; }
+.pedido-propor-vagas label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14px;
+}
+.pedido-propor-vagas input { accent-color: var(--color-azul-fundo); width: 18px; height: 18px; }
+.pedido-propor-nova > div { display: flex; flex-wrap: wrap; gap: 10px; }
+.pedido-propor-nova label { display: flex; flex-direction: column; gap: 4px; }
+.pedido-propor-nova span,
+.pedido-propor-mensagem span { font-size: 12px; color: var(--color-tinta-suave); }
+.pedido-propor select,
+.pedido-propor input[type="time"],
+.pedido-propor textarea {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-linha);
+  border-radius: 4px;
+  background: white;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-tinta);
+}
+.pedido-propor textarea { min-height: 60px; resize: vertical; }
+.pedido-propor select:focus-visible,
+.pedido-propor input:focus-visible,
+.pedido-propor textarea:focus-visible {
+  outline: 2px solid var(--color-azul);
+  outline-offset: 1px;
+}
+.pedido-propor-mensagem { display: flex; flex-direction: column; gap: 4px; }
+
 @media (max-width: 520px) {
   .pedido-registo > header { grid-template-columns: 30px 1fr; gap: 10px; }
   .pedido-registo header time { grid-column: 2; margin-top: 6px; }
   .pedido-contacto,
   .pedido-registo blockquote,
   .pedido-disponibilidade,
+  .pedido-propor,
   .pedido-registo footer { margin-left: 40px; }
+  .pedido-propor-nova > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .pedido-propor-nova label:first-child { grid-column: 1 / -1; }
   .pedido-disponibilidade > div { display: grid; }
   .pedido-horario-botao { width: 100%; }
 }
