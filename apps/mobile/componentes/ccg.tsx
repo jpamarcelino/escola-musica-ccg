@@ -4,7 +4,7 @@
 // devolve um objeto com a paleta lá dentro (e não a paleta em si), a
 // barra passou a ter tipos a sério em vez de `any`, e o caminho do
 // símbolo veio do public/simbolo-ccg.svg.
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import Svg, { G, Path } from 'react-native-svg'
@@ -136,6 +136,10 @@ export function FichaProfessor({
   onPress?: () => void
 }) {
   const { cores: c } = useTema()
+  // Não basta perguntar se há endereço: um endereço que não resolve
+  // desenha um círculo vazio, que é pior do que as iniciais. A queda
+  // para as iniciais tem de acontecer também quando a imagem falha.
+  const [falhou, setFalhou] = useState(false)
   return (
     <Pressable
       onPress={onPress}
@@ -143,8 +147,8 @@ export function FichaProfessor({
       accessibilityLabel={`${nome}, ${area}`}
       style={[estilos.ficha, { backgroundColor: c.cartao, borderColor: c.linha }]}
     >
-      {foto ? (
-        <Image source={{ uri: foto }} style={estilos.retrato} />
+      {foto && !falhou ? (
+        <Image source={{ uri: foto }} style={estilos.retrato} onError={() => setFalhou(true)} />
       ) : (
         <View style={[estilos.retrato, estilos.retratoIniciais, { backgroundColor: c.cianoFundo }]}>
           <Text style={[texto.cartao, { color: c.ciano }]}>{iniciais}</Text>
