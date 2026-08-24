@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native'
 import { BotaoSecundario } from '../componentes/formulario'
+import { CabecalhoVoltar } from '../componentes/ccg'
 import { supabase } from '../lib/supabase'
 import { espaco, raio, texto, tipos, type Cores } from '../lib/tema'
 import { useEstilos, useTema } from '../lib/tema-contexto'
@@ -57,8 +58,13 @@ export default function Entrar() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={estilos.conteudo} keyboardShouldPersistTaps="handled">
-        <Text style={estilos.titulo}>Escolas Artísticas</Text>
-        <Text style={estilos.subtitulo}>Centro Cultural da Guarda</Text>
+        {/* A marca vive no cabeçalho, e o cabeçalho é o caminho de volta.
+            Estava aqui como título — "Escolas Artísticas" grande com
+            "Centro Cultural da Guarda" por baixo — e nesse formato não
+            era caminho para lado nenhum: quem abria este ecrã ficava sem
+            saída. O título do ecrã passa a dizer o que se faz nele. */}
+        <CabecalhoVoltar />
+        <Text style={estilos.titulo}>Entrar</Text>
 
         <View style={estilos.campo}>
           <Text style={estilos.etiqueta}>Email</Text>

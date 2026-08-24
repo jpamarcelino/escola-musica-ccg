@@ -6,7 +6,9 @@
 // símbolo veio do public/simbolo-ccg.svg.
 import { useState, type ReactNode } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
+import { useRouter } from 'expo-router'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Svg, { G, Path } from 'react-native-svg'
 import { barra, raio, texto } from '../lib/tema'
 import { useTema } from '../lib/tema-contexto'
@@ -59,6 +61,33 @@ type PropsDaBarra = {
     }
   >
   navigation: { navigate: (nome: string) => void }
+}
+
+// ── Cabeçalho de voltar ───────────────────────────────────────────────
+// A marca a servir de caminho, e não só de assinatura.
+//
+// Os ecrãs de entrar e de criar conta não têm barra de navegação: são
+// ecrãs de pilha com o cabeçalho desligado, e quem lá entra fica sem
+// saída nenhuma — a única forma de sair era fechar a app. O símbolo
+// sozinho não resolve; é preciso ler-se como algo em que se toca, e é
+// por isso que leva o nome ao lado e uma área de toque a sério.
+export function CabecalhoVoltar() {
+  const router = useRouter()
+  // A área segura é tratada aqui e não em cada ecrã: estes são ecrãs de
+  // pilha com o cabeçalho desligado, e sem isto o nome da instituição
+  // fica por baixo das horas e da bateria. Quem usar este componente
+  // ganha o espaçamento certo sem se lembrar dele.
+  const insets = useSafeAreaInsets()
+  return (
+    <Pressable
+      onPress={() => (router.canGoBack() ? router.back() : router.replace('/descobrir'))}
+      accessibilityRole="button"
+      accessibilityLabel="Voltar"
+      style={[estilos.cabecalhoVoltar, { marginTop: insets.top }]}
+    >
+      <MarcaLinha />
+    </Pressable>
+  )
 }
 
 // ── Cápsula de navegação ──────────────────────────────────────────────
@@ -176,6 +205,12 @@ export function sortearTres<T>(todos: T[]): T[] {
 
 const estilos = StyleSheet.create({
   marcaLinha: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  cabecalhoVoltar: {
+    alignSelf: 'flex-start',
+    justifyContent: 'center',
+    minHeight: 48,
+    paddingRight: 12,
+  },
   barraFora: { position: 'absolute', left: 14, right: 14, bottom: 14 },
   capsula: {
     flexDirection: 'row',
