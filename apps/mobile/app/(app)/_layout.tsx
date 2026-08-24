@@ -66,7 +66,11 @@ export default function LayoutApp() {
         headerStyle: { backgroundColor: cores.fundo },
         headerShadowVisible: false,
         headerTitleStyle: { fontFamily: tipos.corpoMedio, fontSize: 17, color: cores.tinta },
-        sceneStyle: { backgroundColor: cores.fundo },
+        // A cápsula flutua por cima do conteúdo, e o conteúdo tem de
+        // acabar antes dela. Aqui e não em cada ecrã: são doze, e o que
+        // se esquecesse ficava com a última linha escondida por baixo da
+        // barra — um erro que só aparece quando a lista é comprida.
+        sceneStyle: { backgroundColor: cores.fundo, paddingBottom: 88 },
       }}
     >
       {/* Do dia a dia — fora do modo de administração */}

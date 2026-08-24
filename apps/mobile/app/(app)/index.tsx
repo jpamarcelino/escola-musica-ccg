@@ -19,26 +19,24 @@ import {
   matriculasComPresencaMarcada,
   type AulaDoProfessor,
 } from '@ccg/data'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
-import {
-  ACarregar,
-  Cabecalho,
-  Cartao,
-  CartaoTocavel,
-  Distintivo,
-  EstadoVazio,
-} from '../../componentes/base'
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ACarregar } from '../../componentes/base'
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { espaco, texto, type Cores } from '../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../lib/tema'
 import { useEstilos, useTema } from '../../lib/tema-contexto'
 
-// Uma aula pronta a mostrar, venha ela do lado do professor ou do lado
-// da família. Os dois ecrãs querem responder à mesma pergunta — o que é
-// que se passa hoje — por isso convergem na mesma forma.
+// O que se passa hoje.
+//
+// A hierarquia é a do redesenho e responde por ordem de urgência: o que
+// está a acontecer agora, o que espera resposta minha, o que vem a
+// seguir. Antes era tudo cartões do mesmo tamanho com distintivos por
+// cima — e um ecrã onde tudo tem o mesmo peso é um ecrã onde é preciso
+// ler tudo para saber o que fazer.
+
 type Linha = {
   chave: string
   titulo: string
@@ -47,6 +45,7 @@ type Linha = {
   horaInicio: string
   horaFim: string
   sala: string | null
+  horarioId: number | null
 }
 
 export default function Hoje() {
@@ -54,6 +53,7 @@ export default function Hoje() {
   const { cores } = useTema()
   const { sessao } = useSessao()
   const { perfil } = usePerfil()
+  const router = useRouter()
   const [linhas, setLinhas] = useState<Linha[]>([])
   const [porConfirmar, setPorConfirmar] = useState(0)
   const [pendentes, setPendentes] = useState(0)
@@ -132,6 +132,7 @@ export default function Hoje() {
           horaInicio: m.horarios.hora_inicio,
           horaFim: m.horarios.hora_fim,
           sala: formatarSala(m.horarios.salas),
+          horarioId: null,
         })
       }
     }
@@ -155,7 +156,42 @@ export default function Hoje() {
   const agora = agoraNaEscola()
   const hoje = hojeISO()
   const deHoje = linhas.filter((l) => l.data === hoje)
+  const aDecorrer = deHoje.find(
+    (l) => estadoTemporalAula(l.data, l.horaInicio, l.horaFim, agora) === 'agora'
+  )
+  const restoDeHoje = deHoje.filter((l) => l.chave !== aDecorrer?.chave)
   const aSeguir = linhas.filter((l) => l.data > hoje).slice(0, 4)
+
+  // Uma pergunta de cada vez. Três cartões vermelhos empilhados deixam
+  // de ser urgência e passam a ser parede — o que precisa de resposta
+  // aparece por ordem de quem está à espera há mais tempo.
+  const resposta = professor
+    ? porConfirmar > 0
+      ? {
+          texto: plural(porConfirmar, 'presença por marcar', 'presenças por marcar'),
+          destino: '/presencas' as const,
+          acao: 'Marcar agora',
+        }
+      : pendentes > 0
+        ? {
+            texto: plural(pendentes, 'pedido por responder', 'pedidos por responder'),
+            destino: '/pedidos' as const,
+            acao: 'Ver pedidos',
+          }
+        : null
+    : pendentes > 0
+      ? {
+          texto: plural(pendentes, 'pedido à espera de resposta', 'pedidos à espera de resposta'),
+          destino: '/agenda' as const,
+          acao: 'Ver',
+        }
+      : avisos > 0
+        ? {
+            texto: plural(avisos, 'aviso por ler', 'avisos por ler'),
+            destino: '/avisos' as const,
+            acao: 'Ler',
+          }
+        : null
 
   return (
     <ScrollView
@@ -167,68 +203,61 @@ export default function Hoje() {
             setARecarregar(true)
             carregar().finally(() => setARecarregar(false))
           }}
-          tintColor={cores.azulFundo}
+          tintColor={cores.ciano}
         />
       }
     >
-      <Cabecalho
-        sobretitulo={formatarDataEscolar(hoje, {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-        })}
-        titulo={primeiroNome(perfil?.nome)}
-      />
+      <View style={estilos.cabecalho}>
+        <Text style={estilos.data}>
+          {formatarDataEscolar(hoje, { weekday: 'long', day: 'numeric', month: 'long' })}
+        </Text>
+        <Text style={estilos.nome}>{primeiroNome(perfil?.nome)}</Text>
+      </View>
 
-      {(porConfirmar > 0 || pendentes > 0 || avisos > 0) && (
-        <View style={estilos.avisos}>
-          {porConfirmar > 0 && (
-            <Distintivo
-              texto={plural(porConfirmar, 'presença por marcar', 'presenças por marcar')}
-              tom="aviso"
-            />
-          )}
-          {pendentes > 0 && (
-            <Distintivo
-              texto={
-                professor
-                  ? plural(pendentes, 'pedido por responder', 'pedidos por responder')
-                  : plural(pendentes, 'pedido à espera', 'pedidos à espera')
-              }
-              tom="azul"
-            />
-          )}
-          {avisos > 0 && (
-            <Distintivo texto={plural(avisos, 'aviso por ler', 'avisos por ler')} tom="azul" />
-          )}
-        </View>
-      )}
+      {resposta ? (
+        <Pressable
+          onPress={() => router.push(resposta.destino)}
+          accessibilityRole="button"
+          accessibilityLabel={`${resposta.texto}. ${resposta.acao}.`}
+          style={estilos.precisa}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={estilos.precisaTexto}>{resposta.texto}</Text>
+            <Text style={estilos.precisaAcao}>{resposta.acao} →</Text>
+          </View>
+        </Pressable>
+      ) : null}
 
-      <Text style={estilos.seccao}>Hoje</Text>
-      {deHoje.length === 0 ? (
-        <EstadoVazio
-          titulo="Hoje não há aulas."
-          descricao={
-            professor
-              ? 'Nenhuma aula marcada para hoje na tua agenda.'
-              : 'Nenhuma aula marcada para hoje.'
+      {aDecorrer ? (
+        <CartaoAgora
+          linha={aDecorrer}
+          agora={agora}
+          acao={
+            professor && aDecorrer.horarioId
+              ? { rotulo: 'Marcar presenças', destino: `/professor/presencas/${aDecorrer.horarioId}` }
+              : null
           }
         />
+      ) : null}
+
+      <Text style={estilos.seccao}>{aDecorrer ? 'Ainda hoje' : 'Hoje'}</Text>
+      {restoDeHoje.length === 0 ? (
+        <Text style={estilos.vazio}>
+          {aDecorrer
+            ? 'Não há mais nada marcado para hoje.'
+            : professor
+              ? 'Nenhuma aula marcada para hoje na tua agenda.'
+              : 'Nenhuma aula marcada para hoje.'}
+        </Text>
       ) : (
-        deHoje.map((l) => (
-          <CartaoAula
-            key={l.chave}
-            linha={l}
-            estado={estadoTemporalAula(l.data, l.horaInicio, l.horaFim, agora)}
-          />
-        ))
+        restoDeHoje.map((l) => <LinhaAula key={l.chave} linha={l} />)
       )}
 
       {aSeguir.length > 0 && (
         <>
           <Text style={estilos.seccao}>A seguir</Text>
           {aSeguir.map((l) => (
-            <CartaoAula key={l.chave} linha={l} estado="futura" comData />
+            <LinhaAula key={l.chave} linha={l} comData />
           ))}
         </>
       )}
@@ -239,55 +268,110 @@ export default function Hoje() {
       {professor && (
         <>
           <Text style={estilos.seccao}>Gerir</Text>
-          <Link href="/professor/alunos" asChild>
-            <CartaoTocavel rotulo="Ver os teus alunos">
-              <Text style={estilos.aulaTitulo}>Alunos</Text>
-              <Text style={estilos.aulaDetalhe}>Quem tens, com que disciplina e quando</Text>
-            </CartaoTocavel>
-          </Link>
-          <Link href="/professor/horarios" asChild>
-            <CartaoTocavel rotulo="Ver os teus horários">
-              <Text style={estilos.aulaTitulo}>Horários</Text>
-              <Text style={estilos.aulaDetalhe}>A tua disponibilidade da semana</Text>
-            </CartaoTocavel>
-          </Link>
-          <Link href="/professor/mensalidades" asChild>
-            <CartaoTocavel rotulo="Ver mensalidades">
-              <Text style={estilos.aulaTitulo}>Mensalidades</Text>
-              <Text style={estilos.aulaDetalhe}>O que está pago e o que falta receber</Text>
-            </CartaoTocavel>
-          </Link>
+          <Atalho href="/professor/alunos" titulo="Alunos" nota="Quem tens, com que disciplina e quando" />
+          <Atalho href="/professor/horarios" titulo="Horários" nota="A tua disponibilidade da semana" />
+          <Atalho href="/professor/mensalidades" titulo="Mensalidades" nota="O que está pago e o que falta receber" />
         </>
       )}
     </ScrollView>
   )
 }
 
-function CartaoAula({
+// O cartão do que está a acontecer agora. Contorno ciano, hora grande em
+// mono e uma barra que anda: é a única coisa no ecrã que muda sozinha, e
+// é isso que a distingue de tudo o resto sem precisar de uma etiqueta.
+function CartaoAgora({
   linha,
-  estado,
-  comData,
+  agora,
+  acao,
 }: {
   linha: Linha
-  estado: 'agora' | 'proxima' | 'futura'
-  comData?: boolean
+  agora: Date
+  acao: { rotulo: string; destino: string } | null
 }) {
   const estilos = useEstilos(criarEstilos)
+  const decorrido = minutosDesde(linha.horaInicio, agora)
+  const total = minutosEntre(linha.horaInicio, linha.horaFim)
+  const fracao = total > 0 ? Math.min(1, Math.max(0, decorrido / total)) : 0
+  const faltam = Math.max(0, total - decorrido)
+
   return (
-    <Cartao>
-      {estado === 'agora' && <Distintivo texto="A decorrer" tom="positivo" />}
-      <Text style={estilos.aulaTitulo}>{linha.titulo}</Text>
-      <Text style={estilos.aulaQuando}>
-        {comData ? `${formatarDataEscolar(linha.data)} · ` : ''}
-        {formatarHora(linha.horaInicio)}–{formatarHora(linha.horaFim)}
+    <View style={estilos.agora}>
+      <View style={estilos.agoraTopo}>
+        <Text style={estilos.agoraHora}>{formatarHora(linha.horaInicio)}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={estilos.agoraTitulo}>{linha.titulo}</Text>
+          {(linha.detalhe || linha.sala) && (
+            <Text style={estilos.agoraDetalhe}>
+              {[linha.detalhe, linha.sala].filter(Boolean).join(' · ')}
+            </Text>
+          )}
+        </View>
+      </View>
+
+      <View style={estilos.barra}>
+        <View style={[estilos.barraCheia, { width: `${fracao * 100}%` }]} />
+      </View>
+      <Text style={estilos.agoraFaltam}>
+        {faltam === 0 ? 'A terminar' : `Faltam ${plural(faltam, 'minuto', 'minutos')}`}
       </Text>
-      {(linha.detalhe || linha.sala) && (
-        <Text style={estilos.aulaDetalhe}>
-          {[linha.detalhe, linha.sala].filter(Boolean).join(' · ')}
-        </Text>
-      )}
-    </Cartao>
+
+      {acao ? (
+        <Link href={acao.destino as never} asChild>
+          <Pressable accessibilityRole="button" style={estilos.agoraBotao}>
+            <Text style={estilos.agoraBotaoTexto}>{acao.rotulo}</Text>
+          </Pressable>
+        </Link>
+      ) : null}
+    </View>
   )
+}
+
+function LinhaAula({ linha, comData }: { linha: Linha; comData?: boolean }) {
+  const estilos = useEstilos(criarEstilos)
+  return (
+    <View style={estilos.linha}>
+      <Text style={estilos.linhaHora}>{formatarHora(linha.horaInicio)}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={estilos.linhaTitulo}>{linha.titulo}</Text>
+        {(linha.detalhe || linha.sala || comData) && (
+          <Text style={estilos.linhaDetalhe}>
+            {[comData ? formatarDataEscolar(linha.data) : null, linha.detalhe, linha.sala]
+              .filter(Boolean)
+              .join(' · ')}
+          </Text>
+        )}
+      </View>
+    </View>
+  )
+}
+
+function Atalho({ href, titulo, nota }: { href: string; titulo: string; nota: string }) {
+  const estilos = useEstilos(criarEstilos)
+  return (
+    <Link href={href as never} asChild>
+      <Pressable accessibilityRole="button" accessibilityLabel={titulo} style={estilos.linha}>
+        <View style={{ flex: 1 }}>
+          <Text style={estilos.linhaTitulo}>{titulo}</Text>
+          <Text style={estilos.linhaDetalhe}>{nota}</Text>
+        </View>
+        <Text style={estilos.seta}>›</Text>
+      </Pressable>
+    </Link>
+  )
+}
+
+function minutosEntre(inicio: string, fim: string): number {
+  return paraMinutos(fim) - paraMinutos(inicio)
+}
+
+function minutosDesde(inicio: string, agora: Date): number {
+  return agora.getHours() * 60 + agora.getMinutes() - paraMinutos(inicio)
+}
+
+function paraMinutos(hora: string): number {
+  const [h, m] = hora.slice(0, 5).split(':').map(Number)
+  return h * 60 + m
 }
 
 function paraLinhas(aulas: AulaDoProfessor[], agora: Date): Linha[] {
@@ -309,6 +393,7 @@ function paraLinhas(aulas: AulaDoProfessor[], agora: Date): Linha[] {
         horaInicio: a.horarios!.hora_inicio,
         horaFim: a.horarios!.hora_fim,
         sala: formatarSala(a.horarios!.salas),
+        horarioId: a.horario_final_id,
       }))
   )
 }
@@ -324,11 +409,68 @@ function primeiroNome(nome: string | undefined): string {
   return nome.trim().split(/\s+/)[0]
 }
 
-const criarEstilos = (cores: Cores) => StyleSheet.create({
-  conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
-  avisos: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.xs, marginBottom: espaco.s },
-  seccao: { ...texto.seccao, color: cores.tinta, marginTop: espaco.m, marginBottom: espaco.xs },
-  aulaTitulo: { ...texto.cartao, color: cores.tinta },
-  aulaQuando: { ...texto.corpo, color: cores.tinta },
-  aulaDetalhe: { ...texto.pequeno, color: cores.tintaSuave },
-})
+const criarEstilos = (cores: Cores) =>
+  StyleSheet.create({
+    conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
+
+    cabecalho: { marginBottom: espaco.s },
+    data: { ...texto.pequeno, color: cores.tintaSuave },
+    nome: { ...texto.titulo, color: cores.tinta },
+
+    precisa: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      minHeight: 64,
+      padding: espaco.m,
+      borderRadius: raio.cartao,
+      borderWidth: 1,
+      borderColor: cores.alertaLinha,
+      backgroundColor: cores.alertaFundo,
+    },
+    precisaTexto: { ...texto.cartao, color: cores.alerta },
+    precisaAcao: { ...texto.pequeno, color: cores.alerta, marginTop: 2 },
+
+    agora: {
+      gap: espaco.s,
+      padding: espaco.m,
+      borderRadius: raio.cartao,
+      borderWidth: 1.5,
+      borderColor: cores.ciano,
+      backgroundColor: cores.cartao,
+    },
+    agoraTopo: { flexDirection: 'row', alignItems: 'center', gap: espaco.m },
+    agoraHora: { ...texto.hora, color: cores.ciano },
+    agoraTitulo: { ...texto.cartao, color: cores.tinta },
+    agoraDetalhe: { ...texto.pequeno, color: cores.tintaSuave },
+    barra: { height: 4, borderRadius: 2, backgroundColor: cores.cartaoSuave, overflow: 'hidden' },
+    barraCheia: { height: 4, borderRadius: 2, backgroundColor: cores.ciano },
+    agoraFaltam: { ...texto.pequeno, color: cores.tintaSuave },
+    agoraBotao: {
+      minHeight: 48,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: raio.botao,
+      backgroundColor: cores.botao,
+    },
+    agoraBotaoTexto: { ...texto.cartao, color: cores.botaoTexto },
+
+    seccao: { ...texto.seccao, color: cores.tintaSuave, marginTop: espaco.m },
+    vazio: { ...texto.corpo, color: cores.tintaSuave },
+
+    linha: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: espaco.m,
+      minHeight: 64,
+      paddingHorizontal: espaco.m,
+      paddingVertical: espaco.s,
+      borderRadius: raio.cartao,
+      backgroundColor: cores.cartao,
+      borderWidth: 1,
+      borderColor: cores.linha,
+    },
+    linhaHora: { ...texto.horaLista, color: cores.tintaSuave },
+    linhaTitulo: { ...texto.cartao, color: cores.tinta },
+    linhaDetalhe: { ...texto.pequeno, color: cores.tintaSuave },
+    seta: { fontSize: 20, color: cores.tintaSuave },
+  })
