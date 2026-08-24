@@ -3459,7 +3459,9 @@ body {
 /* O símbolo desta zona era um ::before decorativo, fixo no canto: via-se
    mas não se clicava, e em CSS não há como o tornar uma ligação. Passou
    para o <CabecalhoPublico>, que o mostra igual e leva à página inicial. */
-.auth-pagina::after { content: "Escolas Artísticas · Guarda"; position: fixed; right: clamp(18px, 5vw, 70px); bottom: 28px; font-size: 10px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; color: var(--color-tinta-suave); }
+/* A marca vive no cabeçalho, com o símbolo ao lado. Estava aqui em
+   baixo, presa ao canto, onde não fazia companhia a nada nem servia de
+   caminho para lado nenhum. */
 .auth-pagina > div { position: relative; z-index: 1; }
 .auth-pagina [class*="rounded-"] { border-radius: 4px; }
 .auth-pagina form { padding: 30px; border-block: 1px solid var(--color-linha); background: color-mix(in srgb, white 68%, transparent); }
@@ -3482,7 +3484,6 @@ body {
   .publico-escolas strong { font-size: 20px; }
   .publico-escolas a p { white-space: normal; }
   .publico-rodape { align-items: flex-start; flex-direction: column; justify-content: center; gap: 8px; }
-  .auth-pagina::after { display: none; }
   .auth-pagina form, .auth-cartao { padding: 24px 0; background: transparent; }
 }
 
@@ -3660,11 +3661,15 @@ button[data-pending="true"] { cursor: progress; }
    desalinha de nada. */
 body:has(.auth-pagina) { background: var(--color-papel); }
 
-/* Em ecrã estreito fica só o símbolo — o nome por extenso comia metade
-   da largura e a marca já se reconhece pela pincelada. */
+/* O nome fica, também em ecrã estreito.
+   Escondê-lo poupava largura numa faixa que não tem mais nada — e o
+   preço era alto: sobrava um símbolo solto no canto, que ninguém lê
+   como "voltar ao início". Quem estava a meio do registo não via saída
+   nenhuma. A pincelada identifica a marca a quem já a conhece; não
+   identifica um botão a quem chega pela primeira vez. */
 @media (max-width: 520px) {
   .cabecalho-publico { min-height: 60px; }
-  .cabecalho-publico small { display: none; }
+  .cabecalho-publico small { font-size: 12.5px; }
 }
 
 /* ---------------------------------------------------------------------
