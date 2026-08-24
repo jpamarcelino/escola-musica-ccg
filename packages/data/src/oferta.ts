@@ -68,3 +68,40 @@ export async function listarHorariosPublicos(
 
   return (data ?? []) as unknown as HorarioPublico[]
 }
+
+export type ProfessorDoCartaz = {
+  professor_id: string
+  nome: string
+  foto_url: string | null
+  areas: string
+}
+
+// Todos os professores com disciplina atribuída, para a home pública.
+//
+// A `professores_publicos` recebe um instrumento de cada vez, e a home
+// não tem instrumento nenhum escolhido — pedi-la vinte vezes para
+// desenhar três cartões era o mesmo que não ter função.
+export async function listarProfessoresDoCartaz(
+  supabase: ClienteCcg
+): Promise<ProfessorDoCartaz[]> {
+  const { data } = await supabase.rpc('professores_do_cartaz')
+  return (data ?? []) as unknown as ProfessorDoCartaz[]
+}
+
+export type NumerosPublicos = {
+  alunos: number
+  professores: number
+  escolas: number
+}
+
+// Três contagens, e nada mais. Um total não identifica ninguém — é o que
+// permite mostrá-las a quem não tem sessão sem abrir as tabelas.
+//
+// Nome diferente do `numerosDaEscola` do admin.ts de propósito: aquele
+// corre com sessão de administração e conta outra coisa. Dois nomes
+// iguais para dois números diferentes é como se troca um pelo outro.
+export async function numerosPublicos(supabase: ClienteCcg): Promise<NumerosPublicos | null> {
+  const { data } = await supabase.rpc('numeros_da_escola')
+  const linha = (data ?? [])[0] as NumerosPublicos | undefined
+  return linha ?? null
+}

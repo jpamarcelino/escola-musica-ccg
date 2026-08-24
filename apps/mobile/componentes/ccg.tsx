@@ -27,12 +27,15 @@ export function Pincelada({ tamanho = 24, cor = barra.marcaSimbolo }) {
 
 // ── Cabeçalho da home pública ─────────────────────────────────────────
 // Pincelada e nome na MESMA linha. Nunca o nome debaixo do símbolo.
-export function MarcaLinha() {
+export function MarcaLinha({ cor }: { cor?: string }) {
   const { cores: c } = useTema()
   return (
     <View style={estilos.marcaLinha}>
       <Pincelada tamanho={26} cor="#00C4DF" />
-      <Text style={[texto.pequeno, { fontSize: 13.5, color: c.tintaSuave }]}>
+      {/* A cor entra por fora porque esta linha tanto assenta no fundo da
+          app como por cima de uma fotografia. Sobre o mármore, o cinzento
+          do tema não se lê. */}
+      <Text style={[texto.pequeno, { fontSize: 13.5, color: cor ?? c.tintaSuave }]}>
         Centro Cultural da Guarda
       </Text>
     </View>
