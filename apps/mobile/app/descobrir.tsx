@@ -6,7 +6,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Cartao } from '../componentes/base'
 import { BotaoPrincipal, BotaoSecundario } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { cores, espaco, raio, texto } from '../lib/tema'
+import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { useEstilos } from '../lib/tema-contexto'
 
 // A porta de entrada para quem ainda não tem conta: o que a escola tem.
 //
@@ -41,6 +42,7 @@ const ESCOLAS: {
 ]
 
 export default function Descobrir() {
+  const estilos = useEstilos(criarEstilos)
   const router = useRouter()
   const [aberta, setAberta] = useState<InstrumentoPrograma | null>(null)
   const [disciplinas, setDisciplinas] = useState<Instrumento[]>([])
@@ -114,7 +116,7 @@ export default function Descobrir() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: {
     padding: espaco.l,
     gap: espaco.s,

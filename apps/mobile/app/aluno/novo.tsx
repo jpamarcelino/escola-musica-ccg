@@ -7,9 +7,11 @@ import { Cabecalho } from '../../componentes/base'
 import { BotaoPrincipal, Campo, Mensagem } from '../../componentes/formulario'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco } from '../../lib/tema'
+import { espaco, type Cores } from '../../lib/tema'
+import { useEstilos } from '../../lib/tema-contexto'
 
 export default function NovoAluno() {
+  const estilos = useEstilos(criarEstilos)
   const router = useRouter()
   const { sessao } = useSessao()
   const [nome, setNome] = useState('')
@@ -84,7 +86,7 @@ export default function NovoAluno() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: {
     padding: espaco.m,
     gap: espaco.m,

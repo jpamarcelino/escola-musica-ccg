@@ -6,7 +6,8 @@ import { FlatList, StyleSheet, Text } from 'react-native'
 import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../componentes/base'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos } from '../../lib/tema-contexto'
 
 // Os alunos de um professor, um por linha. Um aluno com duas disciplinas
 // aparece uma vez só, com as duas — na web a lista era por matrícula e o
@@ -18,6 +19,7 @@ type Aluno = {
 }
 
 export default function AlunosDoProfessor() {
+  const estilos = useEstilos(criarEstilos)
   const { sessao } = useSessao()
   const [alunos, setAlunos] = useState<Aluno[]>([])
   const [aCarregar, setACarregar] = useState(true)
@@ -92,7 +94,7 @@ export default function AlunosDoProfessor() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   lista: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   nome: { ...texto.cartao, color: cores.tinta },
   aula: { ...texto.pequeno, color: cores.tintaSuave },

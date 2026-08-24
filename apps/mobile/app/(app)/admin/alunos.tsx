@@ -4,9 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { FlatList, StyleSheet, Text, TextInput } from 'react-native'
 import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../../componentes/base'
 import { supabase } from '../../../lib/supabase'
-import { cores, espaco, raio, texto } from '../../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../../lib/tema'
+import { useEstilos, useTema } from '../../../lib/tema-contexto'
 
 export default function AlunosAdmin() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const [alunos, setAlunos] = useState<AlunoAdmin[]>([])
   const [procura, setProcura] = useState('')
   const [aCarregar, setACarregar] = useState(true)
@@ -81,13 +84,13 @@ export default function AlunosAdmin() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   lista: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   procura: {
     borderWidth: 1,
     borderColor: cores.linha,
     borderRadius: raio.pilula,
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
     paddingHorizontal: espaco.m,
     height: 48,
     marginBottom: espaco.s,

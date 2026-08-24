@@ -10,7 +10,8 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos } from '../../lib/tema-contexto'
 
 type Faixa = {
   id: number
@@ -22,6 +23,7 @@ type Faixa = {
 }
 
 export default function Horarios() {
+  const estilos = useEstilos(criarEstilos)
   const { sessao } = useSessao()
   const [faixas, setFaixas] = useState<Faixa[]>([])
   const [aCarregar, setACarregar] = useState(true)
@@ -155,7 +157,7 @@ export default function Horarios() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, paddingBottom: espaco.xxl },
   grupo: { gap: espaco.s, marginBottom: espaco.l },
   dia: { ...texto.etiqueta, color: cores.azulTexto, marginBottom: espaco.xs },

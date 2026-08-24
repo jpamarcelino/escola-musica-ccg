@@ -4,9 +4,11 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-na
 import { Cabecalho } from '../componentes/base'
 import { BotaoPrincipal, BotaoSecundario, Campo, Mensagem } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { cores, espaco } from '../lib/tema'
+import { espaco, type Cores } from '../lib/tema'
+import { useEstilos } from '../lib/tema-contexto'
 
 export default function RecuperarPassword() {
+  const estilos = useEstilos(criarEstilos)
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [erro, setErro] = useState<string | null>(null)
@@ -81,7 +83,7 @@ export default function RecuperarPassword() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: {
     flexGrow: 1,
     justifyContent: 'center',

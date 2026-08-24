@@ -19,7 +19,8 @@ import {
 } from '../../../componentes/base'
 import { BotaoPrincipal, BotaoSecundario, Campo, Mensagem } from '../../../componentes/formulario'
 import { supabase } from '../../../lib/supabase'
-import { cores, espaco, texto } from '../../../lib/tema'
+import { espaco, texto, type Cores } from '../../../lib/tema'
+import { useEstilos } from '../../../lib/tema-contexto'
 
 const ROTULO: Record<RecomendacaoEstado, string> = {
   registada: 'Por validar',
@@ -34,6 +35,7 @@ const TOM: Record<RecomendacaoEstado, TomDistintivo> = {
 }
 
 export default function Recomendacoes() {
+  const estilos = useEstilos(criarEstilos)
   const [lista, setLista] = useState<RecomendacaoAdmin[]>([])
   const [aCarregar, setACarregar] = useState(true)
   const [ocupado, setOcupado] = useState<number | null>(null)
@@ -186,7 +188,7 @@ export default function Recomendacoes() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   lista: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   nome: { ...texto.cartao, color: cores.tinta },
   detalhe: { ...texto.pequeno, color: cores.tintaSuave },

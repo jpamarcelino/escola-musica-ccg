@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text } from 'react-native'
 import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../../componentes/base'
 import { supabase } from '../../../lib/supabase'
-import { cores, espaco, texto } from '../../../lib/tema'
+import { espaco, texto, type Cores } from '../../../lib/tema'
+import { useEstilos } from '../../../lib/tema-contexto'
 
 const ESCOLA: Record<string, string> = {
   musica: 'Música',
@@ -12,6 +13,7 @@ const ESCOLA: Record<string, string> = {
 }
 
 export default function ProfessoresAdmin() {
+  const estilos = useEstilos(criarEstilos)
   const [professores, setProfessores] = useState<ProfessorAdmin[]>([])
   const [aCarregar, setACarregar] = useState(true)
 
@@ -56,7 +58,7 @@ export default function ProfessoresAdmin() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   lista: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   nome: { ...texto.cartao, color: cores.tinta },
   detalhe: { ...texto.pequeno, color: cores.tintaSuave },

@@ -7,7 +7,8 @@ import { ACarregar, Cabecalho, CartaoTocavel, EstadoVazio } from '../../componen
 import { BotaoPrincipal } from '../../componentes/formulario'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 type Item = {
   id: string
@@ -18,6 +19,8 @@ type Item = {
 }
 
 export default function Alunos() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { sessao } = useSessao()
   const router = useRouter()
   const [itens, setItens] = useState<Item[]>([])
@@ -119,7 +122,7 @@ function resumir(item: Item): string {
   return partes.length > 0 ? partes.join(' · ') : 'Ainda sem aulas'
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   lista: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   nome: { ...texto.cartao, color: cores.tinta },
   resumo: { ...texto.pequeno, color: cores.tintaSuave },

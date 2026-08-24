@@ -23,13 +23,16 @@ import {
 } from '../../componentes/base'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 // O que falta marcar hoje. Cada aula por marcar leva ao ecrã da chamada.
 //
 // Só aparecem aqui as aulas que JÁ ACABARAM: marcar presenças numa aula
 // a decorrer é registar quem esteve antes de a aula ter acontecido.
 export default function Presencas() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { sessao } = useSessao()
   const [porMarcar, setPorMarcar] = useState<AulaDoProfessor[]>([])
   const [marcadas, setMarcadas] = useState<AulaDoProfessor[]>([])
@@ -150,7 +153,7 @@ function horas(a: AulaDoProfessor): string {
   return `${formatarHora(a.horarios!.hora_inicio)}–${formatarHora(a.horarios!.hora_fim)}`
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   nome: { ...texto.cartao, color: cores.tinta },
   detalhe: { ...texto.pequeno, color: cores.tintaSuave },

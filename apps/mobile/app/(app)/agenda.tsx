@@ -17,7 +17,8 @@ import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../componentes/bas
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 type Aula = {
   chave: string
@@ -33,6 +34,8 @@ type Aula = {
 // aulas", ao contrário do "Hoje", que responde a "o que é que se passa
 // agora". A web tem as duas, e pela mesma razão.
 export default function Agenda() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { sessao } = useSessao()
   const { perfil } = usePerfil()
   const [aulas, setAulas] = useState<Aula[]>([])
@@ -164,7 +167,7 @@ export default function Agenda() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, paddingBottom: espaco.xxl },
   grupo: { gap: espaco.s, marginBottom: espaco.l },
   dia: { ...texto.etiqueta, color: cores.azulTexto, marginBottom: espaco.xs },

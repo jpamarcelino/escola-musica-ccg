@@ -8,7 +8,8 @@ import {
   View,
   type TextInputProps,
 } from 'react-native'
-import { cores, espaco, raio, texto } from '../lib/tema'
+import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { useEstilos, useTema } from '../lib/tema-contexto'
 
 // As peças de formulário, num sítio só. A app passa a escrever, e um
 // campo de texto que se comporta de maneira diferente em cada ecrã é
@@ -18,6 +19,8 @@ export const Campo = forwardRef<TextInput, TextInputProps & {
   etiqueta: string
   ajuda?: string
 }>(function Campo({ etiqueta, ajuda, style, ...props }, ref) {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   return (
     <View style={estilos.campo}>
       <Text style={estilos.etiqueta}>{etiqueta}</Text>
@@ -46,6 +49,8 @@ export function BotaoPrincipal({
   ocupado?: boolean
   desativado?: boolean
 }) {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const inativo = ocupado || desativado
   return (
     <Pressable
@@ -61,7 +66,7 @@ export function BotaoPrincipal({
       ]}
     >
       {ocupado ? (
-        <ActivityIndicator color={cores.branco} />
+        <ActivityIndicator color={cores.sobreAcento} />
       ) : (
         <Text style={estilos.botaoTexto}>{rotulo}</Text>
       )}
@@ -78,6 +83,8 @@ export function BotaoSecundario({
   onPress: () => void
   tom?: 'normal' | 'destrutivo'
 }) {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   return (
     <Pressable
       onPress={onPress}
@@ -100,6 +107,8 @@ export function BotaoSecundario({
 // quando aparecem — sem isso, quem usa leitor de ecrã submete o
 // formulário e não recebe resposta nenhuma.
 export function Mensagem({ texto: conteudo, tom }: { texto: string; tom: 'erro' | 'sucesso' }) {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   return (
     <View style={[estilos.mensagem, tom === 'erro' ? estilos.mensagemErro : estilos.mensagemOk]}>
       <Text
@@ -113,7 +122,7 @@ export function Mensagem({ texto: conteudo, tom }: { texto: string; tom: 'erro' 
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   campo: { gap: espaco.xs },
   etiqueta: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
   input: {
@@ -126,7 +135,7 @@ const estilos = StyleSheet.create({
     height: 48,
     ...texto.corpo,
     color: cores.tinta,
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
   },
   ajuda: { ...texto.pequeno, color: cores.tintaSuave },
   botao: {
@@ -136,7 +145,7 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.branco },
+  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.sobreAcento },
   secundario: { paddingVertical: espaco.s + 4, alignItems: 'center' },
   secundarioTexto: { ...texto.corpo, color: cores.azulTexto },
   mensagem: { borderRadius: raio.botao, padding: espaco.m, borderWidth: 1 },

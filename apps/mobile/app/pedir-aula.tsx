@@ -22,7 +22,8 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../componentes/base'
 import { BotaoPrincipal, Mensagem } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { cores, espaco, raio, texto } from '../lib/tema'
+import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { useEstilos, useTema } from '../lib/tema-contexto'
 
 // O mesmo percurso do /pedir-aula da web, em quatro passos: escola,
 // disciplina, professor, horários. A idade não é um passo — vem do aluno
@@ -36,6 +37,7 @@ const ESCOLAS: { programa: InstrumentoPrograma; nome: string; descricao: string 
 ]
 
 export default function PedirAula() {
+  const estilos = useEstilos(criarEstilos)
   const { alunoId, nome, dataNascimento } =
     useLocalSearchParams<{ alunoId: string; nome?: string; dataNascimento?: string }>()
   const router = useRouter()
@@ -251,6 +253,7 @@ function Migalhas({
   instrumento: Instrumento | null
   professor: ProfessorPublico | null
 }) {
+  const estilos = useEstilos(criarEstilos)
   const feitas = [
     programa ? ESCOLAS.find((e) => e.programa === programa)?.nome : null,
     instrumento ? separarFaixaEtaria(instrumento.nome).titulo : null,
@@ -282,6 +285,7 @@ function Disciplinas({
   idade: number | null
   escolher: (i: Instrumento) => void
 }) {
+  const estilos = useEstilos(criarEstilos)
   if (instrumentos.length === 0) {
     return <EstadoVazio titulo="Ainda não há disciplinas nesta escola." />
   }
@@ -342,6 +346,8 @@ function Horarios({
   enviar: () => void
   aEnviar: boolean
 }) {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const porDia = DIAS_SEMANA.map((dia) => ({
     dia,
     faixas: horarios.filter((h) => h.dia_semana === dia),
@@ -367,7 +373,7 @@ function Horarios({
                 accessibilityLabel={`${dia} às ${formatarHora(h.hora_inicio)}`}
                 style={[estilos.faixa, ativo && estilos.faixaEscolhida]}
               >
-                <Text style={[estilos.faixaHora, ativo && { color: cores.branco }]}>
+                <Text style={[estilos.faixaHora, ativo && { color: cores.sobreAcento }]}>
                   {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}
                 </Text>
               </Pressable>
@@ -404,7 +410,7 @@ function Horarios({
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   voltar: { ...texto.corpo, color: cores.azulFundo },
   migalhas: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.xs, marginBottom: espaco.s },
@@ -418,7 +424,7 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     borderColor: cores.linha,
     borderRadius: raio.cartao,
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
     paddingHorizontal: espaco.m,
     minHeight: 48,
     justifyContent: 'center',
@@ -429,7 +435,7 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     borderColor: cores.linha,
     borderRadius: raio.cartao,
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
     padding: espaco.m,
     minHeight: 96,
     textAlignVertical: 'top',

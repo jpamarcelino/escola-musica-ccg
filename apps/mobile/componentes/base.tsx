@@ -8,7 +8,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import { cores, espaco, raio, texto } from '../lib/tema'
+import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { useEstilos, useTema } from '../lib/tema-contexto'
 
 // As peças que se repetem em todos os ecrãs, num sítio só. São as mesmas
 // que a web tem em src/components — Cartao, PageHeader, EmptyState,
@@ -22,6 +23,7 @@ export function Cartao({
   children: ReactNode
   style?: StyleProp<ViewStyle>
 }) {
+  const estilos = useEstilos(criarEstilos)
   return <View style={[estilos.cartao, style]}>{children}</View>
 }
 
@@ -39,6 +41,7 @@ export function CartaoTocavel({
   rotulo?: string
   style?: StyleProp<ViewStyle>
 }) {
+  const estilos = useEstilos(criarEstilos)
   return (
     <Pressable
       onPress={onPress}
@@ -64,6 +67,7 @@ export function Cabecalho({
   sobretitulo?: string
   descricao?: string
 }) {
+  const estilos = useEstilos(criarEstilos)
   return (
     <View style={estilos.cabecalho}>
       {sobretitulo ? <Text style={estilos.sobretitulo}>{sobretitulo}</Text> : null}
@@ -82,6 +86,7 @@ export function EstadoVazio({
   titulo: string
   descricao?: string
 }) {
+  const estilos = useEstilos(criarEstilos)
   return (
     <View style={estilos.vazio}>
       <Text style={estilos.vazioTitulo}>{titulo}</Text>
@@ -95,22 +100,31 @@ export type TomDistintivo = 'neutro' | 'positivo' | 'aviso' | 'erro' | 'azul'
 // A cor sozinha não distingue nada para quem não a vê. O distintivo leva
 // sempre texto, e é o texto que carrega o significado — a cor só reforça.
 export function Distintivo({ texto: conteudo, tom = 'neutro' }: { texto: string; tom?: TomDistintivo }) {
+  const estilos = useEstilos(criarEstilos)
+  const tons = useEstilos(criarTons)
   return (
-    <View style={[estilos.distintivo, TONS[tom].caixa]}>
-      <Text style={[estilos.distintivoTexto, TONS[tom].letra]}>{conteudo}</Text>
+    <View style={[estilos.distintivo, tons[tom].caixa]}>
+      <Text style={[estilos.distintivoTexto, tons[tom].letra]}>{conteudo}</Text>
     </View>
   )
 }
 
-const TONS: Record<TomDistintivo, { caixa: ViewStyle; letra: { color: string } }> = {
+// Função da paleta como tudo o resto. Era uma constante do módulo com os
+// fundos em hexadecimal — a única parte da app onde havia cores fora do
+// tema, e por isso a única que o compilador não denunciou.
+const criarTons = (
+  cores: Cores
+): Record<TomDistintivo, { caixa: ViewStyle; letra: { color: string } }> => ({
   neutro: { caixa: { backgroundColor: cores.papel2 }, letra: { color: cores.tintaSuave } },
-  positivo: { caixa: { backgroundColor: '#E8F1EC' }, letra: { color: cores.positivo } },
-  aviso: { caixa: { backgroundColor: '#FBF1E3' }, letra: { color: cores.aviso } },
-  erro: { caixa: { backgroundColor: '#F7E9E6' }, letra: { color: cores.erro } },
-  azul: { caixa: { backgroundColor: '#E7EFF6' }, letra: { color: cores.azulTexto } },
-}
+  positivo: { caixa: { backgroundColor: cores.fundoPositivo }, letra: { color: cores.positivo } },
+  aviso: { caixa: { backgroundColor: cores.fundoAviso }, letra: { color: cores.aviso } },
+  erro: { caixa: { backgroundColor: cores.fundoErro }, letra: { color: cores.erro } },
+  azul: { caixa: { backgroundColor: cores.fundoAzul }, letra: { color: cores.azulTexto } },
+})
 
 export function ACarregar() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   return (
     <View style={estilos.centro}>
       <ActivityIndicator color={cores.azulFundo} />
@@ -118,9 +132,9 @@ export function ACarregar() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   cartao: {
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
     borderWidth: 1,
     // O fundo branco sobre papel tem pouco contraste — é o contorno que
     // faz o cartão existir, tal como na web.

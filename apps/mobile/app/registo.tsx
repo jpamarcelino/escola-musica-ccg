@@ -5,9 +5,11 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from 're
 import { Cabecalho } from '../componentes/base'
 import { BotaoPrincipal, BotaoSecundario, Campo, Mensagem } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { cores, espaco, texto } from '../lib/tema'
+import { espaco, texto, type Cores } from '../lib/tema'
+import { useEstilos } from '../lib/tema-contexto'
 
 export default function Registo() {
+  const estilos = useEstilos(criarEstilos)
   const router = useRouter()
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
@@ -142,7 +144,7 @@ export default function Registo() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: {
     flexGrow: 1,
     justifyContent: 'center',

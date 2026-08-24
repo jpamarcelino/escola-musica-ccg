@@ -12,9 +12,12 @@ import {
 } from '../../componentes/base'
 import { usePerfil } from '../../lib/perfil'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 export default function Admin() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { perfil } = usePerfil()
   const [numeros, setNumeros] = useState<NumerosDaEscola | null>(null)
   const [aCarregar, setACarregar] = useState(true)
@@ -133,6 +136,7 @@ export default function Admin() {
 }
 
 function Numero({ valor, rotulo }: { valor: number; rotulo: string }) {
+  const estilos = useEstilos(criarEstilos)
   return (
     <Cartao style={estilos.numero}>
       <Text style={estilos.numeroValor}>{valor}</Text>
@@ -150,7 +154,7 @@ function primeiroNome(nome: string | undefined): string {
   return nome.trim().split(/\s+/)[0]
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   avisos: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.xs, marginBottom: espaco.s },
   grelha: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.s },

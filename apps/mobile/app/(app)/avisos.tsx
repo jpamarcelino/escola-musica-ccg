@@ -5,7 +5,8 @@ import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
 import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, raio, texto } from '../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 // O `tipo` é um código da base de dados; aqui vira assunto legível. O
 // esquema declara cinco e a app só cria um por agora — os outros quatro
@@ -20,6 +21,8 @@ const ASSUNTO: Record<Notificacao['tipo'], string> = {
 }
 
 export default function Avisos() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { sessao } = useSessao()
   const [avisos, setAvisos] = useState<Notificacao[]>([])
   const [aCarregar, setACarregar] = useState(true)
@@ -87,7 +90,7 @@ export default function Avisos() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   lista: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   // Por ler distingue-se por uma barra à esquerda e não só por cor — quem
   // não distingue as duas cores continua a ver a diferença.

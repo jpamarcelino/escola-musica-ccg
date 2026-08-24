@@ -16,7 +16,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ProvedorModo } from '../lib/modo'
 import { ProvedorPerfil } from '../lib/perfil'
 import { ProvedorSessao } from '../lib/sessao'
-import { cores, tipos } from '../lib/tema'
+import { tipos } from '../lib/tema'
+import { ProvedorTema, useTema } from '../lib/tema-contexto'
 
 // O ecrã de arranque fica de pé até as fontes chegarem. Sem isto a app
 // abria em Helvetica e trocava de tipo a meio — o mesmo salto que a web
@@ -48,34 +49,55 @@ export default function LayoutRaiz() {
 
   return (
     <SafeAreaProvider>
+      {/* O tema por dentro da sessão, e não por fora: é a sessão que
+          decide se a preferência guardada vale. Sem conta, vale o
+          telemóvel. */}
       <ProvedorSessao>
-        <ProvedorPerfil>
-        <ProvedorModo>
-        <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerStyle: { backgroundColor: cores.papel },
-            headerTintColor: cores.azulFundo,
-            headerTitleStyle: { fontFamily: tipos.display, fontSize: 17, color: cores.tinta },
-            headerShadowVisible: false,
-            // Só a seta, sem legenda. Por omissão o iOS escreve ao lado da
-            // seta o nome do ecrã anterior, e o ecrã anterior destes é o
-            // grupo de rotas — dava um botão a dizer "(app)", que é nome de
-            // pasta do código e não diz nada a ninguém. Pior: parecia avaria,
-            // ao ponto de se duvidar que o botão sequer funcionasse.
-            headerBackButtonDisplayMode: 'minimal',
-            contentStyle: { backgroundColor: cores.papel },
-          }}
-        >
-          <Stack.Screen name="descobrir" options={{ headerShown: false }} />
-          <Stack.Screen name="entrar" options={{ headerShown: false }} />
-          <Stack.Screen name="registo" options={{ headerShown: false }} />
-          <Stack.Screen name="recuperar-password" options={{ headerShown: false }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack>
-        </ProvedorModo>
-        </ProvedorPerfil>
+        <ProvedorTema>
+          <ProvedorPerfil>
+            <ProvedorModo>
+              <Navegacao />
+            </ProvedorModo>
+          </ProvedorPerfil>
+        </ProvedorTema>
       </ProvedorSessao>
     </SafeAreaProvider>
+  )
+}
+
+// A navegação vive à parte do LayoutRaiz por uma razão simples: quem
+// fornece o tema não o pode consumir. O useTema só lê o que estiver
+// acima dele na árvore, e o ProvedorTema é desenhado aqui — as opções
+// do Stack tinham de sair para dentro de um filho.
+function Navegacao() {
+  const { cores, esquema } = useTema()
+
+  return (
+    <>
+      {/* A barra de estado segue o tema: no escuro os ícones do sistema
+          têm de ser claros, senão ficam pretos sobre um fundo preto. */}
+      <StatusBar style={esquema === 'escuro' ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: cores.papel },
+          headerTintColor: cores.azulFundo,
+          headerTitleStyle: { fontFamily: tipos.display, fontSize: 17, color: cores.tinta },
+          headerShadowVisible: false,
+          // Só a seta, sem legenda. Por omissão o iOS escreve ao lado da
+          // seta o nome do ecrã anterior, e o ecrã anterior destes é o
+          // grupo de rotas — dava um botão a dizer "(app)", que é nome de
+          // pasta do código e não diz nada a ninguém. Pior: parecia avaria,
+          // ao ponto de se duvidar que o botão sequer funcionasse.
+          headerBackButtonDisplayMode: 'minimal',
+          contentStyle: { backgroundColor: cores.papel },
+        }}
+      >
+        <Stack.Screen name="descobrir" options={{ headerShown: false }} />
+        <Stack.Screen name="entrar" options={{ headerShown: false }} />
+        <Stack.Screen name="registo" options={{ headerShown: false }} />
+        <Stack.Screen name="recuperar-password" options={{ headerShown: false }} />
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      </Stack>
+    </>
   )
 }

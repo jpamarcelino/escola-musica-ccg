@@ -23,7 +23,8 @@ import {
 } from '../../componentes/base'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, raio, texto } from '../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../lib/tema'
+import { useEstilos } from '../../lib/tema-contexto'
 
 type Linha = {
   chave: number
@@ -44,6 +45,7 @@ const TOM: Record<EstadoMensalidade, TomDistintivo> = {
 }
 
 export default function Mensalidades() {
+  const estilos = useEstilos(criarEstilos)
   const { sessao } = useSessao()
   const hoje = new Date()
   const indiceInicial = Math.max(
@@ -172,7 +174,7 @@ export default function Mensalidades() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   navegacao: {
     flexDirection: 'row',

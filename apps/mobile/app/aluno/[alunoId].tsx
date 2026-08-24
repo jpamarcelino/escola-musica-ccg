@@ -14,9 +14,12 @@ import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } 
 import { ACarregar, Cabecalho, Cartao, Distintivo, EstadoVazio } from '../../componentes/base'
 import { BotaoPrincipal, BotaoSecundario } from '../../componentes/formulario'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 export default function AulasDoAluno() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { alunoId, nome, dataNascimento } =
     useLocalSearchParams<{ alunoId: string; nome?: string; dataNascimento?: string }>()
   const router = useRouter()
@@ -202,7 +205,7 @@ export default function AulasDoAluno() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   pendente: { backgroundColor: cores.papel2, borderColor: cores.linha },
   disciplina: { ...texto.cartao, color: cores.tinta },

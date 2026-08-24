@@ -15,9 +15,12 @@ import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../../componentes/
 import { BotaoPrincipal, BotaoSecundario, Mensagem } from '../../../componentes/formulario'
 import { useSessao } from '../../../lib/sessao'
 import { supabase } from '../../../lib/supabase'
-import { cores, espaco, raio, texto } from '../../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../../lib/tema'
+import { useEstilos, useTema } from '../../../lib/tema-contexto'
 
 export default function ResponderPedido() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { matriculaId } = useLocalSearchParams<{ matriculaId: string }>()
   const router = useRouter()
   const { sessao } = useSessao()
@@ -162,10 +165,10 @@ export default function ResponderPedido() {
                     accessibilityLabel={`${dia} às ${formatarHora(h.hora_inicio)}`}
                     style={[estilos.faixa, ativo && estilos.faixaEscolhida]}
                   >
-                    <Text style={[estilos.faixaHora, ativo && { color: cores.branco }]}>
+                    <Text style={[estilos.faixaHora, ativo && { color: cores.sobreAcento }]}>
                       {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}
                     </Text>
-                    <Text style={[estilos.faixaNota, ativo && { color: cores.branco }]}>
+                    <Text style={[estilos.faixaNota, ativo && { color: cores.sobreAcento }]}>
                       {quantos === 0
                         ? 'Livre'
                         : plural(quantos, 'aluno já marcado', 'alunos já marcados')}
@@ -191,7 +194,7 @@ export default function ResponderPedido() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   etiquetaMensagem: { ...texto.etiqueta, color: cores.azulTexto },
   mensagem: { ...texto.corpo, color: cores.tinta, fontStyle: 'italic' },
@@ -205,7 +208,7 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     borderColor: cores.linha,
     borderRadius: raio.cartao,
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
     paddingHorizontal: espaco.m,
     minHeight: 52,
   },

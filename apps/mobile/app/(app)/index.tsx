@@ -33,7 +33,8 @@ import {
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
 import { supabase } from '../../lib/supabase'
-import { cores, espaco, texto } from '../../lib/tema'
+import { espaco, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 // Uma aula pronta a mostrar, venha ela do lado do professor ou do lado
 // da família. Os dois ecrãs querem responder à mesma pergunta — o que é
@@ -49,6 +50,8 @@ type Linha = {
 }
 
 export default function Hoje() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const { sessao } = useSessao()
   const { perfil } = usePerfil()
   const [linhas, setLinhas] = useState<Linha[]>([])
@@ -269,6 +272,7 @@ function CartaoAula({
   estado: 'agora' | 'proxima' | 'futura'
   comData?: boolean
 }) {
+  const estilos = useEstilos(criarEstilos)
   return (
     <Cartao>
       {estado === 'agora' && <Distintivo texto="A decorrer" tom="positivo" />}
@@ -320,7 +324,7 @@ function primeiroNome(nome: string | undefined): string {
   return nome.trim().split(/\s+/)[0]
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   avisos: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.xs, marginBottom: espaco.s },
   seccao: { ...texto.seccao, color: cores.tinta, marginTop: espaco.m, marginBottom: espaco.xs },

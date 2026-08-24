@@ -4,7 +4,8 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Cabecalho, Cartao } from '../../componentes/base'
-import { cores, espaco, raio, texto } from '../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../lib/tema'
+import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 const BPM_MIN = 40
 const BPM_MAX = 240
@@ -25,6 +26,7 @@ const COMPASSOS = [2, 3, 4, 6]
 // Continua a não ser um metrónomo de estúdio. Para estudar em casa serve;
 // para gravar, não.
 export default function Materiais() {
+  const estilos = useEstilos(criarEstilos)
   const { nome } = useLocalSearchParams<{ nome?: string }>()
 
   const [bpm, setBpm] = useState(100)
@@ -191,6 +193,8 @@ function Botao({
   ativo?: boolean
   acessivel?: string
 }) {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   return (
     <Pressable
       onPress={onPress}
@@ -199,12 +203,12 @@ function Botao({
       accessibilityState={{ selected: ativo }}
       style={[estilos.botao, ativo && estilos.botaoAtivo]}
     >
-      <Text style={[estilos.botaoTexto, ativo && { color: cores.branco }]}>{rotulo}</Text>
+      <Text style={[estilos.botaoTexto, ativo && { color: cores.sobreAcento }]}>{rotulo}</Text>
     </Pressable>
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   pontos: { flexDirection: 'row', gap: espaco.s, justifyContent: 'center', marginBottom: espaco.m },
   ponto: {
@@ -234,7 +238,7 @@ const estilos = StyleSheet.create({
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
   },
   botaoAtivo: { backgroundColor: cores.azulFundo, borderColor: cores.azulFundo },
   botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
@@ -256,7 +260,7 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
   },
   interruptorLigado: { backgroundColor: cores.azulFundo },
-  bolinha: { width: 22, height: 22, borderRadius: 11, backgroundColor: cores.branco },
+  bolinha: { width: 22, height: 22, borderRadius: 11, backgroundColor: cores.cartao },
   bolinhaLigada: { alignSelf: 'flex-end' },
   principal: {
     backgroundColor: cores.azulFundo,
@@ -267,5 +271,5 @@ const estilos = StyleSheet.create({
     marginTop: espaco.m,
   },
   principalATocar: { backgroundColor: cores.marcaVermelho },
-  principalTexto: { ...texto.seccao, color: cores.branco },
+  principalTexto: { ...texto.seccao, color: cores.sobreAcento },
 })

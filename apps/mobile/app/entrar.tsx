@@ -13,9 +13,12 @@ import {
 } from 'react-native'
 import { BotaoSecundario } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { cores, espaco, raio, texto } from '../lib/tema'
+import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { useEstilos, useTema } from '../lib/tema-contexto'
 
 export default function Entrar() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -102,7 +105,7 @@ export default function Entrar() {
           ]}
         >
           {aEntrar ? (
-            <ActivityIndicator color={cores.branco} />
+            <ActivityIndicator color={cores.sobreAcento} />
           ) : (
             <Text style={estilos.botaoTexto}>Entrar</Text>
           )}
@@ -121,7 +124,7 @@ export default function Entrar() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -143,7 +146,7 @@ const estilos = StyleSheet.create({
     height: 48,
     ...texto.corpo,
     color: cores.tinta,
-    backgroundColor: cores.branco,
+    backgroundColor: cores.cartao,
   },
   erro: { ...texto.pequeno, color: cores.erro },
   botao: {
@@ -154,7 +157,7 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     marginTop: espaco.s,
   },
-  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.branco },
+  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.sobreAcento },
   separador: {
     ...texto.pequeno,
     color: cores.tintaSuave,

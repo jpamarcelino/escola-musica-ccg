@@ -14,17 +14,23 @@ import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../../componentes/
 import { BotaoPrincipal, Mensagem } from '../../../componentes/formulario'
 import { useSessao } from '../../../lib/sessao'
 import { supabase } from '../../../lib/supabase'
-import { cores, espaco, raio, texto } from '../../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../../lib/tema'
+import { useEstilos, useTema } from '../../../lib/tema-contexto'
 
 // As três opções, pela ordem em que um professor pensa nelas: primeiro
 // quem veio, depois quem avisou, e só no fim quem faltou sem dizer nada.
-const OPCOES: { estado: PresencaEstado; rotulo: string; cor: string }[] = [
+const criarOpcoes = (
+  cores: Cores
+): { estado: PresencaEstado; rotulo: string; cor: string }[] => [
   { estado: 'presente', rotulo: 'Presente', cor: cores.positivo },
   { estado: 'falta_aviso', rotulo: 'Faltou, avisou', cor: cores.aviso },
   { estado: 'falta_sem_aviso', rotulo: 'Faltou', cor: cores.erro },
 ]
 
 export default function MarcarPresencas() {
+  const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
+  const OPCOES = useEstilos(criarOpcoes)
   const { horarioId, dia, data: dataParam } =
     useLocalSearchParams<{ horarioId: string; dia?: string; data?: string }>()
   const router = useRouter()
@@ -157,7 +163,7 @@ export default function MarcarPresencas() {
                         <Text
                           style={[
                             estilos.opcaoTexto,
-                            ativo && { color: cores.branco },
+                            ativo && { color: cores.sobreAcento },
                           ]}
                         >
                           {o.rotulo}
@@ -193,7 +199,7 @@ export default function MarcarPresencas() {
   )
 }
 
-const estilos = StyleSheet.create({
+const criarEstilos = (cores: Cores) => StyleSheet.create({
   conteudo: { padding: espaco.m, gap: espaco.s, paddingBottom: espaco.xxl },
   nome: { ...texto.cartao, color: cores.tinta },
   disciplina: { ...texto.pequeno, color: cores.tintaSuave },

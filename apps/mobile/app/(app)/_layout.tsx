@@ -13,7 +13,8 @@ import { ACarregar } from '../../componentes/base'
 import { useModo } from '../../lib/modo'
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
-import { cores, tipos } from '../../lib/tema'
+import { tipos } from '../../lib/tema'
+import { useTema } from '../../lib/tema-contexto'
 
 // Os mesmos cinco separadores da web, e a mesma regra a separá-los: uma
 // Conta CCG gere alunos (Hoje, Agenda, Alunos, Avisos, Conta) e um
@@ -31,6 +32,7 @@ import { cores, tipos } from '../../lib/tema'
 // que os tira da barra e impede a navegação para eles. Um ecrã que existe
 // mas não devia ser alcançável é uma porta que alguém acaba por encontrar.
 export default function LayoutApp() {
+  const { cores } = useTema()
   const { sessao, aCarregar: sessaoACarregar } = useSessao()
   const { perfil, aCarregar: perfilACarregar } = usePerfil()
   const { modoAdmin, aCarregar: modoACarregar } = useModo()
