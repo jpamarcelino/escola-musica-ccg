@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Cartao } from '../componentes/base'
 import { BotaoPrincipal, BotaoSecundario } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { espaco, raio, texto, tipos, type Cores } from '../lib/tema'
 import { useEstilos } from '../lib/tema-contexto'
 
 // A porta de entrada para quem ainda não tem conta: o que a escola tem.
@@ -133,7 +133,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
   escolaNome: { ...texto.seccao, color: cores.tinta },
   escolaDetalhe: { ...texto.pequeno, color: cores.azulTexto },
   escolaTexto: { ...texto.corpo, color: cores.tintaSuave, marginTop: espaco.xs },
-  verMais: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.azulTexto, marginTop: espaco.s },
+  verMais: { ...texto.pequeno, fontFamily: tipos.corpoMedio, color: cores.azulTexto, marginTop: espaco.s },
   disciplinas: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.xs, marginTop: espaco.s },
   disciplina: {
     backgroundColor: cores.papel2,

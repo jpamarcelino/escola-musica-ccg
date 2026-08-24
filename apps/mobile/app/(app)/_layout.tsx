@@ -1,5 +1,6 @@
 import { ehProfessor } from '@ccg/data'
 import { Redirect, Tabs } from 'expo-router'
+import { BarraCapsula } from '../../componentes/ccg'
 import {
   IconeAlunos,
   IconeCalendario,
@@ -56,18 +57,16 @@ export default function LayoutApp() {
 
   return (
     <Tabs
+      // A barra por omissão dá lugar à cápsula. Os `href: null` continuam
+      // a valer — é o expo-router que os lê para decidir o que existe, e
+      // a cápsula limita-se a não desenhar o que ele já escondeu. É essa
+      // a diferença entre um separador arrumado e um separador trancado.
+      tabBar={(p) => <BarraCapsula {...p} />}
       screenOptions={{
-        headerStyle: { backgroundColor: cores.papel },
+        headerStyle: { backgroundColor: cores.fundo },
         headerShadowVisible: false,
-        headerTitleStyle: { fontFamily: tipos.display, fontSize: 17, color: cores.tinta },
-        sceneStyle: { backgroundColor: cores.papel },
-        tabBarActiveTintColor: cores.azulFundo,
-        tabBarInactiveTintColor: cores.tintaSuave,
-        tabBarStyle: {
-          backgroundColor: cores.papel,
-          borderTopColor: cores.linha,
-        },
-        tabBarLabelStyle: { fontFamily: tipos.corpoMedio, fontSize: 11 },
+        headerTitleStyle: { fontFamily: tipos.corpoMedio, fontSize: 17, color: cores.tinta },
+        sceneStyle: { backgroundColor: cores.fundo },
       }}
     >
       {/* Do dia a dia — fora do modo de administração */}

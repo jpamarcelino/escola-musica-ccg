@@ -8,7 +8,7 @@ import {
   View,
   type TextInputProps,
 } from 'react-native'
-import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { espaco, raio, texto, tipos, type Cores } from '../lib/tema'
 import { useEstilos, useTema } from '../lib/tema-contexto'
 
 // As peças de formulário, num sítio só. A app passa a escrever, e um
@@ -124,7 +124,7 @@ export function Mensagem({ texto: conteudo, tom }: { texto: string; tom: 'erro' 
 
 const criarEstilos = (cores: Cores) => StyleSheet.create({
   campo: { gap: espaco.xs },
-  etiqueta: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
+  etiqueta: { ...texto.pequeno, fontFamily: tipos.corpoMedio, color: cores.tinta },
   input: {
     borderWidth: 1,
     borderColor: cores.linha,
@@ -145,7 +145,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.sobreAcento },
+  botaoTexto: { ...texto.corpo, fontFamily: tipos.corpoMedio, color: cores.sobreAcento },
   secundario: { paddingVertical: espaco.s + 4, alignItems: 'center' },
   secundarioTexto: { ...texto.corpo, color: cores.azulTexto },
   mensagem: { borderRadius: raio.botao, padding: espaco.m, borderWidth: 1 },

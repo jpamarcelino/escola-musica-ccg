@@ -4,7 +4,7 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Cabecalho, Cartao } from '../../componentes/base'
-import { espaco, raio, texto, type Cores } from '../../lib/tema'
+import { espaco, raio, texto, tipos, type Cores } from '../../lib/tema'
 import { useEstilos, useTema } from '../../lib/tema-contexto'
 
 const BPM_MIN = 40
@@ -241,7 +241,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
     backgroundColor: cores.cartao,
   },
   botaoAtivo: { backgroundColor: cores.azulFundo, borderColor: cores.azulFundo },
-  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
+  botaoTexto: { ...texto.corpo, fontFamily: tipos.corpoMedio, color: cores.tinta },
   etiqueta: { ...texto.etiqueta, color: cores.azulTexto },
   acento: {
     flexDirection: 'row',

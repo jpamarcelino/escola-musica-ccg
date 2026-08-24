@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 import { BotaoSecundario } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { espaco, raio, texto, tipos, type Cores } from '../lib/tema'
 import { useEstilos, useTema } from '../lib/tema-contexto'
 
 export default function Entrar() {
@@ -135,7 +135,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
   titulo: { ...texto.titulo, fontSize: 32, lineHeight: 38, color: cores.tinta },
   subtitulo: { ...texto.corpo, color: cores.tintaSuave, marginBottom: espaco.l },
   campo: { gap: espaco.xs },
-  etiqueta: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
+  etiqueta: { ...texto.pequeno, fontFamily: tipos.corpoMedio, color: cores.tinta },
   input: {
     borderWidth: 1,
     borderColor: cores.linha,
@@ -157,7 +157,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
     justifyContent: 'center',
     marginTop: espaco.s,
   },
-  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.sobreAcento },
+  botaoTexto: { ...texto.corpo, fontFamily: tipos.corpoMedio, color: cores.sobreAcento },
   separador: {
     ...texto.pequeno,
     color: cores.tintaSuave,
