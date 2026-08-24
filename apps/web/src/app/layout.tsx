@@ -34,6 +34,17 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Centro Cultural da Guarda",
   },
+  // O Safari do iOS procura números de telefone no texto e transforma-os
+  // em links sozinho. Fá-lo ao NIPC do rodapé — 501 430 881 tem o
+  // aspeto de um número — e altera o HTML antes de o React hidratar, o
+  // que rebenta a hidratação da página inteira com um "server rendered
+  // HTML didn't match the client".
+  //
+  // Só acontece no iOS, por isso não aparece em nenhum teste feito no
+  // Chrome. Os números que devem ser telefones nesta app já são links
+  // escritos à mão (o contacto do encarregado, nos pedidos), e esses não
+  // dependem desta deteção.
+  formatDetection: { telephone: false },
 };
 
 export const viewport = {
