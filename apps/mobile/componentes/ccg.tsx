@@ -7,7 +7,15 @@
 import { useState, type ReactNode } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Svg, { G, Path } from 'react-native-svg'
 import { barra, raio, texto } from '../lib/tema'
@@ -55,7 +63,7 @@ type PropsDaBarra = {
     {
       options: {
         title?: string
-        href?: string | null
+        tabBarItemStyle?: StyleProp<ViewStyle>
         tabBarIcon?: (p: { color: string; focused: boolean; size: number }) => ReactNode
       }
     }
@@ -103,7 +111,13 @@ export function BarraCapsula({ state, descriptors, navigation }: PropsDaBarra) {
         </View>
         {state.routes.map((rota, i) => {
           const { options } = descriptors[rota.key]
-          if (options.href === null) return null
+          // Não se pergunta pelo `href`: o expo-router consome-o antes de
+          // chegar aqui e converte-o em `tabBarItemStyle: display none`
+          // (ver TabsClient.js). Perguntar por ele dava sempre undefined,
+          // e a cápsula desenhava os onze separadores em vez dos cinco
+          // que o papel de cada pessoa permite.
+          // flatten e não leitura direta: o estilo pode vir em array.
+          if (StyleSheet.flatten(options.tabBarItemStyle)?.display === 'none') return null
           const ativo = state.index === i
           const cor = ativo ? barra.iconeAtivo : barra.iconeInativo
           return (

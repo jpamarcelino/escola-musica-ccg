@@ -1,5 +1,6 @@
 import { ehProfessor } from '@ccg/data'
 import { Redirect, Tabs } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { BarraCapsula } from '../../componentes/ccg'
 import {
   IconeAlunos,
@@ -14,7 +15,6 @@ import { ACarregar } from '../../componentes/base'
 import { useModo } from '../../lib/modo'
 import { usePerfil } from '../../lib/perfil'
 import { useSessao } from '../../lib/sessao'
-import { tipos } from '../../lib/tema'
 import { useTema } from '../../lib/tema-contexto'
 
 // Os mesmos cinco separadores da web, e a mesma regra a separá-los: uma
@@ -37,6 +37,10 @@ export default function LayoutApp() {
   const { sessao, aCarregar: sessaoACarregar } = useSessao()
   const { perfil, aCarregar: perfilACarregar } = usePerfil()
   const { modoAdmin, aCarregar: modoACarregar } = useModo()
+  // Antes de qualquer saída antecipada: os hooks têm de correr sempre
+  // pela mesma ordem, e por baixo há dois `return` que dependem do que
+  // se carregou.
+  const insets = useSafeAreaInsets()
 
   if (sessaoACarregar || perfilACarregar || modoACarregar) return <ACarregar />
   // Sem sessão, a app abre na descoberta e não no login — tal como a
@@ -63,14 +67,22 @@ export default function LayoutApp() {
       // a diferença entre um separador arrumado e um separador trancado.
       tabBar={(p) => <BarraCapsula {...p} />}
       screenOptions={{
-        headerStyle: { backgroundColor: cores.fundo },
-        headerShadowVisible: false,
-        headerTitleStyle: { fontFamily: tipos.corpoMedio, fontSize: 17, color: cores.tinta },
+        // Sem cabeçalho de navegação: todos estes ecrãs já trazem o seu,
+        // com o título por extenso. O do sistema escrevia "Hoje" por
+        // cima de um ecrã que já dizia "Hoje" logo a seguir.
+        headerShown: false,
         // A cápsula flutua por cima do conteúdo, e o conteúdo tem de
         // acabar antes dela. Aqui e não em cada ecrã: são doze, e o que
         // se esquecesse ficava com a última linha escondida por baixo da
         // barra — um erro que só aparece quando a lista é comprida.
-        sceneStyle: { backgroundColor: cores.fundo, paddingBottom: 88 },
+        //
+        // O topo pela mesma razão: era o cabeçalho que afastava o
+        // conteúdo das horas e da bateria, e ele deixou de existir.
+        sceneStyle: {
+          backgroundColor: cores.fundo,
+          paddingTop: insets.top,
+          paddingBottom: 88,
+        },
       }}
     >
       {/* Do dia a dia — fora do modo de administração */}
