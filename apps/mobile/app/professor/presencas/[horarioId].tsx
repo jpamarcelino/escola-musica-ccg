@@ -14,7 +14,7 @@ import { ACarregar, Cabecalho, Cartao, EstadoVazio } from '../../../componentes/
 import { BotaoPrincipal, Mensagem } from '../../../componentes/formulario'
 import { useSessao } from '../../../lib/sessao'
 import { supabase } from '../../../lib/supabase'
-import { espaco, raio, texto, tipos, type Cores } from '../../../lib/tema'
+import { espaco, raio, texto, type Cores } from '../../../lib/tema'
 import { useEstilos, useTema } from '../../../lib/tema-contexto'
 
 // As três opções, pela ordem em que um professor pensa nelas: primeiro
@@ -216,7 +216,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
     minHeight: 44,
     justifyContent: 'center',
   },
-  opcaoTexto: { ...texto.pequeno, fontFamily: tipos.corpoMedio, color: cores.tinta },
+  opcaoTexto: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
   voltar: { padding: espaco.m, alignItems: 'center' },
   voltarTexto: { ...texto.corpo, color: cores.azulTexto },
 })

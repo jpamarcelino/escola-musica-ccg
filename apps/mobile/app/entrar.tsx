@@ -12,9 +12,8 @@ import {
   View,
 } from 'react-native'
 import { BotaoSecundario } from '../componentes/formulario'
-import { CabecalhoVoltar } from '../componentes/ccg'
 import { supabase } from '../lib/supabase'
-import { espaco, raio, texto, tipos, type Cores } from '../lib/tema'
+import { espaco, raio, texto, type Cores } from '../lib/tema'
 import { useEstilos, useTema } from '../lib/tema-contexto'
 
 export default function Entrar() {
@@ -58,13 +57,8 @@ export default function Entrar() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={estilos.conteudo} keyboardShouldPersistTaps="handled">
-        {/* A marca vive no cabeçalho, e o cabeçalho é o caminho de volta.
-            Estava aqui como título — "Escolas Artísticas" grande com
-            "Centro Cultural da Guarda" por baixo — e nesse formato não
-            era caminho para lado nenhum: quem abria este ecrã ficava sem
-            saída. O título do ecrã passa a dizer o que se faz nele. */}
-        <CabecalhoVoltar />
-        <Text style={estilos.titulo}>Entrar</Text>
+        <Text style={estilos.titulo}>Escolas Artísticas</Text>
+        <Text style={estilos.subtitulo}>Centro Cultural da Guarda</Text>
 
         <View style={estilos.campo}>
           <Text style={estilos.etiqueta}>Email</Text>
@@ -141,7 +135,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
   titulo: { ...texto.titulo, fontSize: 32, lineHeight: 38, color: cores.tinta },
   subtitulo: { ...texto.corpo, color: cores.tintaSuave, marginBottom: espaco.l },
   campo: { gap: espaco.xs },
-  etiqueta: { ...texto.pequeno, fontFamily: tipos.corpoMedio, color: cores.tinta },
+  etiqueta: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.tinta },
   input: {
     borderWidth: 1,
     borderColor: cores.linha,
@@ -163,7 +157,7 @@ const criarEstilos = (cores: Cores) => StyleSheet.create({
     justifyContent: 'center',
     marginTop: espaco.s,
   },
-  botaoTexto: { ...texto.corpo, fontFamily: tipos.corpoMedio, color: cores.sobreAcento },
+  botaoTexto: { ...texto.corpo, fontFamily: 'Geist_600SemiBold', color: cores.sobreAcento },
   separador: {
     ...texto.pequeno,
     color: cores.tintaSuave,

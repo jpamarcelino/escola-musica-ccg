@@ -3,7 +3,6 @@ import { Stack, useRouter } from 'expo-router'
 import { useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from 'react-native'
 import { Cabecalho } from '../componentes/base'
-import { CabecalhoVoltar } from '../componentes/ccg'
 import { BotaoPrincipal, BotaoSecundario, Campo, Mensagem } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
 import { espaco, texto, type Cores } from '../lib/tema'
@@ -75,8 +74,8 @@ export default function Registo() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={estilos.conteudo} keyboardShouldPersistTaps="handled">
-          <CabecalhoVoltar />
           <Cabecalho
+            sobretitulo="Escolas Artísticas"
             titulo="Criar conta"
             descricao="Uma conta serve para gerir os teus alunos e acompanhar as aulas."
           />

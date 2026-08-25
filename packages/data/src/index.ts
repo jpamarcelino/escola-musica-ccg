@@ -64,18 +64,10 @@ export {
 
 export {
   listarInstrumentos,
-  listarProfessoresDoCartaz,
-  numerosPublicos,
   listarProfessoresDoInstrumento,
   listarHorariosPublicos,
 } from './oferta'
-export type {
-  Instrumento,
-  ProfessorPublico,
-  ProfessorDoCartaz,
-  NumerosPublicos,
-  HorarioPublico,
-} from './oferta'
+export type { Instrumento, ProfessorPublico, HorarioPublico } from './oferta'
 
 export {
   atualizarNome,

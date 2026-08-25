@@ -1,246 +1,152 @@
-import {
-  listarProfessoresDoCartaz,
-  numerosPublicos,
-  type NumerosPublicos,
-  type ProfessorDoCartaz,
-} from '@ccg/data'
-import { LinearGradient } from 'expo-linear-gradient'
+import { listarInstrumentos, type Instrumento } from '@ccg/data'
+import type { InstrumentoPrograma } from '@ccg/types'
 import { Stack, useRouter } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BotaoPrincipal, FichaProfessor, MarcaLinha, PainelAcao, sortearTres } from '../componentes/ccg'
+import { useEffect, useState } from 'react'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Cartao } from '../componentes/base'
+import { BotaoPrincipal, BotaoSecundario } from '../componentes/formulario'
 import { supabase } from '../lib/supabase'
-import { espaco, raio, texto, tipos, type Cores } from '../lib/tema'
-import { useEstilos, useTema } from '../lib/tema-contexto'
+import { espaco, raio, texto, type Cores } from '../lib/tema'
+import { useEstilos } from '../lib/tema-contexto'
 
-// A home de quem ainda não tem conta.
+// A porta de entrada para quem ainda não tem conta: o que a escola tem.
 //
-// A ordem não é decorativa: primeiro o que a escola é (imagem e frase),
-// depois o tamanho dela (os números), depois o que lá se faz (as três
-// escolas), depois quem lá está (os professores) e só no fim o que se
-// pede à pessoa. Quem chega aqui está a decidir se vale a pena, não a
-// executar uma tarefa — pôr o botão em primeiro era responder antes da
-// pergunta.
-
-const ESCOLAS = [
-  { programa: 'musica' as const, nome: 'Música' },
-  { programa: 'danca' as const, nome: 'Dança' },
-  { programa: 'bebes' as const, nome: 'Primeiros sons' },
+// As palavras são as da home da web (public-home-experience.tsx), porque
+// é o mesmo convite a dizer a mesma coisa. As imagens não vêm — são
+// ficheiros da pasta public/ da web e trazê-las para a app engordaria o
+// bundle para pouco; aqui o que carrega a página é a tipografia.
+const ESCOLAS: {
+  id: InstrumentoPrograma
+  nome: string
+  detalhe: string
+  texto: string
+}[] = [
+  {
+    id: 'musica',
+    nome: 'Música',
+    detalhe: 'Piano · guitarra · canto · bateria',
+    texto: 'Aprender a escutar, repetir e encontrar uma voz própria.',
+  },
+  {
+    id: 'danca',
+    nome: 'Dança',
+    detalhe: 'Ballet · contemporâneo · estilos urbanos',
+    texto: 'Descobrir o corpo, o espaço e a expressão através do movimento.',
+  },
+  {
+    id: 'bebes',
+    nome: 'Primeiros sons',
+    detalhe: 'Música para bebés · 0–5 anos',
+    texto: 'Uma primeira relação com som, ritmo e criação em família.',
+  },
 ]
-
-// De quantos em quantos segundos as fichas rodam. Seis é tempo de ler
-// três nomes sem correr, e curto ao ponto de se perceber que a lista é
-// maior do que aquilo que está no ecrã.
-const ROTACAO_MS = 6000
-
-function iniciaisDe(nome: string): string {
-  const partes = nome.trim().split(/\s+/)
-  if (partes.length === 0) return '?'
-  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase()
-  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
-}
 
 export default function Descobrir() {
   const estilos = useEstilos(criarEstilos)
-  const { cores } = useTema()
   const router = useRouter()
-  const insets = useSafeAreaInsets()
-
-  const [numeros, setNumeros] = useState<NumerosPublicos | null>(null)
-  const [todos, setTodos] = useState<ProfessorDoCartaz[]>([])
-  const [tres, setTres] = useState<ProfessorDoCartaz[]>([])
-  const relogio = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [aberta, setAberta] = useState<InstrumentoPrograma | null>(null)
+  const [disciplinas, setDisciplinas] = useState<Instrumento[]>([])
 
   useEffect(() => {
+    if (!aberta) return
     let ativo = true
-    // Sem sessão. As duas funções são `security definer` e decidem lá
-    // dentro o que pode ser mostrado a quem passa — ver a migração 0055.
-    void Promise.all([numerosPublicos(supabase), listarProfessoresDoCartaz(supabase)]).then(
-      ([n, profs]) => {
-        if (!ativo) return
-        setNumeros(n)
-        setTodos(profs)
-        setTres(sortearTres(profs))
-      }
-    )
+    // Sem sessão. A política de RLS da tabela `instrumentos` deixa
+    // qualquer pessoa ver a oferta — é isso que permite haver uma página
+    // de descoberta antes de alguém se registar.
+    listarInstrumentos(supabase, aberta).then((lista) => {
+      if (ativo) setDisciplinas(lista)
+    })
     return () => {
       ativo = false
     }
-  }, [])
-
-  // Rodar só quando há mais do que três: com três ou menos, a "rotação"
-  // trocava as caras de sítio de seis em seis segundos sem mostrar
-  // ninguém novo, o que lê como avaria e não como novidade.
-  useEffect(() => {
-    if (todos.length <= 3) return
-    relogio.current = setInterval(() => setTres(sortearTres(todos)), ROTACAO_MS)
-    return () => {
-      if (relogio.current) clearInterval(relogio.current)
-      relogio.current = null
-    }
-  }, [todos])
-
-  const irParaEscola = useCallback(
-    (programa: string) => router.push(`/pedir-aula?programa=${programa}`),
-    [router]
-  )
+  }, [aberta])
 
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      {/* Claro, e não o do tema. Este ecrã começa por uma fotografia
-          escurecida, mesmo quando a app está em modo claro — as horas e
-          a bateria do sistema ficavam pretas por cima da pedra. É o
-          único sítio da app onde a barra de estado não segue o tema, e é
-          por o fundo aqui não ser o do tema. */}
-      <StatusBar style="light" />
-      <ScrollView
-        contentContainerStyle={[estilos.conteudo, { paddingBottom: 190 }]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* O herói: mármore, gradiente e o título por cima. O gradiente
-            não é enfeite — sem ele o texto branco assenta em zonas
-            claras da pedra e deixa de se ler. */}
-        <View style={estilos.heroi}>
-          <Image
-            source={require('../assets/patio-ccg.jpg')}
-            style={estilos.marmore}
-            accessibilityIgnoresInvertColors
-          />
-          <LinearGradient
-            // Mais escuro do que parece preciso, e de propósito. O
-            // pátio tem o céu quase branco em cima e a calçada clara em
-            // baixo — é nesses dois sítios que assentam a marca e o
-            // título, e ambos são texto branco. O meio pode respirar: é
-            // onde estão as arcadas, que já são escuras.
-            colors={['rgba(16,14,13,0.72)', 'rgba(16,14,13,0.34)', 'rgba(16,14,13,0.92)']}
-            locations={[0, 0.42, 1]}
-            style={StyleSheet.absoluteFill}
-          />
-          <View style={[estilos.heroiConteudo, { paddingTop: insets.top + espaco.m }]}>
-            <View style={estilos.heroiTopo}>
-              <MarcaLinha cor="#FFFFFF" />
+      <ScrollView contentContainerStyle={estilos.conteudo}>
+        <Text style={estilos.sobretitulo}>Centro Cultural da Guarda</Text>
+        <Text style={estilos.titulo}>Onde começa uma prática.</Text>
+        <Text style={estilos.entrada}>
+          Três escolas, dos primeiros sons aos instrumentos. Vê o que há e pede
+          uma aula — a conta cria-se em dois minutos.
+        </Text>
+
+        {ESCOLAS.map((e) => {
+          const ativa = aberta === e.id
+          return (
+            <Cartao key={e.id}>
               <Pressable
-                onPress={() => router.push('/entrar')}
+                onPress={() => {
+                  setDisciplinas([])
+                  setAberta(ativa ? null : e.id)
+                }}
                 accessibilityRole="button"
-                style={estilos.entrar}
+                accessibilityState={{ expanded: ativa }}
+                accessibilityLabel={`${e.nome}. ${e.detalhe}`}
               >
-                <Text style={estilos.entrarTexto}>Entrar</Text>
+                <Text style={estilos.escolaNome}>{e.nome}</Text>
+                <Text style={estilos.escolaDetalhe}>{e.detalhe}</Text>
+                <Text style={estilos.escolaTexto}>{e.texto}</Text>
+                <Text style={estilos.verMais}>
+                  {ativa ? 'Esconder disciplinas' : 'Ver disciplinas'}
+                </Text>
               </Pressable>
-            </View>
-            <Text style={estilos.titulo}>Três escolas artísticas, uma inscrição.</Text>
-          </View>
-        </View>
 
-        {/* Os números da escola. Reais, vindos da base — ver 0055. */}
-        <View style={estilos.numeros}>
-          <Numero valor={numeros?.alunos} rotulo="alunos" />
-          <View style={estilos.divisor} />
-          <Numero valor={numeros?.professores} rotulo="professores" />
-          <View style={estilos.divisor} />
-          <Numero valor={numeros?.escolas} rotulo="escolas" />
-        </View>
+              {ativa && disciplinas.length > 0 ? (
+                <View style={estilos.disciplinas}>
+                  {disciplinas.map((d) => (
+                    <View key={d.id} style={estilos.disciplina}>
+                      <Text style={estilos.disciplinaNome}>{d.nome}</Text>
+                    </View>
+                  ))}
+                </View>
+              ) : null}
+            </Cartao>
+          )
+        })}
 
-        <View style={estilos.chips}>
-          {ESCOLAS.map((e) => (
-            <Pressable
-              key={e.programa}
-              onPress={() => irParaEscola(e.programa)}
-              accessibilityRole="button"
-              style={estilos.chip}
-            >
-              <Text style={estilos.chipTexto}>{e.nome}</Text>
-            </Pressable>
-          ))}
+        <View style={estilos.rodape}>
+          <BotaoPrincipal texto="Criar conta" onPress={() => router.push('/registo')} />
+          <BotaoSecundario texto="Já tenho conta" onPress={() => router.push('/entrar')} />
+          <Text style={estilos.assinatura}>Pela Guarda, pela arte e pela cultura.</Text>
         </View>
-
-        <View style={estilos.fichas}>
-          {tres.map((p) => (
-            <FichaProfessor
-              key={p.professor_id}
-              nome={p.nome}
-              area={p.areas}
-              iniciais={iniciaisDe(p.nome)}
-              foto={p.foto_url}
-              onPress={() => router.push('/pedir-aula')}
-            />
-          ))}
-        </View>
-
-        {todos.length > 3 ? (
-          <Pressable
-            onPress={() => router.push('/pedir-aula')}
-            accessibilityRole="button"
-            style={estilos.verTodos}
-          >
-            <Text style={estilos.verTodosTexto}>
-              Conhece os {todos.length} professores →
-            </Text>
-          </Pressable>
-        ) : null}
       </ScrollView>
-
-      {/* Um botão só. Havia dois — "Criar conta" e "Já tenho conta" — e
-          o segundo está agora no canto do herói: quem já tem conta não
-          precisa de o ver ao fundo de uma página que existe para
-          convencer quem não tem. */}
-      <PainelAcao>
-        <BotaoPrincipal rotulo="Pedir uma aula" onPress={() => router.push('/pedir-aula')} />
-      </PainelAcao>
     </>
   )
-
-  function Numero({ valor, rotulo }: { valor: number | undefined; rotulo: string }) {
-    return (
-      <View style={estilos.numero}>
-        {/* Um traço enquanto não chega, e não um zero: zero alunos é uma
-            afirmação, e falsa. */}
-        <Text style={[estilos.numeroValor, { color: cores.ciano }]}>{valor ?? '—'}</Text>
-        <Text style={estilos.numeroRotulo}>{rotulo}</Text>
-      </View>
-    )
-  }
 }
 
-const criarEstilos = (cores: Cores) =>
-  StyleSheet.create({
-    conteudo: { backgroundColor: cores.fundo },
-    heroi: { height: 340, justifyContent: 'flex-end' },
-    marmore: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
-    heroiConteudo: { flex: 1, justifyContent: 'space-between', padding: espaco.m },
-    heroiTopo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    entrar: { minHeight: 44, justifyContent: 'center', paddingHorizontal: espaco.s },
-    entrarTexto: { ...texto.cartao, color: '#FFFFFF' },
-    titulo: { ...texto.titulo, color: '#FFFFFF', marginBottom: espaco.s },
-
-    numeros: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: espaco.m,
-      paddingHorizontal: espaco.m,
-      borderBottomWidth: 1,
-      borderBottomColor: cores.linha,
-    },
-    numero: { flex: 1, gap: 2 },
-    numeroValor: { ...texto.numero },
-    numeroRotulo: { ...texto.pequeno, color: cores.tintaSuave },
-    divisor: { width: 1, height: 34, backgroundColor: cores.linha },
-
-    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.s, padding: espaco.m },
-    chip: {
-      minHeight: 44,
-      justifyContent: 'center',
-      paddingHorizontal: espaco.m,
-      borderRadius: raio.capsula,
-      borderWidth: 1,
-      borderColor: cores.linha,
-      backgroundColor: cores.cartao,
-    },
-    chipTexto: { ...texto.cartao, color: cores.tinta },
-
-    fichas: { gap: espaco.s, paddingHorizontal: espaco.m },
-    verTodos: { minHeight: 44, justifyContent: 'center', paddingHorizontal: espaco.m },
-    verTodosTexto: { ...texto.cartao, fontFamily: tipos.corpoMedio, color: cores.ciano },
-  })
+const criarEstilos = (cores: Cores) => StyleSheet.create({
+  conteudo: {
+    padding: espaco.l,
+    gap: espaco.s,
+    paddingBottom: espaco.xxl,
+    backgroundColor: cores.papel,
+  },
+  sobretitulo: { ...texto.etiqueta, color: cores.azulTexto },
+  titulo: { ...texto.titulo, fontSize: 34, lineHeight: 40, color: cores.tinta },
+  entrada: {
+    ...texto.corpo,
+    color: cores.tintaSuave,
+    marginBottom: espaco.m,
+  },
+  escolaNome: { ...texto.seccao, color: cores.tinta },
+  escolaDetalhe: { ...texto.pequeno, color: cores.azulTexto },
+  escolaTexto: { ...texto.corpo, color: cores.tintaSuave, marginTop: espaco.xs },
+  verMais: { ...texto.pequeno, fontFamily: 'Geist_600SemiBold', color: cores.azulTexto, marginTop: espaco.s },
+  disciplinas: { flexDirection: 'row', flexWrap: 'wrap', gap: espaco.xs, marginTop: espaco.s },
+  disciplina: {
+    backgroundColor: cores.papel2,
+    borderRadius: raio.pilula,
+    paddingVertical: 6,
+    paddingHorizontal: espaco.s + 2,
+  },
+  disciplinaNome: { ...texto.pequeno, color: cores.tinta },
+  rodape: { marginTop: espaco.l, gap: espaco.s },
+  assinatura: {
+    ...texto.pequeno,
+    color: cores.tintaSuave,
+    textAlign: 'center',
+    marginTop: espaco.m,
+  },
+})

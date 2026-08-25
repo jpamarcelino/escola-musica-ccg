@@ -1,12 +1,12 @@
 import {
-  IBMPlexMono_500Medium,
-  IBMPlexMono_600SemiBold,
-} from '@expo-google-fonts/ibm-plex-mono'
+  Fraunces_600SemiBold,
+  Fraunces_700Bold,
+} from '@expo-google-fonts/fraunces'
 import {
-  Manrope_400Regular,
-  Manrope_600SemiBold,
-  Manrope_800ExtraBold,
-} from '@expo-google-fonts/manrope'
+  Geist_400Regular,
+  Geist_500Medium,
+  Geist_600SemiBold,
+} from '@expo-google-fonts/geist'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
@@ -28,15 +28,12 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 })
 
 export default function LayoutRaiz() {
-  // Manrope em tudo, IBM Plex Mono só para horas, datas e números. O
-  // Fraunces saiu: um serifado de display não sobrevive a uma interface
-  // que passou a ser sobretudo listas e horas.
   const [fontesProntas, erroFontes] = useFonts({
-    Manrope_400Regular,
-    Manrope_600SemiBold,
-    Manrope_800ExtraBold,
-    IBMPlexMono_500Medium,
-    IBMPlexMono_600SemiBold,
+    Fraunces_600SemiBold,
+    Fraunces_700Bold,
+    Geist_400Regular,
+    Geist_500Medium,
+    Geist_600SemiBold,
   })
 
   useEffect(() => {
@@ -84,7 +81,7 @@ function Navegacao() {
         screenOptions={{
           headerStyle: { backgroundColor: cores.papel },
           headerTintColor: cores.azulFundo,
-          headerTitleStyle: { fontFamily: tipos.corpoMedio, fontSize: 17, color: cores.tinta },
+          headerTitleStyle: { fontFamily: tipos.display, fontSize: 17, color: cores.tinta },
           headerShadowVisible: false,
           // Só a seta, sem legenda. Por omissão o iOS escreve ao lado da
           // seta o nome do ecrã anterior, e o ecrã anterior destes é o
