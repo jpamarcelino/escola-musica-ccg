@@ -155,12 +155,29 @@ export default function Hoje() {
 
   const agora = agoraNaEscola()
   const hoje = hojeISO()
-  const deHoje = linhas.filter((l) => l.data === hoje)
-  const aDecorrer = deHoje.find(
-    (l) => estadoTemporalAula(l.data, l.horaInicio, l.horaFim, agora) === 'agora'
+  const horaAgora = `${String(agora.getHours()).padStart(2, '0')}:${String(
+    agora.getMinutes()
+  ).padStart(2, '0')}`
+
+  // O cartão grande mostra sempre alguma coisa: o que está a decorrer e,
+  // na falta disso, o que vem a seguir. Um ecrã que só ganha vida durante
+  // os cinquenta minutos de uma aula está apagado o resto do dia — e a
+  // maior parte das vezes que se abre a app não é a meio de uma aula.
+  //
+  // A primeira por acontecer é a primeira cujo fim ainda não passou, o
+  // que apanha de graça a que está a decorrer agora.
+  const porAcontecer = linhas.filter(
+    (l) => l.data > hoje || (l.data === hoje && l.horaFim.slice(0, 5) > horaAgora)
   )
-  const restoDeHoje = deHoje.filter((l) => l.chave !== aDecorrer?.chave)
-  const aSeguir = linhas.filter((l) => l.data > hoje).slice(0, 4)
+  const destaque = porAcontecer[0]
+  const aDecorrer =
+    destaque != null &&
+    estadoTemporalAula(destaque.data, destaque.horaInicio, destaque.horaFim, agora) === 'agora'
+
+  const deHoje = linhas.filter((l) => l.data === hoje && l.chave !== destaque?.chave)
+  const aSeguir = linhas
+    .filter((l) => l.data > hoje && l.chave !== destaque?.chave)
+    .slice(0, 4)
 
   // Uma pergunta de cada vez. Três cartões vermelhos empilhados deixam
   // de ser urgência e passam a ser parede — o que precisa de resposta
@@ -228,34 +245,54 @@ export default function Hoje() {
         </Pressable>
       ) : null}
 
-      {aDecorrer ? (
-        <CartaoAgora
-          linha={aDecorrer}
+      {destaque ? (
+        <CartaoDestaque
+          linha={destaque}
           agora={agora}
+          hoje={hoje}
+          aDecorrer={aDecorrer}
           acao={
-            professor && aDecorrer.horarioId
-              ? { rotulo: 'Marcar presenças', destino: `/professor/presencas/${aDecorrer.horarioId}` }
-              : null
+            aDecorrer && professor && destaque.horarioId
+              ? {
+                  rotulo: 'Marcar presença',
+                  destino: `/professor/presencas/${destaque.horarioId}`,
+                }
+              : { rotulo: 'Ver na agenda', destino: '/agenda' }
           }
         />
       ) : null}
 
-      <Text style={estilos.seccao}>{aDecorrer ? 'Ainda hoje' : 'Hoje'}</Text>
-      {restoDeHoje.length === 0 ? (
-        <Text style={estilos.vazio}>
-          {aDecorrer
-            ? 'Não há mais nada marcado para hoje.'
-            : professor
+      {deHoje.length > 0 ? (
+        <>
+          <Text style={estilos.seccao}>{destaque ? 'Ainda hoje' : 'Hoje'}</Text>
+          {deHoje.map((l) => (
+            <LinhaAula key={l.chave} linha={l} />
+          ))}
+        </>
+      ) : null}
+
+      {/* Dizer que hoje não há nada, mesmo quando o cartão já mostra o de
+          amanhã. Sem isto, quem abre a app a meio da manhã vê uma aula
+          de amanhã em destaque e fica sem saber se lhe escapou alguma
+          coisa hoje. */}
+      {deHoje.length === 0 && destaque?.data !== hoje ? (
+        <>
+          <Text style={estilos.seccao}>Hoje</Text>
+          <Text style={estilos.vazio}>
+            {professor
               ? 'Nenhuma aula marcada para hoje na tua agenda.'
               : 'Nenhuma aula marcada para hoje.'}
-        </Text>
-      ) : (
-        restoDeHoje.map((l) => <LinhaAula key={l.chave} linha={l} />)
-      )}
+          </Text>
+        </>
+      ) : null}
 
       {aSeguir.length > 0 && (
         <>
-          <Text style={estilos.seccao}>A seguir</Text>
+          {/* "Depois" e não "A seguir": o cartão de cima já é o que vem
+              a seguir, e dois títulos iguais no mesmo ecrã fazem duvidar
+              de qual é qual. Só quando o cartão mostra uma aula a
+              decorrer é que o que vem abaixo é mesmo o seguinte. */}
+          <Text style={estilos.seccao}>{aDecorrer ? 'A seguir' : 'Depois'}</Text>
           {aSeguir.map((l) => (
             <LinhaAula key={l.chave} linha={l} comData />
           ))}
@@ -277,54 +314,99 @@ export default function Hoje() {
   )
 }
 
-// O cartão do que está a acontecer agora. Contorno ciano, hora grande em
-// mono e uma barra que anda: é a única coisa no ecrã que muda sozinha, e
-// é isso que a distingue de tudo o resto sem precisar de uma etiqueta.
-function CartaoAgora({
+// O cartão do que vem já.
+//
+// Contorno ciano, hora grande em mono e uma ação lá dentro. É a única
+// coisa do ecrã com peso, e é de propósito: quem abre a app a meio do
+// dia quer saber uma coisa — o que é a seguir — e não quer ler uma lista
+// para descobrir.
+//
+// Mostra o que está a decorrer quando há, e o que vem a seguir quando não
+// há. A diferença está na etiqueta, no que se lê à direita e na barra: a
+// barra só existe enquanto há alguma coisa a progredir. Uma barra vazia
+// num cartão do que ainda não começou parece avaria, não informação.
+function CartaoDestaque({
   linha,
   agora,
+  hoje,
+  aDecorrer,
   acao,
 }: {
   linha: Linha
   agora: Date
-  acao: { rotulo: string; destino: string } | null
+  hoje: string
+  aDecorrer: boolean
+  acao: { rotulo: string; destino: string }
 }) {
   const estilos = useEstilos(criarEstilos)
+  const { cores } = useTema()
+
   const decorrido = minutosDesde(linha.horaInicio, agora)
   const total = minutosEntre(linha.horaInicio, linha.horaFim)
   const fracao = total > 0 ? Math.min(1, Math.max(0, decorrido / total)) : 0
-  const faltam = Math.max(0, total - decorrido)
 
   return (
-    <View style={estilos.agora}>
-      <View style={estilos.agoraTopo}>
-        <Text style={estilos.agoraHora}>{formatarHora(linha.horaInicio)}</Text>
-        <View style={{ flex: 1 }}>
-          <Text style={estilos.agoraTitulo}>{linha.titulo}</Text>
-          {(linha.detalhe || linha.sala) && (
-            <Text style={estilos.agoraDetalhe}>
-              {[linha.detalhe, linha.sala].filter(Boolean).join(' · ')}
-            </Text>
-          )}
+    <View style={estilos.destaque}>
+      <View style={estilos.destaqueTopo}>
+        <View style={estilos.etiqueta}>
+          {aDecorrer ? <View style={estilos.ponto} /> : null}
+          <Text style={estilos.etiquetaTexto}>{aDecorrer ? 'A decorrer' : 'A seguir'}</Text>
         </View>
+        <Text style={estilos.quando}>{quandoDizer(linha, agora, hoje, aDecorrer)}</Text>
       </View>
 
-      <View style={estilos.barra}>
-        <View style={[estilos.barraCheia, { width: `${fracao * 100}%` }]} />
+      <View style={estilos.destaqueLinha}>
+        <Text style={estilos.destaqueHora}>{formatarHora(linha.horaInicio)}</Text>
+        <Text style={estilos.destaqueTitulo} numberOfLines={1}>
+          {linha.titulo}
+        </Text>
       </View>
-      <Text style={estilos.agoraFaltam}>
-        {faltam === 0 ? 'A terminar' : `Faltam ${plural(faltam, 'minuto', 'minutos')}`}
+
+      <Text style={estilos.destaqueMeta}>
+        {[linha.detalhe, linha.sala, `até ${formatarHora(linha.horaFim)}`]
+          .filter(Boolean)
+          .join(' · ')}
       </Text>
 
-      {acao ? (
-        <Link href={acao.destino as never} asChild>
-          <Pressable accessibilityRole="button" style={estilos.agoraBotao}>
-            <Text style={estilos.agoraBotaoTexto}>{acao.rotulo}</Text>
-          </Pressable>
-        </Link>
+      {aDecorrer ? (
+        <View style={estilos.barra}>
+          <View style={[estilos.barraCheia, { width: `${fracao * 100}%` }]} />
+        </View>
       ) : null}
+
+      <Link href={acao.destino as never} asChild>
+        <Pressable accessibilityRole="button" style={estilos.destaqueBotao}>
+          <Text style={[estilos.destaqueBotaoTexto, { color: cores.botaoTexto }]}>
+            {acao.rotulo}
+          </Text>
+        </Pressable>
+      </Link>
     </View>
   )
+}
+
+// O que se lê no canto direito. Enquanto decorre, quanto falta; antes de
+// começar, daqui a quanto. Depois de "amanhã" passa a dizer-se a data:
+// "daqui a 39 h" não é coisa que alguém consiga usar.
+function quandoDizer(linha: Linha, agora: Date, hoje: string, aDecorrer: boolean): string {
+  if (aDecorrer) {
+    const faltam = Math.max(0, minutosEntre(linha.horaInicio, linha.horaFim) - minutosDesde(linha.horaInicio, agora))
+    return faltam === 0 ? 'a terminar' : `faltam ${faltam} min`
+  }
+
+  if (linha.data === hoje) {
+    const minutos = Math.max(0, -minutosDesde(linha.horaInicio, agora))
+    if (minutos < 60) return `daqui a ${minutos} min`
+    const horas = Math.floor(minutos / 60)
+    const resto = minutos % 60
+    return resto === 0 ? `daqui a ${horas} h` : `daqui a ${horas} h ${resto}`
+  }
+
+  const amanha = new Date(`${hoje}T12:00:00`)
+  amanha.setDate(amanha.getDate() + 1)
+  if (linha.data === amanha.toISOString().slice(0, 10)) return 'amanhã'
+
+  return formatarDataEscolar(linha.data, { day: 'numeric', month: 'long' })
 }
 
 function LinhaAula({ linha, comData }: { linha: Linha; comData?: boolean }) {
@@ -430,7 +512,7 @@ const criarEstilos = (cores: Cores) =>
     precisaTexto: { ...texto.cartao, color: cores.alerta },
     precisaAcao: { ...texto.pequeno, color: cores.alerta, marginTop: 2 },
 
-    agora: {
+    destaque: {
       gap: espaco.s,
       padding: espaco.m,
       borderRadius: raio.cartao,
@@ -438,21 +520,32 @@ const criarEstilos = (cores: Cores) =>
       borderColor: cores.ciano,
       backgroundColor: cores.cartao,
     },
-    agoraTopo: { flexDirection: 'row', alignItems: 'center', gap: espaco.m },
-    agoraHora: { ...texto.hora, color: cores.ciano },
-    agoraTitulo: { ...texto.cartao, color: cores.tinta },
-    agoraDetalhe: { ...texto.pequeno, color: cores.tintaSuave },
-    barra: { height: 4, borderRadius: 2, backgroundColor: cores.cartaoSuave, overflow: 'hidden' },
-    barraCheia: { height: 4, borderRadius: 2, backgroundColor: cores.ciano },
-    agoraFaltam: { ...texto.pequeno, color: cores.tintaSuave },
-    agoraBotao: {
+    destaqueTopo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    etiqueta: { flexDirection: 'row', alignItems: 'center', gap: espaco.xs },
+    ponto: { width: 9, height: 9, borderRadius: 5, backgroundColor: cores.ciano },
+    etiquetaTexto: { ...texto.cartao, color: cores.ciano },
+    // Em mono porque é um número que muda sozinho: alinhado, não dança
+    // de largura a cada minuto que passa.
+    quando: { ...texto.horaLista, color: cores.tintaSuave },
+    destaqueLinha: { flexDirection: 'row', alignItems: 'baseline', gap: espaco.s },
+    destaqueHora: { ...texto.hora, color: cores.tinta },
+    destaqueTitulo: { ...texto.seccao, fontSize: 21, lineHeight: 26, color: cores.tinta, flex: 1 },
+    destaqueMeta: { ...texto.pequeno, color: cores.tintaSuave },
+    barra: { height: 6, borderRadius: 3, backgroundColor: cores.cartaoSuave, overflow: 'hidden' },
+    barraCheia: { height: 6, borderRadius: 3, backgroundColor: cores.ciano },
+    // Pílula e não barra de largura inteira: é uma ação entre outras
+    // coisas do cartão, não o fim de um formulário.
+    destaqueBotao: {
+      alignSelf: 'flex-start',
       minHeight: 48,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: raio.botao,
+      paddingHorizontal: espaco.l,
+      borderRadius: raio.capsula,
       backgroundColor: cores.botao,
+      marginTop: espaco.xs,
     },
-    agoraBotaoTexto: { ...texto.cartao, color: cores.botaoTexto },
+    destaqueBotaoTexto: { ...texto.cartao },
 
     seccao: { ...texto.seccao, color: cores.tintaSuave, marginTop: espaco.m },
     vazio: { ...texto.corpo, color: cores.tintaSuave },
