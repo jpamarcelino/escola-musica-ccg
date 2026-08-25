@@ -12,6 +12,7 @@ import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { AtivarNotificacoes } from '@/components/ativar-notificacoes'
+import { SeletorAparencia } from '@/components/seletor-aparencia'
 
 export default async function AdminContaPage({
   searchParams,
@@ -124,6 +125,11 @@ export default async function AdminContaPage({
             professor e da secretaria ao mesmo tempo liga uma vez e
             recebe tudo. Por isso esta secção está fora do bloco de
             professor. */}
+        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+          <h2 className="font-semibold">Aparência</h2>
+          <SeletorAparencia />
+        </section>
+
         <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
           <h2 className="font-semibold">Notificações no telemóvel</h2>
           {chavePublica ? (

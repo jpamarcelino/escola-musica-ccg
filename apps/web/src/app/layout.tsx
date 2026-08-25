@@ -5,6 +5,7 @@ import { CabecalhoPublico } from "@/components/cabecalho-publico";
 import { NavigationFeedback } from "@/components/navigation-feedback";
 import { PageTransition } from "@/components/page-transition";
 import { RegistarServiceWorker } from "@/components/registar-service-worker";
+import { APARENCIA_PREDEFINIDA, CHAVE_APARENCIA } from "@/lib/aparencia";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -59,8 +60,31 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
+      // O script abaixo escreve `data-aparencia`/`data-tema` no <html>
+      // antes de o React hidratar. O HTML do servidor não os traz — não
+      // pode: só o browser sabe o que está guardado neste aparelho — e
+      // sem isto o React acusa a diferença e desiste de hidratar a
+      // página inteira. Suprime só os atributos DESTE elemento.
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
+      <head>
+        {/* Corre antes de qualquer pintura, e por isso tem de ser um
+            script em texto e não um componente: quando o tema escuro
+            existir, esperar pelo React para o aplicar mostraria um
+            relâmpago branco a cada arranque da app. Lê a preferência
+            guardada e escreve-a no <html> — o CSS lê o atributo, não o
+            localStorage. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var e=localStorage.getItem(${JSON.stringify(
+              CHAVE_APARENCIA,
+            )});if(e!=="claro"&&e!=="escuro"&&e!=="sistema")e=${JSON.stringify(
+              APARENCIA_PREDEFINIDA,
+            )};var r=document.documentElement;r.dataset.aparencia=e;r.dataset.tema=e==="sistema"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"escuro":"claro"):e;}catch(_){}})()`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <RegistarServiceWorker />
         <a
