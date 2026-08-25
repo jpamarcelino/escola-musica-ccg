@@ -6,6 +6,7 @@ import {
 } from '@ccg/data'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Stack, useRouter } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -89,6 +90,12 @@ export default function Descobrir() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
+      {/* Claro, e não o do tema. Este ecrã começa por uma fotografia
+          escurecida, mesmo quando a app está em modo claro — as horas e
+          a bateria do sistema ficavam pretas por cima da pedra. É o
+          único sítio da app onde a barra de estado não segue o tema, e é
+          por o fundo aqui não ser o do tema. */}
+      <StatusBar style="light" />
       <ScrollView
         contentContainerStyle={[estilos.conteudo, { paddingBottom: 190 }]}
         showsVerticalScrollIndicator={false}
@@ -98,16 +105,18 @@ export default function Descobrir() {
             claras da pedra e deixa de se ler. */}
         <View style={estilos.heroi}>
           <Image
-            source={require('../assets/marmore-fundo.jpg')}
+            source={require('../assets/patio-ccg.jpg')}
             style={estilos.marmore}
             accessibilityIgnoresInvertColors
           />
           <LinearGradient
-            // Três paragens e não duas: o mármore é claro no topo, e um
-            // gradiente que só escurece o fundo deixava a marca e o
-            // "Entrar" a flutuar sobre pedra branca.
-            colors={['rgba(16,14,13,0.55)', 'rgba(16,14,13,0.30)', 'rgba(16,14,13,0.88)']}
-            locations={[0, 0.4, 1]}
+            // Mais escuro do que parece preciso, e de propósito. O
+            // pátio tem o céu quase branco em cima e a calçada clara em
+            // baixo — é nesses dois sítios que assentam a marca e o
+            // título, e ambos são texto branco. O meio pode respirar: é
+            // onde estão as arcadas, que já são escuras.
+            colors={['rgba(16,14,13,0.72)', 'rgba(16,14,13,0.34)', 'rgba(16,14,13,0.92)']}
+            locations={[0, 0.42, 1]}
             style={StyleSheet.absoluteFill}
           />
           <View style={[estilos.heroiConteudo, { paddingTop: insets.top + espaco.m }]}>
