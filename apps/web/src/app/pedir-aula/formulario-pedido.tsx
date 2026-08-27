@@ -8,6 +8,7 @@ import { CampoRecomendacao } from '@/components/campo-recomendacao'
 import { MensagemErro } from '@/components/mensagem'
 import { HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import { ModalContaPedido, ModalEscolherAluno } from '@/components/modal-conta-pedido'
+import { ModalUmHorario, deveAvisarUmHorario } from '@/components/confirmar-um-horario'
 import type { HorarioEstado, InstrumentoPrograma } from '@ccg/types'
 
 type Horario = {
@@ -31,6 +32,7 @@ export function FormularioPedido({
   horaInicioGrade,
   alturaGrade,
   semHorarios,
+  horariosDisponiveis,
   instrumentoId,
   professorId,
   professorAdereRecomendacao,
@@ -45,6 +47,8 @@ export function FormularioPedido({
   horaInicioGrade: number
   alturaGrade: number
   semHorarios: boolean
+  // Quantos horários se podem mesmo escolher (os bloqueados não contam).
+  horariosDisponiveis: number
   instrumentoId: string
   professorId: string
   // Só com o professor aderente ao Programa é que se pergunta quem
@@ -59,6 +63,7 @@ export function FormularioPedido({
   erroInicial?: string
 }) {
   const [popup, setPopup] = useState<'conta' | 'aluno' | null>(null)
+  const [avisoUmHorario, setAvisoUmHorario] = useState(false)
   const [aEnviar, iniciarEnvio] = useTransition()
   const [erro, setErro] = useState(erroInicial ?? '')
   const formRef = useRef<HTMLFormElement>(null)
@@ -86,6 +91,17 @@ export function FormularioPedido({
       setErro('Seleciona pelo menos um horário ou escreve uma mensagem.')
       return
     }
+    // Uma pausa antes do popup de conta, não depois: quem vai voltar à
+    // grelha para marcar mais horários não deve ter de passar primeiro
+    // por entrar na conta.
+    if (deveAvisarUmHorario(formEl, horariosDisponiveis)) {
+      setAvisoUmHorario(true)
+      return
+    }
+    abrirPopupDeConta()
+  }
+
+  function abrirPopupDeConta() {
     setPopup(autenticado ? 'aluno' : 'conta')
   }
 
@@ -187,6 +203,16 @@ export function FormularioPedido({
         <input type="hidden" name="programa" value={programa} />
         <input type="hidden" name="idade" value={idade} />
       </form>
+
+      {avisoUmHorario && (
+        <ModalUmHorario
+          onEscolherMais={() => setAvisoUmHorario(false)}
+          onEnviarAssim={() => {
+            setAvisoUmHorario(false)
+            abrirPopupDeConta()
+          }}
+        />
+      )}
 
       {popup === 'conta' && (
         <ModalContaPedido

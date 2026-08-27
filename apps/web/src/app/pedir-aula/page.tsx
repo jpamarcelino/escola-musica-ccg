@@ -267,6 +267,9 @@ export default async function PedirAulaPage({
 
   const horariosGrade = (horarios ?? []).filter((h) => DIAS_GRADE.includes(h.dia_semana))
   const semHorarios = horariosGrade.length === 0
+  // Os bloqueados ficam à vista mas não se escolhem — e por isso não
+  // contam para o aviso do "só uma opção".
+  const horariosDisponiveis = horariosGrade.filter((h) => h.estado !== 'bloqueado').length
 
   const horaInicioGrade = semHorarios
     ? 0
@@ -302,6 +305,7 @@ export default async function PedirAulaPage({
         horaInicioGrade={horaInicioGrade}
         alturaGrade={alturaGrade}
         semHorarios={semHorarios}
+        horariosDisponiveis={horariosDisponiveis}
         instrumentoId={instrumento}
         professorId={professor}
         professorAdereRecomendacao={professorEscolhido?.adere_recomendacao ?? false}

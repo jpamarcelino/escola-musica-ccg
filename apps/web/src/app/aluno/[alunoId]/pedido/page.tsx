@@ -9,6 +9,7 @@ import { BotaoPrimario } from '@/components/botao-primario'
 import { CampoTextarea } from '@/components/campo-formulario'
 import { CampoRecomendacao } from '@/components/campo-recomendacao'
 import { MensagemErro } from '@/components/mensagem'
+import { AvisoUmHorario } from '@/components/confirmar-um-horario'
 
 // Nomes das escolas para as etiquetas de "escolhas até agora". Este
 // percurso tem quatro passos e não cinco como o público: a idade não é
@@ -302,6 +303,11 @@ export default async function PedidoPage({
   )
   const semHorarios = horariosGrade.length === 0
 
+  // Os que se podem mesmo escolher. Os bloqueados aparecem na grelha para
+  // se ver o horário completo do professor, mas não contam para o aviso do
+  // "só uma opção": se só houver um livre, escolher mais é impossível.
+  const horariosDisponiveis = horariosGrade.filter((h) => h.estado !== 'bloqueado').length
+
   // A grelha só mostra as horas entre a aula mais cedo e a mais tarde deste
   // professor (arredondadas à hora certa), não um intervalo fixo do dia.
   const horaInicioGrade = semHorarios
@@ -445,6 +451,7 @@ export default async function PedidoPage({
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
         <BotaoPrimario>Enviar pedido</BotaoPrimario>
+        <AvisoUmHorario horariosDisponiveis={horariosDisponiveis} />
       </form>
     </Wizard>
   )
