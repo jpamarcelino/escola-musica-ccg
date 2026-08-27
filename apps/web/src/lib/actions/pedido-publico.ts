@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { validarDataNascimento, validarRegisto } from '@ccg/core'
+import { TEXTOS_LEGAIS, validarDataNascimento, validarRegisto } from '@ccg/core'
 import { listarAlunosDoEncarregado, type AlunoResumo } from '@ccg/data'
 
 // Variantes de login/signup/criarAlunoDependente que não fazem redirect —
@@ -140,6 +140,13 @@ export async function criarAlunoDependenteModal(
     if (!nome) {
       return { error: 'Indica o nome do aluno.' }
     }
+    // Criar um perfil para outra pessoa exige a declaração; criar o
+    // próprio não, que não há legitimidade a declarar sobre si mesmo.
+    // O `required` do markup não chega — é o formulário a pedir, e um
+    // formulário pede-se sem passar por ele.
+    if (formData.get('declaraLegitimidade') !== 'on') {
+      return { error: TEXTOS_LEGAIS.erroDeclaracaoPerfilAluno }
+    }
   }
   // A data continua opcional aqui — quem cria um aluno pelo pop-up pode
   // não a saber de cor. Mas quando a escreve, passa a valer a mesma regra
@@ -161,6 +168,9 @@ export async function criarAlunoDependenteModal(
       propria_conta_id: ehProprio ? user.id : null,
       nome,
       data_nascimento: dataNascimento || null,
+      // A prova da declaração, e não só a sua exigência: uma caixa
+      // marcada que não deixa rasto não prova nada. Ver migração 0055.
+      declaracao_legitimidade_em: ehProprio ? null : new Date().toISOString(),
     })
     .select('id')
     .single()

@@ -6,7 +6,7 @@ import { SubmitButton } from '@/components/submit-button'
 import { CampoTexto } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
-import { calcularIdade, hojeISO } from '@ccg/core'
+import { calcularIdade, hojeISO, TEXTOS_LEGAIS } from '@ccg/core'
 import { ehContaCCG } from '@/lib/navegacao'
 
 // Gestão dos perfis de aluno da Conta CCG.
@@ -157,6 +157,19 @@ export default async function AlunosPage({
                 type="date"
                 max={hojeISO()}
               />
+              {/* Só neste ramo. Criar um perfil para outra pessoa é o
+                  único caso em que há legitimidade a declarar — quem se
+                  adiciona a si próprio, acima, não declara nada sobre si.
+                  O pop-up de /pedir-aula pede exatamente o mesmo: são
+                  duas portas para a mesma linha da tabela, e não podem
+                  exigir coisas diferentes. */}
+              <fieldset className="registo-declaracoes">
+                <legend className="sr-only">Declaração</legend>
+                <label>
+                  <input type="checkbox" name="declaraLegitimidade" required />
+                  <span>{TEXTOS_LEGAIS.declaracaoPerfilAluno}</span>
+                </label>
+              </fieldset>
               <SubmitButton textoAGuardar="A adicionar…" className="familia-adicionar-botao">
                 Adicionar aluno
               </SubmitButton>

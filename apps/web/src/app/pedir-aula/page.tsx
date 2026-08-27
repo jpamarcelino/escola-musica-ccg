@@ -5,6 +5,7 @@ import { DIAS_SEMANA, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separarFaixaEtaria, pa
 import { CartaoLink } from '@/components/cartao-link'
 import { Wizard, ListaEscolhas } from '@/components/wizard'
 import { SeletorIdade } from '@/components/seletor-idade'
+import type { ProfessorParaRecomendacao } from '@/components/campo-recomendacao'
 import { FormularioPedido } from './formulario-pedido'
 
 // Nomes das escolas pelas palavras de quem escolhe, para as etiquetas
@@ -253,11 +254,20 @@ export default async function PedirAulaPage({
   // A adesão ao Programa vem pela função pública, e não de perfis_escola:
   // aqui ainda se pode estar sem sessão, e essa tabela só abre a quem
   // entrou. A conta cria-se no fim, ao carregar em "Enviar pedido".
-  const { data: professoresDoInstrumento } = await supabase.rpc('professores_publicos', {
-    instrumento_id_param: Number(instrumento),
-  })
+  const [{ data: professoresDoInstrumento }, { data: professoresDaEscola }] = await Promise.all([
+    supabase.rpc('professores_publicos', { instrumento_id_param: Number(instrumento) }),
+    // A lista para o seletor do campo de recomendação. Vem sempre, mesmo
+    // que o campo não chegue a aparecer: é uma consulta de dois campos e
+    // pedi-la só quando é precisa obrigaria a esperar por ela depois de
+    // já se saber se o professor aderiu.
+    supabase.rpc('professores_para_recomendacao'),
+  ])
   const professorEscolhido = (
-    (professoresDoInstrumento ?? []) as { professor_id: string; adere_recomendacao: boolean }[]
+    (professoresDoInstrumento ?? []) as {
+      professor_id: string
+      nome: string
+      adere_recomendacao: boolean
+    }[]
   ).find((p) => p.professor_id === professor)
 
   const { data: horarios } = await supabase
@@ -309,6 +319,10 @@ export default async function PedirAulaPage({
         instrumentoId={instrumento}
         professorId={professor}
         professorAdereRecomendacao={professorEscolhido?.adere_recomendacao ?? false}
+        professorNome={professorEscolhido?.nome ?? ''}
+        professoresParaRecomendacao={
+          (professoresDaEscola ?? []) as ProfessorParaRecomendacao[]
+        }
         programa={programa}
         idade={idadeNum}
         autenticado={!!user}

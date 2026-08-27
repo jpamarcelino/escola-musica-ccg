@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { calcularIdade, elegivelParaDisciplina } from '@ccg/core'
+import { calcularIdade, elegivelParaDisciplina, TEXTOS_LEGAIS } from '@ccg/core'
 
 export async function escolherDisponibilidades(formData: FormData) {
   const supabase = await createClient()
@@ -29,9 +29,11 @@ export async function escolherDisponibilidades(formData: FormData) {
   // É texto livre e por confirmar — ver a migração 0026 e o comentário
   // mais abaixo, onde se grava.
   const recomendadoPor = String(formData.get('recomendadoPor') ?? '').trim().slice(0, 120)
-  const recomendadoModalidade = String(formData.get('recomendadoModalidade') ?? '')
-    .trim()
-    .slice(0, 80)
+  // Com que professor tem aulas quem recomendou. O Art. 8.º só admite
+  // recomendações dentro do mesmo professor — o formulário já o diz assim
+  // que se escolhe outro, mas é aqui que a regra é mesmo aplicada: o ecrã
+  // só mostra, e um pedido pode chegar sem passar por ele.
+  const recomendadoProfessorId = String(formData.get('recomendadoProfessorId') ?? '').trim()
 
   function voltarComErro(mensagemErro: string): never {
     // O wizard público precisa de "programa" e "idade" no caminho de volta:
@@ -161,14 +163,26 @@ export async function escolherDisponibilidades(formData: FormData) {
   // pedida vale por si, e a recomendação recupera-se com uma conversa na
   // secretaria — desfazer um pedido válido por causa disto seria trocar
   // um problema pequeno por um grande.
-  if (recomendadoPor && professorPerfil?.adere_recomendacao) {
+  //
+  // Um professor diferente do que recebe o aluno não dá origem a
+  // indicação nenhuma: registá-la seria criar trabalho para a secretaria
+  // e uma expectativa de desconto que o Art. 8.º não deixa cumprir.
+  const recomendacaoValida =
+    !!recomendadoPor &&
+    professorPerfil?.adere_recomendacao &&
+    recomendadoProfessorId === professorId
+
+  if (recomendacaoValida) {
     await supabase.from('indicacoes_recomendacao').insert({
       matricula_id: matricula.id,
       novo_aluno_id: alunoId,
       novo_aluno_nome: aluno.nome,
       professor_id: professorId,
       recomendador_nome_indicado: recomendadoPor,
-      modalidade_indicada: recomendadoModalidade || null,
+      // Deixou de ser perguntada: a modalidade servia para desempatar
+      // nomes repetidos em toda a escola, e agora a procura já está
+      // limitada aos alunos deste professor.
+      modalidade_indicada: null,
     })
   }
 
@@ -390,6 +404,13 @@ export async function criarAluno(formData: FormData) {
     if (!nome) {
       voltarComErro('Indica o nome do aluno.')
     }
+    // A mesma exigência do pop-up de /pedir-aula: um perfil para outra
+    // pessoa só nasce com a declaração de legitimidade. O `required` do
+    // markup é o formulário a pedir — e um formulário pede-se sem passar
+    // por ele.
+    if (formData.get('declaraLegitimidade') !== 'on') {
+      voltarComErro(TEXTOS_LEGAIS.erroDeclaracaoPerfilAluno)
+    }
   }
   // Exigida para alunos novos (as linhas antigas podem tê-la a null e
   // continuam válidas): sem ela, o filtro por idade deixa passar todas as
@@ -426,6 +447,8 @@ export async function criarAluno(formData: FormData) {
     propria_conta_id: ehProprio ? user.id : null,
     nome,
     data_nascimento: dataNascimento,
+    // A prova da declaração, e não só a sua exigência. Ver migração 0055.
+    declaracao_legitimidade_em: ehProprio ? null : new Date().toISOString(),
   })
 
   if (error) {

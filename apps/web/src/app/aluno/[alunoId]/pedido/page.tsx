@@ -7,7 +7,10 @@ import { CartaoLink } from '@/components/cartao-link'
 import { Wizard, ListaEscolhas } from '@/components/wizard'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { CampoTextarea } from '@/components/campo-formulario'
-import { CampoRecomendacao } from '@/components/campo-recomendacao'
+import {
+  CampoRecomendacao,
+  type ProfessorParaRecomendacao,
+} from '@/components/campo-recomendacao'
 import { MensagemErro } from '@/components/mensagem'
 import { AvisoUmHorario } from '@/components/confirmar-um-horario'
 
@@ -285,18 +288,26 @@ export default async function PedidoPage({
   // Aqui há sessão, por isso a adesão ao Programa lê-se direta de
   // perfis_escola — ao contrário do wizard público, que passa pela função
   // `professores_publicos` por não ter sessão nenhuma.
-  const [{ data: horarios }, { data: professorPerfil }] = await Promise.all([
-    supabase
-      .from('horarios')
-      .select('id, dia_semana, hora_inicio, hora_fim, estado')
-      .eq('professor_id', professor),
-    supabase
-      .from('perfis_escola')
-      .select('adere_recomendacao')
-      .eq('id', professor)
-      .eq('tipo', 'professor')
-      .maybeSingle(),
-  ])
+  const [{ data: horarios }, { data: professorPerfil }, { data: professoresDaEscola }] =
+    await Promise.all([
+      supabase
+        .from('horarios')
+        .select('id, dia_semana, hora_inicio, hora_fim, estado')
+        .eq('professor_id', professor),
+      supabase
+        .from('perfis_escola')
+        .select('adere_recomendacao, profiles(nome)')
+        .eq('id', professor)
+        .eq('tipo', 'professor')
+        .maybeSingle(),
+      // A lista do seletor de recomendação. Passa pela mesma função
+      // pública do wizard sem sessão — é a mesma lista, e ter duas
+      // maneiras de a ir buscar era ter duas maneiras de a ver divergir.
+      supabase.rpc('professores_para_recomendacao'),
+    ])
+
+  const professorNome =
+    (professorPerfil as { profiles?: { nome: string } | null } | null)?.profiles?.nome ?? ''
 
   const horariosGrade = (horarios ?? []).filter((h) =>
     DIAS_GRADE.includes(h.dia_semana)
@@ -447,7 +458,13 @@ export default async function PedidoPage({
           ajuda="Deixa uma mensagem ao professor em vez de escolher um horário. Ele decide se quer entrar em contacto fora da app."
         />
 
-        {professorPerfil?.adere_recomendacao && <CampoRecomendacao />}
+        {professorPerfil?.adere_recomendacao && (
+          <CampoRecomendacao
+            professorId={professor}
+            professorNome={professorNome}
+            professores={(professoresDaEscola ?? []) as ProfessorParaRecomendacao[]}
+          />
+        )}
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
         <BotaoPrimario>Enviar pedido</BotaoPrimario>

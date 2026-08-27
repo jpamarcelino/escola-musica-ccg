@@ -4,7 +4,7 @@ import { useRef, useState, useTransition, type CSSProperties } from 'react'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
 import { BotaoPrimario } from '@/components/botao-primario'
 import { CampoTextarea } from '@/components/campo-formulario'
-import { CampoRecomendacao } from '@/components/campo-recomendacao'
+import { CampoRecomendacao, type ProfessorParaRecomendacao } from '@/components/campo-recomendacao'
 import { MensagemErro } from '@/components/mensagem'
 import { HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import { ModalContaPedido, ModalEscolherAluno } from '@/components/modal-conta-pedido'
@@ -36,6 +36,8 @@ export function FormularioPedido({
   instrumentoId,
   professorId,
   professorAdereRecomendacao,
+  professorNome,
+  professoresParaRecomendacao,
   programa,
   idade,
   autenticado,
@@ -54,6 +56,8 @@ export function FormularioPedido({
   // Só com o professor aderente ao Programa é que se pergunta quem
   // recomendou (Art. 5.º). Vem decidido do servidor.
   professorAdereRecomendacao: boolean
+  professorNome: string
+  professoresParaRecomendacao: ProfessorParaRecomendacao[]
   // Viajam com o pedido só para o erro poder devolver a pessoa a este
   // mesmo passo. Sem eles, o redirect de erro caía num /pedir-aula sem
   // escola nem idade — ou seja, no pop-up da idade, do início.
@@ -190,7 +194,13 @@ export function FormularioPedido({
           ajuda="Deixa uma mensagem ao professor em vez de escolher um horário. Ele decide se quer entrar em contacto fora da app."
         />
 
-        {professorAdereRecomendacao && <CampoRecomendacao />}
+        {professorAdereRecomendacao && (
+          <CampoRecomendacao
+            professorId={professorId}
+            professorNome={professorNome}
+            professores={professoresParaRecomendacao}
+          />
+        )}
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
         <BotaoPrimario disabled={aEnviar}>

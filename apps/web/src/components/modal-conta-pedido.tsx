@@ -433,38 +433,28 @@ function EscolherAluno({
             />
             <p className="registo-nota">{TEXTOS_LEGAIS.porqueDataNascimento}</p>
           </div>
-          <fieldset className="registo-declaracoes">
-            <legend className="sr-only">Declaração</legend>
-            <label>
-              <input type="checkbox" name="declaraLegitimidade" defaultChecked={false} />
-              <span>{TEXTOS_LEGAIS.declaracaoPerfilAluno}</span>
-            </label>
-          </fieldset>
-          <fieldset className="registo-declaracoes">
-            <legend className="sr-only">Declarações</legend>
-            <label>
-              <input type="checkbox" name="declaraMaioridade" defaultChecked={false} />
-              <span>Confirmo que tenho 18 ou mais anos.</span>
-            </label>
-            <label>
-              <input type="checkbox" name="aceitaTermos" defaultChecked={false} />
-              <span>
-                Li e aceito os{' '}
-                <a href="/legal/termos" target="_blank" rel="noopener noreferrer">
-                  Termos de Utilização e as Regras do Serviço
-                </a>
-                .
-              </span>
-            </label>
-            <p className="registo-nota">{TEXTOS_LEGAIS.avisoIdade}</p>
-            <p className="registo-nota">
-              Consulta a{' '}
-              <a href="/legal/privacidade" target="_blank" rel="noopener noreferrer">
-                Política de Privacidade
-              </a>{' '}
-              para saberes como o CCG utiliza os teus dados.
-            </p>
-          </fieldset>
+          {/* Só quando o perfil é de outra pessoa. Quem se adiciona a si
+              próprio não tem legitimidade nenhuma a declarar sobre si —
+              e os Termos e a maioridade já foram declarados no registo,
+              com a aceitação registada em `aceitacoes` (migração 0053).
+              Voltar a pedi-los aqui era pedir o mesmo duas vezes, e a
+              caixa não ia parar a lado nenhum. */}
+          {quem !== 'proprio' && (
+            <fieldset className="registo-declaracoes">
+              <legend className="sr-only">Declaração</legend>
+              <label>
+                <input type="checkbox" name="declaraLegitimidade" required />
+                <span>{TEXTOS_LEGAIS.declaracaoPerfilAluno}</span>
+              </label>
+              <p className="registo-nota">
+                Consulta a{' '}
+                <a href="/legal/privacidade" target="_blank" rel="noopener noreferrer">
+                  Política de Privacidade
+                </a>{' '}
+                para saberes como o CCG utiliza os dados deste aluno.
+              </p>
+            </fieldset>
+          )}
 
           {estado?.error && <MensagemErro>{estado.error}</MensagemErro>}
           <BotaoPrimario disabled={pendente}>{pendente ? 'A criar…' : 'Continuar'}

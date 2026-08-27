@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { classesCampo } from '@/components/campo-formulario'
 
+export type ProfessorParaRecomendacao = { professor_id: string; nome: string }
+
 // Programa de Recomendação, do lado de quem chega (Art. 9.º e 10.º).
 //
 // Só aparece quando o professor pedido aderiu ao Programa — quem não
@@ -18,8 +20,37 @@ import { classesCampo } from '@/components/campo-formulario'
 // alunos da escola diria a quem chega quem lá anda — exatamente o que o
 // Art. 25.º manda não expor. O preço é a secretaria ter de confirmar à
 // mão, que é o que o Programa já previa.
-export function CampoRecomendacao() {
+//
+// O PROFESSOR, esse, escolhe-se de uma lista. Antes perguntava-se a
+// modalidade por escrito ("piano"), o que servia só para a secretaria
+// desempatar nomes repetidos — e deixava por dizer a regra que decide
+// tudo: o Art. 8.º só admite recomendações dentro do mesmo professor.
+// Escolher da lista faz a regra aparecer no momento em que é quebrada,
+// em vez de a pessoa a descobrir dias depois pela secretaria.
+export function CampoRecomendacao({
+  professorId,
+  professorNome,
+  professores,
+}: {
+  // O professor a quem esta aula está a ser pedida — a única resposta
+  // que faz a recomendação contar.
+  professorId: string
+  professorNome: string
+  professores: ProfessorParaRecomendacao[]
+}) {
   const [aberto, setAberto] = useState(false)
+  const [escolhido, setEscolhido] = useState('')
+
+  // Sem lista não há pergunta. Acontece se a função
+  // professores_para_recomendacao ainda não existir na base de dados (a
+  // migração 0056 é o que a cria): mais vale o Programa não aparecer
+  // durante esse intervalo do que aparecer com um seletor vazio e
+  // obrigatório, que travava o pedido de aula inteiro.
+  if (professores.length === 0) return null
+
+  const mesmoProfessor = escolhido !== '' && escolhido === professorId
+  const outroProfessor = escolhido !== '' && escolhido !== professorId
+  const nomeEscolhido = professores.find((p) => p.professor_id === escolhido)?.nome ?? ''
 
   return (
     <div className="recomendacao-bloco">
@@ -50,26 +81,53 @@ export function CampoRecomendacao() {
               maxLength={120}
               autoComplete="off"
               placeholder="Ex: Maria Silva"
+              required
               className={classesCampo}
             />
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="recomendadoModalidade" className="block text-[12.5px] font-medium">
-              Que aulas tem essa pessoa? <span className="recomendacao-opcional">(opcional)</span>
+            <label htmlFor="recomendadoProfessorId" className="block text-[12.5px] font-medium">
+              Com que professor tem aulas essa pessoa?
             </label>
-            <input
-              id="recomendadoModalidade"
-              name="recomendadoModalidade"
-              type="text"
-              maxLength={80}
-              autoComplete="off"
-              placeholder="Ex: piano"
+            <select
+              id="recomendadoProfessorId"
+              name="recomendadoProfessorId"
+              value={escolhido}
+              onChange={(e) => setEscolhido(e.target.value)}
+              required
               className={classesCampo}
-            />
-            {/* Serve para desempatar nomes repetidos — numa escola há mais
-                do que uma Maria, e a secretaria precisa de saber qual. */}
-            <p className="recomendacao-ajuda">Ajuda a secretaria a encontrar a pessoa certa.</p>
+            >
+              <option value="">Escolhe o professor</option>
+              {professores.map((p) => (
+                <option key={p.professor_id} value={p.professor_id}>
+                  {p.nome}
+                </option>
+              ))}
+            </select>
+
+            {mesmoProfessor && (
+              <p className="recomendacao-ajuda recomendacao-confirmado">
+                Certo — é o professor deste pedido. A recomendação pode contar.
+              </p>
+            )}
+
+            {/* Não trava o pedido: a aula pedida vale por si. O que se diz
+                aqui é só que esta parte não vai a lado nenhum, para
+                ninguém ficar à espera de um desconto que não vem. */}
+            {outroProfessor && (
+              <p className="recomendacao-aviso">
+                O Programa de Recomendação só conta quando as duas pessoas têm aulas com o
+                mesmo professor. Como {nomeEscolhido} não é {professorNome}, esta indicação
+                não vai ser registada — o teu pedido de aula segue na mesma.
+              </p>
+            )}
+
+            {!escolhido && (
+              <p className="recomendacao-ajuda">
+                Ajuda a secretaria a encontrar a pessoa certa.
+              </p>
+            )}
           </div>
         </div>
       )}
