@@ -108,11 +108,38 @@ export async function criarAlunoDependenteModal(
     return { error: 'A tua sessão expirou. Tenta entrar outra vez.' }
   }
 
-  const nome = String(formData.get('nome') ?? '').trim()
   const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
+  const ehProprio = formData.get('ehProprio') === 'sim'
 
-  if (!nome) {
-    return { error: 'Indica o nome do aluno.' }
+  // Mesma regra da página /dashboard/alunos: quem é ele próprio o aluno
+  // não reescreve o nome — vem da conta, e da base e não de um campo
+  // escondido, que se podia reescrever.
+  let nome: string
+  if (ehProprio) {
+    const { data: perfil } = await supabase
+      .from('profiles')
+      .select('nome')
+      .eq('id', user.id)
+      .single()
+    nome = (perfil?.nome ?? '').trim()
+    if (!nome) {
+      return { error: 'A tua conta não tem nome. Preenche-o em Conta e tenta outra vez.' }
+    }
+
+    const { data: jaExiste } = await supabase
+      .from('alunos')
+      .select('id')
+      .eq('propria_conta_id', user.id)
+      .maybeSingle()
+
+    if (jaExiste) {
+      return { error: 'Já tens um perfil de aluno em teu nome. Escolhe-o na lista acima.' }
+    }
+  } else {
+    nome = String(formData.get('nome') ?? '').trim()
+    if (!nome) {
+      return { error: 'Indica o nome do aluno.' }
+    }
   }
   // A data continua opcional aqui — quem cria um aluno pelo pop-up pode
   // não a saber de cor. Mas quando a escreve, passa a valer a mesma regra
@@ -129,6 +156,9 @@ export async function criarAlunoDependenteModal(
     .from('alunos')
     .insert({
       encarregado_id: user.id,
+      // Nunca vem do formulário: é sempre a conta autenticada, senão dava
+      // para reclamar como "próprio" o perfil de outra pessoa.
+      propria_conta_id: ehProprio ? user.id : null,
       nome,
       data_nascimento: dataNascimento || null,
     })
@@ -140,6 +170,25 @@ export async function criarAlunoDependenteModal(
   }
 
   return { alunoId: aluno.id }
+}
+
+// O que o pop-up precisa de saber antes de mostrar as opções: como se
+// chama quem está autenticado, e se já existe um perfil de aluno em nome
+// dele (nesse caso "sou eu" não faz sentido — está na lista).
+export async function dadosDoTitular(): Promise<{ nome: string; jaTemProprio: boolean }> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return { nome: '', jaTemProprio: false }
+
+  const [{ data: perfil }, { data: proprio }] = await Promise.all([
+    supabase.from('profiles').select('nome').eq('id', user.id).single(),
+    supabase.from('alunos').select('id').eq('propria_conta_id', user.id).maybeSingle(),
+  ])
+
+  return { nome: perfil?.nome ?? '', jaTemProprio: !!proprio }
 }
 
 // A query em si vive no @ccg/data, para a app móvel a usar tal e qual.

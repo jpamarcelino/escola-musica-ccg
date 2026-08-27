@@ -1363,30 +1363,29 @@ body {
   font-weight: 700;
 }
 
-/* Escolha entre dependente e o próprio titular, em /dashboard/alunos.
-   Linhas inteiras clicáveis (a etiqueta envolve o botão de rádio), com
-   56px de altura para o alvo de toque ficar acima dos 44px mínimos. */
-.alunos-quem { border: 0; padding: 0; margin: 0; }
-.alunos-quem legend {
-  padding: 0 0 8px;
+/* As duas portas para adicionar alguém, em /dashboard/alunos: "sou eu" e
+   "um filho". São dois <details> encostados, por isso o de baixo dispensa
+   o traço de topo — senão as duas bordas somam-se numa linha grossa. */
+.familia-adicionar-escolha { margin-top: 34px; }
+.familia-adicionar-escolha .familia-adicionar { margin-top: 0; }
+.familia-adicionar-escolha .familia-adicionar + .familia-adicionar { border-top: 0; }
+
+/* O nome do titular, mostrado em vez de perguntado. */
+.familia-adicionar-identidade {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-linha);
+  border-radius: 4px;
+  background: var(--color-papel-2);
+}
+.familia-adicionar-identidade span {
   font-size: 12px;
   font-weight: 600;
   color: var(--color-tinta-suave);
 }
-.alunos-quem label {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  min-height: 56px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-linha);
-  cursor: pointer;
-}
-.alunos-quem label:first-of-type { border-top: 1px solid var(--color-linha); }
-.alunos-quem input { margin-top: 3px; accent-color: var(--color-azul-fundo); }
-.alunos-quem span { display: flex; flex-direction: column; gap: 2px; }
-.alunos-quem strong { font-size: 15px; font-weight: 600; color: var(--color-tinta); }
-.alunos-quem small { font-size: 12.5px; line-height: 1.35; color: var(--color-tinta-suave); }
+.familia-adicionar-identidade strong { font-size: 15px; font-weight: 600; color: var(--color-tinta); }
 
 .aluno-hub-links { margin-top: 36px; border-top: 1px solid var(--color-linha); }
 .aluno-hub-links a {

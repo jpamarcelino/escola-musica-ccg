@@ -102,46 +102,68 @@ export default async function AlunosPage({
           )}
         </section>
 
-        <details className="familia-adicionar" open={alunos.length === 0}>
-          <summary>Adicionar aluno</summary>
-          <form action={criarAluno} className="mt-[16px] space-y-[14px]">
-            <CampoTexto id="nome" name="nome" label="Nome do aluno" />
-            <CampoTexto
-              id="dataNascimento"
-              name="dataNascimento"
-              label="Data de nascimento"
-              type="date"
-              max={hojeISO()}
-            />
+        {/* Duas portas separadas em vez de um formulário só com um
+            botão de rádio no fim. Adicionar-se a si próprio e inscrever um
+            filho são coisas diferentes: numa a app já sabe o nome, na
+            outra tem de o perguntar. Com um formulário só, o titular
+            escrevia o próprio nome outra vez — e nada impedia que o
+            escrevesse diferente do da conta. */}
+        <section className="familia-adicionar-escolha" aria-labelledby="adicionar-aluno-titulo">
+          <div className="partitura-seccao-cabecalho">
+            <div>
+              <p className="partitura-indice">02</p>
+              <h2 id="adicionar-aluno-titulo">Adicionar aluno</h2>
+            </div>
+          </div>
 
-            <fieldset className="alunos-quem">
-              <legend>Quem é este aluno?</legend>
-              <label>
-                <input type="radio" name="ehProprio" value="nao" defaultChecked />
-                <span>
-                  <strong>Um dependente</strong>
-                  <small>Um filho ou educando, sem conta própria.</small>
-                </span>
-              </label>
-              {/* A opção só aparece enquanto não houver um perfil do
-                  titular: dois "sou eu" seriam a mesma pessoa duas vezes,
-                  com as matrículas repartidas entre os dois. */}
-              {!jaTemProprio && (
-                <label>
-                  <input type="radio" name="ehProprio" value="sim" />
-                  <span>
-                    <strong>Sou eu</strong>
-                    <small>Sou eu que vou às aulas, com esta mesma conta.</small>
-                  </span>
-                </label>
-              )}
-            </fieldset>
+          {/* Só enquanto não houver um perfil do titular: dois "sou eu"
+              seriam a mesma pessoa duas vezes, com as matrículas
+              repartidas entre os dois. */}
+          {!jaTemProprio && (
+            <details className="familia-adicionar" open={alunos.length === 0}>
+              <summary>Sou eu que vou às aulas</summary>
+              <form action={criarAluno} className="mt-[16px] space-y-[14px]">
+                <input type="hidden" name="ehProprio" value="sim" />
+                <p className="familia-adicionar-identidade">
+                  <span>Nome</span>
+                  <strong>{profile?.nome}</strong>
+                </p>
+                {/* A data continua a ser perguntada: o registo não a
+                    recolhe (pede só a declaração de maioridade), por isso
+                    a app não a sabe. É pedida uma vez e fica. */}
+                <CampoTexto
+                  id="dataNascimentoProprio"
+                  name="dataNascimento"
+                  label="Data de nascimento"
+                  type="date"
+                  max={hojeISO()}
+                />
+                <SubmitButton textoAGuardar="A adicionar…" className="familia-adicionar-botao">
+                  Adicionar-me como aluno
+                </SubmitButton>
+              </form>
+            </details>
+          )}
 
-            <SubmitButton textoAGuardar="A adicionar…" className="familia-adicionar-botao">
-              Adicionar aluno
-            </SubmitButton>
-          </form>
-        </details>
+          <details className="familia-adicionar" open={jaTemProprio && alunos.length === 0}>
+            <summary>Adicionar um filho ou educando</summary>
+            <form action={criarAluno} className="mt-[16px] space-y-[14px]">
+              <input type="hidden" name="ehProprio" value="nao" />
+              <CampoTexto id="nome" name="nome" label="Nome do aluno" />
+              <CampoTexto
+                id="dataNascimento"
+                name="dataNascimento"
+                label="Data de nascimento"
+                type="date"
+                max={hojeISO()}
+              />
+              <SubmitButton textoAGuardar="A adicionar…" className="familia-adicionar-botao">
+                Adicionar aluno
+              </SubmitButton>
+            </form>
+          </details>
+        </section>
+
       </div>
     </main>
   )

@@ -13,6 +13,7 @@ import {
   registoModal,
   criarAlunoDependenteModal,
   listarMeusAlunos,
+  dadosDoTitular,
 } from '@/lib/actions/pedido-publico'
 
 type Aluno = { id: string; nome: string }
@@ -280,7 +281,17 @@ function EscolherAluno({
   onEscolher: (alunoId: string) => void
 }) {
   const [aCriar, setACriar] = useState(alunos.length === 0)
+  // Quem é o aluno a criar. "null" é a pergunta ainda por responder — o
+  // titular e um filho não se criam da mesma maneira, e perguntar isso
+  // primeiro evita que quem se está a inscrever a si próprio tenha de
+  // reescrever o nome que já deu à conta.
+  const [quem, setQuem] = useState<'proprio' | 'outro' | null>(null)
+  const [titular, setTitular] = useState<{ nome: string; jaTemProprio: boolean } | null>(null)
   const [estado, acao, pendente] = useActionState(criarAlunoDependenteModal, undefined)
+
+  useEffect(() => {
+    dadosDoTitular().then(setTitular)
+  }, [])
 
   useEffect(() => {
     if (estado?.alunoId) {
@@ -338,20 +349,76 @@ function EscolherAluno({
         </div>
       )}
 
-      {aCriar && (
+      {aCriar && !titular && (
+        <p className="text-sm text-foreground/60">A verificar a tua conta...</p>
+      )}
+
+      {aCriar && titular && quem === null && !titular.jaTemProprio && (
+        <div className="space-y-2">
+          <p className="text-[13px]" style={{ color: 'var(--color-tinta-suave)' }}>
+            Quem vai ter as aulas?
+          </p>
+          <button
+            type="button"
+            onClick={() => setQuem('proprio')}
+            className="block w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] py-[12px] text-left text-[15px] transition-colors hover:border-[var(--color-azul-logo)]"
+          >
+            <strong className="font-semibold">Sou eu</strong>
+            <span className="block text-[12.5px]" style={{ color: 'var(--color-tinta-suave)' }}>
+              {titular.nome}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setQuem('outro')}
+            className="block w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] py-[12px] text-left text-[15px] transition-colors hover:border-[var(--color-azul-logo)]"
+          >
+            <strong className="font-semibold">Um filho ou outra pessoa</strong>
+            <span className="block text-[12.5px]" style={{ color: 'var(--color-tinta-suave)' }}>
+              Vais indicar o nome e a data de nascimento.
+            </span>
+          </button>
+          {alunos.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setACriar(false)}
+              className="w-full text-sm underline text-foreground/60"
+            >
+              Voltar à lista de alunos
+            </button>
+          )}
+        </div>
+      )}
+
+      {aCriar && titular && (quem !== null || titular.jaTemProprio) && (
         <form action={acao} className="space-y-3">
-          <div className="space-y-1">
-            <label htmlFor="mcp-aluno-nome" className="block text-[12.5px] font-medium"
-                  style={{ color: 'var(--color-tinta-suave)' }}>
-              Nome do aluno
-            </label>
-            <input
-              id="mcp-aluno-nome"
-              name="nome"
-              required
-              className={classesCampo}
-            />
-          </div>
+          {quem === 'proprio' ? (
+            <>
+              <input type="hidden" name="ehProprio" value="sim" />
+              {/* O nome não se volta a escrever: já foi dado à conta. */}
+              <div className="space-y-1">
+                <p className="block text-[12.5px] font-medium" style={{ color: 'var(--color-tinta-suave)' }}>
+                  Nome do aluno
+                </p>
+                <p className="rounded-[13px] border border-[var(--color-linha)] bg-[var(--color-papel-2)] px-[14px] py-[12px] text-[15px]">
+                  {titular.nome}
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-1">
+              <label htmlFor="mcp-aluno-nome" className="block text-[12.5px] font-medium"
+                    style={{ color: 'var(--color-tinta-suave)' }}>
+                Nome do aluno
+              </label>
+              <input
+                id="mcp-aluno-nome"
+                name="nome"
+                required
+                className={classesCampo}
+              />
+            </div>
+          )}
           <div className="space-y-1">
             <label htmlFor="mcp-aluno-dataNascimento" className="block text-[12.5px] font-medium"
                   style={{ color: 'var(--color-tinta-suave)' }}>
@@ -402,14 +469,24 @@ function EscolherAluno({
           {estado?.error && <MensagemErro>{estado.error}</MensagemErro>}
           <BotaoPrimario disabled={pendente}>{pendente ? 'A criar…' : 'Continuar'}
           </BotaoPrimario>
-          {alunos.length > 0 && (
+          {quem !== null ? (
             <button
               type="button"
-              onClick={() => setACriar(false)}
+              onClick={() => setQuem(null)}
               className="w-full text-sm underline text-foreground/60"
             >
-              Voltar à lista de alunos
+              Voltar atrás
             </button>
+          ) : (
+            alunos.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setACriar(false)}
+                className="w-full text-sm underline text-foreground/60"
+              >
+                Voltar à lista de alunos
+              </button>
+            )
           )}
         </form>
       )}

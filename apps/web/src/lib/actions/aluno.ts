@@ -363,7 +363,6 @@ export async function criarAluno(formData: FormData) {
     redirect('/login')
   }
 
-  const nome = String(formData.get('nome') ?? '').trim()
   const dataNascimento = String(formData.get('dataNascimento') ?? '').trim()
   const ehProprio = formData.get('ehProprio') === 'sim'
 
@@ -371,8 +370,26 @@ export async function criarAluno(formData: FormData) {
     redirect(`/dashboard/alunos?erro=${encodeURIComponent(mensagem)}`)
   }
 
-  if (!nome) {
-    voltarComErro('Indica o nome do aluno.')
+  // Quem se adiciona a si próprio não escreve o nome outra vez: já o deu
+  // ao criar a conta. Vem da base e não de um campo escondido — um campo
+  // escondido é um campo que se pode reescrever, e o nome do titular
+  // passaria a ser o que o formulário dissesse.
+  let nome: string
+  if (ehProprio) {
+    const { data: perfil } = await supabase
+      .from('profiles')
+      .select('nome')
+      .eq('id', user.id)
+      .single()
+    nome = (perfil?.nome ?? '').trim()
+    if (!nome) {
+      voltarComErro('A tua conta não tem nome. Preenche-o em Conta antes de te adicionares como aluno.')
+    }
+  } else {
+    nome = String(formData.get('nome') ?? '').trim()
+    if (!nome) {
+      voltarComErro('Indica o nome do aluno.')
+    }
   }
   // Exigida para alunos novos (as linhas antigas podem tê-la a null e
   // continuam válidas): sem ela, o filtro por idade deixa passar todas as
