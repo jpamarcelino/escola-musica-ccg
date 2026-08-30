@@ -83,7 +83,7 @@ export default function InstalarPage() {
   return (
     <FundoPapel>
       <div className="space-y-[22px]">
-        <PageHeader voltar="/login" titulo="Instalar a app" />
+        <PageHeader voltar="/" titulo="Instalar a app" voltarPeloHistorico />
 
         <p
           className="text-[15px] leading-[1.6]"
