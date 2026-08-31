@@ -2,84 +2,154 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { SimboloCCG } from '@/components/simbolo-ccg'
+import { RodapeVitrine } from '@/components/rodape-vitrine'
 
+// Página pública de entrada, na linguagem "vitrine" (Claude Design, 1a).
+//
+// Uma peça de cada vez, e não as três ao mesmo tempo: a escolha faz-se
+// na cápsula de baixo, e o que está por cima é a consequência dela. A
+// versão anterior mostrava uma colagem que rodava sozinha a cada 5
+// segundos — dizia "olha para mim" mas não dizia "escolhe".
+//
+// Por isso também não há aqui rotação automática. Quem chega escolhe;
+// nada se mexe sem alguém mandar.
 const OFERTA = [
-  { id: 'musica', nome: 'Música', detalhe: 'Piano · guitarra · canto · bateria', texto: 'Aprender a escutar, repetir e encontrar uma voz própria.', imagens: ['/instrumentos/piano.png', '/instrumentos/guitarra.png', '/instrumentos/bateria.png'] },
-  { id: 'danca', nome: 'Dança', detalhe: 'Ballet · contemporâneo · estilos urbanos', texto: 'Descobrir o corpo, o espaço e a expressão através do movimento.', imagens: ['/instrumentos/ballet-classico.png', '/instrumentos/danca-contemporanea.png', '/instrumentos/estilos-urbanos.png'] },
-  { id: 'bebes', nome: 'Primeiros sons', detalhe: 'Música para bebés · 0–5 anos', texto: 'Uma primeira relação com som, ritmo e criação em família.', imagens: ['/instrumentos/bebes-0-3.png', '/instrumentos/bebes-3-5.png'] },
+  {
+    id: 'musica',
+    nome: 'Música',
+    detalhe: 'Piano · guitarra · canto · bateria',
+    imagem: '/instrumentos/piano.png',
+  },
+  {
+    id: 'danca',
+    nome: 'Dança',
+    detalhe: 'Ballet · contemporâneo · estilos urbanos',
+    imagem: '/instrumentos/ballet-classico.png',
+  },
+  {
+    id: 'bebes',
+    nome: 'Primeiros sons',
+    detalhe: 'Música para bebés · 0–5 anos',
+    imagem: '/instrumentos/bebes-0-3.png',
+  },
 ] as const
 
+const PASSOS = [
+  { titulo: 'Escolhes a direcção', detalhe: 'Música, dança ou primeiros sons.' },
+  { titulo: 'Vês os horários livres', detalhe: 'A disponibilidade real dos professores.' },
+  { titulo: 'Pedes a aula', detalhe: 'A secretaria confirma e ficas com conta.' },
+]
+
 export function PublicHomeExperience() {
-  const [ativa, setAtiva] = useState<(typeof OFERTA)[number]['id']>('musica')
-  const [pausado, setPausado] = useState(false)
-  const selecionada = OFERTA.find((item) => item.id === ativa) ?? OFERTA[0]
-  const indiceAtivo = OFERTA.findIndex((item) => item.id === ativa)
-
-  useEffect(() => {
-    if (pausado || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const intervalo = window.setInterval(() => {
-      setAtiva((atual) => {
-        const indice = OFERTA.findIndex((item) => item.id === atual)
-        return OFERTA[(indice + 1) % OFERTA.length].id
-      })
-    }, 5200)
-    return () => window.clearInterval(intervalo)
-  }, [pausado])
-
-  function mover(direcao: -1 | 1) {
-    setPausado(true)
-    setAtiva(OFERTA[(indiceAtivo + direcao + OFERTA.length) % OFERTA.length].id)
-  }
+  const [indice, setIndice] = useState(0)
+  const activa = OFERTA[indice]
 
   return (
-    <main id="conteudo-principal" className={`publico-vivo publico-vivo-${ativa}`}>
-      <nav className="publico-vivo-nav" aria-label="Navegação principal">
-        {/* Também aqui é ligação, e não texto: quem desce a home e quer
-            recomeçar do topo procura a marca, e nas outras páginas ela
-            leva ao início — se aqui não fizesse nada, a regra deixava de
-            valer justamente onde se aprende. */}
-        <Link href="/" className="publico-vivo-marca" aria-label="Centro Cultural da Guarda — ir para o início"><SimboloCCG /><small>Centro Cultural da Guarda</small></Link>
-        <div><Link href="/login">Entrar</Link><Link href="/registo">Criar conta</Link></div>
-      </nav>
-
-      <section className="publico-vivo-hero" aria-labelledby="publico-vivo-titulo">
-        <div className="publico-vivo-intro">
-          <p>Centro Cultural da Guarda</p>
-          <h1 id="publico-vivo-titulo">Onde começa<br/><em>uma prática.</em></h1>
-          <span>Escolhe uma direção. A página acompanha a tua descoberta.</span>
+    <main id="conteudo-principal" className="v-pagina">
+      <div className="v-folha">
+        <div className="v-topo">
+          <Link href="/" className="v-marca" aria-label="Centro Cultural da Guarda — ir para o início">
+            <SimboloCCG />
+            <span>Centro Cultural da Guarda</span>
+          </Link>
+          <Link href="/login" className="v-topo-saida">
+            Entrar
+          </Link>
         </div>
 
-        <Link href={`/pedir-aula?programa=${selecionada.id}`} className="publico-vivo-visual" aria-label={`Ver aulas de ${selecionada.nome}`}>
-          <span className="publico-vivo-visual-indice">0{indiceAtivo + 1}</span>
-          <div className="publico-vivo-colagem" key={selecionada.id} aria-hidden="true">
-            {selecionada.imagens.map((imagem, indice) => <Image key={imagem} src={imagem} width={230} height={230} alt="" priority={indice === 0} className={`publico-vivo-imagem publico-vivo-imagem-${indice + 1}`} />)}
-          </div>
-          <div className="publico-vivo-visual-texto" aria-live="polite"><strong>{selecionada.nome}</strong><p>{selecionada.detalhe}</p><span>Ver tipos de aula <i aria-hidden="true">↗</i></span></div>
+        <div style={{ padding: '38px 22px 0' }}>
+          <p className="v-sobretitulo">Escolas artísticas</p>
+          <h1 className="v-titulo">
+            Onde começa
+            <br />
+            <em>uma prática.</em>
+          </h1>
+          <p className="v-entrada">
+            Música, dança e primeiros sons na Guarda. Escolhe uma direcção e vê as aulas.
+          </p>
+        </div>
+
+        <Link
+          href={`/pedir-aula?programa=${activa.id}`}
+          className="v-vitrine"
+          aria-label={`Ver aulas de ${activa.nome}`}
+        >
+          <span className="v-vitrine-indice">0{indice + 1}</span>
+          {/* As três ficam montadas e só a activa é visível: assim a
+              troca é um esbatimento e não um pedido à rede a meio de um
+              toque. A primeira carrega com prioridade porque é ela que
+              está à vista quando a página abre. */}
+          {OFERTA.map((item, i) => (
+            <Image
+              key={item.id}
+              src={item.imagem}
+              alt=""
+              width={270}
+              height={270}
+              priority={i === 0}
+              data-ativa={i === indice}
+            />
+          ))}
+          <span className="v-vitrine-legenda">
+            <strong>{activa.nome}</strong>
+            <span>{activa.detalhe}</span>
+          </span>
         </Link>
 
-        <div className="publico-vivo-escolha">
-          <p>O que queres descobrir?</p>
-          <div aria-label="Oferta artística">
-            {OFERTA.map((item) => {
-              const selecionado = item.id === ativa
-              return (
-                <Link key={item.id} href={`/pedir-aula?programa=${item.id}`} aria-current={selecionado ? 'true' : undefined} onMouseEnter={() => setAtiva(item.id)} onFocus={() => setAtiva(item.id)}>
-                  <span>{item.nome}</span><small>Ver aulas</small>
-                </Link>
-              )
-            })}
+        <div className="v-chips" role="group" aria-label="Escolas artísticas">
+          {OFERTA.map((item, i) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-pressed={i === indice}
+              onClick={() => setIndice(i)}
+            >
+              {item.nome}
+            </button>
+          ))}
+        </div>
+
+        <div className="v-seccao">
+          <p className="v-sobretitulo">02 Como começa</p>
+          <h2>Três passos, cinco minutos.</h2>
+        </div>
+
+        <div className="v-passos">
+          <ol>
+            {PASSOS.map((passo) => (
+              <li key={passo.titulo}>
+                <strong>{passo.titulo}</strong>
+                <span>{passo.detalhe}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <Link href="/instalar" className="v-cartao-linha">
+          <i>
+            <SimboloCCG />
+          </i>
+          <div>
+            <strong>Levar a aplicação contigo</strong>
+            <small>Instalar no telemóvel, sem loja.</small>
           </div>
-        </div>
+          <span aria-hidden="true">›</span>
+        </Link>
 
-        <div className="publico-vivo-reveal" key={selecionada.id}>
-          <p>{selecionada.texto}</p>
-          <div className="publico-vivo-controlos" aria-label="Controlos do carrossel"><button type="button" onClick={() => mover(-1)} aria-label="Anterior">←</button><span>{indiceAtivo + 1} / {OFERTA.length}</span><button type="button" onClick={() => mover(1)} aria-label="Seguinte">→</button><button type="button" onClick={() => setPausado((valor) => !valor)}>{pausado ? 'Retomar' : 'Pausar'}</button></div>
-        </div>
-      </section>
+        <RodapeVitrine lema="Pela Guarda, pela arte e pela cultura." />
+      </div>
 
-      <footer className="publico-vivo-rodape"><p>Pela Guarda, pela arte e pela cultura.</p><Link href="/instalar">Levar a aplicação contigo</Link></footer>
+      <div className="v-capsula">
+        <span className="v-capsula-texto">
+          <small>{activa.nome}</small>
+          <strong>Pedir uma aula</strong>
+        </span>
+        <Link href={`/pedir-aula?programa=${activa.id}`} className="v-capsula-accao">
+          Começar
+        </Link>
+      </div>
     </main>
   )
 }

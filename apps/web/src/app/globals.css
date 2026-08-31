@@ -4566,3 +4566,294 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .conta-legal li a { display: flex; align-items: center; min-height: 48px; font-size: 14.5px; color: var(--color-azul-fundo); }
 .conta-legal-nota { margin-top: 14px; font-size: 12.5px; line-height: 1.55; color: var(--color-tinta-suave); }
 .conta-legal-nota a { color: var(--color-azul-texto); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   VITRINE — o design novo (Claude Design, turno 1a)
+   ═══════════════════════════════════════════════════════════════════
+
+   Vive ao lado da "partitura", não em cima dela. Os ecrãs públicos —
+   entrada, pedido de aula, ficha do professor, entrar e criar conta —
+   passam a falar esta linguagem; a área autenticada continua na antiga
+   até ser migrada. Por isso os tokens têm prefixo próprio (--v-): duas
+   paletas a partilhar nomes seria a receita para uma mudar a outra sem
+   ninguém dar por isso.
+
+   O acento é uma escolha de marca com quatro valores previstos no
+   design (#00C4DF, #06707F, #1B4F7A, #DC291E). Fica numa variável para
+   trocar num sítio só. */
+:root {
+  --v-papel:        #FBF8F3;
+  --v-papel-2:      #F3EDE4;
+  --v-branco:       #FFFFFF;
+  --v-tinta:        #231F20;
+  --v-tinta-suave:  #6B615A;
+  --v-tinta-fraca:  #8C8177;
+  --v-linha:        #E4DACC;
+  --v-linha-fina:   #EFE7DB;
+  --v-teal:         #06707F;
+  --v-azul-claro:   #78AEDE;
+  --v-azul:         #1B4F7A;
+  --v-acento:       #00C4DF;
+
+  /* A pilha da Apple primeiro, como no design. A Geist fica para os
+     ecrãs ainda por migrar — misturar as duas no mesmo ecrã é que não. */
+  --v-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, system-ui, sans-serif;
+  --v-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+/* A folha. Ocupa o ecrã todo e é ela que pinta o fundo — o <body> da app
+   é branco, e um papel que só cobre o conteúdo deixa uma faixa branca
+   por baixo do último elemento. */
+.v-pagina {
+  min-height: 100dvh;
+  background: var(--v-papel);
+  font-family: var(--v-sans);
+  color: var(--v-tinta);
+  letter-spacing: -.01em;
+  /* Espaço para a cápsula, que é fixa e tapa o que estiver por baixo. */
+  padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px));
+}
+.v-folha { max-width: 430px; margin-inline: auto; }
+
+/* Topo: marca à esquerda, uma saída à direita. */
+.v-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px 0;
+}
+.v-marca { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.v-marca svg { width: 19px; height: 21px; display: block; }
+.v-marca span { font-size: 12px; font-weight: 600; color: var(--v-tinta); }
+.v-topo-saida { font-size: 15px; font-weight: 500; color: var(--v-teal); text-decoration: none; }
+
+/* Seta de voltar — disco discreto, 44px de alvo. */
+.v-voltar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: rgba(35, 31, 32, .05);
+  color: var(--v-tinta);
+  font-size: 20px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+/* Títulos. O "sobretítulo" é a etiqueta em versaletes que abre quase
+   todos os ecrãs deste design. */
+.v-sobretitulo {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--v-tinta-suave);
+}
+.v-titulo {
+  margin: 12px 0 0;
+  font-family: var(--v-serif);
+  font-size: clamp(38px, 13vw, 52px);
+  font-weight: 600;
+  line-height: .95;
+  letter-spacing: -.04em;
+  color: var(--v-tinta);
+  text-wrap: balance;
+}
+.v-titulo em { font-style: italic; font-weight: 400; }
+.v-traco { width: 48px; height: 3px; margin: 20px 0 0; border-radius: 2px; background: var(--v-acento); }
+.v-entrada { margin: 16px 0 0; max-width: 31ch; font-size: 16px; line-height: 1.45; color: var(--v-tinta-suave); }
+
+/* A vitrine em si: uma peça de cada vez, com as três imagens sobrepostas
+   e só a activa a 1 de opacidade. Trocar por opacidade e não por
+   montagem/desmontagem evita o salto do layout a cada mudança. */
+.v-vitrine {
+  position: relative;
+  margin: 30px 16px 0;
+  height: 326px;
+  border-radius: 34px;
+  overflow: hidden;
+  background: linear-gradient(170deg, #FFFFFF 0%, var(--v-papel-2) 100%);
+  border: 1px solid rgba(35, 31, 32, .06);
+  display: block;
+  text-decoration: none;
+}
+.v-vitrine-indice {
+  position: absolute;
+  top: 20px;
+  left: 22px;
+  z-index: 2;
+  font-family: var(--v-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--v-teal);
+}
+.v-vitrine img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 270px;
+  height: 270px;
+  object-fit: contain;
+  opacity: 0;
+  filter: drop-shadow(0 18px 30px rgba(35, 31, 32, .16));
+  transition: opacity .38s cubic-bezier(.22, 1, .36, 1);
+}
+.v-vitrine img[data-ativa='true'] { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .v-vitrine img { transition: none; } }
+.v-vitrine-legenda {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 56px 22px 20px;
+  background: linear-gradient(rgba(251, 248, 243, 0), rgba(251, 248, 243, .94) 55%, var(--v-papel));
+}
+.v-vitrine-legenda strong {
+  display: block;
+  font-family: var(--v-serif);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -.03em;
+  color: var(--v-tinta);
+}
+.v-vitrine-legenda span { display: block; margin-top: 3px; font-size: 13.5px; color: var(--v-tinta-suave); }
+
+/* Cápsula de escolha — os três programas. */
+.v-chips { display: flex; gap: 6px; margin: 16px 16px 0; padding: 5px; border-radius: 999px; background: var(--v-papel-2); }
+.v-chips button {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  cursor: pointer;
+  padding: 11px 4px;
+  border-radius: 999px;
+  font: 600 13.5px var(--v-sans);
+  letter-spacing: -.01em;
+  color: var(--v-tinta-suave);
+  background: transparent;
+  transition: background .28s cubic-bezier(.22, 1, .36, 1), color .28s;
+}
+.v-chips button[aria-pressed='true'] { background: var(--v-branco); color: var(--v-tinta); box-shadow: 0 1px 3px rgba(35, 31, 32, .14); }
+@media (prefers-reduced-motion: reduce) { .v-chips button { transition: none; } }
+
+/* Cabeçalho de secção numerada. */
+.v-seccao { margin: 44px 22px 0; }
+.v-seccao h2 {
+  margin: 0;
+  font-family: var(--v-serif);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -.03em;
+  color: var(--v-tinta);
+}
+.v-seccao .v-sobretitulo { margin-bottom: 4px; }
+
+/* Os três passos, com a linha vertical no acento. */
+.v-passos { position: relative; margin: 22px 22px 0; padding-left: 30px; }
+.v-passos::before { content: ''; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 2px; border-radius: 2px; background: var(--v-acento); }
+.v-passos ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 26px; }
+.v-passos li { position: relative; }
+.v-passos li::before {
+  content: '';
+  position: absolute;
+  left: -30px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--v-linha);
+  box-shadow: 0 0 0 4px var(--v-papel);
+}
+.v-passos li:first-child::before { background: var(--v-acento); }
+.v-passos strong { display: block; font-size: 16px; font-weight: 600; color: var(--v-tinta); }
+.v-passos span { display: block; margin-top: 3px; font-size: 14px; line-height: 1.45; color: var(--v-tinta-suave); }
+
+/* Cartão de linha — usado no "levar a app contigo" e afins. */
+.v-cartao-linha {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 16px 0;
+  padding: 20px;
+  border-radius: 26px;
+  background: var(--v-branco);
+  border: 1px solid rgba(35, 31, 32, .07);
+  text-decoration: none;
+}
+.v-cartao-linha > i:first-child {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--v-papel-2);
+}
+.v-cartao-linha > i:first-child svg { width: 20px; height: 22px; }
+.v-cartao-linha div { display: flex; flex-direction: column; min-width: 0; }
+.v-cartao-linha strong { font-family: var(--v-serif); font-size: 18px; font-weight: 600; letter-spacing: -.02em; color: var(--v-tinta); }
+.v-cartao-linha small { margin-top: 2px; font-size: 13px; color: var(--v-tinta-suave); }
+.v-cartao-linha > span:last-child { margin-left: auto; font-size: 19px; color: var(--v-tinta-fraca); }
+
+/* Rodapé. */
+.v-rodape { margin: 34px 22px 0; padding-top: 20px; border-top: 1px solid var(--v-linha); }
+.v-rodape-lema { margin: 0; font-family: var(--v-serif); font-size: 15px; font-style: italic; color: var(--v-tinta-suave); }
+/* gap só na horizontal: os 44px de alvo de toque de cada ligação já
+   afastam as linhas mais do que suficiente, e somar-lhes um gap
+   vertical deixava o rodapé com o dobro da altura do desenho. */
+.v-rodape nav { display: flex; flex-wrap: wrap; gap: 0 16px; margin-top: 6px; }
+.v-rodape nav a { min-height: 44px; display: inline-flex; align-items: center; font-size: 12px; color: var(--v-tinta-suave); text-decoration: none; }
+.v-rodape p:last-child { margin: 10px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--v-tinta-suave); }
+
+/* A cápsula fixa. É a acção principal do ecrã e acompanha o scroll. */
+.v-capsula {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  max-width: 398px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 7px 7px 20px;
+  border-radius: 999px;
+  background: rgba(35, 31, 32, .94);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 32px rgba(35, 31, 32, .34);
+}
+.v-capsula-texto { display: flex; flex-direction: column; min-width: 0; }
+.v-capsula-texto small {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--v-acento);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.v-capsula-texto strong { margin-top: 1px; font-size: 15.5px; font-weight: 600; color: #fff; white-space: nowrap; }
+.v-capsula-accao {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--v-tinta);
+  font: 600 15px var(--v-sans);
+  letter-spacing: -.01em;
+  text-decoration: none;
+  cursor: pointer;
+}
+.v-capsula-accao[aria-disabled='true'],
+.v-capsula-accao:disabled { background: rgba(255, 255, 255, .22); color: rgba(255, 255, 255, .6); cursor: default; }
