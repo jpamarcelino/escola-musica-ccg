@@ -43,7 +43,7 @@ function ModalShell({
             isso a centragem flex do overlay não chega até aqui — repete-se
             com position fixed + transform (ver botao-acao-destruir.tsx). */}
         <Dialog.Content
-          className="modal-caixa fixed left-1/2 top-1/2 z-50 space-y-4"
+          className="modal-caixa v-modal fixed left-1/2 top-1/2 z-50 space-y-4"
         >
           <Dialog.Close
             aria-label="Fechar"
@@ -107,9 +107,7 @@ export function ModalContaPedido({
         <>
           <Dialog.Title asChild>
             <h1
-              className="text-[22px] font-semibold leading-[1.2]"
-              style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-            >Entrar na Conta CCG</h1>
+>Entrar na Conta CCG</h1>
           </Dialog.Title>
           <form action={acaoLogin} className="space-y-3">
             <div className="space-y-1">
@@ -154,9 +152,7 @@ export function ModalContaPedido({
         <>
           <Dialog.Title asChild>
             <h1
-              className="text-[22px] font-semibold leading-[1.2]"
-              style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-            >Criar Conta CCG</h1>
+>Criar Conta CCG</h1>
           </Dialog.Title>
           <form action={acaoRegisto} className="space-y-3">
             <div className="space-y-1">
@@ -322,9 +318,7 @@ function EscolherAluno({
     <>
       <Dialog.Title asChild>
         <h1
-                className="text-[22px] font-semibold leading-[1.2]"
-                style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-              >Para qual aluno é o pedido?</h1>
+>Para qual aluno é o pedido?</h1>
       </Dialog.Title>
 
       {!aCriar && alunos.length > 0 && (
@@ -334,7 +328,7 @@ function EscolherAluno({
               key={a.id}
               type="button"
               onClick={() => onEscolher(a.id)}
-              className="block w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] py-[12px] text-left text-[15px] transition-colors hover:border-[var(--color-azul-logo)]"
+              className="v-escolha"
             >
               {a.nome}
             </button>
@@ -342,7 +336,7 @@ function EscolherAluno({
           <button
             type="button"
             onClick={() => setACriar(true)}
-            className="block w-full rounded-[13px] border border-dashed border-[var(--color-linha)] px-[14px] py-[12px] text-left text-[15px] text-[var(--color-tinta-suave)] transition-colors hover:border-[var(--color-azul-logo)]"
+            className="v-escolha v-escolha-nova"
           >
             + Criar novo perfil de aluno
           </button>
@@ -361,7 +355,7 @@ function EscolherAluno({
           <button
             type="button"
             onClick={() => setQuem('proprio')}
-            className="block w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] py-[12px] text-left text-[15px] transition-colors hover:border-[var(--color-azul-logo)]"
+            className="v-escolha"
           >
             <strong className="font-semibold">Sou eu</strong>
             <span className="block text-[12.5px]" style={{ color: 'var(--color-tinta-suave)' }}>
@@ -371,7 +365,7 @@ function EscolherAluno({
           <button
             type="button"
             onClick={() => setQuem('outro')}
-            className="block w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-[14px] py-[12px] text-left text-[15px] transition-colors hover:border-[var(--color-azul-logo)]"
+            className="v-escolha"
           >
             <strong className="font-semibold">Um filho ou outra pessoa</strong>
             <span className="block text-[12.5px]" style={{ color: 'var(--color-tinta-suave)' }}>
@@ -382,7 +376,7 @@ function EscolherAluno({
             <button
               type="button"
               onClick={() => setACriar(false)}
-              className="w-full text-sm underline text-foreground/60"
+              className="v-modal-ligacao"
             >
               Voltar à lista de alunos
             </button>
@@ -463,7 +457,7 @@ function EscolherAluno({
             <button
               type="button"
               onClick={() => setQuem(null)}
-              className="w-full text-sm underline text-foreground/60"
+              className="v-modal-ligacao"
             >
               Voltar atrás
             </button>
@@ -472,7 +466,7 @@ function EscolherAluno({
               <button
                 type="button"
                 onClick={() => setACriar(false)}
-                className="w-full text-sm underline text-foreground/60"
+                className="v-modal-ligacao"
               >
                 Voltar à lista de alunos
               </button>

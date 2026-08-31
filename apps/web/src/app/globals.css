@@ -5336,3 +5336,86 @@ body:has(.auth-pagina) { background: var(--color-papel); }
    fica do CSS antigo é a tabela, que rola dentro da sua própria caixa. */
 .v-texto.legal-corpo { margin-top: 22px; }
 .v-texto.legal-corpo section { margin-bottom: 26px; }
+
+/* ── Vitrine · diálogos ─────────────────────────────────────────────
+   O pop-up de conta a meio do pedido. O Claude Design apontou-o como
+   passo seguinte e não chegou a desenhá-lo; segue a linguagem dos ecrãs
+   à volta — papel, cantos de 28px, campos de 54px, botão em pílula. */
+.v-modal {
+  background: var(--v-papel);
+  border: none;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(35, 31, 32, .28), 0 2px 6px rgba(35, 31, 32, .2);
+  padding: 24px 22px;
+  font-family: var(--v-sans);
+  color: var(--v-tinta);
+}
+.v-modal h1 {
+  font-family: var(--v-serif);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  color: var(--v-tinta);
+}
+.v-modal .v-campos { padding: 0; }
+.v-modal input:not([type='checkbox']),
+.v-modal select {
+  height: 54px;
+  width: 100%;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid var(--v-linha);
+  background: var(--v-branco);
+  font: 16px var(--v-sans);
+  color: var(--v-tinta);
+  outline: none;
+  box-sizing: border-box;
+}
+.v-modal input:focus,
+.v-modal select:focus { border-color: var(--v-azul-claro); box-shadow: 0 0 0 3px rgba(120, 174, 222, .25); }
+/* Botão de escolha — um aluno da lista, ou "sou eu / um filho". */
+.v-escolha {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--v-linha);
+  background: var(--v-branco);
+  font: 15px var(--v-sans);
+  color: var(--v-tinta);
+  cursor: pointer;
+  text-decoration: none;
+}
+.v-escolha:hover { border-color: var(--v-azul-claro); }
+.v-escolha strong { display: block; font-weight: 600; }
+.v-escolha span { display: block; margin-top: 2px; font-size: 12.5px; color: var(--v-tinta-suave); }
+.v-escolha-nova { border-style: dashed; color: var(--v-tinta-suave); }
+/* O botão principal do diálogo: pílula escura, largura toda. */
+.v-botao {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 54px;
+  border: none;
+  border-radius: 999px;
+  background: var(--v-tinta);
+  color: #fff;
+  font: 600 15.5px var(--v-sans);
+  letter-spacing: -.01em;
+  cursor: pointer;
+}
+.v-botao:disabled { opacity: .5; cursor: default; }
+.v-modal-ligacao {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  background: none;
+  font: 500 14.5px var(--v-sans);
+  color: var(--v-teal);
+  cursor: pointer;
+  text-decoration: none;
+}
