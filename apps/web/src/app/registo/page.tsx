@@ -1,9 +1,7 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import { FundoPapel } from '@/components/fundo-papel'
 import RegistoForm from './form'
 import type { ConvitePrograma, ConviteTipo } from '@ccg/types'
-import { RodapeLegal } from '@/components/rodape-legal'
 
 type ConviteInfo = {
   tipo: ConviteTipo
@@ -26,12 +24,11 @@ export default async function RegistoPage({
     conviteInfo = data?.[0] ?? null
   }
 
+  // O rodapé e o fundo vivem dentro do formulário: no design vitrine a
+  // página é uma folha inteira com uma cápsula fixa por cima.
   return (
-    <FundoPapel className="auth-pagina auth-registo-pagina">
-      <Suspense>
-        <RegistoForm conviteCodigo={convite ?? null} conviteInfo={conviteInfo} />
-      </Suspense>
-      <RodapeLegal />
-    </FundoPapel>
+    <Suspense>
+      <RegistoForm conviteCodigo={convite ?? null} conviteInfo={conviteInfo} />
+    </Suspense>
   )
 }

@@ -1,63 +1,83 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { login } from '@/lib/actions/auth'
-import { InstalarCallout } from '@/components/instalar-callout'
-import { PasswordInput } from '@/components/password-input'
-import { Cartao } from '@/components/cartao'
-import { BotaoPrimario } from '@/components/botao-primario'
-import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
-import { Campo, CampoTexto, classesCampo } from '@/components/campo-formulario'
-import { MensagemErro } from '@/components/mensagem'
+import { SimboloCCG } from '@/components/simbolo-ccg'
+import { RodapeVitrine } from '@/components/rodape-vitrine'
+import { CampoVitrine, PasswordVitrine } from '@/components/campo-vitrine'
 
+// Entrar, na linguagem vitrine (Claude Design, 3a).
+//
+// A acção principal saiu de dentro do cartão e foi para a cápsula fixa:
+// num telemóvel, o fim do formulário fica abaixo do teclado, e o botão
+// que estava lá desaparecia justamente quando havia o que submeter.
 export default function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined)
   const searchParams = useSearchParams()
   const erroLink = searchParams.get('erro')
 
   return (
-    <div className="space-y-[14px]">
-      <Cartao>
-        <form action={action} className="space-y-[14px]">
-          <h1
-            className="text-[22px] font-semibold leading-[1.2]"
-            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-          >
-            Entrar
-          </h1>
+    <form action={action} className="v-pagina">
+      <div className="v-folha">
+        <div className="v-topo">
+          <Link href="/" className="v-voltar" aria-label="Voltar ao início">
+            ‹
+          </Link>
+          <span className="v-topo-marca" aria-hidden="true">
+            <SimboloCCG />
+          </span>
+        </div>
 
-          {erroLink && <MensagemErro>{erroLink}</MensagemErro>}
+        <div style={{ padding: '34px 22px 0' }}>
+          <p className="v-sobretitulo">Conta CCG</p>
+          <h1 className="v-titulo">Entrar</h1>
+          <div className="v-traco" />
+          <p className="v-entrada">A mesma conta serve para os pais e para os alunos da família.</p>
+        </div>
 
-          <CampoTexto id="email" name="email" label="Email" type="email" />
+        {(erroLink || state?.error) && <p className="v-erro">{erroLink || state?.error}</p>}
 
-          <Campo id="password" label="Password">
-            <PasswordInput
-              id="password"
-              name="password"
-              autoComplete="current-password"
-              className={classesCampo}
-            />
-          </Campo>
+        <div className="v-campos">
+          <CampoVitrine
+            id="email"
+            name="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            placeholder="nome@exemplo.pt"
+            required
+          />
+          <PasswordVitrine id="password" name="password" />
+        </div>
 
-          {state?.error && <MensagemErro>{state.error}</MensagemErro>}
+        <div className="v-ligacoes">
+          <Link href="/esqueci-password">Esqueceste-te da password?</Link>
+          <Link href="/registo">Ainda não tens conta? Criar conta</Link>
+        </div>
 
-          <BotaoPrimario disabled={pending}>
-            {pending ? 'A entrar…' : 'Entrar'}
-          </BotaoPrimario>
-
-          <div className="flex flex-col items-center gap-[8px] pt-[4px]">
-            <LigacaoTerciaria href="/esqueci-password">
-              Esqueceste-te da password?
-            </LigacaoTerciaria>
-            <LigacaoTerciaria href="/registo">
-              Ainda não tens conta? Criar conta
-            </LigacaoTerciaria>
+        <Link href="/instalar" className="v-cartao-linha">
+          <i>
+            <SimboloCCG />
+          </i>
+          <div>
+            <strong>Levar a aplicação contigo</strong>
+            <small>Instalar no telemóvel, sem loja.</small>
           </div>
-        </form>
-      </Cartao>
+          <span aria-hidden="true">›</span>
+        </Link>
 
-      <InstalarCallout />
-    </div>
+        <RodapeVitrine />
+      </div>
+
+      <div className="v-capsula">
+        <span className="v-ponto" aria-hidden="true" />
+        <strong className="v-capsula-marca">Conta CCG</strong>
+        <button type="submit" className="v-capsula-accao" disabled={pending}>
+          {pending ? 'A entrar…' : 'Entrar'}
+        </button>
+      </div>
+    </form>
   )
 }

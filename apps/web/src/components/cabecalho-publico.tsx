@@ -14,10 +14,17 @@ const AREAS_COM_CHROME_PROPRIO = ['/dashboard', '/admin', '/aluno']
 // conta". Repetir aqui a marca dava-lhe duas.
 const HOME = '/'
 
+// O mesmo, para os ecrãs já migrados para o design vitrine: cada um traz
+// o seu topo, com a seta de voltar e a marca no sítio que o desenho lhe
+// deu. Esta lista encolhe à medida que o resto da app for migrando —
+// quando não sobrar nenhum ecrã antigo, o componente inteiro sai.
+const ECRAS_VITRINE = ['/login', '/registo', '/pedir-aula', '/professor']
+
 export function CabecalhoPublico() {
   const caminho = usePathname()
 
   if (caminho === HOME) return null
+  if (ECRAS_VITRINE.some((a) => caminho === a || caminho.startsWith(`${a}/`))) return null
   if (AREAS_COM_CHROME_PROPRIO.some((a) => caminho === a || caminho.startsWith(`${a}/`))) {
     return null
   }

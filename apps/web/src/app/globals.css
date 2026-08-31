@@ -4626,6 +4626,8 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .v-marca svg { width: 19px; height: 21px; display: block; }
 .v-marca span { font-size: 12px; font-weight: 600; color: var(--v-tinta); }
 .v-topo-saida { font-size: 15px; font-weight: 500; color: var(--v-teal); text-decoration: none; }
+/* A marca do lado direito, quando o topo é seta + símbolo. */
+.v-topo-marca svg { width: 20px; height: 22px; display: block; opacity: .55; }
 
 /* Seta de voltar — disco discreto, 44px de alvo. */
 .v-voltar {
@@ -4829,6 +4831,9 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   box-shadow: 0 12px 32px rgba(35, 31, 32, .34);
 }
 .v-capsula-texto { display: flex; flex-direction: column; min-width: 0; }
+/* Cápsula simples: um ponto no acento e o nome do sítio onde se está. */
+.v-ponto { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--v-acento); }
+.v-capsula-marca { font-size: 15.5px; font-weight: 500; color: #fff; }
 .v-capsula-texto small {
   font-size: 9.5px;
   font-weight: 700;
@@ -4857,3 +4862,127 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 }
 .v-capsula-accao[aria-disabled='true'],
 .v-capsula-accao:disabled { background: rgba(255, 255, 255, .22); color: rgba(255, 255, 255, .6); cursor: default; }
+
+/* ── Vitrine · formulários ──────────────────────────────────────────
+   Campos altos (54px) e cantos de 16px, como no design. O foco é uma
+   borda azul-clara e não um anel do sistema: o anel não cabia dentro do
+   raio e cortava o canto. */
+.v-campos { display: flex; flex-direction: column; gap: 16px; padding: 34px 22px 0; }
+.v-campo { display: flex; flex-direction: column; gap: 7px; }
+.v-campo > span:first-child { font-size: 12.5px; font-weight: 500; color: var(--v-tinta-suave); }
+.v-campo-ajuda { font-size: 12.5px; line-height: 1.5; color: var(--v-tinta-suave); }
+.v-input,
+.v-campo input,
+.v-campo select {
+  height: 54px;
+  width: 100%;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid var(--v-linha);
+  background: var(--v-branco);
+  font: 16px var(--v-sans);
+  color: var(--v-tinta);
+  outline: none;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.v-campo input:focus,
+.v-campo select:focus { border-color: var(--v-azul-claro); box-shadow: 0 0 0 3px rgba(120, 174, 222, .25); }
+.v-campo-par { display: grid; grid-template-columns: 1.15fr 1fr; gap: 12px; }
+
+/* Password com o botão Mostrar/Ocultar por dentro do campo. */
+.v-password { position: relative; display: block; }
+.v-password input { padding-right: 92px; }
+.v-password button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  height: 40px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--v-papel-2);
+  color: var(--v-teal);
+  font: 600 13.5px var(--v-sans);
+  cursor: pointer;
+}
+
+/* Ligações terciárias, centradas, com 44px de alvo. */
+.v-ligacoes { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 26px 22px 0; }
+.v-ligacoes a {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--v-teal);
+  text-decoration: none;
+}
+
+/* Bloco de declarações — caixas grandes, uma por linha, tudo clicável. */
+.v-declaracoes { border-radius: 24px; background: var(--v-branco); border: 1px solid rgba(35, 31, 32, .07); overflow: hidden; }
+.v-declaracoes label {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--v-tinta);
+}
+.v-declaracoes label + label { border-top: 1px solid var(--v-linha-fina); }
+.v-declaracoes input { position: absolute; opacity: 0; width: 0; height: 0; }
+.v-declaracoes i {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  border: 1.5px solid #CBC0B1;
+  background: transparent;
+  color: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  font-style: normal;
+}
+.v-declaracoes input:checked + i { background: var(--v-tinta); border-color: var(--v-tinta); color: #fff; }
+.v-declaracoes input:focus-visible + i { box-shadow: 0 0 0 3px rgba(120, 174, 222, .45); }
+.v-declaracoes a { color: var(--v-teal); text-decoration: underline; text-underline-offset: 3px; }
+.v-nota { margin: 14px 0 0; font-size: 12.5px; line-height: 1.55; color: var(--v-tinta-suave); text-wrap: pretty; }
+.v-nota a { color: var(--v-teal); }
+
+/* Mensagem de erro. Vermelho do sistema de erros da app, não um novo. */
+.v-erro {
+  margin: 18px 22px 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(154, 59, 46, .3);
+  background: rgba(154, 59, 46, .06);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #9A3B2E;
+}
+
+/* Secção numerada de campos, no registo. */
+.v-seccao-campos { margin: 34px 22px 0; }
+.v-seccao-campos .v-sobretitulo { margin-bottom: 14px; }
+/* Dentro de uma secção, os campos já herdam a margem lateral dela. */
+.v-campos-secas { padding: 0; gap: 14px; }
+
+/* Aviso informativo — um convite reconhecido, uma conta por confirmar.
+   Não é erro nem sucesso: é contexto, e por isso usa o papel e não uma
+   cor de estado. */
+.v-aviso {
+  margin: 18px 22px 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--v-linha);
+  background: var(--v-papel-2);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--v-tinta);
+}

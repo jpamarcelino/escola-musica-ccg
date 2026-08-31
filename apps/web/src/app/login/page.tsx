@@ -1,15 +1,13 @@
 import { Suspense } from 'react'
-import { FundoPapel } from '@/components/fundo-papel'
 import LoginForm from './form'
-import { RodapeLegal } from '@/components/rodape-legal'
 
+// O rodapé legal e o fundo vivem agora dentro do formulário: no design
+// vitrine a página inteira é uma folha de papel com uma cápsula fixa por
+// cima, e não um cartão pousado sobre um fundo.
 export default function LoginPage() {
   return (
-    <FundoPapel className="auth-pagina">
-      <Suspense>
-        <LoginForm />
-      </Suspense>
-      <RodapeLegal />
-    </FundoPapel>
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }
