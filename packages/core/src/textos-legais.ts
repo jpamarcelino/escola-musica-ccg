@@ -28,6 +28,12 @@ export const TEXTOS_LEGAIS = {
   declaracaoPerfilAluno:
     'Declaro que sou o próprio aluno ou que tenho legitimidade para gerir este perfil e os respetivos dados.',
 
+  // O mesmo pedido, quando quem submete não passou pela checkbox. O
+  // texto é uma só frase, e não a declaração inteira outra vez: quem lê
+  // isto está a olhar para o formulário, com a declaração à frente.
+  erroDeclaracaoPerfilAluno:
+    'Para criar um perfil de aluno para outra pessoa, tens de declarar que tens legitimidade para gerir este perfil.',
+
   porqueDataNascimento:
     'Usamos a data de nascimento para confirmar que as modalidades escolhidas são adequadas à idade do aluno.',
 
