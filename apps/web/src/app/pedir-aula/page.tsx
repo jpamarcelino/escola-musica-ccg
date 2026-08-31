@@ -1,9 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DIAS_SEMANA, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separarFaixaEtaria, parseFaixaEtaria, dentroDaFaixa, elegivelParaDisciplina, HOUR_HEIGHT, paraMinutos } from '@ccg/core'
-import { CartaoLink } from '@/components/cartao-link'
-import { Wizard, ListaEscolhas } from '@/components/wizard'
+import { DIAS_SEMANA, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separarFaixaEtaria, parseFaixaEtaria, dentroDaFaixa, elegivelParaDisciplina } from '@ccg/core'
+import { WizardVitrine } from '@/components/wizard-vitrine'
 import { SeletorIdade } from '@/components/seletor-idade'
 import type { ProfessorParaRecomendacao } from '@/components/campo-recomendacao'
 import { FormularioPedido } from './formulario-pedido'
@@ -59,14 +58,14 @@ export default async function PedirAulaPage({
   // leve à página inicial e não outra vez ao pop-up.
   if (idadeNum === null) {
     return (
-      <Wizard
-        publico
+      <WizardVitrine
         voltar="/"
         passo={2}
-        escolhas={[{ valor: NOME_ESCOLA[programa] ?? programa, href: '/' }]}
+        titulo="Que idade tem o futuro aluno?"
+        entrada="Só para te mostrarmos as disciplinas certas para essa idade."
       >
         <SeletorIdade />
-      </Wizard>
+      </WizardVitrine>
     )
   }
 
@@ -130,24 +129,22 @@ export default async function PedirAulaPage({
       : null
 
     return (
-      <Wizard
-        publico
-        title={
+      <WizardVitrine
+        voltar="/"
+        passo={3}
+        titulo={
           programa === 'musica'
             ? 'Que instrumento queres aprender?'
             : programa === 'bebes'
-              ? 'Escolha a turma indicada'
+              ? 'Escolhe a turma indicada'
               : 'Que modalidade queres aprender?'
         }
-        voltar="/"
-        passo={3}
-        escolhas={[
-          { valor: NOME_ESCOLA[programa] ?? programa, href: '/' },
-          { valor: `${idadeNum} anos`, href: `/pedir-aula?programa=${programa}` },
-        ]}
+        entrada="Mostramos só o que serve a idade indicada."
+        resumo={`${NOME_ESCOLA[programa] ?? programa} · ${idadeNum} anos`}
+        mudarHref="/"
       >
         {sugestao && (
-          <p className="wizard-sem-opcoes">
+          <p className="v-aviso">
             {sugestao.texto}
             {sugestao.acao && (
               <>
@@ -158,20 +155,45 @@ export default async function PedirAulaPage({
           </p>
         )}
 
-        <ListaEscolhas>
-          {ordenados.map((i) => (
-            <CartaoLink
-              key={i.id}
-              href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${i.id}`}
-              nome={programa === 'danca' ? i.titulo : i.nome}
-              descricao={i.idade ?? undefined}
-              icone={i.imagem_url ?? undefined}
-              iconeTamanho={34}
-              bloqueado={!i.elegivel}
-            />
-          ))}
-        </ListaEscolhas>
-      </Wizard>
+        <div className="v-grelha">
+          {ordenados.map((i) => {
+            const nome = programa === 'danca' ? i.titulo : i.nome
+            // Um nome longo numa coluna de metade do ecrã parte-se em três
+            // linhas e desalinha a grelha toda. Esses ocupam a linha
+            // inteira, com a imagem ao lado em vez de por cima. Treze
+            // caracteres é onde "Baixo Elétrico" e "Teoria Musical"
+            // deixam de caber a 375px.
+            const larga = nome.length >= 13
+            const conteudo = (
+              <>
+                <i>
+                  {i.imagem_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={i.imagem_url} alt="" />
+                  )}
+                </i>
+                <strong>{nome}</strong>
+                {i.idade && <small>{i.idade}</small>}
+                <span aria-hidden="true">›</span>
+              </>
+            )
+            const classe = `v-opcao${larga ? ' v-larga' : ''}`
+            return i.elegivel ? (
+              <Link
+                key={i.id}
+                href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${i.id}`}
+                className={classe}
+              >
+                {conteudo}
+              </Link>
+            ) : (
+              <div key={i.id} className={classe} aria-disabled="true">
+                {conteudo}
+              </div>
+            )
+          })}
+        </div>
+      </WizardVitrine>
     )
   }
 
@@ -183,11 +205,13 @@ export default async function PedirAulaPage({
 
   if (instrumentoAtual && !elegivelParaDisciplina(idadeNum, programa, instrumentoAtual.nome)) {
     return (
-      <Wizard title="Não disponível para esta idade" voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}>
-        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
-          Esta disciplina não está disponível para a idade indicada.
-        </p>
-      </Wizard>
+      <WizardVitrine
+        titulo="Não disponível para esta idade"
+        voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}
+        entrada="Esta disciplina não está disponível para a idade indicada."
+      >
+        <span />
+      </WizardVitrine>
     )
   }
 
@@ -210,41 +234,65 @@ export default async function PedirAulaPage({
       .slice()
       .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
 
+    const nomeInstrumento = instrumentoAtual?.nome ?? ''
+
     return (
-      <Wizard
-        publico
-        title="Escolhe o professor"
+      <WizardVitrine
         voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}
         passo={4}
-        escolhas={[
-          { valor: NOME_ESCOLA[programa] ?? programa, href: '/' },
-          { valor: `${idadeNum} anos`, href: `/pedir-aula?programa=${programa}` },
-        ]}
+        titulo="Escolhe o professor"
+        entrada="Toca no i para conhecer cada um antes de decidir."
+        resumo={`${NOME_ESCOLA[programa] ?? programa} · ${idadeNum} anos · ${nomeInstrumento}`}
+        mudarHref={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}
       >
         {professores.length ? (
-          <ListaEscolhas>
-            {professores.map((p) => (
-              <CartaoLink
-                key={p.professor_id}
-                href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}&professor=${p.professor_id}`}
-                nome={p.nome}
-                descricao={p.especialidade ?? undefined}
-                icone={p.foto_url ?? undefined}
-                iconeTamanho={46}
-                iconeCobre
-                infoHref={`/professor/${p.professor_id}?voltar=${encodeURIComponent(
-                  `/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`
-                )}`}
-                infoRotulo={`Conhecer ${p.nome}`}
-              />
-            ))}
-          </ListaEscolhas>
+          <>
+            {/* A linha inteira escolhe o professor e o "i" abre a ficha.
+                Duas ligações, não uma dentro da outra — isso não é HTML
+                válido. A que escolhe estica-se por cima da linha toda com
+                um ::after, e o "i" fica por cima dela. */}
+            <div className="v-lista">
+              {professores.map((p) => (
+                <div key={p.professor_id} className="v-lista-linha">
+                  {p.foto_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.foto_url} alt="" />
+                  ) : (
+                    <i aria-hidden="true">{p.nome.slice(0, 1)}</i>
+                  )}
+                  <Link
+                    href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}&professor=${p.professor_id}`}
+                    className="v-lista-alvo"
+                  >
+                    <strong>{p.nome}</strong>
+                    {p.especialidade && <small>{p.especialidade}</small>}
+                  </Link>
+                  <Link
+                    href={`/professor/${p.professor_id}?voltar=${encodeURIComponent(
+                      `/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`
+                    )}`}
+                    className="v-lista-info"
+                    aria-label={`Conhecer ${p.nome}`}
+                  >
+                    i
+                  </Link>
+                  <span className="v-lista-seta" aria-hidden="true">
+                    ›
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="v-entre-tracos">
+              <p>
+                Não faz mal enganares-te: no passo seguinte ainda podes voltar atrás sem perder
+                nada.
+              </p>
+            </div>
+          </>
         ) : (
-          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
-            Ainda não há professores para esta disciplina.
-          </p>
+          <p className="v-passo-entrada">Ainda não há professores para esta disciplina.</p>
         )}
-      </Wizard>
+      </WizardVitrine>
     )
   }
 
@@ -281,15 +329,6 @@ export default async function PedirAulaPage({
   // contam para o aviso do "só uma opção".
   const horariosDisponiveis = horariosGrade.filter((h) => h.estado !== 'bloqueado').length
 
-  const horaInicioGrade = semHorarios
-    ? 0
-    : Math.floor(Math.min(...horariosGrade.map((h) => paraMinutos(h.hora_inicio))) / 60)
-  const horaFimGrade = semHorarios
-    ? 0
-    : Math.ceil(Math.max(...horariosGrade.map((h) => paraMinutos(h.hora_fim))) / 60)
-  const horas = Array.from({ length: horaFimGrade - horaInicioGrade }, (_, i) => horaInicioGrade + i)
-  const alturaGrade = horas.length * HOUR_HEIGHT
-
   const horariosPorDia: Record<string, typeof horariosGrade> = {}
   for (const dia of DIAS_GRADE) horariosPorDia[dia] = []
   for (const h of horariosGrade) horariosPorDia[h.dia_semana]?.push(h)
@@ -297,26 +336,26 @@ export default async function PedirAulaPage({
     horariosPorDia[dia]?.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
   }
 
+  const primeiroNome = (professorEscolhido?.nome ?? '').split(' ')[0]
+
   return (
-    <Wizard
-        publico
-      title="Seleciona os vários horários em que há disponibilidade"
+    <WizardVitrine
       voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`}
       passo={5}
-      escolhas={[
-        { valor: NOME_ESCOLA[programa] ?? programa, href: '/' },
-        { valor: `${idadeNum} anos`, href: `/pedir-aula?programa=${programa}` },
-      ]}
+      titulo="Quando é que dá jeito?"
+      entrada={
+        primeiroNome
+          ? `Escolhe todas as opções possíveis — ${primeiroNome} decide depois qual fica confirmada.`
+          : 'Escolhe todas as opções possíveis — o professor decide depois qual fica confirmada.'
+      }
     >
       <FormularioPedido
         diasGrade={DIAS_GRADE}
         horariosPorDia={horariosPorDia}
-        horas={horas}
-        horaInicioGrade={horaInicioGrade}
-        alturaGrade={alturaGrade}
         semHorarios={semHorarios}
         horariosDisponiveis={horariosDisponiveis}
         instrumentoId={instrumento}
+        instrumentoNome={instrumentoAtual?.nome ?? ''}
         professorId={professor}
         professorAdereRecomendacao={professorEscolhido?.adere_recomendacao ?? false}
         professorNome={professorEscolhido?.nome ?? ''}
@@ -328,7 +367,7 @@ export default async function PedirAulaPage({
         autenticado={!!user}
         erroInicial={erro}
       />
-    </Wizard>
+    </WizardVitrine>
   )
 }
 

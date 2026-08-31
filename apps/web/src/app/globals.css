@@ -4986,3 +4986,282 @@ body:has(.auth-pagina) { background: var(--color-papel); }
   line-height: 1.5;
   color: var(--v-tinta);
 }
+
+/* ── Vitrine · assistente de pedido ─────────────────────────────────
+   Topo com seta e a contagem do passo, e a barra de progresso em cinco
+   segmentos. Os feitos ficam azul-claro, o actual a tinta, os que faltam
+   na cor da linha — a distinção não é só de cor: o actual é o único
+   escuro, e lê-se mesmo sem ver cor nenhuma. */
+.v-passo-topo { display: flex; align-items: flex-start; gap: 14px; padding: 14px 22px 0; }
+.v-passo-topo .v-sobretitulo { padding-top: 14px; }
+.v-progresso { display: flex; gap: 5px; margin: 18px 22px 0; padding: 0; list-style: none; }
+.v-progresso li { flex: 1; height: 3px; border-radius: 2px; background: var(--v-linha); }
+.v-progresso li[data-estado='feito'] { background: var(--v-azul-claro); }
+.v-progresso li[data-estado='atual'] { background: var(--v-tinta); }
+
+.v-passo-titulo {
+  margin: 22px 22px 0;
+  font-family: var(--v-serif);
+  font-size: clamp(30px, 9.5vw, 38px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  color: var(--v-tinta);
+  text-wrap: balance;
+}
+.v-passo-entrada { margin: 12px 22px 0; font-size: 15px; line-height: 1.5; color: var(--v-tinta-suave); }
+
+/* Grelha de disciplinas: dois por linha, com a imagem num quadrado de
+   papel. O que ocupa a linha toda é o cartão largo (.v-larga). */
+.v-grelha { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 26px 16px 0; }
+.v-opcao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 16px 16px;
+  border-radius: 26px;
+  background: var(--v-branco);
+  border: 1px solid rgba(35, 31, 32, .07);
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(35, 31, 32, .04);
+}
+.v-opcao > i {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--v-papel-2);
+}
+.v-opcao img { width: 46px; height: 46px; object-fit: contain; }
+.v-opcao strong {
+  font-family: var(--v-serif);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--v-tinta);
+}
+.v-opcao small { font-size: 12.5px; color: var(--v-tinta-suave); }
+.v-opcao > span:last-child { position: absolute; top: 18px; right: 18px; font-size: 15px; color: var(--v-tinta-fraca); }
+.v-opcao.v-larga {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+}
+.v-opcao.v-larga > i { flex: none; width: 52px; height: 52px; border-radius: 16px; }
+.v-opcao.v-larga img { width: 38px; height: 38px; }
+.v-opcao.v-larga > span:last-child { position: static; margin-left: auto; }
+/* Fora da idade: continua à vista, para se perceber o que a escola dá,
+   mas sem convidar ao toque. */
+.v-opcao[aria-disabled='true'] { opacity: .45; pointer-events: none; box-shadow: none; }
+
+/* Lista de professores — um cartão só, com linhas lá dentro. */
+.v-lista { margin: 26px 16px 0; border-radius: 28px; background: var(--v-branco); border: 1px solid rgba(35, 31, 32, .07); overflow: hidden; }
+.v-lista-linha {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  text-decoration: none;
+}
+.v-lista-linha { position: relative; }
+.v-lista-linha + .v-lista-linha { border-top: 1px solid var(--v-linha-fina); }
+/* A ligação que escolhe estica-se por toda a linha; o "i" fica por cima
+   dela com z-index, para o toque nele abrir a ficha e não escolher. */
+.v-lista-alvo { display: flex; flex-direction: column; min-width: 0; text-decoration: none; }
+.v-lista-alvo::after { content: ''; position: absolute; inset: 0; }
+.v-lista-info { position: relative; z-index: 1; }
+.v-lista-linha > img,
+.v-lista-linha > i:first-child {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 12%;
+  display: grid;
+  place-items: center;
+  background: var(--v-papel-2);
+  font-family: var(--v-serif);
+  font-size: 20px;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--v-tinta-suave);
+}
+.v-lista-linha strong {
+  font-family: var(--v-serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--v-tinta);
+}
+.v-lista-linha small {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--v-tinta-suave);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.v-lista-info {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--v-papel-2);
+  font-family: var(--v-serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--v-teal);
+  text-decoration: none;
+}
+.v-lista-seta { font-size: 16px; color: var(--v-tinta-fraca); }
+.v-lista-nota { margin: 10px 22px 0; font-size: 13px; line-height: 1.5; color: var(--v-tinta-suave); }
+
+/* Bloco de texto entre traços — a nota tranquilizadora do passo 4. */
+.v-entre-tracos { margin: 34px 22px 0; padding: 18px 0; border-block: 1px solid var(--v-linha); }
+.v-entre-tracos p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--v-tinta-suave); }
+
+/* Cápsula com o resumo do percurso e um "Mudar" discreto. */
+.v-capsula-secundaria {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.v-capsula-texto small.v-capsula-etiqueta { color: rgba(255, 255, 255, .55); }
+
+/* ── Vitrine · agenda de horários (passo 5) ─────────────────────────
+   Uma lista por dia, e não uma grelha de semana. A grelha obrigava a
+   apertar seis colunas em 375px e a ler blocos de 40px de largura; aqui
+   cada horário tem uma linha inteira, com a hora à esquerda e o visto à
+   direita. */
+.v-dias { margin: 28px 22px 0; }
+.v-dia + .v-dia { margin-top: 34px; }
+.v-dia-cabecalho { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.v-dia-cabecalho h2 {
+  margin: 0;
+  font-family: var(--v-serif);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -.03em;
+  color: var(--v-tinta);
+}
+.v-dia-cabecalho small { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--v-tinta-fraca); }
+.v-dia-horarios { position: relative; padding-left: 24px; }
+.v-dia-horarios::before { content: ''; position: absolute; left: 3px; top: 16px; bottom: 16px; width: 1px; background: var(--v-acento); opacity: .45; }
+
+.v-horario {
+  position: relative;
+  display: grid;
+  grid-template-columns: 62px 1fr 30px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 66px;
+  border-top: 1px solid var(--v-linha);
+  cursor: pointer;
+}
+.v-horario:last-child { border-bottom: 1px solid var(--v-linha); }
+.v-horario::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 29px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--v-linha);
+  box-shadow: 0 0 0 3px var(--v-papel);
+}
+.v-horario input { position: absolute; opacity: 0; width: 0; height: 0; }
+.v-horario-hora { font-size: 16px; font-weight: 700; color: var(--v-azul); font-variant-numeric: tabular-nums; }
+.v-horario-texto { display: flex; flex-direction: column; }
+.v-horario-texto strong { font-size: 15px; font-weight: 500; color: var(--v-tinta); }
+.v-horario-texto small { margin-top: 2px; font-size: 12.5px; color: var(--v-tinta-suave); }
+.v-horario-visto {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #CBC0B1;
+  color: transparent;
+  font-size: 13px;
+  font-weight: 700;
+}
+.v-horario input:checked ~ .v-horario-visto { background: var(--v-tinta); border-color: var(--v-tinta); color: #fff; }
+.v-horario:has(input:checked)::before { background: var(--v-acento); }
+.v-horario:has(input:checked) .v-horario-texto strong { font-weight: 600; }
+.v-horario input:focus-visible ~ .v-horario-visto { box-shadow: 0 0 0 3px rgba(120, 174, 222, .45); }
+/* Ocupado: fica à vista para se ver o horário completo do professor, mas
+   não se escolhe. */
+.v-horario[data-ocupado='true'] { opacity: .5; cursor: default; }
+.v-horario[data-ocupado='true'] .v-horario-hora { color: var(--v-tinta-suave); }
+
+/* Cartão da mensagem alternativa. */
+.v-cartao-mensagem {
+  margin: 36px 16px 0;
+  padding: 20px;
+  border-radius: 26px;
+  background: var(--v-branco);
+  border: 1px solid rgba(35, 31, 32, .07);
+}
+.v-cartao-mensagem strong {
+  display: block;
+  font-family: var(--v-serif);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--v-tinta);
+}
+.v-cartao-mensagem p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--v-tinta-suave); }
+.v-cartao-mensagem textarea {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px 15px;
+  border-radius: 18px;
+  background: #F7F3EC;
+  border: 1px solid #EAE0D0;
+  font: 14px/1.5 var(--v-sans);
+  color: var(--v-tinta);
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.v-cartao-mensagem textarea:focus { border-color: var(--v-azul-claro); }
+
+/* ── Vitrine · ficha pública do professor ───────────────────────────
+   O retrato grande, e a apresentação escrita pelo próprio a seguir. Não
+   há contactos: quem quiser falar com o professor fala com a secretaria,
+   e é isso que a nota do fim diz. */
+.v-ficha-cabecalho { padding: 26px 22px 0; }
+.v-ficha-cabecalho h1 {
+  margin: 10px 0 0;
+  font-family: var(--v-serif);
+  font-size: clamp(34px, 11.5vw, 46px);
+  font-weight: 600;
+  line-height: .98;
+  letter-spacing: -.04em;
+  color: var(--v-tinta);
+}
+.v-ficha-disciplinas { margin: 16px 0 0; font-size: 15px; color: var(--v-tinta-suave); }
+.v-retrato { margin: 26px 16px 0; border-radius: 34px; overflow: hidden; background: var(--v-papel-2); }
+.v-retrato img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 12%; }
+.v-bio { margin: 30px 22px 0; }
+.v-bio .v-sobretitulo { margin-bottom: 14px; }
+.v-bio p { margin: 0 0 12px; font-size: 15.5px; line-height: 1.6; color: var(--v-tinta); text-wrap: pretty; }
+.v-bio p:last-child { margin-bottom: 0; }
+.v-ficha-nota { margin: 34px 22px 0; padding-top: 20px; border-top: 1px solid var(--v-linha); }
+.v-ficha-nota p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--v-tinta-suave); text-wrap: pretty; }

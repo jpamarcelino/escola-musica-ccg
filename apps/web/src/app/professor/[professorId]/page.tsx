@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { RodapeVitrine } from '@/components/rodape-vitrine'
 
 type FichaPublica = {
   professor_id: string
@@ -49,39 +50,73 @@ export default async function FichaProfessorPage({
         ? 'Escola de Dança'
         : null
 
+  // O nome parte-se em duas linhas quando tem duas palavras, como no
+  // desenho: um nome inteiro numa linha só encolhe a tipografia até
+  // deixar de ter presença.
+  const partes = ficha.nome.trim().split(/\s+/)
+  const nomeEmDuasLinhas =
+    partes.length > 1 ? [partes[0], partes.slice(1).join(' ')] : [ficha.nome]
+
   return (
-    <main id="conteudo-principal" className="partitura-pagina ficha-professor-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href={destinoVoltar} className="partitura-voltar" aria-label="Voltar">
-            ←
+    <main id="conteudo-principal" className="v-pagina">
+      <div className="v-folha">
+        <div className="v-topo">
+          <Link href={destinoVoltar} className="v-voltar" aria-label="Voltar">
+            ‹
           </Link>
-          <div>
-            <p className="partitura-sobretitulo">{escola ?? 'Centro Cultural da Guarda'}</p>
-            <h1>{ficha.nome}</h1>
-            {ficha.disciplinas.length > 0 && <p>{ficha.disciplinas.join(' · ')}</p>}
-          </div>
-        </header>
+        </div>
+
+        <div className="v-ficha-cabecalho">
+          <p className="v-sobretitulo">{escola ?? 'Centro Cultural da Guarda'}</p>
+          <h1>
+            {nomeEmDuasLinhas.map((linha, i) => (
+              <span key={linha}>
+                {i > 0 && <br />}
+                {linha}
+              </span>
+            ))}
+          </h1>
+          <div className="v-traco" />
+          {ficha.disciplinas.length > 0 && (
+            <p className="v-ficha-disciplinas">{ficha.disciplinas.join(' · ')}</p>
+          )}
+        </div>
 
         {ficha.foto_url && (
-          <div className="ficha-professor-retrato">
+          <div className="v-retrato">
             <Image
               src={ficha.foto_url}
               alt={`Retrato de ${ficha.nome}`}
               width={640}
-              height={640}
-              sizes="(max-width: 700px) 100vw, 420px"
+              height={800}
+              sizes="(max-width: 460px) 100vw, 400px"
             />
           </div>
         )}
 
-        {ficha.bio ? (
-          <article className="ficha-professor-bio">{ficha.bio}</article>
-        ) : (
-          <p className="ficha-professor-sem-bio">
-            Ainda não há uma apresentação escrita deste professor.
+        <div className="v-bio">
+          <p className="v-sobretitulo">01 Apresentação</p>
+          {ficha.bio ? (
+            // A bio é escrita pelo professor num campo de texto: os
+            // parágrafos são quebras de linha, não HTML.
+            ficha.bio
+              .split(/\n{2,}/)
+              .map((paragrafo, i) => <p key={i}>{paragrafo}</p>)
+          ) : (
+            <p style={{ color: 'var(--v-tinta-suave)' }}>
+              Ainda não há uma apresentação escrita deste professor.
+            </p>
+          )}
+        </div>
+
+        <div className="v-ficha-nota">
+          <p>
+            A ficha não mostra contactos. Para falar com o professor, fala com a secretaria do
+            Centro Cultural da Guarda.
           </p>
-        )}
+        </div>
+
+        <RodapeVitrine />
       </div>
     </main>
   )

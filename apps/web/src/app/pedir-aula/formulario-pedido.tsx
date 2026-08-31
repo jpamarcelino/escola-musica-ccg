@@ -1,14 +1,11 @@
 'use client'
 
-import { useRef, useState, useTransition, type CSSProperties } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import { escolherDisponibilidades } from '@/lib/actions/aluno'
-import { BotaoPrimario } from '@/components/botao-primario'
-import { CampoTextarea } from '@/components/campo-formulario'
 import { CampoRecomendacao, type ProfessorParaRecomendacao } from '@/components/campo-recomendacao'
-import { MensagemErro } from '@/components/mensagem'
-import { HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import { ModalContaPedido, ModalEscolherAluno } from '@/components/modal-conta-pedido'
 import { ModalUmHorario, deveAvisarUmHorario } from '@/components/confirmar-um-horario'
+import { paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import type { HorarioEstado, InstrumentoPrograma } from '@ccg/types'
 
 type Horario = {
@@ -19,21 +16,30 @@ type Horario = {
   estado: HorarioEstado
 }
 
-// Passo final do wizard público (/pedir-aula): a mesma grelha de horários +
-// mensagem do fluxo autenticado, mas o "Enviar pedido" não faz um POST
-// direto — primeiro garante que há sessão e um aluno escolhido (mostrando
-// o popup de conta só se for preciso), e só depois envia o pedido a
-// sério. Os checkboxes/textarea ficam sempre montados por trás do popup,
-// por isso nada do que já foi escolhido se perde.
+function duracao(inicio: string, fim: string): string {
+  const minutos = paraMinutos(fim) - paraMinutos(inicio)
+  if (minutos % 60 === 0) return `${minutos / 60} ${minutos === 60 ? 'hora' : 'horas'}`
+  return `${minutos} minutos`
+}
+
+// Passo 5 do pedido público, na linguagem vitrine (Claude Design, 2d).
+//
+// Deixou de ser a grelha da semana. A grelha obrigava a apertar seis
+// colunas em 375px, e cada aula ficava um bloco de 40px de largura com a
+// hora em corpo 10. Aqui cada horário tem uma linha inteira: a hora à
+// esquerda, a duração ao meio, o visto à direita.
+//
+// O "Enviar pedido" não faz um POST direto — primeiro garante que há
+// sessão e um aluno escolhido (mostrando o popup de conta só se for
+// preciso), e só depois envia. Os campos ficam montados por trás do
+// popup, por isso nada do que já foi escolhido se perde.
 export function FormularioPedido({
   diasGrade,
   horariosPorDia,
-  horas,
-  horaInicioGrade,
-  alturaGrade,
   semHorarios,
   horariosDisponiveis,
   instrumentoId,
+  instrumentoNome,
   professorId,
   professorAdereRecomendacao,
   professorNome,
@@ -45,22 +51,17 @@ export function FormularioPedido({
 }: {
   diasGrade: string[]
   horariosPorDia: Record<string, Horario[]>
-  horas: number[]
-  horaInicioGrade: number
-  alturaGrade: number
   semHorarios: boolean
-  // Quantos horários se podem mesmo escolher (os bloqueados não contam).
   horariosDisponiveis: number
   instrumentoId: string
+  instrumentoNome: string
   professorId: string
-  // Só com o professor aderente ao Programa é que se pergunta quem
-  // recomendou (Art. 5.º). Vem decidido do servidor.
   professorAdereRecomendacao: boolean
   professorNome: string
   professoresParaRecomendacao: ProfessorParaRecomendacao[]
   // Viajam com o pedido só para o erro poder devolver a pessoa a este
   // mesmo passo. Sem eles, o redirect de erro caía num /pedir-aula sem
-  // escola nem idade — ou seja, no pop-up da idade, do início.
+  // escola nem idade — ou seja, no passo da idade, do início.
   programa: InstrumentoPrograma
   idade: number
   autenticado: boolean
@@ -68,11 +69,10 @@ export function FormularioPedido({
 }) {
   const [popup, setPopup] = useState<'conta' | 'aluno' | null>(null)
   const [avisoUmHorario, setAvisoUmHorario] = useState(false)
+  const [escolhidos, setEscolhidos] = useState(0)
   const [aEnviar, iniciarEnvio] = useTransition()
   const [erro, setErro] = useState(erroInicial ?? '')
   const formRef = useRef<HTMLFormElement>(null)
-
-  let indiceAtual = 0
 
   function enviarPedido(alunoId: string, formEl: HTMLFormElement) {
     setPopup(null)
@@ -85,18 +85,22 @@ export function FormularioPedido({
     iniciarEnvio(() => escolherDisponibilidades(dados))
   }
 
+  function abrirPopupDeConta() {
+    setPopup(autenticado ? 'aluno' : 'conta')
+  }
+
   function aoSubmeter(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setErro('')
     const formEl = e.currentTarget
-    const horariosEscolhidos = formEl.querySelectorAll('input[name="horarios"]:checked')
+    const marcados = formEl.querySelectorAll('input[name="horarios"]:checked')
     const mensagem = (formEl.elements.namedItem('mensagem') as HTMLTextAreaElement)?.value.trim()
-    if (horariosEscolhidos.length === 0 && !mensagem) {
-      setErro('Seleciona pelo menos um horário ou escreve uma mensagem.')
+    if (marcados.length === 0 && !mensagem) {
+      setErro('Escolhe pelo menos um horário ou escreve uma mensagem.')
       return
     }
     // Uma pausa antes do popup de conta, não depois: quem vai voltar à
-    // grelha para marcar mais horários não deve ter de passar primeiro
+    // lista para marcar mais horários não deve ter de passar primeiro
     // por entrar na conta.
     if (deveAvisarUmHorario(formEl, horariosDisponiveis)) {
       setAvisoUmHorario(true)
@@ -105,113 +109,124 @@ export function FormularioPedido({
     abrirPopupDeConta()
   }
 
-  function abrirPopupDeConta() {
-    setPopup(autenticado ? 'aluno' : 'conta')
+  function contar() {
+    const n = formRef.current?.querySelectorAll('input[name="horarios"]:checked').length ?? 0
+    setEscolhidos(n)
   }
+
+  const diasComHorarios = diasGrade.filter((dia) => (horariosPorDia[dia] ?? []).length > 0)
 
   return (
     <>
-      <form ref={formRef} onSubmit={aoSubmeter} className="space-y-4">
+      <form ref={formRef} onSubmit={aoSubmeter}>
         {semHorarios ? (
-          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
-            Este professor ainda não tem horários disponíveis. Podes deixar-lhe
-            uma mensagem em baixo.
+          <p className="v-passo-entrada">
+            Este professor ainda não tem horários disponíveis. Podes deixar-lhe uma mensagem em
+            baixo.
           </p>
         ) : (
-          <>
-            <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
-              Podes escolher várias opções — o professor decide depois qual
-              fica confirmada.
-            </p>
-            <div className="horarios-grade">
-              <div className="horarios-coluna-horas">
-                <div className="horarios-coluna-horas-cabecalho" />
-                {horas.map((hora) => (
-                  <div
-                    key={hora}
-                    className="horarios-hora-label"
-                    style={{ height: HOUR_HEIGHT }}
-                  >
-                    {hora}h
+          <div className="v-dias">
+            {diasComHorarios.map((dia) => {
+              const doDia = horariosPorDia[dia] ?? []
+              const livres = doDia.filter((h) => h.estado !== 'bloqueado').length
+              return (
+                <section key={dia} className="v-dia">
+                  <div className="v-dia-cabecalho">
+                    <h2>{dia}</h2>
+                    <small>
+                      {livres === 0 ? 'sem vagas' : livres === 1 ? '1 livre' : `${livres} livres`}
+                    </small>
                   </div>
-                ))}
-              </div>
-              {diasGrade.map((dia) => (
-                <div key={dia} className="horarios-coluna-dia">
-                  <div className="horarios-coluna-dia-cabecalho">{dia.slice(0, 3)}</div>
-                  <div
-                    className="horarios-coluna-dia-corpo"
-                    style={{
-                      height: alturaGrade,
-                      backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
-                    }}
-                  >
-                    {(horariosPorDia[dia] ?? []).map((h) => {
-                      const inicioMin = paraMinutos(h.hora_inicio)
-                      const fimMin = paraMinutos(h.hora_fim)
-                      const estilo = {
-                        top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
-                        height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
-                        '--card-index': indiceAtual++,
-                      } as CSSProperties
-
-                      if (h.estado === 'bloqueado') {
-                        return (
-                          <div
-                            key={h.id}
-                            className="horario-bloco entrada-esquerda bloqueado"
-                            style={estilo}
-                            aria-disabled="true"
-                          >
-                            <span>{formatarHora(h.hora_inicio)}</span>
-                            <span>{formatarHora(h.hora_fim)}</span>
-                          </div>
-                        )
-                      }
-
-                      return (
-                        <label key={h.id} className="horario-bloco entrada-esquerda" style={estilo}>
-                          <input type="checkbox" name="horarios" value={h.id} />
-                          <span>{formatarHora(h.hora_inicio)}</span>
-                          <span>{formatarHora(h.hora_fim)}</span>
+                  <div className="v-dia-horarios">
+                    {doDia.map((h) =>
+                      h.estado === 'bloqueado' ? (
+                        <div key={h.id} className="v-horario" data-ocupado="true">
+                          <span className="v-horario-hora">{formatarHora(h.hora_inicio)}</span>
+                          <span className="v-horario-texto">
+                            <strong>{duracao(h.hora_inicio, h.hora_fim)}</strong>
+                            <small>Ocupado</small>
+                          </span>
+                          <span aria-hidden="true" style={{ color: 'var(--v-tinta-fraca)' }}>
+                            —
+                          </span>
+                        </div>
+                      ) : (
+                        <label key={h.id} className="v-horario">
+                          <input
+                            type="checkbox"
+                            name="horarios"
+                            value={h.id}
+                            onChange={contar}
+                          />
+                          <span className="v-horario-hora">{formatarHora(h.hora_inicio)}</span>
+                          <span className="v-horario-texto">
+                            <strong>{duracao(h.hora_inicio, h.hora_fim)}</strong>
+                            {/* A hora de início já está na coluna da
+                                esquerda: repeti-la aqui era dizer duas
+                                vezes a mesma coisa. */}
+                            <small>
+                              até às {formatarHora(h.hora_fim)}
+                              {instrumentoNome ? ` · ${instrumentoNome}` : ''}
+                            </small>
+                          </span>
+                          <span className="v-horario-visto" aria-hidden="true">
+                            ✓
+                          </span>
                         </label>
                       )
-                    })}
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          </>
+                </section>
+              )
+            })}
+          </div>
         )}
 
-        <CampoTextarea
-          id="mensagem"
-          name="mensagem"
-          label="Nenhum horário dá jeito?"
-          rows={3}
-          maxLength={500}
-          placeholder="Ex: só posso às quintas-feiras a partir das 16h — achas que dá para arranjar?"
-          ajuda="Deixa uma mensagem ao professor em vez de escolher um horário. Ele decide se quer entrar em contacto fora da app."
-        />
+        <div className="v-cartao-mensagem">
+          <strong>Nenhum horário dá jeito?</strong>
+          <p>Deixa uma mensagem em vez de escolher. O professor decide se entra em contacto.</p>
+          <textarea
+            id="mensagem"
+            name="mensagem"
+            rows={3}
+            maxLength={500}
+            placeholder="Ex: só posso às quintas a partir das 16h — dá para arranjar?"
+            aria-label="Mensagem para o professor"
+          />
+        </div>
 
         {professorAdereRecomendacao && (
-          <CampoRecomendacao
-            professorId={professorId}
-            professorNome={professorNome}
-            professores={professoresParaRecomendacao}
-          />
+          <div style={{ margin: '24px 22px 0' }}>
+            <CampoRecomendacao
+              professorId={professorId}
+              professorNome={professorNome}
+              professores={professoresParaRecomendacao}
+            />
+          </div>
         )}
 
-        {erro && <MensagemErro>{erro}</MensagemErro>}
-        <BotaoPrimario disabled={aEnviar}>
-          {aEnviar ? 'A enviar…' : 'Enviar pedido'}
-        </BotaoPrimario>
-        {/* Campos ocultos só para dar contexto ao FormData reconstruído em
-            enviarPedido — o alunoId real é preenchido só depois do popup. */}
+        {erro && <p className="v-erro">{erro}</p>}
+
         <input type="hidden" name="instrumentoId" value={instrumentoId} />
         <input type="hidden" name="professorId" value={professorId} />
         <input type="hidden" name="programa" value={programa} />
         <input type="hidden" name="idade" value={idade} />
+
+        <div className="v-capsula">
+          <span className="v-capsula-texto">
+            <small>
+              {escolhidos === 0
+                ? 'Nenhum escolhido'
+                : escolhidos === 1
+                  ? '1 horário escolhido'
+                  : `${escolhidos} horários escolhidos`}
+            </small>
+            <strong>Enviar pedido</strong>
+          </span>
+          <button type="submit" className="v-capsula-accao" disabled={aEnviar}>
+            {aEnviar ? 'A enviar…' : 'Enviar'}
+          </button>
+        </div>
       </form>
 
       {avisoUmHorario && (
