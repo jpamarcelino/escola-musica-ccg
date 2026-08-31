@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { PageHeader } from '@/components/page-header'
-import { FundoPapel } from '@/components/fundo-papel'
-import { Cartao } from '@/components/cartao'
-import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
-import { RodapeLegal } from '@/components/rodape-legal'
+import Link from 'next/link'
+import { BotaoVoltarHistorico } from '@/components/botao-voltar-historico'
+import { SimboloCCG } from '@/components/simbolo-ccg'
+import { RodapeVitrine } from '@/components/rodape-vitrine'
 
 type SistemaId = 'ios' | 'android'
 
@@ -71,93 +70,78 @@ const PASSOS: Record<SistemaId, { icone: React.ReactNode; texto: string }[]> = {
 export default function InstalarPage() {
   const [sistema, setSistema] = useState<SistemaId>('ios')
 
-  // Alvos de toque com pelo menos 44px (secção 9).
-  function classesSeparador(ativo: boolean) {
-    return `h-[44px] flex-1 rounded-[13px] border text-[14px] font-medium transition-colors ${
-      ativo
-        ? 'border-[var(--color-azul-fundo)] bg-[var(--color-azul-fundo)] text-white'
-        : 'border-[var(--color-linha)] bg-white text-[var(--color-tinta-suave)]'
-    }`
-  }
-
   return (
-    <FundoPapel>
-      <div className="space-y-[22px]">
-        <PageHeader voltar="/" titulo="Instalar a app" voltarPeloHistorico />
+    <main id="conteudo-principal" className="v-pagina">
+      <div className="v-folha">
+        <div className="v-topo">
+          {/* A seta recua de verdade: chega-se aqui da página pública, do
+              login, da Home e das definições de notificações. */}
+          <BotaoVoltarHistorico href="/" className="v-voltar">
+            ‹
+          </BotaoVoltarHistorico>
+          <span className="v-topo-marca" aria-hidden="true">
+            <SimboloCCG />
+          </span>
+        </div>
 
-        <p
-          className="text-[15px] leading-[1.6]"
-          style={{ color: 'var(--color-tinta-suave)' }}
-        >
-          Podes adicionar esta página ao ecrã principal do teu telemóvel, para
-          abrir como se fosse uma app instalada — sem precisares da loja de
-          aplicações. Os passos são diferentes consoante o telemóvel.
-        </p>
+        <div style={{ padding: '34px 22px 0' }}>
+          <p className="v-sobretitulo">Sem loja de aplicações</p>
+          <h1 className="v-titulo">
+            Instalar
+            <br />
+            no telemóvel
+          </h1>
+          <div className="v-traco" />
+          <p className="v-entrada">
+            Podes juntar esta página ao ecrã principal e abri-la como uma app. Os passos mudam
+            conforme o telemóvel.
+          </p>
+        </div>
 
-        <div className="motion-tabs flex gap-[8px]" role="tablist" aria-label="Sistema operativo">
+        <div className="v-separadores" role="tablist" aria-label="Sistema operativo">
           <button
             type="button"
-            onClick={() => setSistema('ios')}
             role="tab"
             aria-selected={sistema === 'ios'}
             aria-controls="passos-instalacao"
-            className={classesSeparador(sistema === 'ios')}
+            onClick={() => setSistema('ios')}
           >
             iPhone / iPad
           </button>
           <button
             type="button"
-            onClick={() => setSistema('android')}
             role="tab"
             aria-selected={sistema === 'android'}
             aria-controls="passos-instalacao"
-            className={classesSeparador(sistema === 'android')}
+            onClick={() => setSistema('android')}
           >
             Android
           </button>
         </div>
 
-        <div id="passos-instalacao" role="tabpanel" key={sistema} className="motion-content-swap"><Cartao>
-          <ol className="space-y-[14px]">
+        <div id="passos-instalacao" role="tabpanel" key={sistema} className="v-cartao-passos">
+          <ol>
             {PASSOS[sistema].map((passo, idx) => (
-              <li key={idx} className="flex items-center gap-[12px]">
-                <span
-                  className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full text-[12.5px] font-semibold text-white"
-                  style={{ backgroundColor: 'var(--color-azul-fundo)' }}
-                >
-                  {idx + 1}
-                </span>
-                <span
-                  className="flex-1 text-[13px] leading-[1.5]"
-                  style={{ color: 'var(--color-tinta)' }}
-                >
-                  {passo.texto}
-                </span>
-                {passo.icone && (
-                  <span
-                    className="flex-none"
-                    style={{ color: 'var(--color-azul-fundo)' }}
-                    aria-hidden="true"
-                  >
-                    {passo.icone}
-                  </span>
-                )}
+              <li key={idx}>
+                <b>{idx + 1}</b>
+                <span>{passo.texto}</span>
+                {passo.icone && <i aria-hidden="true">{passo.icone}</i>}
               </li>
             ))}
           </ol>
-        </Cartao></div>
+        </div>
 
-        <p className="text-[12.5px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
-          Não encontras estas opções? Confirma que estás a usar o Safari (no
-          iPhone) ou o Chrome (no Android) — outros navegadores nem sempre
-          têm esta funcionalidade.
+        <p className="v-nota" style={{ margin: '18px 22px 0' }}>
+          Não encontras estas opções? Confirma que estás a usar o Safari (no iPhone) ou o Chrome
+          (no Android) — outros navegadores nem sempre têm esta funcionalidade.
         </p>
 
-        <div className="flex justify-center">
-          <LigacaoTerciaria href="/login">Voltar ao login</LigacaoTerciaria>
+        <div className="v-ligacoes">
+          <Link href="/login">Voltar a entrar</Link>
         </div>
+
+        <RodapeVitrine />
       </div>
-      <RodapeLegal />
-    </FundoPapel>
+    </main>
   )
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { DOCUMENTOS, CCG, CNIACC, LIVRO_RECLAMACOES_URL } from '@/lib/legal'
+import { SimboloCCG } from '@/components/simbolo-ccg'
 
 export const metadata: Metadata = {
   title: 'Informação legal · Centro Cultural da Guarda',
@@ -12,31 +13,42 @@ export const metadata: Metadata = {
 // repetidas em oito ecrãs.
 export default function LegalIndexPage() {
   return (
-    <main id="conteudo-principal" className="partitura-pagina legal-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
+    <main id="conteudo-principal" className="v-pagina v-pagina-sem-capsula">
+      <div className="v-folha">
+        <div className="v-topo">
+          <Link href="/" className="v-voltar" aria-label="Voltar ao início">
+            ‹
           </Link>
-          <div>
-            <p className="partitura-sobretitulo">{CCG.nome}</p>
-            <h1>Informação legal</h1>
-            <p>Podes ler, guardar e imprimir qualquer um destes documentos, com ou sem conta.</p>
-          </div>
-        </header>
+          <span className="v-topo-marca" aria-hidden="true">
+            <SimboloCCG />
+          </span>
+        </div>
 
-        <nav className="partitura-links" aria-label="Documentos legais">
+        <div style={{ padding: '34px 22px 0' }}>
+          <p className="v-sobretitulo">{CCG.nome}</p>
+          <h1 className="v-titulo">Informação legal</h1>
+          <div className="v-traco" />
+          <p className="v-entrada">
+            Podes ler, guardar e imprimir qualquer um destes documentos, com ou sem conta.
+          </p>
+        </div>
+
+        <div className="v-lista" aria-label="Documentos legais">
           {DOCUMENTOS.map((d) => (
-            <Link key={d.tipo} href={d.caminho}>
-              <span>{d.titulo}</span>
-              <small>{d.resumo}</small>
-              <b aria-hidden="true">→</b>
-            </Link>
+            <div key={d.tipo} className="v-lista-linha v-lista-linha-simples">
+              <Link href={d.caminho} className="v-lista-alvo">
+                <strong>{d.titulo}</strong>
+                <small>{d.resumo}</small>
+              </Link>
+              <span className="v-lista-seta" aria-hidden="true">
+                ›
+              </span>
+            </div>
           ))}
-        </nav>
+        </div>
 
-        <section className="legal-reclamacoes">
-          <h2 className="secao-titulo">Reclamações</h2>
+        <section className="v-texto">
+          <h2>Reclamações</h2>
           <p>
             {LIVRO_RECLAMACOES_URL === null
               ? 'O Livro de Reclamações físico está disponível na secretaria. O Livro de Reclamações Eletrónico ficará acessível aqui depois de concluído o registo do CCG como operador.'
@@ -56,7 +68,7 @@ export default function LegalIndexPage() {
             </a>
             . O recurso a estes mecanismos não elimina o direito de recorrer aos tribunais.
           </p>
-          <p className="legal-contacto">
+          <p style={{ fontSize: '13px', color: 'var(--v-tinta-suave)' }}>
             {CCG.nome} · NIPC {CCG.nipc} · {CCG.morada} · {CCG.email} · {CCG.telefone}
           </p>
         </section>

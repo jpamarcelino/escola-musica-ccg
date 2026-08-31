@@ -12,9 +12,7 @@ export default async function RedefinirPasswordPage() {
     redirect('/esqueci-password')
   }
 
-  return (
-    <main id="conteudo-principal" className="auth-pagina flex-1 flex items-center justify-center p-6">
-      <div className="auth-cartao w-full max-w-sm"><RedefinirPasswordForm /></div>
-    </main>
-  )
+  // O fundo e o rodapé vivem dentro do formulário, como nos restantes
+  // ecrãs vitrine.
+  return <RedefinirPasswordForm />
 }

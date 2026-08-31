@@ -5265,3 +5265,74 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .v-bio p:last-child { margin-bottom: 0; }
 .v-ficha-nota { margin: 34px 22px 0; padding-top: 20px; border-top: 1px solid var(--v-linha); }
 .v-ficha-nota p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--v-tinta-suave); text-wrap: pretty; }
+
+/* ── Vitrine · separadores e passos numerados ───────────────────────
+   Os separadores usam a mesma cápsula de papel dos chips da entrada: é a
+   mesma pergunta ("de três, qual?") e não havia razão para dois
+   desenhos. */
+.v-separadores { display: flex; gap: 6px; margin: 26px 16px 0; padding: 5px; border-radius: 999px; background: var(--v-papel-2); }
+.v-separadores button {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  font: 600 13.5px var(--v-sans);
+  color: var(--v-tinta-suave);
+  background: transparent;
+  transition: background .28s cubic-bezier(.22, 1, .36, 1), color .28s;
+}
+.v-separadores button[aria-selected='true'] { background: var(--v-branco); color: var(--v-tinta); box-shadow: 0 1px 3px rgba(35, 31, 32, .14); }
+@media (prefers-reduced-motion: reduce) { .v-separadores button { transition: none; } }
+
+/* Passos numerados dentro de um cartão branco. */
+.v-cartao-passos { margin: 20px 16px 0; padding: 8px 20px; border-radius: 26px; background: var(--v-branco); border: 1px solid rgba(35, 31, 32, .07); }
+.v-cartao-passos ol { list-style: none; margin: 0; padding: 0; }
+.v-cartao-passos li { display: flex; align-items: center; gap: 14px; padding: 14px 0; }
+.v-cartao-passos li + li { border-top: 1px solid var(--v-linha-fina); }
+.v-cartao-passos li > b {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--v-tinta);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.v-cartao-passos li > span { flex: 1; font-size: 14px; line-height: 1.5; color: var(--v-tinta); }
+.v-cartao-passos li > i { flex: none; color: var(--v-teal); }
+
+/* Texto corrido de página — a informação legal e afins. */
+.v-texto { margin: 26px 22px 0; }
+.v-texto h2 {
+  margin: 30px 0 10px;
+  font-family: var(--v-serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--v-tinta);
+}
+.v-texto h3 { margin: 22px 0 8px; font-size: 15px; font-weight: 600; color: var(--v-tinta); }
+.v-texto p, .v-texto li { font-size: 15px; line-height: 1.65; color: var(--v-tinta); text-wrap: pretty; }
+.v-texto p { margin: 0 0 12px; }
+.v-texto ul, .v-texto ol { margin: 0 0 12px; padding-left: 20px; }
+.v-texto li { margin-bottom: 6px; }
+.v-texto a { color: var(--v-teal); text-decoration: underline; text-underline-offset: 2px; }
+.v-texto strong { font-weight: 600; }
+
+/* Páginas sem cápsula fixa (informação legal, documentos): não precisam
+   do espaço que ela ocupa em baixo. */
+.v-pagina-sem-capsula { padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
+
+/* Linha de lista sem avatar nem "i" — só título, resumo e seta. Aqui o
+   resumo é uma frase e não uma etiqueta: quebra em vez de ser cortado. */
+.v-lista-linha-simples { grid-template-columns: 1fr auto; }
+.v-lista-linha-simples small { white-space: normal; overflow: visible; line-height: 1.45; }
+
+/* O corpo dos documentos jurídicos herda a tipografia do .v-texto; o que
+   fica do CSS antigo é a tabela, que rola dentro da sua própria caixa. */
+.v-texto.legal-corpo { margin-top: 22px; }
+.v-texto.legal-corpo section { margin-bottom: 26px; }

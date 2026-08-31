@@ -18,7 +18,16 @@ const HOME = '/'
 // o seu topo, com a seta de voltar e a marca no sítio que o desenho lhe
 // deu. Esta lista encolhe à medida que o resto da app for migrando —
 // quando não sobrar nenhum ecrã antigo, o componente inteiro sai.
-const ECRAS_VITRINE = ['/login', '/registo', '/pedir-aula', '/professor']
+const ECRAS_VITRINE = [
+  '/login',
+  '/registo',
+  '/pedir-aula',
+  '/professor',
+  '/esqueci-password',
+  '/redefinir-password',
+  '/instalar',
+  '/legal',
+]
 
 export function CabecalhoPublico() {
   const caminho = usePathname()

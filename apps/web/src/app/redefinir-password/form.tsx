@@ -2,40 +2,59 @@
 
 import { useActionState } from 'react'
 import { atualizarPassword } from '@/lib/actions/auth'
-import { PasswordInput } from '@/components/password-input'
+import { SimboloCCG } from '@/components/simbolo-ccg'
+import { RodapeVitrine } from '@/components/rodape-vitrine'
+import { PasswordVitrine } from '@/components/campo-vitrine'
 
+// O fim do percurso de recuperação. Sem seta de voltar: chega-se aqui
+// por um link de email com uma sessão de recuperação, e voltar atrás não
+// leva a lado nenhum útil — leva a pedir outro link.
 export default function RedefinirPasswordForm() {
   const [state, action, pending] = useActionState(atualizarPassword, undefined)
 
   return (
-    <form
-      action={action}
-      className="w-full max-w-sm space-y-4 border border-foreground/15 rounded-lg p-6"
-    >
-      <h1 className="text-xl font-semibold">Definir nova password</h1>
+    <form action={action} className="v-pagina">
+      <div className="v-folha">
+        <div className="v-topo">
+          <span />
+          <span className="v-topo-marca" aria-hidden="true">
+            <SimboloCCG />
+          </span>
+        </div>
 
-      <div className="space-y-1">
-        <label htmlFor="password" className="block text-sm font-medium">
-          Nova password
-        </label>
-        <PasswordInput
-          id="password"
-          name="password"
-          minLength={6}
-          autoComplete="new-password"
-          className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
-        />
+        <div style={{ padding: '34px 22px 0' }}>
+          <p className="v-sobretitulo">Conta CCG</p>
+          <h1 className="v-titulo">
+            Nova
+            <br />
+            password
+          </h1>
+          <div className="v-traco" />
+          <p className="v-entrada">Escolhe uma password nova para esta conta.</p>
+        </div>
+
+        <div className="v-campos">
+          <PasswordVitrine
+            id="password"
+            name="password"
+            label="Nova password"
+            autoComplete="new-password"
+            ajuda="Pelo menos 6 caracteres."
+          />
+        </div>
+
+        {state?.error && <p className="v-erro">{state.error}</p>}
+
+        <RodapeVitrine />
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-      >
-        {pending ? 'A guardar…' : 'Guardar password'}
-      </button>
+      <div className="v-capsula">
+        <span className="v-ponto" aria-hidden="true" />
+        <strong className="v-capsula-marca">Conta CCG</strong>
+        <button type="submit" className="v-capsula-accao" disabled={pending}>
+          {pending ? 'A guardar…' : 'Guardar'}
+        </button>
+      </div>
     </form>
   )
 }

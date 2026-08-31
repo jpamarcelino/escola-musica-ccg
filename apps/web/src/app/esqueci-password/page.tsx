@@ -3,55 +3,71 @@
 import { useActionState } from 'react'
 import Link from 'next/link'
 import { pedirRecuperacaoPassword } from '@/lib/actions/auth'
+import { SimboloCCG } from '@/components/simbolo-ccg'
+import { RodapeVitrine } from '@/components/rodape-vitrine'
+import { CampoVitrine } from '@/components/campo-vitrine'
 
+// Recuperar password. Não foi desenhada no Claude Design — não havia
+// nada para decidir — mas fala a mesma língua dos outros ecrãs de conta:
+// se ficasse na linguagem antiga, o percurso "não me lembro da password"
+// atravessava duas aplicações diferentes.
 export default function EsqueciPasswordPage() {
-  const [state, action, pending] = useActionState(
-    pedirRecuperacaoPassword,
-    undefined
-  )
+  const [state, action, pending] = useActionState(pedirRecuperacaoPassword, undefined)
 
   return (
-    <main id="conteudo-principal" className="auth-pagina flex-1 flex items-center justify-center p-6">
-      <form
-        action={action}
-        className="auth-cartao w-full max-w-sm space-y-4"
-      >
-        <h1 className="text-xl font-semibold">Recuperar password</h1>
-        <p className="text-sm text-foreground/60">
-          Introduz o teu email e enviamos-te um link para definires uma nova
-          password.
-        </p>
+    <form action={action} className="v-pagina">
+      <div className="v-folha">
+        <div className="v-topo">
+          <Link href="/login" className="v-voltar" aria-label="Voltar a entrar">
+            ‹
+          </Link>
+          <span className="v-topo-marca" aria-hidden="true">
+            <SimboloCCG />
+          </span>
+        </div>
 
-        <div className="space-y-1">
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email
-          </label>
-          <input
+        <div style={{ padding: '34px 22px 0' }}>
+          <p className="v-sobretitulo">Conta CCG</p>
+          <h1 className="v-titulo">
+            Recuperar
+            <br />
+            password
+          </h1>
+          <div className="v-traco" />
+          <p className="v-entrada">
+            Escreve o teu email e enviamos-te um link para definires uma nova.
+          </p>
+        </div>
+
+        <div className="v-campos">
+          <CampoVitrine
             id="email"
             name="email"
+            label="Email"
             type="email"
+            autoComplete="email"
+            placeholder="nome@exemplo.pt"
             required
-            className="w-full rounded border border-foreground/20 bg-background px-3 py-2"
           />
         </div>
 
-        {state?.error && <p className="text-sm text-red-600" role="alert">{state.error}</p>}
-        {state?.info && <p className="text-sm text-green-600" role="status">{state.info}</p>}
+        {state?.error && <p className="v-erro">{state.error}</p>}
+        {state?.info && <p className="v-aviso">{state.info}</p>}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded bg-brand text-white hover:bg-brand-hover py-2 disabled:opacity-50"
-        >
+        <div className="v-ligacoes">
+          <Link href="/login">Voltar a entrar</Link>
+        </div>
+
+        <RodapeVitrine />
+      </div>
+
+      <div className="v-capsula">
+        <span className="v-ponto" aria-hidden="true" />
+        <strong className="v-capsula-marca">Conta CCG</strong>
+        <button type="submit" className="v-capsula-accao" disabled={pending}>
           {pending ? 'A enviar…' : 'Enviar link'}
         </button>
-
-        <p className="text-sm text-center">
-          <Link href="/login" className="underline">
-            Voltar a entrar
-          </Link>
-        </p>
-      </form>
-    </main>
+      </div>
+    </form>
   )
 }

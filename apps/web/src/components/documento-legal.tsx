@@ -11,16 +11,21 @@ import { LIVRO_RECLAMACOES_URL } from '@/lib/legal'
 // informação permanente.
 export function DocumentoLegalPagina({ documento }: { documento: DocumentoLegal }) {
   return (
-    <main id="conteudo-principal" className="partitura-pagina legal-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/legal" className="partitura-voltar" aria-label="Voltar à informação legal">
-            ←
+    <main id="conteudo-principal" className="v-pagina v-pagina-sem-capsula">
+      <div className="v-folha">
+        <div className="v-topo">
+          <Link href="/legal" className="v-voltar" aria-label="Voltar à informação legal">
+            ‹
           </Link>
-          <div>
-            <p className="partitura-sobretitulo">Centro Cultural da Guarda</p>
-            <h1>{documento.titulo}</h1>
-            <p>
+        </div>
+
+        <div style={{ padding: '26px 22px 0' }}>
+          <p className="v-sobretitulo">Centro Cultural da Guarda</p>
+          <h1 className="v-titulo" style={{ fontSize: 'clamp(30px, 9vw, 38px)' }}>
+            {documento.titulo}
+          </h1>
+          <div className="v-traco" />
+          <p className="v-entrada" style={{ fontSize: '14px' }}>
               Versão {documento.versao} · Elaborado em{' '}
               {formatarDataEscolar(documento.elaboradoEm, {
                 day: 'numeric',
@@ -34,11 +39,10 @@ export function DocumentoLegalPagina({ documento }: { documento: DocumentoLegal 
                     year: 'numeric',
                   })}`
                 : ' · Entrada em vigor a definir'}
-            </p>
-          </div>
-        </header>
+          </p>
+        </div>
 
-        <article className="legal-corpo">
+        <article className="v-texto legal-corpo">
           {documento.seccoes.map((s) => (
             <section key={`${s.numero ?? ''}${s.titulo}`}>
               <h2>{s.numero ? `${s.numero}. ${s.titulo}` : s.titulo}</h2>

@@ -33,14 +33,24 @@ function veioDeDentroDaApp(caminhoAtual: string): boolean {
   }
 }
 
-export function BotaoVoltarHistorico({ href }: { href: string }) {
+export function BotaoVoltarHistorico({
+  href,
+  className = 'back-button',
+  children,
+}: {
+  href: string
+  // A seta veste-se conforme o ecrã: quadrada com borda na linguagem
+  // antiga, disco de papel na vitrine.
+  className?: string
+  children?: React.ReactNode
+}) {
   const router = useRouter()
   const caminho = usePathname()
 
   return (
     <button
       type="button"
-      className="back-button"
+      className={className}
       aria-label="Voltar"
       onClick={() => {
         if (veioDeDentroDaApp(caminho)) {
@@ -50,7 +60,7 @@ export function BotaoVoltarHistorico({ href }: { href: string }) {
         }
       }}
     >
-      <ChevronLeft aria-hidden="true" strokeWidth={1.5} />
+      {children ?? <ChevronLeft aria-hidden="true" strokeWidth={1.5} />}
     </button>
   )
 }
