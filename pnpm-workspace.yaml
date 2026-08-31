@@ -1,9 +1,10 @@
-# Monorepo de duas frentes sobre o mesmo Supabase: a web em Next.js e,
-# mais tarde, a app em Expo. Os pacotes partilhados vivem em packages/.
+# A PWA em Next.js sobre o Supabase, com os pacotes partilhados em
+# packages/. Houve aqui uma segunda frente em Expo (apps/mobile); foi
+# arquivada na branch "arquivo-expo" — o produto é a PWA e mais nada.
 #
 # pnpm workspaces e nada mais: o Turborepo e o Nx resolvem caching de
 # builds e grafos de dependências em monorepos com dezenas de pacotes, e
-# aqui há dois apps e um punhado de pacotes pequenos. Se um dia o build
+# aqui há um app e um punhado de pacotes pequenos. Se um dia o build
 # passar dos dois minutos, acrescenta-se Turborepo em meia hora.
 packages:
   - 'apps/*'
@@ -17,28 +18,3 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
-# O pnpm segura pacotes acabados de publicar durante uns dias, como defesa
-# contra pacotes comprometidos. O SDK da Expo move-se em bloco, por isso
-# são muitas de uma vez — foram acrescentadas pelo próprio `expo install`.
-#
-# O projeto está no SDK 56 e não no 57, de propósito: o 57 é recente ao
-# ponto de a app Expo Go publicada nas lojas ainda não o abrir, e sem o
-# Expo Go não há como experimentar a app sem instalar o SDK do Android.
-minimumReleaseAgeExclude:
-  - '@expo/cli@54.0.27 || 56.1.24'
-  - '@expo/fingerprint@0.20.8'
-  - '@expo/inline-modules@0.1.6'
-  - expo-asset@56.0.23
-  - expo-constants@18.0.14 || 56.0.24
-  - expo@54.0.37 || 56.0.20
-  - '@expo/metro-runtime@56.0.20'
-  - expo-router@56.2.19
-  - '@expo/config-plugins@56.0.15'
-  - '@expo/prebuild-config@56.0.22'
-  - '@expo/router-server@56.0.18'
-  - expo-file-system@19.0.24 || 56.0.10
-  - expo-modules-autolinking@3.0.27 || 56.0.22
-  - expo-modules-core@56.0.24
-  - expo-server@56.0.6
-  - '@expo/ui@56.0.26'
-  - expo-linking@56.0.17

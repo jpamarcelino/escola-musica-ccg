@@ -51,15 +51,17 @@ instalável como PWA.
 O repositório é um workspace pnpm. A web deixou de estar na raiz:
 
 ```
-apps/web/         a aplicação Next.js
-apps/mobile/      a aplicação Expo (React Native)
+apps/web/         a aplicação Next.js (a PWA — o produto)
 packages/core/    lógica sem framework, partilhada
 packages/data/    leituras da base de dados, partilháveis
 packages/types/   vocabulário de estados, gerado do esquema
 ```
 
-O `packages/core` é o que a web e a futura app móvel partilham
-literalmente — o mesmo ficheiro, não duas cópias. Só entra ali código
+Os `packages/` nasceram para serem partilhados entre a web e uma app
+Expo que chegou a existir em `apps/mobile`. Essa app foi arquivada na
+branch `arquivo-expo` — o produto é a PWA e mais nada — e os pacotes
+ficaram, porque separar a lógica do framework vale por si. O
+`packages/core` é código partilhado literalmente — o mesmo ficheiro, não duas cópias. Só entra ali código
 que corre sem alterações no Node, no browser e no Hermes: datas,
 dinheiro, plurais, idades, salas, faixas etárias e a grelha de horários.
 Não entra nada que faça queries, nem nada que toque no DOM — o
@@ -97,121 +99,21 @@ telemóvel de quem a instala. Há um teste que varre todos os pacotes e
 falha se algum mencionar `SERVICE_ROLE`, ler `process.env` ou criar um
 cliente.
 
-### A app móvel
+### A app móvel, que não há
 
-Expo com `expo-router`, em `apps/mobile`. Cobre os três perfis — Conta
-CCG, professor e administração — e escreve, não só consulta.
+Houve uma app Expo com `expo-router` em `apps/mobile`, a cobrir os três
+perfis. Foi abandonada a 25/08/2026: não vai haver app nas lojas nem APK,
+e o que se instala no telemóvel é a PWA. O código está na branch
+`arquivo-expo`, e a razão de estar arquivado e não apagado é só uma —
+`packages/data` foi desenhado para ser usado sem Server Actions, e essa
+branch é a prova de que funciona.
 
-As escritas **não passam por Server Actions**: a app escreve direto no
-Supabase e é a RLS que decide se passa. Isso só é possível porque as
-regras deste projeto vivem no Postgres; as Server Actions da web validam
-e navegam, mas não são elas que protegem os dados. As funções em
-`packages/data` não recebem o id de quem escreve, de propósito — passá-lo
-daria a ilusão de se poder escrever em nome de outra pessoa.
-
-O que a app **não** faz, e é decisão e não esquecimento: pagamentos,
-faturação e o estudo das recomendações continuam no site. São tabelas
-largas, de conferir com calma, e num telemóvel dariam mais erros do que
-rapidez. O ecrã de administração di-lo, para ninguém concluir que a app
-está partida.
-
-O que interessa não é o tamanho — é que as contas são as mesmas. A
-próxima ocorrência de uma aula, a hora de Lisboa, o nome da sala, os
-plurais: tudo vem do `@ccg/core` e do `@ccg/data`, os mesmos ficheiros
-que a web usa. Não é código parecido nos dois sítios, é o mesmo código.
-
-Confirmado num telemóvel, e não só em teoria: numa segunda-feira à
-noite, a aula de Guitarra das 16h desse mesmo dia apareceu com a data da
-segunda seguinte, e a de Bateria de quarta-feira veio à frente dela na
-lista. É a `proximaOcorrenciaDeAula` e a ordenação por data a correrem
-em Hermes com o mesmo resultado que dão no servidor.
-
-A única diferença real entre as duas apps, no que toca a dados, é onde
-mora a sessão: cookies na web, `AsyncStorage` no telemóvel. É por isso
-que o `packages/data` recebe o cliente já construído.
-
-O `metro.config.js` merece uma leitura antes de se lhe mexer: num
-workspace pnpm o Metro precisa de saber que a raiz do monorepo faz parte
-do projeto, e a busca hierárquica tem de ficar **ligada** — ao contrário
-do conselho que se encontra escrito para monorepos npm e yarn.
-
-As **escritas** estão em `escritas-professor.ts`,
-`escritas-encarregado.ts`, `conta.ts` e `admin.ts`. Não foram levantadas
-das Server Actions: a
-[`AUDITORIA_SERVER_ACTIONS.md`](AUDITORIA_SERVER_ACTIONS.md) explica
-porquê — das 48, uma só era lógica de dados pura; as outras escrevem *e*
-navegam, e a navegação do servidor não existe numa app. O que se
-partilhou foram as queries e as regras; o que decide o que acontece a
-seguir é de cada frente.
-
-O que ainda **não** está no `packages/types` são as formas das linhas de
-cada tabela. Isso quer a geração de tipos do Supabase, que precisa de um
-token de acesso, do Docker ou da ligação à base — nenhum deles disponível
-até agora. As projeções de cada query continuam declaradas em cada
-página, e é aceitável: seis páginas declaram um tipo `Matricula` e as
-seis são projeções diferentes, não cópias.
-
-Comandos, todos a partir da raiz:
-
-| | |
-|---|---|
-| `pnpm dev` | servidor de desenvolvimento da web |
-| `pnpm build` | build de produção da web |
-| `pnpm test` | testes de todos os pacotes |
-| `pnpm typecheck` | TypeScript em todos os pacotes |
-| `pnpm lint` | ESLint (só a web tem configuração) |
-
-Três clientes Supabase, em `apps/web/src/lib/supabase/`:
-
-- `server.ts` — Server Components e Server Actions
-- `client.ts` — o pouco que corre no browser
-- `proxy.ts` — usado pelo `middleware.ts` para renovar a sessão em cada
-  pedido; o matcher cobre tudo menos estáticos e imagens
-
----
-
-## 3. Quem usa a app
-
-`perfis_escola.tipo` aceita **três** valores, mas os níveis de acesso são
-**quatro**, porque `admin` e `super_admin` são flags independentes do
-tipo — a mesma conta pode ser professor *e* administrador.
-
-| `tipo` | Na app é | Notas |
-|---|---|---|
-| `conta` | **Conta CCG** — quem gere | email, password, avisos, agenda familiar, gestão de alunos |
-| `professor` | Professor | tem `programa` obrigatório (música ou dança) |
-| `admin` | Direção / secretaria | |
-
-Mais as flags `admin` e `super_admin` em `perfis_escola`. Só um super
-admin pode dar ou tirar admin — garantido pelo gatilho
-`impedir_auto_promocao_admin`, que bloqueia **mesmo com chave de
-serviço**.
-
-**Conta e aluno são coisas separadas.** A migração `0025` levou esta
-distinção até ao fim e renomeou o tipo `aluno` para `conta`:
-
-- **Conta CCG** — quem gere: email, password, nome, avisos, agenda
-  familiar, gestão de alunos.
-- **Aluno** — quem tem aulas: perfil sem login, seja um filho ou o
-  próprio titular da conta.
-
-Criar conta já não inventa um aluno com o nome do titular. Quem se
-regista escolhe em `/dashboard/alunos` quem vai às aulas. As 17 contas
-que já existiam mantiveram alunos, matrículas, presenças, mensalidades e
-histórico.
-
-Então há **cinco tipos de pessoa** (encarregado, aluno dependente,
-professor, admin, super admin) mas só **três tipos de conta**.
-
-Duas funções `security definer` centralizam a verificação, para as
-policies não caírem em recursão: `eh_admin()` e `eh_super_admin()`.
-
----
-
-## 4. Modelo de dados
-
-15 tabelas. O `supabase/schema.sql` só tem o esquema inicial — o resto
-está nas 25 migrações em `supabase/migrations/`.
+Fica dela uma decisão que continua a valer: as regras deste projeto
+vivem no Postgres, não nas Server Actions. As Server Actions da web
+validam e navegam, mas não são elas que protegem os dados — é a RLS. As
+funções em `packages/data` não recebem o id de quem escreve, de
+propósito: passá-lo daria a ilusão de se poder escrever em nome de outra
+pessoa.
 
 ### Identidade
 
@@ -433,12 +335,9 @@ Registada aqui para não se descobrir duas vezes.
 | `notificacoes.tipo` permite cinco valores e a app só cria `pedido_aceite` — os outros quatro (lembretes de aula e de pagamento, mudança de horário, novo material) nunca são escritos | esquema vs. Server Actions | Baixa — superfície declarada por usar, não erro |
 | `instrumentos.programa` aceita `bebes`, mas `perfis_escola.programa` só aceita `musica` e `danca`: um professor não pode ter o programa da escola de bebés, e `convites.ts` recusa-o também | esquema | A confirmar com o dono — pode ser intencional (bebés dados por professores de música) |
 | As formas das linhas de cada tabela ainda não estão tipadas — falta gerar os tipos do Supabase, que precisa de token, Docker ou ligação à base | `packages/types` | Média |
-| ~~A app móvel nunca correu num dispositivo~~ | **confirmada** em iPhone com Expo Go a 17/08/2026: login, lista de alunos, aulas com data/hora corretas e avisos | — |
-| A app móvel só foi vista num iPhone. O Android não foi experimentado, e é onde vivem a maioria dos encarregados | `apps/mobile` | Média |
 | A data de uma presença não pode ser futura nem cair fora do dia do horário — mas isso é verificado **só pela aplicação**. A RLS da tabela `presencas` garante a posse e mais nada. Já era assim antes da app; fechá-lo quer uma constraint ou trigger, ou seja uma migração | `presencas` | Média — decisão do dono |
-| Não há forma de fazer um pedido de aula pela app — o ecrã vazio manda a pessoa ao site. É consequência de as escritas ainda não estarem partilhadas | `apps/mobile` | Média — decisão de âmbito, não defeito |
 | Três componentes chamam `setState` em síncrono dentro de um `useEffect` (`instalar-callout`, `modal-conta-pedido`, `navigation-feedback`) | web | Baixa — apanhado pela regra `react-hooks/set-state-in-effect` da versão 7 do plugin, que a web não usa (ver abaixo) |
-| A web fixa `eslint-plugin-react-hooks@^5` porque o `FlatCompat` resolve o plugin pelo nome e apanhava a versão 7 trazida pela app móvel. Atualizar a web para a 7 é uma decisão à parte, com as três correções acima | `apps/web` | Baixa |
+| A web fixa `eslint-plugin-react-hooks@^5` porque o `FlatCompat` resolve o plugin pelo nome e apanhava a versão 7 trazida pela app móvel. Com a app móvel fora, o conflito acabou e a web pode subir para a 7 — falta fazê-lo, com as três correções acima | `apps/web` | Baixa |
 
 ---
 
