@@ -6,6 +6,7 @@ import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { agoraNaEscola, estadoTemporalAula, proximaAulaPorAcontecer, hojeISO, formatarHora, formatarSala, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
+import { Bell, CalendarDays, ChevronRight, Music2, UserRoundCog, WalletCards } from 'lucide-react'
 
 type AulaConfirmada = {
   id: number
@@ -392,50 +393,52 @@ export default async function DashboardPage({
         : a.data.localeCompare(b.data)
     )[0] ?? null
 
-  const hojeEditorialAluno = dataEditorial(hojeISO())
-
   return (
-    <main id="conteudo-principal" className="partitura-pagina familia-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-cabecalho">
-          <div className="partitura-data" aria-label={`${hojeEditorialAluno.dia} de ${hojeEditorialAluno.mes}`}><span>{hojeEditorialAluno.dia}</span><span>{hojeEditorialAluno.mes}</span></div>
-          <div><p className="partitura-sobretitulo">{hojeEditorialAluno.semana} · em família</p><h1>Olá, {primeiroNome}.</h1><p className="partitura-contexto">Escolas Artísticas do CCG</p></div>
+    <main id="conteudo-principal" className="pinterest-home">
+      <div className="pinterest-home-folha">
+        <header className="pinterest-home-cabecalho">
+          <div>
+            <h1>Olá, {primeiroNome}</h1>
+            <p>O que se segue na tua escola.</p>
+          </div>
+          <span className="pinterest-home-avatar" aria-hidden="true">
+            {primeiroNome.slice(0, 1).toUpperCase()}
+          </span>
         </header>
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
 
         {porDecidir > 0 ? (
-          <Link href="/dashboard/agenda" className="familia-aviso familia-aviso-decidir">
-            <span>{porDecidir === 1 ? 'Precisa da tua resposta' : 'Precisam da tua resposta'}</span>
-            <strong>
-              {porDecidir === 1
-                ? 'O professor propôs uma alteração. Aceita ou diz que não podes.'
-                : `${porDecidir} propostas do professor à espera de resposta.`}
-            </strong>
-            <i aria-hidden="true">→</i>
+          <Link href="/dashboard/agenda" className="pinterest-home-alerta">
+            <Bell size={19} strokeWidth={1.8} aria-hidden="true" />
+            <span><strong>{porDecidir === 1 ? 'Precisa da tua resposta' : `${porDecidir} respostas pendentes`}</strong><small>Vê a proposta do professor.</small></span>
+            <ChevronRight size={18} aria-hidden="true" />
           </Link>
         ) : (
           avisoMaisRecente && (
-            <Link href="/dashboard/avisos" className="familia-aviso"><span>Novo aviso</span><strong>{avisoMaisRecente.mensagem}</strong><i aria-hidden="true">→</i></Link>
+            <Link href="/dashboard/avisos" className="pinterest-home-alerta">
+              <Bell size={19} strokeWidth={1.8} aria-hidden="true" />
+              <span><strong>Novo aviso</strong><small>{avisoMaisRecente.mensagem}</small></span>
+              <ChevronRight size={18} aria-hidden="true" />
+            </Link>
           )
         )}
 
-        <section className="familia-proxima" aria-labelledby="proxima-familia-titulo">
-          <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">01</p><h2 id="proxima-familia-titulo">A seguir</h2></div></div>
+        <section className="pinterest-home-seccao" aria-labelledby="proxima-familia-titulo">
+          <div className="pinterest-home-seccao-topo"><h2 id="proxima-familia-titulo">Próxima aula</h2><Link href="/dashboard/agenda">Ver agenda <ChevronRight size={17} aria-hidden="true" /></Link></div>
           {proximaGlobal ? (
-            <Link href={`/aluno/${proximaGlobal.aluno_id}/horario`}>
-              <time>{formatarHora(proximaGlobal.horarios!.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" />
-              <span><small>{rotuloDoDia(proximaGlobal.data, proximaGlobal.horarios!.dia_semana)}</small><strong>{proximaGlobal.instrumentos?.nome}</strong><b>{proximaGlobal.alunos?.nome}{formatarSala(proximaGlobal.horarios!.salas) ? ` · ${formatarSala(proximaGlobal.horarios!.salas)}` : ''}</b></span><i aria-hidden="true">→</i>
+            <Link href={`/aluno/${proximaGlobal.aluno_id}/horario`} className="pinterest-aula">
+              <span className="pinterest-aula-icone"><Music2 size={24} strokeWidth={1.8} aria-hidden="true" /></span>
+              <span className="pinterest-aula-data">{rotuloDoDia(proximaGlobal.data, proximaGlobal.horarios!.dia_semana)} · {formatarHora(proximaGlobal.horarios!.hora_inicio)}–{formatarHora(proximaGlobal.horarios!.hora_fim)}</span>
+              <strong>{proximaGlobal.instrumentos?.nome}</strong>
+              <span className="pinterest-aula-aluno">{proximaGlobal.alunos?.nome}{formatarSala(proximaGlobal.horarios!.salas) ? ` · ${formatarSala(proximaGlobal.horarios!.salas)}` : ''}</span>
+              <ChevronRight className="pinterest-aula-seta" size={22} aria-hidden="true" />
             </Link>
-          ) : <p className="partitura-vazio">Ainda não há aulas confirmadas.</p>}
+          ) : <div className="pinterest-aula pinterest-aula-vazia"><span className="pinterest-aula-icone"><Music2 size={24} aria-hidden="true" /></span><strong>Ainda não há aulas confirmadas</strong><Link href="/pedir-aula">Pedir uma aula</Link></div>}
         </section>
 
-        <section className="familia-alunos" aria-labelledby="familia-alunos-titulo">
-          <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">02</p><h2 id="familia-alunos-titulo">{meusAlunos.length === 1 ? 'O teu aluno' : 'Os teus alunos'}</h2></div></div>
-          {/* Uma conta acabada de criar não tem alunos nenhuns — o registo
-              deixou de os criar sozinho (migração 0025). Sem isto, a
-              secção ficava a mostrar um título e mais nada, sem dizer o
-              que falta nem por onde começar. */}
+        <section className="pinterest-home-seccao" aria-labelledby="familia-alunos-titulo">
+          <div className="pinterest-home-seccao-topo"><h2 id="familia-alunos-titulo">{meusAlunos.length === 1 ? 'O teu aluno' : 'Os teus alunos'}</h2><Link href="/dashboard/alunos">Gerir <ChevronRight size={17} aria-hidden="true" /></Link></div>
           {meusAlunos.length === 0 ? (
             <EmptyState
               titulo="Ainda não tens alunos associados."
@@ -447,32 +450,24 @@ export default async function DashboardPage({
               }
             />
           ) : (
-            <div>
+            <div className="pinterest-alunos">
               {meusAlunos.map((aluno) => {
                 const resumo = resumoDoFilho(aluno.id)
-                return <Link key={aluno.id} href={`/aluno/${aluno.id}`}><strong>{aluno.nome}</strong><span>{resumo.proxima ? `${resumo.proxima.instrumentos?.nome} · ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}` : resumo.pendentes > 0 ? `${resumo.pendentes} ${resumo.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'Sem aulas marcadas'}</span>{resumo.pendentes > 0 && <small>A aguardar professor</small>}<i aria-hidden="true">→</i></Link>
+                return <Link key={aluno.id} href={`/aluno/${aluno.id}`}><span className="pinterest-aluno-avatar" aria-hidden="true">{aluno.nome.trim().slice(0, 1).toUpperCase()}</span><span><strong>{aluno.nome}</strong><small>{resumo.proxima ? `${resumo.proxima.instrumentos?.nome} · ${rotuloDoDia(resumo.proxima.data, resumo.proxima.horarios!.dia_semana)}, ${formatarHora(resumo.proxima.horarios!.hora_inicio)}` : resumo.pendentes > 0 ? `${resumo.pendentes} ${resumo.pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'}` : 'Sem aulas marcadas'}</small></span>{resumo.pendentes > 0 && <b>A aguardar</b>}<ChevronRight size={19} aria-hidden="true" /></Link>
               })}
             </div>
           )}
         </section>
 
-        {/* A Home é a visão de família, não o sítio onde se gere quem são
-            os alunos — o formulário que aqui estava mudou-se para
-            /dashboard/alunos, junto da lista completa. */}
-        {meusAlunos.length > 0 && (
-          <div className="familia-adicionar">
-            <Link href="/dashboard/alunos" className="familia-gerir">
-              Gerir alunos<i aria-hidden="true">→</i>
-            </Link>
-            {/* A barra de baixo já tem os cinco destinos que cabem, por
-                isso a porta para as mensalidades é aqui — a mesma solução
-                que os Avisos da secretaria tiveram. */}
-            <Link href="/dashboard/mensalidades" className="familia-gerir">
-              Mensalidades<i aria-hidden="true">→</i>
-            </Link>
-          </div>
-        )}
-        <div className="partitura-instalacao"><InstalarCallout /></div>
+        <section className="pinterest-home-seccao" aria-labelledby="atalhos-titulo">
+          <div className="pinterest-home-seccao-topo"><h2 id="atalhos-titulo">Acesso rápido</h2></div>
+          <nav className="pinterest-atalhos" aria-label="Ações da conta">
+            <Link href="/dashboard/alunos"><span><UserRoundCog size={22} aria-hidden="true" /></span><strong>Gerir alunos</strong><small>Perfis e dados</small></Link>
+            <Link href="/dashboard/mensalidades"><span><WalletCards size={22} aria-hidden="true" /></span><strong>Mensalidades</strong><small>Pagamentos</small></Link>
+            <Link href="/dashboard/agenda"><span><CalendarDays size={22} aria-hidden="true" /></span><strong>Agenda</strong><small>Próximas aulas</small></Link>
+            <Link href="/dashboard/avisos"><span><Bell size={22} aria-hidden="true" /></span><strong>Avisos</strong><small>Novidades</small></Link>
+          </nav>
+        </section>
       </div>
     </main>
   )

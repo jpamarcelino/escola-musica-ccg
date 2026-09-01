@@ -205,6 +205,67 @@ body {
   }
 }
 
+/* Design Pinterest — Home da Conta CCG, primeira prova mobile/light.
+   Inspirada na hierarquia nativa iOS da referencia: superficie calma,
+   proxima aula dominante, listas compactas e navegacao sempre ao alcance. */
+.pinterest-home {
+  min-height: 100dvh;
+  padding: max(20px, env(safe-area-inset-top, 0px)) 16px calc(116px + env(safe-area-inset-bottom, 0px));
+  background: #f5f6f8;
+  color: #17191c;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif;
+}
+.pinterest-home-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-home-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 2px 18px; }
+.pinterest-home-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-home-cabecalho p { margin-top: 5px; font-size: 15px; color: #757a82; }
+.pinterest-home-avatar,
+.pinterest-aluno-avatar { display: grid; flex: none; place-items: center; border-radius: 15px; background: #dcefed; color: #176b70; font-weight: 750; }
+.pinterest-home-avatar { width: 52px; height: 52px; font-size: 20px; }
+.pinterest-home-alerta { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; gap: 10px; align-items: center; margin: 2px 0 22px; padding: 12px 14px; border: 1px solid #eadfbf; border-radius: 18px; background: #fff9e9; color: #292519; text-decoration: none; }
+.pinterest-home-alerta > svg:first-child { padding: 8px; box-sizing: content-box; border-radius: 12px; background: #f5df9e; }
+.pinterest-home-alerta span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-home-alerta strong { font-size: 14px; }
+.pinterest-home-alerta small { overflow: hidden; margin-top: 2px; color: #756d58; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-home-seccao { margin-top: 27px; }
+.pinterest-home-seccao-topo { display: flex; min-height: 36px; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 10px; padding-inline: 2px; }
+.pinterest-home-seccao-topo h2 { font-size: 21px; font-weight: 740; line-height: 1.2; letter-spacing: 0; }
+.pinterest-home-seccao-topo > a { display: inline-flex; min-height: 44px; align-items: center; gap: 2px; color: #5f646b; font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.pinterest-aula { position: relative; display: grid; grid-template-columns: 46px minmax(0,1fr); gap: 3px 13px; min-height: 178px; padding: 19px 48px 20px 19px; overflow: hidden; border-radius: 25px; background: #252827; color: white; text-decoration: none; box-shadow: 0 12px 28px rgba(25,29,29,.18); }
+.pinterest-aula-icone { display: grid; grid-row: 1 / span 3; width: 46px; height: 46px; place-items: center; border-radius: 15px; background: #d8f1ed; color: #176b70; }
+.pinterest-aula-data { align-self: center; color: rgba(255,255,255,.66); font-size: 13px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.pinterest-aula > strong { align-self: end; overflow-wrap: anywhere; font-size: 27px; font-weight: 750; line-height: 1.08; letter-spacing: 0; }
+.pinterest-aula-aluno { align-self: start; overflow-wrap: anywhere; color: rgba(255,255,255,.72); font-size: 14px; line-height: 1.4; }
+.pinterest-aula-seta { position: absolute; right: 18px; bottom: 20px; }
+.pinterest-aula-vazia { align-content: center; }
+.pinterest-aula-vazia > strong { align-self: center; font-size: 19px; }
+.pinterest-aula-vazia > a { grid-column: 2; color: #b8e7e2; font-size: 14px; }
+.pinterest-alunos { overflow: hidden; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-alunos > a { display: grid; grid-template-columns: 46px minmax(0,1fr) auto auto; gap: 11px; align-items: center; min-height: 76px; padding: 12px 14px; color: #17191c; text-decoration: none; }
+.pinterest-alunos > a + a { border-top: 1px solid #eceef0; }
+.pinterest-aluno-avatar { width: 46px; height: 46px; font-size: 17px; }
+.pinterest-alunos a > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-alunos strong { overflow: hidden; font-size: 16px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-alunos small { overflow: hidden; margin-top: 3px; color: #797e85; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-alunos b { padding: 5px 8px; border-radius: 999px; background: #fff2cf; color: #80611d; font-size: 10px; white-space: nowrap; }
+.pinterest-alunos svg { color: #8a8f96; }
+.pinterest-atalhos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pinterest-atalhos a { display: grid; grid-template-columns: 38px minmax(0,1fr); gap: 2px 10px; min-height: 94px; align-content: center; padding: 13px; border: 1px solid #e8eaed; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+.pinterest-atalhos a > span { display: grid; grid-row: 1 / span 2; width: 38px; height: 38px; place-items: center; border-radius: 13px; background: #e2f1ef; color: #176b70; }
+.pinterest-atalhos a:nth-child(2) > span { background: #fff0d5; color: #8a631b; }
+.pinterest-atalhos a:nth-child(3) > span { background: #e8ebfa; color: #505a91; }
+.pinterest-atalhos a:nth-child(4) > span { background: #f8e5e7; color: #98535b; }
+.pinterest-atalhos strong { align-self: end; overflow-wrap: anywhere; font-size: 14px; line-height: 1.15; }
+.pinterest-atalhos small { align-self: start; color: #858a91; font-size: 11px; }
+.pinterest-home :is(a,button):active { transform: scale(.98); }
+.pinterest-home :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+@media (min-width: 768px) {
+  .pinterest-home { padding-inline: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pinterest-home :is(a,button) { transition: none; }
+}
+
 
 /* ── Ecrã de carregamento ────────────────────────────────────────────
    O símbolo do CCG é uma pincelada — um "C" que é também o "G" de
