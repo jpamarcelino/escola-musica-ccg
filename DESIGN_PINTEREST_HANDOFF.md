@@ -240,6 +240,12 @@ A data da proxima aula subiu para uma faixa no fundo do cartao, ao lado
 do desmarcar — antes so aparecia dentro da confirmacao, o que obrigava a
 abrir o dialogo para saber de que dia se tratava.
 
+Cuidado com os nomes: `.pinterest-aula` e `.pinterest-aula-aluno` ja
+pertenciam ao cartao da proxima aula na Home. O bloco desta pagina usa o
+prefixo `.pinterest-detalhe-*` por causa disso. Antes de criar uma
+familia nova de classes, procurar o nome no `globals.css` — o ficheiro ja
+passa das 5400 linhas e uma colisao so aparece na pagina do outro.
+
 O CSS antigo `.detalhe-aula-*` em `globals.css` ficou orfao e pode ser
 removido numa limpeza; nao foi removido agora para nao alargar o conflito
 no ficheiro enquanto ha duas sessoes a escrever nele.

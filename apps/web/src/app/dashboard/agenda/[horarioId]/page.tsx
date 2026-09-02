@@ -97,10 +97,10 @@ export default async function AgendaHorarioPage({
     )
 
   return (
-    <main id="conteudo-principal" className="pinterest-aula">
-      <div className="pinterest-aula-folha">
-        <header className="pinterest-aula-cabecalho">
-          <Link href="/dashboard/agenda" className="pinterest-aula-voltar" aria-label="Voltar à agenda">
+    <main id="conteudo-principal" className="pinterest-detalhe">
+      <div className="pinterest-detalhe-folha">
+        <header className="pinterest-detalhe-cabecalho">
+          <Link href="/dashboard/agenda" className="pinterest-detalhe-voltar" aria-label="Voltar à agenda">
             <ChevronLeft size={23} aria-hidden="true" />
           </Link>
           <div>
@@ -112,7 +112,7 @@ export default async function AgendaHorarioPage({
         {/* A hora e a sala num cartão próprio, e não numa linha do
             cabeçalho: é o que o professor confirma antes de agir sobre
             alguém desta lista. */}
-        <div className="pinterest-aula-contexto">
+        <div className="pinterest-detalhe-contexto">
           <Clock size={20} aria-hidden="true" />
           <div>
             <strong>
@@ -123,7 +123,7 @@ export default async function AgendaHorarioPage({
         </div>
 
         {(erro || desmarcada) && (
-          <div className="pinterest-aula-mensagem">
+          <div className="pinterest-detalhe-mensagem">
             {erro && <MensagemErro>{erro}</MensagemErro>}
             {desmarcada && <MensagemInfo>Aula desmarcada. O aluno foi avisado.</MensagemInfo>}
           </div>
@@ -135,18 +135,18 @@ export default async function AgendaHorarioPage({
             descricao="Assim que confirmares um pedido para esta hora, o aluno aparece aqui."
           />
         ) : (
-          <section className="pinterest-aula-seccao" aria-labelledby="alunos-aula-titulo">
+          <section className="pinterest-detalhe-seccao" aria-labelledby="alunos-aula-titulo">
             <h2 id="alunos-aula-titulo">
               Quem vem<b>{alunos.length}</b>
             </h2>
-            <div className="pinterest-aula-lista">
+            <div className="pinterest-detalhe-lista">
               {alunos.map((aluno) => {
                 const proxima = proximaDe(aluno.id)
                 const nome = aluno.alunos?.nome ?? ''
                 return (
-                  <article key={aluno.id} className="pinterest-aula-aluno">
+                  <article key={aluno.id} className="pinterest-detalhe-aluno">
                     <Link href={`/dashboard/meus-alunos/${aluno.id}`}>
-                      <span className="pinterest-aula-inicial" aria-hidden="true">
+                      <span className="pinterest-detalhe-inicial" aria-hidden="true">
                         {nome.trim().charAt(0).toUpperCase()}
                       </span>
                       <span>
@@ -159,7 +159,7 @@ export default async function AgendaHorarioPage({
                         cartão: dizer de que dia se trata só depois do
                         toque obrigava a abrir o diálogo para saber. */}
                     {podeDesmarcar && proxima && (
-                      <div className="pinterest-aula-desmarcar">
+                      <div className="pinterest-detalhe-desmarcar">
                         <p>
                           Próxima a{' '}
                           {formatarDataEscolar(proxima, { day: 'numeric', month: 'long' })}
