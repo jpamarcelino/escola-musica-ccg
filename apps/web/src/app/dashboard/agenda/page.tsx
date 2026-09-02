@@ -1,9 +1,8 @@
-import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, formatarDataEscolar, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
+import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, formatarDataEscolar, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
@@ -91,11 +90,8 @@ export default async function AgendaPage({
     redirect('/dashboard')
   }
 
-  const mostrarNomes = profile.programa === 'musica'
-  // O mesmo teste, com outro nome, porque é outra decisão: só música tem
-  // reposições, e desmarcar uma aula sem reposição a seguir seria só
-  // perder a aula. Reutilizar `mostrarNomes` para isto ligava duas
-  // regras que podem divergir amanhã.
+  // Só música tem reposições, e desmarcar uma aula sem reposição a
+  // seguir seria só perder a aula.
   const podeDesmarcar = profile.programa === 'musica'
 
   const { data: confirmadosData } = await supabase
@@ -250,46 +246,6 @@ export default async function AgendaPage({
     porData.set(entrada.data, lista)
   }
 
-  const horariosPorDia = new Map<string, BlocoAgenda[]>()
-  const indicePorHorario = new Map<number, number>()
-  let horaInicioGrade = 0
-  let horasGrade: number[] = []
-  let alturaGrade = 0
-
-  if (blocos.length > 0) {
-    horaInicioGrade = Math.floor(
-      Math.min(...blocos.map((b) => paraMinutos(b.hora_inicio))) / 60
-    )
-    const horaFimGrade = Math.ceil(
-      Math.max(...blocos.map((b) => paraMinutos(b.hora_fim))) / 60
-    )
-    horasGrade = Array.from(
-      { length: horaFimGrade - horaInicioGrade },
-      (_, i) => horaInicioGrade + i
-    )
-    alturaGrade = horasGrade.length * HOUR_HEIGHT
-
-    for (const dia of DIAS_SEMANA) horariosPorDia.set(dia, [])
-    for (const b of blocos) horariosPorDia.get(b.dia_semana)?.push(b)
-    for (const dia of DIAS_SEMANA) {
-      horariosPorDia.get(dia)?.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
-    }
-
-    let indiceAtual = 0
-    for (const dia of DIAS_SEMANA) {
-      for (const b of horariosPorDia.get(dia) ?? []) {
-        indicePorHorario.set(b.horarioId, indiceAtual)
-        indiceAtual += 1
-      }
-    }
-  }
-
-  const diaHoje = DIAS_SEMANA[(agora.getDay() + 6) % 7]
-  const minutosAgora = agora.getHours() * 60 + agora.getMinutes()
-  const mostrarLinhaAgora = blocos.length > 0
-    && minutosAgora >= horaInicioGrade * 60
-    && minutosAgora <= (horaInicioGrade * 60) + (alturaGrade / HOUR_HEIGHT) * 60
-  const topoLinhaAgora = ((minutosAgora - horaInicioGrade * 60) / 60) * HOUR_HEIGHT
 
   return (
     <main id="conteudo-principal" className="pinterest-agenda pinterest-agenda-professor">
@@ -435,76 +391,18 @@ export default async function AgendaPage({
               })}
             </div>
 
-            <details className="partitura-grelha pinterest-agenda-grelha">
-              <summary>
-                <LayoutGrid size={18} aria-hidden="true" />
-                <span>Ver grelha semanal</span>
-                <ChevronDown size={18} aria-hidden="true" />
-              </summary>
-              <p>
-                A grelha ajuda a comparar horários. Para o dia a dia, a lista acima é mais rápida.
-              </p>
-              <div className="horarios-grade" aria-label="Grelha semanal de aulas">
-                <div className="horarios-coluna-horas">
-                  <div className="horarios-coluna-horas-cabecalho" />
-                  {horasGrade.map((hora) => (
-                    <div key={hora} className="horarios-hora-label" style={{ height: HOUR_HEIGHT }}>
-                      {hora}h
-                    </div>
-                  ))}
-                </div>
-                {DIAS_SEMANA.map((dia) => (
-                  <div key={dia} className="horarios-coluna-dia">
-                    <div className="horarios-coluna-dia-cabecalho">{dia.slice(0, 3)}</div>
-                    <div
-                      className="horarios-coluna-dia-corpo"
-                      style={{
-                        height: alturaGrade,
-                        backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.06) 0, rgba(0,0,0,0.06) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
-                      }}
-                    >
-                      {dia === diaHoje && mostrarLinhaAgora && (
-                        <div
-                          className="agenda-agora-linha"
-                          style={{ transform: `translateY(${topoLinhaAgora}px)` }}
-                          aria-label={`Agora, ${formatarHora(`${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`)}`}
-                        >
-                          <span aria-hidden="true" />
-                        </div>
-                      )}
-                      {horariosPorDia.get(dia)?.map((b) => {
-                        const inicioMin = paraMinutos(b.hora_inicio)
-                        const fimMin = paraMinutos(b.hora_fim)
-                        const estilo = {
-                          top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
-                          height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
-                          '--card-index': indicePorHorario.get(b.horarioId) ?? 0,
-                        } as CSSProperties
-
-                        return (
-                          <Link
-                            key={b.horarioId}
-                            href={`/dashboard/agenda/${b.horarioId}`}
-                            className="horario-bloco entrada-esquerda"
-                            style={estilo}
-                            title={[b.sala, mostrarNomes ? null : b.alunos.join(', ')]
-                              .filter(Boolean)
-                              .join(' — ') || undefined}
-                          >
-                            <span>{formatarHora(b.hora_inicio)}</span>
-                            <span>{formatarHora(b.hora_fim)}</span>
-                            {b.sala && <span className="horario-bloco-sala">{b.sala}</span>}
-                            {mostrarNomes && (
-                              <span className="horario-bloco-alunos">{b.alunos.join(', ')}</span>
-                            )}
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </details>
+            {/* A grelha vive numa página própria. Dentro de um
+                acordeão no fundo da agenda, era uma segunda leitura da
+                semana que ninguém abria e que nunca chegou a ter
+                desenho. */}
+            <Link href="/dashboard/agenda/semana" className="pinterest-agenda-semana">
+              <LayoutGrid size={20} aria-hidden="true" />
+              <span>
+                <strong>Ver a semana em grelha</strong>
+                <small>Todos os horários lado a lado</small>
+              </span>
+              <ChevronRight size={19} aria-hidden="true" />
+            </Link>
           </>
         )}
       </div>
