@@ -96,14 +96,17 @@ export default async function AvisosPage({
   const naSecretaria = profile?.admin ? await getAvisosPorLer('secretaria') : 0
 
   return (
-    <main id="conteudo-principal" className={familia ? 'pinterest-avisos' : 'partitura-pagina avisos-pagina'}>
-      <div className={familia ? 'pinterest-avisos-folha' : 'partitura-folha'}>
-        <header className={familia ? 'pinterest-avisos-cabecalho' : 'partitura-agenda-cabecalho'}>
-          <Link href="/dashboard" className={familia ? 'pinterest-avisos-voltar' : 'partitura-voltar'} aria-label="Voltar ao início">
-            {familia ? <ChevronLeft size={23} aria-hidden="true" /> : '←'}
+    // A caixa de entrada é a mesma para os dois papéis, e o desenho
+    // também: o que muda é o que lá cai, não a forma de o ler. O
+    // professor tinha aqui a folha editorial antiga só porque a variante
+    // dele nunca chegou a ser redesenhada.
+    <main id="conteudo-principal" className="pinterest-avisos">
+      <div className="pinterest-avisos-folha">
+        <header className="pinterest-avisos-cabecalho">
+          <Link href="/dashboard" className="pinterest-avisos-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={23} aria-hidden="true" />
           </Link>
           <div>
-            {!familia && <p className="partitura-sobretitulo">O que aconteceu</p>}
             <h1>Avisos</h1>
             <p>
               {porLer > 0

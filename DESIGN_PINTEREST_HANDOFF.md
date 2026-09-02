@@ -125,6 +125,8 @@ O Historico de Presencas e o detalhe por aluno foram implementados e publicados 
 
 A lista de alunos do professor foi implementada e publicada em `c4891d5`. Mantem o cabecalho compacto da area do professor e apresenta cada aluno como um cartao acionavel, com inicial, disciplina, horario e idade quando existirem. O estado vazio real foi validado autenticado a 360 px, 390 px e 430 px, sem overflow. A lista preenchida aguarda uma conta com alunos reais para a inspecao visual final.
 
+A ficha individual e o envio de materiais foram redesenhados e publicados em `d88398b`. A ficha organiza dados, contactos, proposta de novo horario, historico de materiais e desmatricula em superficies separadas; a confirmacao destrutiva usa o dialogo movel Pinterest. O envio de materiais ganhou seletor segmentado Video/Partitura, formulario, preview e selecao de destinatarios na mesma linguagem. O estado vazio de `/dashboard/enviar-material` foi validado autenticado em producao; os formularios preenchidos, a ficha e os dialogos aguardam alunos reais para a inspecao visual final.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
@@ -499,3 +501,36 @@ recebe o toque e a etiqueta.
 O `/pedir-aula` sem `?programa=` devolve a pessoa a inicial. E
 intencional, esta comentado na propria pagina, e nao e ecra em falta: a
 escola escolhe-se na inicial.
+## Campos e o zoom do iOS
+
+Regra global no fim do `globals.css`: em ponteiro grosseiro, qualquer
+`input`, `select` ou `textarea` que receba texto tem letra de 16 px. O
+Safari do iPhone aproxima a pagina sozinho quando o campo focado tem letra
+mais pequena, e a aproximacao fica la depois de sair do campo — era o que
+deixava o ecra "um pouco aumentado" depois do login.
+
+Nao resolver com `maximum-scale=1` na meta viewport: isso tira a quem
+precisa a possibilidade de aproximar a pagina, e o iOS recente ja nem o
+respeita para este efeito.
+
+Consequencia pratica: ao desenhar um formulario compacto, contar com
+16 px no telemovel e nao com o tamanho que se escreveu. Foi por isso que
+o "Criar horarios" passou a ter o dia por cima e as duas horas por baixo,
+e que o "Ou uma hora nova" nos Pedidos passou a duas colunas.
+
+## Avisos do professor
+
+Nao ha desenho novo: a caixa de entrada e a mesma para os dois papeis, e
+o que muda e o que la cai, nao a forma de o ler. A pagina tinha um
+`familia ? ... : ...` em cada `className` do cabecalho, com o professor a
+ficar com a folha editorial antiga — caiu tudo, e a rota usa agora
+`.pinterest-avisos` para toda a gente. O detalhe (`[avisoId]`) ja pedia
+`variante="pinterest"` desde o inicio.
+
+A ponte para `/admin/avisos`, que so aparece a quem e professor e esta na
+direccao, ja tinha o seu proprio tratamento Pinterest
+(`.pinterest-avisos .avisos-outra-caixa`).
+
+As classes base `.avisos-lista`, `.avisos-outra-caixa` e `.avisos-pagina`
+continuam a servir `/admin/avisos`, que ainda nao foi redesenhada. Nao as
+apagar.

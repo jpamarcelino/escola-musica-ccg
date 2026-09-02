@@ -36,7 +36,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/agenda` - todas as variantes - desktop e modo escuro
 - [ ] `/dashboard/agenda/semana` - professor - mobile - modo claro - pagina nova (a grelha semanal saiu do acordeao da agenda), falta validar com conta de professor real
 - [ ] `/dashboard/agenda/[horarioId]` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
-- [ ] `/dashboard/avisos` e detalhe - professor - mobile - modo claro
+- [ ] `/dashboard/avisos` e detalhe - professor - mobile - modo claro - implementado (partilha a folha da variante familiar), falta validar com conta de professor real
 - [ ] `/dashboard/avisos` e detalhe - todas as variantes - desktop e modo escuro
 - [ ] `/dashboard/calendario` - familia/aluno e professor - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/conta` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real (ver nota no handoff)
@@ -56,7 +56,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/horarios` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
 - [ ] `/professor/horarios/[id]`
 - [ ] `/dashboard/meus-alunos` - professor - mobile - modo claro - implementado e publicado (`c4891d5`), estado vazio validado; falta validar com alunos reais
-- [ ] `/dashboard/meus-alunos/[matriculaId]`
+- [ ] `/dashboard/meus-alunos/[matriculaId]` - professor - mobile - modo claro - implementado e publicado (`d88398b`), incluindo ficha, proposta de horario, materiais e confirmacao de desmatricula; falta validar com aluno real
 - [ ] `/dashboard/pedidos` - professor - mobile - modo claro - implementado, falta validar com um pedido real pendente
 - [ ] `/dashboard/presencas` - professor - mobile - modo claro - implementado e publicado (`60ca4c7`), estado sem pendencias validado; falta validar com aulas por confirmar
 - [ ] `/dashboard/presencas/[horarioId]` - professor - mobile - modo claro - implementado e publicado (`890059f`, clareza revista em `8d4c9ca`), falta validar com um horario e alunos reais
@@ -65,7 +65,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/presencas/historico/[alunoId]` - professor - mobile - modo claro - implementado e publicado (`24cb560`), falta validar com registos reais
 - [ ] `/dashboard/reposicoes`
 - [ ] `/dashboard/mensagens`
-- [ ] `/dashboard/enviar-material`
+- [ ] `/dashboard/enviar-material` - professor - mobile - modo claro - implementado e publicado (`d88398b`), estado vazio validado; falta testar video, PDF e selecao com alunos reais
 - [ ] `/dashboard/mensalidades` - variante professor
 
 ## Administracao
