@@ -49,14 +49,13 @@ function rotuloData(data: string): string {
   return formatado.charAt(0).toUpperCase() + formatado.slice(1)
 }
 
-function partesData(data: string) {
-  const [ano, mes, dia] = data.split('-').map(Number)
-  const objeto = new Date(ano, mes - 1, dia)
-  return {
-    dia: String(dia).padStart(2, '0'),
-    semana: new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(objeto),
-    mes: new Intl.DateTimeFormat('pt-PT', { month: 'long' }).format(objeto),
-  }
+// Só o número do dia, para a caixa azul. O dia da semana e o mês saíram
+// do cabeçalho: em "Hoje" e "Amanhã" acrescentavam uma linha que ninguém
+// precisa de ler, e nos outros dias repetiam à letra o que o próprio
+// rótulo já diz ("Sexta-feira, 5 de setembro" sobre "sexta-feira ·
+// setembro").
+function diaDoMes(data: string): string {
+  return String(Number(data.split('-')[2])).padStart(2, '0')
 }
 
 // Agenda conjunta de todos os alunos de uma Conta CCG.
@@ -411,16 +410,12 @@ export async function AgendaFamilia({
         ) : (
           <div className="partitura-dias pinterest-agenda-dias">
             {[...porData.entries()].map(([data, doDia]) => {
-              const partes = partesData(data)
               return (
                 <section key={data} className="partitura-dia">
                   <header>
-                    <span className="partitura-dia-numero">{partes.dia}</span>
+                    <span className="partitura-dia-numero">{diaDoMes(data)}</span>
                     <span>
                       <strong>{rotuloData(data)}</strong>
-                      <small>
-                        {partes.semana} · {partes.mes}
-                      </small>
                     </span>
                   </header>
                   <div className="partitura-linha-tempo">

@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ChevronLeft, BookOpen, CalendarDays, Bell, Clock } from 'lucide-react'
 import { getAuthContext } from '@/lib/auth-context'
 import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, formatarHora, formatarSala, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
@@ -49,30 +50,112 @@ export default async function AlunoHubPage({
   const dataHoje = new Intl.DateTimeFormat('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' }).format(agora)
 
   return (
-    <main id="conteudo-principal" className="aluno-vivo">
-      <header className="aluno-vivo-cabecalho"><Link href="/dashboard" aria-label="Voltar ao início">←</Link><div><p>{dataHoje}</p><h1>{aluno.nome}</h1></div><Link href={`/aluno/${alunoId}/horario`}>Agenda completa</Link></header>
-      <section className="aluno-vivo-dia" aria-label={`Dia de ${aluno.nome}`}>
-        <div className="aluno-vivo-eixo" aria-hidden="true" />
-        {aulas.length === 0 ? (
-          <div className="aluno-vivo-vazio"><p>Hoje respira.</p><h2>Ainda não há aulas confirmadas.</h2><Link href={`/aluno/${alunoId}/pedido`}>Começar um novo pedido</Link></div>
-        ) : aulas.slice(0, 4).map((aula, indice) => {
-          const horario = aula.horarios!
-          const estado = estadoTemporalAula(aula.data, horario.hora_inicio, horario.hora_fim, agora)
-          const destaque = estado === 'agora' || indice === 0
-          return <details key={aula.id} className="aluno-vivo-aula" data-estado={estado} data-destaque={destaque} open={estado === 'agora'}>
-            <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="aluno-vivo-ponto" aria-hidden="true"/><span><small>{estado === 'agora' ? 'Agora' : indice === 0 ? 'A seguir' : horario.dia_semana}</small><strong>{aula.instrumentos?.nome}</strong><b>{aula.profiles?.nome}</b></span><i aria-hidden="true">＋</i></summary>
-            <div><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) ? ` · ${formatarSala(horario.salas)}` : ''}</p><nav><Link href={`/aluno/${alunoId}/materiais`}>Abrir materiais</Link><Link href={`/aluno/${alunoId}/horario`}>Ver na agenda</Link></nav></div>
-          </details>
-        })}
-      </section>
-      <aside className="aluno-vivo-atencao" aria-label="Precisa de atenção">
-        {(notificacoesPorLer ?? 0) > 0 && <Link href="/dashboard/avisos"><small>Novo</small><strong>{notificacoesPorLer} {(notificacoesPorLer ?? 0) === 1 ? 'aviso por ler' : 'avisos por ler'}</strong><span>Consultar avisos</span></Link>}
-        {pendentes > 0 && <Link href={`/aluno/${alunoId}/horario`}><small>Em curso</small><strong>{pendentes} {pendentes === 1 ? 'pedido aguarda horário' : 'pedidos aguardam horário'}</strong><span>Acompanhar pedido</span></Link>}
-        {/* "O teu caderno" tratava por tu o aluno, mas quem tem esta
-            página aberta é o encarregado — a conta é dele. O nome do
-            filho resolve a ambiguidade sem mudar o tom. */}
-        <Link href={`/aluno/${alunoId}/materiais`}><small>Prática</small><strong>O caderno de {aluno.nome.split(' ')[0]}</strong><span>Abrir materiais</span></Link>
-      </aside>
+    <main id="conteudo-principal" className="pinterest-aluno">
+      <div className="pinterest-aluno-folha">
+        <header className="pinterest-aluno-cabecalho">
+          <Link href="/dashboard" className="pinterest-aluno-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+          <div>
+            <h1>{aluno.nome}</h1>
+            <p>{dataHoje}</p>
+          </div>
+          <Link href={`/aluno/${alunoId}/horario`}>Agenda</Link>
+        </header>
+
+        <section className="pinterest-aluno-seccao" aria-label={`Dia de ${aluno.nome}`}>
+          <h2>Hoje</h2>
+          {aulas.length === 0 ? (
+            <div className="pinterest-aluno-vazio">
+              <strong>Ainda não há aulas confirmadas.</strong>
+              <p>Hoje respira. Quando houver uma inscrição a decorrer, as aulas aparecem aqui.</p>
+              <Link href={`/aluno/${alunoId}/pedido`}>Começar um novo pedido</Link>
+            </div>
+          ) : (
+            /* Deixaram de ser acordeões: abrir cada aula para ver a sala
+               escondia justamente a informação que se veio buscar. Tudo
+               fica à vista, e o cartão leva à agenda. */
+            <div className="pinterest-aluno-aulas">
+              {aulas.slice(0, 4).map((aula, indice) => {
+                const horario = aula.horarios!
+                const estado = estadoTemporalAula(
+                  aula.data,
+                  horario.hora_inicio,
+                  horario.hora_fim,
+                  agora
+                )
+                const destaque = estado === 'agora' || indice === 0
+                const sala = formatarSala(horario.salas)
+                return (
+                  <Link
+                    key={aula.id}
+                    href={`/aluno/${alunoId}/horario`}
+                    className="pinterest-aluno-aula"
+                    data-destaque={destaque}
+                  >
+                    <time>{formatarHora(horario.hora_inicio)}</time>
+                    <small>
+                      {estado === 'agora' ? 'Agora' : indice === 0 ? 'A seguir' : horario.dia_semana}
+                    </small>
+                    <strong>{aula.instrumentos?.nome}</strong>
+                    <span>
+                      {aula.profiles?.nome}
+                      {` · até às ${formatarHora(horario.hora_fim)}`}
+                      {sala ? ` · ${sala}` : ''}
+                    </span>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </section>
+
+        <section className="pinterest-aluno-seccao" aria-label="Atalhos">
+          <h2>Atalhos</h2>
+          <div className="pinterest-aluno-atalhos">
+            {/* "O teu caderno" tratava por tu o aluno, mas quem tem esta
+                página aberta é o encarregado — a conta é dele. O nome do
+                filho resolve a ambiguidade sem mudar o tom. */}
+            <Link href={`/aluno/${alunoId}/materiais`}>
+              <span>
+                <BookOpen size={19} strokeWidth={2} aria-hidden="true" />
+              </span>
+              <strong>Caderno de {aluno.nome.split(' ')[0]}</strong>
+              <small>Vídeos e partituras</small>
+            </Link>
+            <Link href={`/aluno/${alunoId}/horario`}>
+              <span>
+                <CalendarDays size={19} strokeWidth={2} aria-hidden="true" />
+              </span>
+              <strong>Horário</strong>
+              <small>As aulas da semana</small>
+            </Link>
+            {(notificacoesPorLer ?? 0) > 0 && (
+              <Link href="/dashboard/avisos">
+                <span>
+                  <Bell size={19} strokeWidth={2} aria-hidden="true" />
+                </span>
+                <strong>
+                  {notificacoesPorLer}{' '}
+                  {(notificacoesPorLer ?? 0) === 1 ? 'aviso por ler' : 'avisos por ler'}
+                </strong>
+                <small>Consultar avisos</small>
+              </Link>
+            )}
+            {pendentes > 0 && (
+              <Link href={`/aluno/${alunoId}/horario`}>
+                <span>
+                  <Clock size={19} strokeWidth={2} aria-hidden="true" />
+                </span>
+                <strong>
+                  {pendentes} {pendentes === 1 ? 'pedido em curso' : 'pedidos em curso'}
+                </strong>
+                <small>À espera de horário</small>
+              </Link>
+            )}
+          </div>
+        </section>
+      </div>
     </main>
   )
 }

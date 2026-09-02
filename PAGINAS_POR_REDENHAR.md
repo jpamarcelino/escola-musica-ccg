@@ -9,6 +9,8 @@ Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por 
 - [x] `/dashboard/avisos` - familia/aluno - mobile - modo claro (`5c12018`, hierarquia afinada em `0e1940f`)
 - [x] `/dashboard/avisos/[avisoId]` - familia/aluno - mobile - modo claro (`5c12018`)
 - [x] `/dashboard/mensalidades` - familia - mobile - modo claro (`fc4402d`, estado vazio `754460e`)
+- [x] `/dashboard/conta/avancado` - familia/aluno - mobile - modo claro (`f3131bf`)
+- [x] `/dashboard/reposicoes/pedidos` - professor - mobile - modo claro (`f3131bf`)
 
 ## Publicas pendentes no Design Pinterest
 
@@ -27,27 +29,26 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Internas partilhadas
 
-- [ ] `/dashboard` - professor - mobile - modo claro
+- [ ] `/dashboard` - professor - mobile - modo claro - implementado e publicado (`f82337d`), estado vazio validado; falta validar com aulas reais
 - [ ] `/dashboard` - todas as variantes - desktop
 - [ ] `/dashboard` - todas as variantes - modo escuro
-- [ ] `/dashboard/agenda` - professor - mobile - modo claro
+- [ ] `/dashboard/agenda` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
 - [ ] `/dashboard/agenda` - todas as variantes - desktop e modo escuro
-- [ ] `/dashboard/agenda/[horarioId]`
+- [ ] `/dashboard/agenda/[horarioId]` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
 - [ ] `/dashboard/avisos` e detalhe - professor - mobile - modo claro
 - [ ] `/dashboard/avisos` e detalhe - todas as variantes - desktop e modo escuro
 - [ ] `/dashboard/calendario` - familia/aluno e professor - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/conta` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real (ver nota no handoff)
-- [ ] `/dashboard/conta/avancado`
 
 ## Familia e aluno
 
 - [ ] `/dashboard/alunos` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/materiais` - familia - mobile - modo claro - implementado, falta validar com conta real
-- [ ] `/aluno/[alunoId]`
-- [ ] `/aluno/[alunoId]/horario`
+- [ ] `/aluno/[alunoId]` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
+- [ ] `/aluno/[alunoId]/horario` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/aluno/[alunoId]/materiais` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/aluno/[alunoId]/pedido`
-- [ ] `/aluno/[alunoId]/reposicao/[aulaId]`
+- [ ] `/aluno/[alunoId]/reposicao/[aulaId]` - familia/aluno - mobile - modo claro - implementado e publicado (`703dd56`), falta validar com uma aula desmarcada elegivel
 
 ## Professor
 
@@ -56,13 +57,12 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/meus-alunos`
 - [ ] `/dashboard/meus-alunos/[matriculaId]`
 - [ ] `/dashboard/pedidos`
-- [ ] `/dashboard/presencas`
-- [ ] `/dashboard/presencas/[horarioId]`
-- [ ] `/dashboard/presencas/confirmar`
+- [ ] `/dashboard/presencas` - professor - mobile - modo claro - implementado e publicado (`60ca4c7`), estado sem pendencias validado; falta validar com aulas por confirmar
+- [ ] `/dashboard/presencas/[horarioId]` - professor - mobile - modo claro - implementado e publicado (`890059f`, clareza revista em `8d4c9ca`), falta validar com um horario e alunos reais
+- [ ] `/dashboard/presencas/confirmar` - professor - mobile - modo claro - implementado e publicado (`890059f`), estado vazio validado; falta validar com aulas pendentes
 - [ ] `/dashboard/presencas/historico`
 - [ ] `/dashboard/presencas/historico/[alunoId]`
 - [ ] `/dashboard/reposicoes`
-- [ ] `/dashboard/reposicoes/pedidos`
 - [ ] `/dashboard/mensagens`
 - [ ] `/dashboard/enviar-material`
 - [ ] `/dashboard/mensalidades` - variante professor

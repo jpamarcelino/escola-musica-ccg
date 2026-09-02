@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { DIAS_SEMANA, HOUR_HEIGHT, paraMinutos, formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, formatarDataEscolar, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
@@ -57,14 +58,13 @@ function rotuloData(data: string): string {
   return formatado.charAt(0).toUpperCase() + formatado.slice(1)
 }
 
-function partesData(data: string) {
-  const [ano, mes, dia] = data.split('-').map(Number)
-  const objeto = new Date(ano, mes - 1, dia)
-  return {
-    dia: String(dia).padStart(2, '0'),
-    semana: new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(objeto),
-    mes: new Intl.DateTimeFormat('pt-PT', { month: 'long' }).format(objeto),
-  }
+// Só o número do dia, para a caixa azul. O dia da semana e o mês saíram
+// do cabeçalho: em "Hoje" e "Amanhã" acrescentavam uma linha que ninguém
+// precisa de ler, e nos outros dias repetiam à letra o que o próprio
+// rótulo já diz ("Sexta-feira, 5 de setembro" sobre "sexta-feira ·
+// setembro").
+function diaDoMes(data: string): string {
+  return String(Number(data.split('-')[2])).padStart(2, '0')
 }
 
 export default async function AgendaPage({
@@ -292,181 +292,217 @@ export default async function AgendaPage({
   const topoLinhaAgora = ((minutosAgora - horaInicioGrade * 60) / 60) * HOUR_HEIGHT
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina partitura-agenda">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+    <main id="conteudo-principal" className="pinterest-agenda pinterest-agenda-professor">
+      <div className="pinterest-agenda-folha">
+        <header className="pinterest-agenda-cabecalho">
+          <Link href="/dashboard" className="pinterest-agenda-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={23} aria-hidden="true" />
+          </Link>
           <div>
-            <p className="partitura-sobretitulo">O teu tempo</p>
             <h1>Agenda</h1>
-            {agendaTemporal[0] && <p>A próxima aula começa às {formatarHora(agendaTemporal[0].hora_inicio)}.</p>}
+            <p>
+              {agendaTemporal[0]
+                ? `Próxima aula às ${formatarHora(agendaTemporal[0].hora_inicio)}`
+                : 'As tuas próximas aulas'}
+            </p>
           </div>
         </header>
 
-        <nav className="pt-2">
+        {/* A agenda responde a "o que tenho esta semana"; o calendário
+            responde a "há aulas no dia 8?". */}
+        <nav className="pinterest-agenda-calendario" aria-label="Calendário escolar">
           <Link href="/dashboard/calendario" className="agenda-ligacao-calendario">
-            Calendário do ano letivo
+            <CalendarDays size={20} aria-hidden="true" />
+            <span>
+              <strong>Calendário escolar</strong>
+              <small>Férias, feriados e interrupções</small>
+            </span>
+            <ChevronRight size={19} aria-hidden="true" />
           </Link>
         </nav>
 
-        {erro && <MensagemErro>{erro}</MensagemErro>}
-        {dia && (
-          <MensagemInfo>
-            {dia === '1' ? '1 aula desmarcada.' : `${dia} aulas desmarcadas.`} Os alunos foram
-            avisados.
-          </MensagemInfo>
+        {/* As mensagens ganham superfície própria: soltas sobre o cinzento
+            liam-se como legenda do cabeçalho e não como resposta a uma
+            ação que acabou de acontecer. */}
+        {(erro || dia) && (
+          <div className="pinterest-agenda-mensagem">
+            {erro && <MensagemErro>{erro}</MensagemErro>}
+            {dia && (
+              <MensagemInfo>
+                {dia === '1' ? '1 aula desmarcada.' : `${dia} aulas desmarcadas.`} Os alunos foram
+                avisados.
+              </MensagemInfo>
+            )}
+          </div>
         )}
 
         {blocos.length === 0 ? (
-          <EmptyState titulo="Ainda não tens aulas confirmadas" />
+          <EmptyState
+            titulo="Ainda não tens aulas confirmadas"
+            descricao="As aulas aparecem aqui assim que confirmares um pedido de horário."
+          />
         ) : (
           <>
-            <div className="partitura-dias">
+            <div className="partitura-dias pinterest-agenda-dias">
               {[...porData.entries()].map(([data, aulas]) => {
-                const partes = partesData(data)
+                // Só as da grelha semanal contam para desmarcar o dia: a
+                // função percorre matrículas, e um dia só de reposições
+                // não tem nada para ela apanhar.
+                const daGrelha = aulas.filter((a) => !a.reposicao)
                 return (
-              <section key={data} className="partitura-dia">
-                <header>
-                  <span className="partitura-dia-numero">{partes.dia}</span>
-                  <span><strong>{rotuloData(data)}</strong><small>{partes.semana} · {partes.mes}</small></span>
-                  {/* A confirmação diz a data por extenso e quantas aulas
-                      caem — é a diferença entre desmarcar um dia e
-                      desmarcar o dia errado. */}
-                  {/* Só se houver aulas da grelha semanal. Um dia que só
-                      tenha reposições não tem nada para "desmarcar o dia"
-                      apanhar — a função percorre matrículas, e o botão
-                      prometia uma coisa que não ia acontecer. */}
-                  {podeDesmarcar && aulas.some((a) => !a.reposicao) && (
-                    <BotaoAcaoDestruir
-                      label="Desmarcar o dia"
-                      variante="editorial"
-                      titulo="Desmarcar todas as aulas deste dia?"
-                      mensagem={`${formatarDataEscolar(data, { weekday: 'long', day: 'numeric', month: 'long' })} — ${aulas.filter((a) => !a.reposicao).length} ${aulas.filter((a) => !a.reposicao).length === 1 ? 'aula' : 'aulas'}.\n\nCada aluno é avisado de que vai haver reposição.`}
-                      action={desmarcarDiaProfessor}
-                    >
-                      <input type="hidden" name="data" value={data} />
-                    </BotaoAcaoDestruir>
-                  )}
-                </header>
-                <div className="partitura-linha-tempo">
-                  {aulas.map((aula, indice) => {
-                    const estadoTemporal = indice === 0
-                      ? estadoTemporalAula(aula.data, aula.hora_inicio, aula.hora_fim, agora)
-                      : 'futura'
-                    // Dois ramos e não um componente escolhido em
-                    // variável: uma reposição não tem horário semanal por
-                    // trás, logo não tem para onde levar, e um <Link> sem
-                    // destino não existe.
-                    const conteudo = (
-                      <>
-                      <time>{formatarHora(aula.hora_inicio)}</time>
-                      <span className="partitura-marca" aria-hidden="true" />
-                      <span className="partitura-aula-conteudo">
-                        {estadoTemporal === 'agora' && <small className="partitura-estado-temporal">Agora</small>}
-                        {aula.reposicao && <small className="partitura-estado-temporal">Reposição</small>}
-                        {/* A disciplina em destaque e o aluno por baixo, como
-                            no painel inicial. A agenda mostrava só o nome, e
-                            quem ensina duas disciplinas ao mesmo aluno não
-                            distinguia as aulas justamente onde prepara o dia. */}
-                        <strong>{aula.disciplinas.length ? aula.disciplinas.join(' · ') : aula.alunos.join(', ')}</strong>
-                        <span>{aula.alunos.join(', ')} · {formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}{aula.sala ? ` · ${aula.sala}` : ''}</span>
+                  <section key={data} className="partitura-dia">
+                    <header>
+                      <span className="partitura-dia-numero">{diaDoMes(data)}</span>
+                      <span>
+                        <strong>{rotuloData(data)}</strong>
                       </span>
-                      <span className="partitura-alunos">{aula.alunos.length} {aula.alunos.length === 1 ? 'aluno' : 'alunos'}</span>
-                      {!aula.reposicao && <span className="partitura-seta" aria-hidden="true">→</span>}
-                      </>
-                    )
-                    return aula.reposicao ? (
-                      <div key={aula.chave} className="partitura-aula">{conteudo}</div>
-                    ) : (
-                      <Link
-                        key={aula.chave}
-                        href={`/dashboard/agenda/${aula.horarioId}`}
-                        className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : ''}`}
-                      >
-                        {conteudo}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </section>
+                      {/* A confirmação diz a data por extenso e quantas
+                          aulas caem — é a diferença entre desmarcar um dia
+                          e desmarcar o dia errado. */}
+                      {podeDesmarcar && daGrelha.length > 0 && (
+                        <BotaoAcaoDestruir
+                          label="Desmarcar o dia"
+                          variante="editorial"
+                          titulo="Desmarcar todas as aulas deste dia?"
+                          mensagem={`${formatarDataEscolar(data, { weekday: 'long', day: 'numeric', month: 'long' })} — ${daGrelha.length} ${daGrelha.length === 1 ? 'aula' : 'aulas'}.\n\nCada aluno é avisado de que vai haver reposição.`}
+                          action={desmarcarDiaProfessor}
+                        >
+                          <input type="hidden" name="data" value={data} />
+                        </BotaoAcaoDestruir>
+                      )}
+                    </header>
+                    <div className="partitura-linha-tempo">
+                      {aulas.map((aula, indice) => {
+                        const estadoTemporal =
+                          indice === 0
+                            ? estadoTemporalAula(aula.data, aula.hora_inicio, aula.hora_fim, agora)
+                            : 'futura'
+                        // Dois ramos e não um componente escolhido em
+                        // variável: uma reposição não tem horário semanal
+                        // por trás, logo não tem para onde levar, e um
+                        // <Link> sem destino não existe.
+                        const conteudo = (
+                          <>
+                            <time>{formatarHora(aula.hora_inicio)}</time>
+                            <span className="partitura-marca" aria-hidden="true" />
+                            <span className="partitura-aula-conteudo">
+                              {estadoTemporal === 'agora' && (
+                                <small className="partitura-estado-temporal">Agora</small>
+                              )}
+                              {aula.reposicao && (
+                                <small className="partitura-estado-temporal">Reposição</small>
+                              )}
+                              {/* A disciplina em destaque e o aluno por
+                                  baixo, como no painel inicial. */}
+                              <strong>
+                                {aula.disciplinas.length
+                                  ? aula.disciplinas.join(' · ')
+                                  : aula.alunos.join(', ')}
+                              </strong>
+                              <span>
+                                {aula.alunos.join(', ')} · {formatarHora(aula.hora_inicio)}–
+                                {formatarHora(aula.hora_fim)}
+                                {aula.sala ? ` · ${aula.sala}` : ''}
+                              </span>
+                            </span>
+                            {/* Só em aula de grupo. Com um aluno, o número
+                                repetia o nome que está uma linha acima. */}
+                            {aula.alunos.length > 1 && (
+                              <span className="partitura-alunos">{aula.alunos.length}</span>
+                            )}
+                            {!aula.reposicao && (
+                              <ChevronRight className="partitura-seta" size={19} aria-hidden="true" />
+                            )}
+                          </>
+                        )
+                        return aula.reposicao ? (
+                          <div key={aula.chave} className="partitura-aula">
+                            {conteudo}
+                          </div>
+                        ) : (
+                          <Link
+                            key={aula.chave}
+                            href={`/dashboard/agenda/${aula.horarioId}`}
+                            className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : ''}`}
+                          >
+                            {conteudo}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </section>
                 )
               })}
             </div>
 
-            <details className="partitura-grelha">
+            <details className="partitura-grelha pinterest-agenda-grelha">
               <summary>
-                Ver grelha semanal
+                <LayoutGrid size={18} aria-hidden="true" />
+                <span>Ver grelha semanal</span>
+                <ChevronDown size={18} aria-hidden="true" />
               </summary>
               <p>
-                A grelha ajuda a comparar horários. Para o uso diário, a lista acima é mais rápida.
+                A grelha ajuda a comparar horários. Para o dia a dia, a lista acima é mais rápida.
               </p>
               <div className="horarios-grade" aria-label="Grelha semanal de aulas">
-              <div className="horarios-coluna-horas">
-                <div className="horarios-coluna-horas-cabecalho" />
-                {horasGrade.map((hora) => (
-                  <div
-                    key={hora}
-                    className="horarios-hora-label"
-                    style={{ height: HOUR_HEIGHT }}
-                  >
-                    {hora}h
+                <div className="horarios-coluna-horas">
+                  <div className="horarios-coluna-horas-cabecalho" />
+                  {horasGrade.map((hora) => (
+                    <div key={hora} className="horarios-hora-label" style={{ height: HOUR_HEIGHT }}>
+                      {hora}h
+                    </div>
+                  ))}
+                </div>
+                {DIAS_SEMANA.map((dia) => (
+                  <div key={dia} className="horarios-coluna-dia">
+                    <div className="horarios-coluna-dia-cabecalho">{dia.slice(0, 3)}</div>
+                    <div
+                      className="horarios-coluna-dia-corpo"
+                      style={{
+                        height: alturaGrade,
+                        backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.06) 0, rgba(0,0,0,0.06) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
+                      }}
+                    >
+                      {dia === diaHoje && mostrarLinhaAgora && (
+                        <div
+                          className="agenda-agora-linha"
+                          style={{ transform: `translateY(${topoLinhaAgora}px)` }}
+                          aria-label={`Agora, ${formatarHora(`${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`)}`}
+                        >
+                          <span aria-hidden="true" />
+                        </div>
+                      )}
+                      {horariosPorDia.get(dia)?.map((b) => {
+                        const inicioMin = paraMinutos(b.hora_inicio)
+                        const fimMin = paraMinutos(b.hora_fim)
+                        const estilo = {
+                          top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
+                          height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
+                          '--card-index': indicePorHorario.get(b.horarioId) ?? 0,
+                        } as CSSProperties
+
+                        return (
+                          <Link
+                            key={b.horarioId}
+                            href={`/dashboard/agenda/${b.horarioId}`}
+                            className="horario-bloco entrada-esquerda"
+                            style={estilo}
+                            title={[b.sala, mostrarNomes ? null : b.alunos.join(', ')]
+                              .filter(Boolean)
+                              .join(' — ') || undefined}
+                          >
+                            <span>{formatarHora(b.hora_inicio)}</span>
+                            <span>{formatarHora(b.hora_fim)}</span>
+                            {b.sala && <span className="horario-bloco-sala">{b.sala}</span>}
+                            {mostrarNomes && (
+                              <span className="horario-bloco-alunos">{b.alunos.join(', ')}</span>
+                            )}
+                          </Link>
+                        )
+                      })}
+                    </div>
                   </div>
                 ))}
-              </div>
-              {DIAS_SEMANA.map((dia) => (
-                <div key={dia} className="horarios-coluna-dia">
-                  <div className="horarios-coluna-dia-cabecalho">{dia.slice(0, 3)}</div>
-                  <div
-                    className="horarios-coluna-dia-corpo"
-                    style={{
-                      height: alturaGrade,
-                      backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
-                    }}
-                  >
-                    {dia === diaHoje && mostrarLinhaAgora && (
-                      <div
-                        className="agenda-agora-linha"
-                        style={{ transform: `translateY(${topoLinhaAgora}px)` }}
-                        aria-label={`Agora, ${formatarHora(`${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`)}`}
-                      >
-                        <span aria-hidden="true" />
-                      </div>
-                    )}
-                    {horariosPorDia.get(dia)?.map((b) => {
-                      const inicioMin = paraMinutos(b.hora_inicio)
-                      const fimMin = paraMinutos(b.hora_fim)
-                      const estilo = {
-                        top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
-                        height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
-                        '--card-index': indicePorHorario.get(b.horarioId) ?? 0,
-                      } as CSSProperties
-
-                      return (
-                        <Link
-                          key={b.horarioId}
-                          href={`/dashboard/agenda/${b.horarioId}`}
-                          className="horario-bloco entrada-esquerda"
-                          style={estilo}
-                          title={[b.sala, mostrarNomes ? null : b.alunos.join(', ')]
-                            .filter(Boolean)
-                            .join(' — ') || undefined}
-                        >
-                          <span>{formatarHora(b.hora_inicio)}</span>
-                          <span>{formatarHora(b.hora_fim)}</span>
-                          {b.sala && (
-                            <span className="horario-bloco-sala">{b.sala}</span>
-                          )}
-                          {mostrarNomes && (
-                            <span className="horario-bloco-alunos">
-                              {b.alunos.join(', ')}
-                            </span>
-                          )}
-                        </Link>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
               </div>
             </details>
           </>

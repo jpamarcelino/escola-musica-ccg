@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
 import { datasDoDia, INICIO_PRESENCAS, hojeISO, type DiaSemana } from '@ccg/core'
+import { CheckCircle2, ChevronLeft, ChevronRight, ClipboardCheck, History } from 'lucide-react'
 
 type Horario = {
   id: number
@@ -73,11 +74,11 @@ export default async function PresencasPage() {
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
-          <div><p className="partitura-sobretitulo">Livro de chamada</p><h1>Presenças</h1><p>{porConfirmar > 0 ? 'Há registos que precisam da tua atenção.' : 'Tudo confirmado até hoje.'}</p></div>
+    <main id="conteudo-principal" className="pinterest-presencas">
+      <div className="pinterest-presencas-folha">
+        <header className="pinterest-presencas-cabecalho">
+          <Link href="/dashboard" className="pinterest-presencas-voltar" aria-label="Voltar ao início"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <div><h1>Presenças</h1><p>{porConfirmar > 0 ? 'Há aulas que precisam da tua atenção.' : 'Tudo confirmado até hoje.'}</p></div>
         </header>
 
         {/* O número em destaque passa a ser ele próprio o caminho para a
@@ -87,17 +88,18 @@ export default async function PresencasPage() {
             por isso aí continua a ser só um aviso. */}
         {porConfirmar > 0 ? (
           <Link href="/dashboard/presencas/confirmar" className="presencas-estado presencas-estado-ligacao">
-            <span>{porConfirmar}</span>
+            <span><ClipboardCheck size={24} strokeWidth={1.9} aria-hidden="true" /></span>
             <div>
-              <strong>{porConfirmar === 1 ? 'aula por confirmar' : 'aulas por confirmar'}</strong>
+              <small>{porConfirmar === 1 ? '1 aula' : `${porConfirmar} aulas`}</small>
+              <strong>Por confirmar</strong>
               <small>Começa pela ocorrência mais antiga</small>
             </div>
-            <i aria-hidden="true">→</i>
+            <ChevronRight size={20} aria-hidden="true" />
           </Link>
         ) : (
           <section className="presencas-estado presencas-estado-ok">
-            <span>{porConfirmar}</span>
-            <div><strong>aulas por confirmar</strong><small>O livro de chamada está atualizado</small></div>
+            <span><CheckCircle2 size={25} strokeWidth={1.9} aria-hidden="true" /></span>
+            <div><small>Nenhuma pendente</small><strong>Tudo em dia</strong><small>O livro de chamada está atualizado</small></div>
           </section>
         )}
 
@@ -113,9 +115,9 @@ export default async function PresencasPage() {
             confirmações antigas. */}
         <nav className="presencas-destinos" aria-label="Ações de presenças">
           {porConfirmar === 0 && (
-            <Link href="/dashboard/presencas/confirmar"><span><b>01</b><strong>Consultar confirmações</strong></span><small>Rever presenças e faltas já registadas</small><i aria-hidden="true">→</i></Link>
+            <Link href="/dashboard/presencas/confirmar"><span><ClipboardCheck size={21} aria-hidden="true" /></span><span><strong>Consultar confirmações</strong><small>Rever presenças e faltas já registadas</small></span><ChevronRight size={19} aria-hidden="true" /></Link>
           )}
-          <Link href="/dashboard/presencas/historico"><span><b>{porConfirmar === 0 ? '02' : '01'}</b><strong>Histórico</strong></span><small>Consultar o percurso de cada aluno</small><i aria-hidden="true">→</i></Link>
+          <Link href="/dashboard/presencas/historico"><span><History size={21} aria-hidden="true" /></span><span><strong>Histórico</strong><small>Consultar o percurso de cada aluno</small></span><ChevronRight size={19} aria-hidden="true" /></Link>
         </nav>
       </div>
     </main>

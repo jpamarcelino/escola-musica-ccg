@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { SubmitButton } from '@/components/submit-button'
+import { BellRing, Check, UserX } from 'lucide-react'
 
 type AlunoChamada = {
   id: number
@@ -10,9 +11,9 @@ type AlunoChamada = {
 }
 
 const ESTADOS = [
-  { valor: 'presente', label: 'Presente' },
-  { valor: 'falta_aviso', label: 'Falta c/ aviso' },
-  { valor: 'falta_sem_aviso', label: 'Falta s/ aviso' },
+  { valor: 'presente', label: 'Presente', ajuda: 'Veio à aula', Icone: Check },
+  { valor: 'falta_aviso', label: 'Falta avisada', ajuda: 'Avisou antes', Icone: BellRing },
+  { valor: 'falta_sem_aviso', label: 'Sem aviso', ajuda: 'Não avisou', Icone: UserX },
 ] as const
 
 export function PresencasChamadaForm({
@@ -38,8 +39,11 @@ export function PresencasChamadaForm({
       <input type="hidden" name="data" value={data} />
 
       <div className="presencas-progresso" data-completo={completo} aria-live="polite">
-        <span><strong>{preenchidos}</strong> de {alunos.length} marcados</span>
-        <span aria-hidden="true">{completo ? 'Pronto a guardar' : 'Completa a chamada'}</span>
+        <div>
+          <span><strong>{preenchidos}</strong> de {alunos.length} alunos</span>
+          <span aria-hidden="true">{completo ? 'Chamada completa' : 'Escolhe um estado para cada aluno'}</span>
+        </div>
+        <div className="presencas-progresso-bar" aria-hidden="true"><span style={{ width: `${alunos.length ? (preenchidos / alunos.length) * 100 : 0}%` }} /></div>
       </div>
 
       <div className="presencas-chamada-lista">
@@ -66,7 +70,8 @@ export function PresencasChamadaForm({
                       [aluno.id]: estado.valor,
                     }))}
                   />
-                  {estado.label}
+                  <estado.Icone size={19} strokeWidth={2} aria-hidden="true" />
+                  <span><strong>{estado.label}</strong><small>{estado.ajuda}</small></span>
                 </label>
               ))}
             </div>

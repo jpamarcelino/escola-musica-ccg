@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { formatarHora, formatarSala, formatarDataEscolar, hojeISO, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
@@ -96,47 +97,89 @@ export default async function AgendaHorarioPage({
     )
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina detalhe-aula-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/agenda" className="partitura-voltar" aria-label="Voltar à agenda">←</Link>
-          <div><p className="partitura-sobretitulo">Aula semanal</p><h1>{horario.dia_semana}</h1><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
+    <main id="conteudo-principal" className="pinterest-detalhe">
+      <div className="pinterest-detalhe-folha">
+        <header className="pinterest-detalhe-cabecalho">
+          <Link href="/dashboard/agenda" className="pinterest-detalhe-voltar" aria-label="Voltar à agenda">
+            <ChevronLeft size={23} aria-hidden="true" />
+          </Link>
+          <div>
+            <h1>{horario.dia_semana}</h1>
+            <p>Aula semanal</p>
+          </div>
         </header>
 
-        {erro && <MensagemErro>{erro}</MensagemErro>}
-        {desmarcada && <MensagemInfo>Aula desmarcada. O aluno foi avisado.</MensagemInfo>}
+        {/* A hora e a sala num cartão próprio, e não numa linha do
+            cabeçalho: é o que o professor confirma antes de agir sobre
+            alguém desta lista. */}
+        <div className="pinterest-detalhe-contexto">
+          <Clock size={20} aria-hidden="true" />
+          <div>
+            <strong>
+              {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}
+            </strong>
+            <span>{formatarSala(horario.salas) || 'Sala por definir'}</span>
+          </div>
+        </div>
+
+        {(erro || desmarcada) && (
+          <div className="pinterest-detalhe-mensagem">
+            {erro && <MensagemErro>{erro}</MensagemErro>}
+            {desmarcada && <MensagemInfo>Aula desmarcada. O aluno foi avisado.</MensagemInfo>}
+          </div>
+        )}
 
         {alunos.length === 0 ? (
-          <EmptyState titulo="Não há alunos confirmados neste horário" />
+          <EmptyState
+            titulo="Não há alunos confirmados neste horário"
+            descricao="Assim que confirmares um pedido para esta hora, o aluno aparece aqui."
+          />
         ) : (
-          <section className="detalhe-aula-alunos" aria-labelledby="alunos-aula-titulo">
-            <header><p className="partitura-indice">01</p><h2 id="alunos-aula-titulo">Alunos nesta aula</h2><span>{alunos.length}</span></header>
-            <div>
-            {alunos.map((aluno) => {
-              const proxima = proximaDe(aluno.id)
-              return (
-                <div key={aluno.id} className="detalhe-aula-aluno">
-                  <Link href={`/dashboard/meus-alunos/${aluno.id}`}>
-                    <strong>{aluno.alunos?.nome}</strong>
-                    <span>{aluno.instrumentos?.nome}</span>
-                    <i aria-hidden="true">→</i>
-                  </Link>
-                  {podeDesmarcar && proxima && (
-                    <BotaoAcaoDestruir
-                      label="Desmarcar esta aula"
-                      variante="editorial"
-                      titulo="Desmarcar a aula de que dia?"
-                      mensagem={`Fica desmarcada só a aula de ${formatarDataEscolar(proxima, { weekday: 'long', day: 'numeric', month: 'long' })}, de ${aluno.alunos?.nome}. As seguintes mantêm-se.\n\nO aluno é avisado de que vai haver reposição.`}
-                      action={desmarcarAulaProfessor}
-                    >
-                      <input type="hidden" name="matriculaId" value={aluno.id} />
-                      <input type="hidden" name="data" value={proxima} />
-                      <input type="hidden" name="horarioId" value={horarioId} />
-                    </BotaoAcaoDestruir>
-                  )}
-                </div>
-              )
-            })}
+          <section className="pinterest-detalhe-seccao" aria-labelledby="alunos-aula-titulo">
+            <h2 id="alunos-aula-titulo">
+              Quem vem<b>{alunos.length}</b>
+            </h2>
+            <div className="pinterest-detalhe-lista">
+              {alunos.map((aluno) => {
+                const proxima = proximaDe(aluno.id)
+                const nome = aluno.alunos?.nome ?? ''
+                return (
+                  <article key={aluno.id} className="pinterest-detalhe-aluno">
+                    <Link href={`/dashboard/meus-alunos/${aluno.id}`}>
+                      <span className="pinterest-detalhe-inicial" aria-hidden="true">
+                        {nome.trim().charAt(0).toUpperCase()}
+                      </span>
+                      <span>
+                        <strong>{nome}</strong>
+                        <small>{aluno.instrumentos?.nome}</small>
+                      </span>
+                      <ChevronRight size={19} aria-hidden="true" />
+                    </Link>
+                    {/* A data da próxima aula sai da confirmação para o
+                        cartão: dizer de que dia se trata só depois do
+                        toque obrigava a abrir o diálogo para saber. */}
+                    {podeDesmarcar && proxima && (
+                      <div className="pinterest-detalhe-desmarcar">
+                        <p>
+                          Próxima a{' '}
+                          {formatarDataEscolar(proxima, { day: 'numeric', month: 'long' })}
+                        </p>
+                        <BotaoAcaoDestruir
+                          label="Desmarcar"
+                          variante="editorial"
+                          titulo="Desmarcar a aula de que dia?"
+                          mensagem={`Fica desmarcada só a aula de ${formatarDataEscolar(proxima, { weekday: 'long', day: 'numeric', month: 'long' })}, de ${nome}. As seguintes mantêm-se.\n\nO aluno é avisado de que vai haver reposição.`}
+                          action={desmarcarAulaProfessor}
+                        >
+                          <input type="hidden" name="matriculaId" value={aluno.id} />
+                          <input type="hidden" name="data" value={proxima} />
+                          <input type="hidden" name="horarioId" value={horarioId} />
+                        </BotaoAcaoDestruir>
+                      </div>
+                    )}
+                  </article>
+                )
+              })}
             </div>
           </section>
         )}

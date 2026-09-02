@@ -85,6 +85,8 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/dashboard/avisos` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/avisos/[avisoId]` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/mensalidades` - variante familia - mobile - modo claro (`fc4402d`, estado vazio finalizado em `754460e`).
+- `/dashboard/conta/avancado` - familia/aluno - mobile - modo claro (`f3131bf`).
+- `/dashboard/reposicoes/pedidos` - professor - mobile - modo claro (`f3131bf`).
 - `/` - publica - mobile - modo claro.
 - `/pedir-aula` - publica - mobile - modo claro.
 - `/login`, `/registo` e `/esqueci-password` - publicas - mobile - modo claro.
@@ -109,9 +111,20 @@ Avisos estabelece o padrao de caixa de entrada: titulo de seccao e contagem, car
 
 Mensalidades estabelece o padrao para resumo financeiro familiar: um resumo mensal destacado mas leve, seletor horizontal de meses e estados de pagamento em superficies brancas. O estado real sem mensalidades foi tratado como parte integral da pagina, com mensagem e nota informativa separadas. Foi validada autenticada a 360 px e 390 px, sem overflow horizontal da pagina.
 
+Cancelamentos e transferencias agrupa cada decisao rara numa superficie branca propria, com consequencias legiveis e perigo reservado para a eliminacao da conta. Marcar reposicao usa uma hierarquia operacional: pedidos primeiro e formulario manual em destaque azul subtil. Ambas foram validadas autenticadas a 360 px, 390 px e 430 px, sem overflow horizontal; na conta de professor foi validado o estado real sem pedidos e o formulario manual completo.
+
+A Home do professor foi implementada e publicada em `f82337d`. Mantem a linguagem da Home familiar, mas ordena o trabalho do professor: presencas urgentes, proxima aula, acessos frequentes e gestao. O estado real sem horarios, a navegacao completa e a responsividade foram validados a 360 px, 390 px e 430 px. Falta validar visualmente o cartao com aulas reais antes de marcar a variante como concluida.
+
+A entrada de Presencas do professor foi implementada e publicada em `60ca4c7`. O estado real sem pendencias usa um resumo verde suave e dois destinos brancos para rever confirmacoes e consultar historico. Foi validada autenticada a 360 px, 390 px e 430 px, sem overflow. Falta validar o resumo acionavel quando existirem aulas por confirmar antes de receber `[x]`.
+
+O fluxo seguinte de Presencas foi implementado e publicado em `890059f`. `/dashboard/presencas/confirmar` separa atrasos e aulas de hoje em cartoes acionaveis; o estado vazio real foi validado a 360 px, 390 px e 430 px. `/dashboard/presencas/[horarioId]` transforma a chamada numa lista de alunos com tres escolhas grandes e botao bloqueado ate estar completa. A conta de teste nao tem horarios, portanto a chamada individual e os cartoes com pendencias aguardam dados reais para a inspecao visual final.
+
+Depois de feedback de falta de clareza, a chamada individual foi revista em `8d4c9ca`: o titulo passou a explicar a tarefa, o progresso ganhou barra visual e cada estado e agora uma linha larga com icone, nome e explicacao (`Presente / Veio a aula`, `Falta avisada / Avisou antes`, `Sem aviso / Nao avisou`). As tres cores so ganham peso depois da selecao.
+
 ### Ainda nao concluido nessa mesma rota
 
-- `/dashboard` - variante professor;
+- `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
+- `/dashboard/agenda` e `/dashboard/agenda/[horarioId]` - variante professor (implementadas, por validar com uma conta de professor com aulas);
 - `/dashboard` - desktop;
 - `/dashboard` - modo escuro;
 - estados de outros papeis que possam usar a rota.
@@ -265,6 +278,10 @@ Fica como o unico `[ ]` das publicas.
 
 Proxima pagina sugerida: voltar ao percurso com sessao — `/aluno/[alunoId]`, que o handoff ja sugeria antes das publicas, ou a variante professor de `/dashboard`.
 
+### Nota sobre `/aluno/[alunoId]/reposicao/[aulaId]`
+
+O pedido de reposicao do aluno foi refeito no sistema Pinterest em `703dd56`: resumo da aula desmarcada, aviso de disponibilidade, vagas como alvos de toque completos, mensagem opcional e acoes finais claras. Lint, typecheck e build passam e a versao esta publicada. A conta de teste nao tem uma aula desmarcada com `reposicao_estado = sem_pedido`; a propria rota redireciona corretamente nesses casos. Falta apenas a inspecao visual autenticada a 360, 390 e 430 px quando existir um caso elegivel, por isso ainda nao recebeu `[x]`.
+
 ### Nota sobre `/dashboard/conta`
 
 A pagina foi reescrita no sistema Pinterest (cabecalho compacto, cartao de
@@ -302,9 +319,81 @@ Usar algo proximo deste texto com outro agente:
 - `f9c973c`: Agenda familiar mobile clara, com o padrao de lista cronologica aprovado.
 - `5c12018`: lista e detalhe de Avisos da familia, mobile claro.
 - `0e1940f`: reforco de hierarquia na lista de Avisos depois de validar o estado com apenas um aviso lido.
+- `703dd56`: pedido de reposicao do aluno redesenhado; aguarda um caso real elegivel para validacao visual final.
+- `f82337d`: Home do professor mobile clara; publicada e validada sem horarios, aguarda dados de aulas reais para fechar.
+- `60ca4c7`: entrada de Presencas mobile clara; publicada e validada sem pendencias, aguarda uma aula por confirmar para fechar.
+- `890059f`: lista por confirmar e chamada individual redesenhadas; estado vazio publicado e validado, estados com aulas aguardam dados reais.
+- `8d4c9ca`: segunda iteracao da chamada individual, com estados explicitos e progresso visual depois de feedback de falta de clareza.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais
   passaram a recuar no historico (`components/voltar-atras.tsx`), porque
   ligacoes fixas mandavam quem vinha da Conta para o indice legal e dai
   para a Home.
+
+## Agenda do professor
+
+A rota `/dashboard/agenda` serve duas paginas diferentes: a familiar
+(`agenda-familia.tsx`) e a do professor (`page.tsx`). A do professor herda
+o mesmo esqueleto `.pinterest-agenda` e a mesma lista cronologica
+`.pinterest-agenda-dias`, com tres diferencas proprias, no bloco
+`.pinterest-agenda-professor`:
+
+- a linha diz primeiro a disciplina e so depois os alunos, a hora e a
+  sala — quem ensina duas disciplinas ao mesmo aluno precisa de as
+  distinguir onde prepara o dia;
+- a contagem de alunos passou a ser um numero num quadrado cinzento e so
+  aparece em aula de grupo: com um aluno repetia o nome da linha de cima;
+- "Desmarcar o dia" e uma pilula pequena de contorno no cabecalho de cada
+  data, e nao um botao editorial — repete-se por cada dia, e so existe em
+  musica (as unicas aulas com reposicao) e em dias com aulas da grelha
+  semanal.
+
+A grelha semanal deixou de ser um `<details>` de texto sublinhado: e um
+cartao branco com icone, que abre encostado a grelha (cantos de cima
+quadrados quando aberta) e nao um segundo cartao dentro do primeiro. Os
+blocos da grelha usam o azul suave `#e7f1fa` em vez do papel bege.
+
+## Cabecalho de data nas listas cronologicas
+
+O cabecalho de cada dia passou a ter so o rotulo: "Hoje", "Amanha" ou
+"Sexta-feira, 5 de setembro". A linha pequena por baixo ("sexta-feira ·
+setembro") saiu das duas agendas — em "Hoje" e "Amanha" acrescentava uma
+linha que ninguem precisa de ler, e nos outros dias repetia a letra o que
+o proprio rotulo ja diz. O numero do dia continua na caixa azul.
+
+## Dialogo de confirmacao
+
+`BotaoAcaoDestruir` e o unico dialogo de confirmacao da app (desmarcar um
+dia, recusar um pedido, cancelar matricula, apagar conta), por isso o
+restyle e global e nao por pagina: bloco `.pinterest-dialogo` em
+`globals.css`. Caixa de 340 px com raio 26, titulo em tipografia de
+sistema a 18.5 px (deixou de ser a serifa editorial), mensagem a 14 px e
+botoes empilhados a largura toda — confirmar em cima, cancelar por baixo.
+Lado a lado, rotulos como "Desmarcar todas as aulas deste dia" partiam a
+meio no telemovel.
+
+O tom continua a vir do componente em estilo inline: vermelho `#9A3B2E`
+para accoes destrutivas, azul da marca para as que so precisam de uma
+pausa. O gatilho nao mudou — cada pagina continua a dar-lhe a forma que
+precisa.
+
+## Detalhe da aula semanal
+
+`/dashboard/agenda/[horarioId]` abre ao tocar numa linha da agenda.
+Cabecalho com o dia da semana, cartao de contexto com o fade azul
+aprovado (hora e sala) e a lista de quem vem: um cartao branco por aluno,
+com inicial em caixa azul clara, nome, disciplina e ligacao para a ficha.
+A data da proxima aula subiu para uma faixa no fundo do cartao, ao lado
+do desmarcar — antes so aparecia dentro da confirmacao, o que obrigava a
+abrir o dialogo para saber de que dia se tratava.
+
+Cuidado com os nomes: `.pinterest-aula` e `.pinterest-aula-aluno` ja
+pertenciam ao cartao da proxima aula na Home. O bloco desta pagina usa o
+prefixo `.pinterest-detalhe-*` por causa disso. Antes de criar uma
+familia nova de classes, procurar o nome no `globals.css` — o ficheiro ja
+passa das 5400 linhas e uma colisao so aparece na pagina do outro.
+
+O CSS antigo `.detalhe-aula-*` em `globals.css` ficou orfao e pode ser
+removido numa limpeza; nao foi removido agora para nao alargar o conflito
+no ficheiro enquanto ha duas sessoes a escrever nele.
