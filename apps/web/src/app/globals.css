@@ -231,15 +231,15 @@ body {
 .pinterest-home-seccao-topo { display: flex; min-height: 36px; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 10px; padding-inline: 2px; }
 .pinterest-home-seccao-topo h2 { font-size: 21px; font-weight: 740; line-height: 1.2; letter-spacing: 0; }
 .pinterest-home-seccao-topo > a { display: inline-flex; min-height: 44px; align-items: center; gap: 2px; color: #5f646b; font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
-.pinterest-aula { position: relative; display: grid; grid-template-columns: 46px minmax(0,1fr); gap: 3px 13px; min-height: 178px; padding: 19px 48px 20px 19px; overflow: hidden; border-radius: 25px; background: #252827; color: white; text-decoration: none; box-shadow: 0 12px 28px rgba(25,29,29,.18); }
-.pinterest-aula-icone { display: grid; grid-row: 1 / span 3; width: 46px; height: 46px; place-items: center; border-radius: 15px; background: #d8f1ed; color: #176b70; }
-.pinterest-aula-data { align-self: center; color: rgba(255,255,255,.66); font-size: 13px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.pinterest-aula { position: relative; display: grid; grid-template-columns: 46px minmax(0,1fr); gap: 3px 13px; min-height: 178px; padding: 19px 48px 20px 19px; overflow: hidden; border-radius: 25px; background: #78aede; color: #123a5b; text-decoration: none; box-shadow: 0 12px 28px rgba(27,79,122,.18); }
+.pinterest-aula-icone { display: grid; grid-row: 1 / span 3; width: 46px; height: 46px; place-items: center; border-radius: 15px; background: rgba(255,255,255,.72); color: #1b4f7a; }
+.pinterest-aula-data { align-self: center; color: #285c87; font-size: 13px; line-height: 1.35; font-variant-numeric: tabular-nums; }
 .pinterest-aula > strong { align-self: end; overflow-wrap: anywhere; font-size: 27px; font-weight: 750; line-height: 1.08; letter-spacing: 0; }
-.pinterest-aula-aluno { align-self: start; overflow-wrap: anywhere; color: rgba(255,255,255,.72); font-size: 14px; line-height: 1.4; }
+.pinterest-aula-aluno { align-self: start; overflow-wrap: anywhere; color: #285c87; font-size: 14px; line-height: 1.4; }
 .pinterest-aula-seta { position: absolute; right: 18px; bottom: 20px; }
 .pinterest-aula-vazia { align-content: center; }
 .pinterest-aula-vazia > strong { align-self: center; font-size: 19px; }
-.pinterest-aula-vazia > a { grid-column: 2; color: #b8e7e2; font-size: 14px; }
+.pinterest-aula-vazia > a { grid-column: 2; color: #1b4f7a; font-size: 14px; }
 .pinterest-alunos { overflow: hidden; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
 .pinterest-alunos > a { display: grid; grid-template-columns: 46px minmax(0,1fr) auto auto; gap: 11px; align-items: center; min-height: 76px; padding: 12px 14px; color: #17191c; text-decoration: none; }
 .pinterest-alunos > a + a { border-top: 1px solid #eceef0; }
