@@ -6,6 +6,7 @@ import { formatarHora, formatarSala, dataMaisRecenteDoDia, type DiaSemana } from
 import { marcarPresencas } from '@/lib/actions/presencas'
 import { MensagemErro } from '@/components/mensagem'
 import { PresencasChamadaForm } from '@/components/presencas-chamada-form'
+import { ChevronLeft } from 'lucide-react'
 
 type Aluno = {
   id: number
@@ -67,11 +68,11 @@ export default async function PresencasHorarioPage({
   )
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/presencas/confirmar" className="partitura-voltar" aria-label="Voltar às aulas por confirmar">←</Link>
-          <div><p className="partitura-sobretitulo">Chamada · {data}</p><h1>{horario.dia_semana}</h1><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
+    <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-chamada-presencas">
+      <div className="pinterest-presencas-fluxo-folha">
+        <header className="pinterest-presencas-fluxo-cabecalho">
+          <Link href="/dashboard/presencas/confirmar" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar às aulas por confirmar"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <div><h1>{horario.dia_semana}</h1><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
         </header>
 
         <form method="get" className="presencas-data-form">
@@ -85,7 +86,7 @@ export default async function PresencasHorarioPage({
             defaultValue={data}
             className="h-[44px] border border-[var(--color-linha)] bg-white px-[12px] text-[14px]"
           />
-          <button type="submit" className="h-[44px] border border-[var(--color-ink)] px-[16px] text-[14px] font-semibold">
+          <button type="submit">
             Ver
           </button>
         </form>

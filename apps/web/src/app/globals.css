@@ -312,6 +312,53 @@ body {
 .pinterest-presencas :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width:431px) { .pinterest-presencas { padding-inline:24px; } }
 
+/* Design Pinterest - fluxo de confirmar presencas e fazer a chamada. */
+.pinterest-presencas-fluxo { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-presencas-fluxo-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-presencas-fluxo-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 20px; }
+.pinterest-presencas-fluxo-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-presencas-fluxo-cabecalho h1 { overflow-wrap: anywhere; font-size: 28px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-presencas-fluxo-cabecalho p { margin-top: 4px; color: #767c84; font-size: 13.5px; line-height: 1.4; }
+.pinterest-presencas-fluxo .empty-editorial { padding: 22px 18px; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); text-align: left; }
+.pinterest-presencas-fluxo .empty-editorial::before { display: none; }
+.pinterest-presencas-fluxo .empty-editorial-titulo { max-width: none; color: #17191c; font-family: inherit; font-size: 17px; font-weight: 740; }
+.pinterest-presencas-fluxo .empty-editorial-descricao { max-width: none; margin-top: 5px; color: #777e85; font-size: 13px; line-height: 1.5; }
+.pinterest-confirmar-presencas .presencas-grupo { margin-top: 24px; }
+.pinterest-confirmar-presencas .presencas-grupo > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 2px 10px; padding: 0; }
+.pinterest-confirmar-presencas .presencas-grupo h2 { color: #17191c; font-family: inherit; font-size: 21px; font-weight: 740; }
+.pinterest-confirmar-presencas .presencas-grupo header small { display: grid; min-width: 28px; height: 28px; place-items: center; border-radius: 10px; background: #e7f1fa; color: #1b4f7a; font-size: 11px; font-weight: 750; }
+.pinterest-confirmar-presencas .presencas-grupo:first-of-type header small { background: #f8e5e7; color: #98535b; }
+.pinterest-confirmar-presencas .presencas-registos { display: flex; flex-direction: column; gap: 9px; border: 0; }
+.pinterest-confirmar-presencas .presencas-registos a { display: grid; grid-template-columns: 76px minmax(0,1fr) auto; gap: 5px 11px; min-height: 82px; align-items: center; padding: 13px 14px; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-confirmar-presencas .presencas-registos time { grid-row: 1 / span 2; color: #1b4f7a; font-size: 12.5px; font-weight: 750; line-height: 1.35; }
+.pinterest-confirmar-presencas .presencas-registos a > span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-confirmar-presencas .presencas-registos strong { overflow: hidden; font-size: 14.5px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-confirmar-presencas .presencas-registos small { margin-top: 3px; color: #7a8087; font-size: 11.5px; }
+.pinterest-confirmar-presencas .presencas-registos em { grid-column: 2; color: #8f5b3c; font-size: 11px; font-style: normal; font-weight: 700; }
+.pinterest-confirmar-presencas .presencas-registos a > svg { grid-column: 3; grid-row: 1 / span 2; color: #969ba1; }
+
+.pinterest-chamada-presencas .presencas-data-form { display: grid; grid-template-columns: minmax(0,1fr) 70px; gap: 8px; align-items: end; margin: 0 0 20px; padding: 15px; border: 1px solid #e5e8ec; border-radius: 19px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.045); }
+.pinterest-chamada-presencas .presencas-data-form label { grid-column: 1 / -1; width: auto; color: #5f646b; font-size: 12px; font-weight: 650; }
+.pinterest-chamada-presencas .presencas-data-form input { width: 100%; min-width: 0; height: 46px; border: 1px solid #dfe4e8; border-radius: 13px; background: #fff; padding: 0 12px; color: #17191c; font-size: 16px; }
+.pinterest-chamada-presencas .presencas-data-form button { height: 46px; border: 0; border-radius: 13px; background: #1b4f7a; color: #fff; font-size: 13.5px; font-weight: 700; }
+.pinterest-chamada-presencas .presencas-progresso { min-height: 40px; margin: 0 2px 8px; color: #777e85; font-size: 11.5px; }
+.pinterest-chamada-presencas .presencas-progresso strong { color: #17191c; font-size: 15px; }
+.pinterest-chamada-presencas .presencas-chamada-lista { display: flex; flex-direction: column; gap: 10px; border: 0; }
+.pinterest-chamada-presencas .presencas-aluno-chamada { display: block; padding: 15px; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); opacity: 1; }
+.pinterest-chamada-presencas .presencas-aluno-chamada legend { display: flex; flex-direction: column; width: 100%; margin-bottom: 12px; }
+.pinterest-chamada-presencas .presencas-aluno-chamada legend strong { color: #17191c; font-family: inherit; font-size: 16px; font-weight: 720; }
+.pinterest-chamada-presencas .presencas-aluno-chamada legend small { margin-top: 3px; color: #7a8087; font-size: 11.5px; }
+.pinterest-chamada-presencas .presencas-estados { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; }
+.pinterest-chamada-presencas .presencas-estados label { display: flex; min-width: 0; min-height: 50px; align-items: center; justify-content: center; border: 1px solid #e1e5e9; border-radius: 13px; padding: 6px 5px; color: #5e656c; font-size: 10.5px; font-weight: 680; line-height: 1.2; text-align: center; }
+.pinterest-chamada-presencas .presencas-estados input { position: absolute; opacity: 0; pointer-events: none; }
+.pinterest-chamada-presencas .presencas-estados label:has(:checked) { border-color: #78aede; background: #eaf3fa; color: #1b4f7a; }
+.pinterest-chamada-presencas .presencas-estados label[data-estado='falta_aviso']:has(:checked) { border-color: #e3c977; background: #fff7df; color: #80611d; }
+.pinterest-chamada-presencas .presencas-estados label[data-estado='falta_sem_aviso']:has(:checked) { border-color: #e5b8bd; background: #fcecef; color: #8f3b47; }
+.pinterest-chamada-presencas .presencas-guardar { position: static; width: 100%; min-height: 52px; margin-top: 16px; border: 0; border-radius: 15px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
+.pinterest-chamada-presencas .presencas-guardar:disabled { background: #d9dde1; color: #858b91; box-shadow: none; opacity: 1; }
+.pinterest-presencas-fluxo :is(a,button,input,label):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width:431px) { .pinterest-presencas-fluxo { padding-inline:24px; } }
+
 /* Design Pinterest - agenda familiar, mobile e modo claro. */
 .pinterest-agenda { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
 .pinterest-agenda-folha { width: 100%; max-width: 430px; margin-inline: auto; }

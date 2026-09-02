@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatarHora, formatarSala, agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO, plural, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Horario = {
   id: number
@@ -115,11 +116,11 @@ export default async function ConfirmarPresencasPage({
   const deHoje = pendentes.filter((p) => p.data === hoje)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/presencas" className="partitura-voltar" aria-label="Voltar a presenças">←</Link>
-          <div><p className="partitura-sobretitulo">Livro de chamada</p><h1>Por confirmar</h1><p>{pendentes.length > 0 ? 'Começa pelas aulas mais antigas.' : 'Está tudo em dia.'}</p></div>
+    <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-confirmar-presencas">
+      <div className="pinterest-presencas-fluxo-folha">
+        <header className="pinterest-presencas-fluxo-cabecalho">
+          <Link href="/dashboard/presencas" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar a presenças"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <div><h1>Por confirmar</h1><p>{pendentes.length > 0 ? 'Começa pelas aulas mais antigas.' : 'Está tudo em dia.'}</p></div>
         </header>
 
         {guardado && <MensagemInfo>Presenças guardadas.</MensagemInfo>}
@@ -127,32 +128,32 @@ export default async function ConfirmarPresencasPage({
         {pendentes.length === 0 ? (
           <EmptyState
             titulo="Não há aulas por confirmar"
-            descricao="Está tudo em dia."
+            descricao="As presenças e faltas estão todas registadas."
           />
         ) : (
           <>
             {atrasadas.length > 0 && (
               <section className="presencas-grupo">
-                <header><span>01</span><h2>Em atraso</h2><small>{atrasadas.length}</small></header>
+                <header><h2>Em atraso</h2><small>{atrasadas.length}</small></header>
                 <div className="presencas-registos presencas-registos-atrasados">
                   {atrasadas.map((p) => (
                     <Link
                       key={`${p.horarioId}|${p.data}`}
                       href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
-                    ><time>{formatarDataEscolar(p.data)}</time><span><strong>{p.dia_semana} · {formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? plural(p.totalAlunos, 'aluno', 'alunos')}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
+                    ><time>{formatarDataEscolar(p.data)}</time><span><strong>{p.dia_semana} · {formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? plural(p.totalAlunos, 'aluno', 'alunos')}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><ChevronRight size={19} aria-hidden="true" /></Link>
                   ))}
                 </div>
               </section>
             )}
             {deHoje.length > 0 && (
               <section className="presencas-grupo">
-                <header><span>02</span><h2>Hoje</h2><small>{deHoje.length}</small></header>
+                <header><h2>Hoje</h2><small>{deHoje.length}</small></header>
                 <div className="presencas-registos">
                   {deHoje.map((p) => (
                     <Link
                       key={`${p.horarioId}|${p.data}`}
                       href={`/dashboard/presencas/${p.horarioId}?data=${p.data}`}
-                    ><time>{formatarHora(p.hora_inicio)}</time><span><strong>{formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? plural(p.totalAlunos, 'aluno', 'alunos')}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><i aria-hidden="true">→</i></Link>
+                    ><time>{formatarHora(p.hora_inicio)}</time><span><strong>{formatarHora(p.hora_inicio)}–{formatarHora(p.hora_fim)}</strong><small>{p.sala ?? plural(p.totalAlunos, 'aluno', 'alunos')}</small></span><em>{p.totalAlunos - p.marcados} por marcar</em><ChevronRight size={19} aria-hidden="true" /></Link>
                   ))}
                 </div>
               </section>
