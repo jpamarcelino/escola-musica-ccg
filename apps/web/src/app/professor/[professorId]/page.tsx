@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
+import { RodapeLegal } from '@/components/rodape-legal'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -50,39 +52,54 @@ export default async function FichaProfessorPage({
         : null
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina ficha-professor-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href={destinoVoltar} className="partitura-voltar" aria-label="Voltar">
-            ←
-          </Link>
+    <div className="pinterest-publico-pagina">
+      <main id="conteudo-principal" className="ficha-professor">
+        <Link href={destinoVoltar} className="ficha-professor-voltar" aria-label="Voltar">
+          <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+        </Link>
+
+        <section className="ficha-professor-identidade">
+          <span className="ficha-professor-retrato">
+            {ficha.foto_url ? (
+              <Image
+                src={ficha.foto_url}
+                alt={`Retrato de ${ficha.nome}`}
+                width={192}
+                height={192}
+              />
+            ) : (
+              <span className="ficha-professor-inicial" aria-hidden="true">
+                {ficha.nome.trim().charAt(0).toUpperCase()}
+              </span>
+            )}
+          </span>
           <div>
-            <p className="partitura-sobretitulo">{escola ?? 'Centro Cultural da Guarda'}</p>
+            <p>{escola ?? 'Centro Cultural da Guarda'}</p>
             <h1>{ficha.nome}</h1>
-            {ficha.disciplinas.length > 0 && <p>{ficha.disciplinas.join(' · ')}</p>}
           </div>
-        </header>
+        </section>
 
-        {ficha.foto_url && (
-          <div className="ficha-professor-retrato">
-            <Image
-              src={ficha.foto_url}
-              alt={`Retrato de ${ficha.nome}`}
-              width={640}
-              height={640}
-              sizes="(max-width: 700px) 100vw, 420px"
-            />
-          </div>
+        {ficha.disciplinas.length > 0 && (
+          <ul className="ficha-professor-disciplinas" aria-label="Disciplinas que ensina">
+            {ficha.disciplinas.map((d) => (
+              <li key={d}>{d}</li>
+            ))}
+          </ul>
         )}
 
-        {ficha.bio ? (
-          <article className="ficha-professor-bio">{ficha.bio}</article>
-        ) : (
-          <p className="ficha-professor-sem-bio">
-            Ainda não há uma apresentação escrita deste professor.
-          </p>
-        )}
-      </div>
-    </main>
+        <section className="ficha-professor-seccao">
+          <h2>Apresentação</h2>
+          {ficha.bio ? (
+            <article className="ficha-professor-bio">{ficha.bio}</article>
+          ) : (
+            <p className="ficha-professor-sem-bio">
+              Este professor ainda não escreveu uma apresentação. As disciplinas que
+              ensina estão acima.
+            </p>
+          )}
+        </section>
+      </main>
+      <RodapeLegal />
+    </div>
   )
 }

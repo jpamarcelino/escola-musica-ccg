@@ -88,6 +88,7 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/` - publica - mobile - modo claro.
 - `/pedir-aula` - publica - mobile - modo claro.
 - `/login`, `/registo` e `/esqueci-password` - publicas - mobile - modo claro.
+- `/professor/[professorId]` - publica - mobile - modo claro.
 
 Inclui:
 
@@ -208,6 +209,25 @@ O `/redefinir-password` nao recebeu `[x]`: exige uma sessao de
 recuperacao e nao foi possivel ve-lo. Esta implementado e alinhado, e o
 inventario di-lo.
 
+### Nota sobre `/professor/[professorId]`
+
+Cartao de identidade com retrato de 96px, disciplinas em pastilhas e a
+apresentacao numa superficie propria — e a unica pagina publica com
+conteudo escrito por outra pessoa, e isso merece uma folha so para si.
+
+O retrato nao sangra o cartao de proposito: a largura toda fazia desta
+pagina um perfil de rede social, e o que ela e continua a ser uma ficha
+para decidir com quem se tem aulas. Sem fotografia, a inicial.
+
+O vazio da apresentacao deixou de ser uma frase solta num ecra em
+branco. Fica numa caixa tracejada e diz onde esta a informacao que ha
+("as disciplinas que ensina estao acima") em vez de so constatar a
+ausencia.
+
+Uma armadilha: `min-height: 100dvh` no `<main>` alem do involucro
+empurrava o rodape legal para fora do ecra numa pagina curta. So o
+involucro precisa da altura.
+
 ## Ordem de trabalho recomendada
 
 1. Fechar o percurso familiar mobile claro: Agenda, Avisos, Conta, Gerir alunos, Mensalidades e paginas do aluno.
@@ -216,9 +236,9 @@ inventario di-lo.
 4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
-7. Redesenhar e validar as restantes paginas publicas. Feitas: `/`, `/pedir-aula`, `/login`, `/registo` e `/esqueci-password`. Faltam `/professor/[id]`, `/instalar`, as duas de `/legal` e validar `/redefinir-password`.
+7. Redesenhar e validar as restantes paginas publicas. Feitas: `/`, `/pedir-aula`, `/login`, `/registo` e `/esqueci-password`. Faltam `/instalar`, as duas de `/legal` (implementadas, por validar) e validar `/redefinir-password`.
 
-Proxima pagina sugerida: `/professor/[professorId]`, que se alcanca do passo 4 do pedido e e a unica publica com conteudo de outra pessoa.
+Proxima pagina sugerida: `/instalar` — a ultima publica por redesenhar. Depois, validar visualmente as duas de `/legal`.
 
 ### Nota sobre `/dashboard/conta`
 

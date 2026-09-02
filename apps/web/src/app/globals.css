@@ -5280,3 +5280,47 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
    escuro, como as faixas escolhidas do resto do percurso. */
 .pinterest-pedido .horario-bloco { border-color: #d3e3f1; background: #e7f1fa; color: #1b4f7a; }
 .pinterest-pedido .horario-bloco:has(input:checked) { border-color: #1b4f7a; background: #1b4f7a; color: #fff; }
+
+/* ── Ficha pública de um professor ──────────────────────────────────
+   Alcança-se do passo 4 do pedido, pelo botão "conhecer". É a única
+   página pública com conteúdo escrito por outra pessoa — daí a
+   apresentação ter uma superfície só para si. */
+/* Sem `min-height` aqui: o invólucro `.pinterest-publico-pagina` já
+   garante que o cinzento chega ao fundo, e repetir a altura no <main>
+   empurrava o rodapé legal para fora do ecrã numa página curta. */
+.ficha-professor { padding: max(14px, env(safe-area-inset-top, 0px)) 16px 8px; color: #17191c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif; }
+@media (min-width: 430px) {
+  .ficha-professor { padding-inline: 24px; }
+}
+.ficha-professor-voltar { display: grid; width: 44px; height: 44px; place-items: center; margin-bottom: 18px; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+
+/* Cartão de identidade: retrato, nome e escola. O retrato tem 96px e
+   não a largura toda — uma fotografia a sangrar o cartão faria desta
+   página um perfil de rede social, e o que ela é continua a ser uma
+   ficha para decidir com quem se tem aulas. */
+.ficha-professor-identidade { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 16px; align-items: center; padding: 16px; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.ficha-professor-retrato { overflow: hidden; width: 96px; height: 96px; border-radius: 24px; background: #dcefed; }
+.ficha-professor-retrato img { width: 100%; height: 100%; object-fit: cover; }
+/* Sem fotografia, a inicial — uma caixa vazia lê-se como imagem que não
+   carregou, e há professores sem retrato. */
+.ficha-professor-inicial { display: grid; width: 100%; height: 100%; place-items: center; color: #176b70; font-size: 34px; font-weight: 750; }
+.ficha-professor-identidade p { font-size: 12px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: #7d838b; }
+.ficha-professor-identidade h1 { margin-top: 5px; font-size: 24px; font-weight: 750; line-height: 1.12; }
+
+.ficha-professor-disciplinas { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 0; padding: 0; list-style: none; }
+.ficha-professor-disciplinas li { padding: 7px 12px; border-radius: 999px; background: #e7f1fa; color: #1b4f7a; font-size: 13px; font-weight: 600; }
+
+.ficha-professor-seccao { margin-top: 26px; }
+.ficha-professor-seccao h2 { margin-bottom: 10px; padding-inline: 2px; font-size: 21px; font-weight: 740; }
+.ficha-professor-bio { padding: 17px; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); color: #3d434a; font-size: 15px; line-height: 1.62; white-space: pre-line; }
+/* Sem apresentação, uma frase curta numa caixa discreta em vez de um
+   ecrã em branco: a ficha continua a ter forma, e a ausência lê-se como
+   ausência e não como erro. */
+.ficha-professor-sem-bio { padding: 17px; border: 1px dashed #dfe3e8; border-radius: 22px; background: #fafbfc; color: #767c84; font-size: 14.5px; line-height: 1.55; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ficha-professor > * { animation: entrada-suave .3s var(--ease-suave) both; }
+  .ficha-professor-seccao { animation-delay: .06s; }
+}
+.ficha-professor a:active { transform: scale(.98); }
+.ficha-professor a:focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
