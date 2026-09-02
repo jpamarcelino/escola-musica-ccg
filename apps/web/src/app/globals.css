@@ -6264,3 +6264,30 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-admin-destaque.pinterest-aula-vazia { min-height: 108px; padding-block: 16px; }
 .pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-aluno { grid-column: 2; align-self: center; color: #1b4f7a; font-size: 14px; }
 .pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-seta { bottom: auto; top: 50%; transform: translateY(-50%); }
+
+/* Arrastar um aviso lido para o apagar.
+   O gesto e o do iOS: a linha anda para a esquerda e por baixo dela
+   aparece o vermelho. Abaixo do limiar so ha cor e largar nao faz nada;
+   passado o limiar aparece o caixote, e e ele que promete a pergunta que
+   vem a seguir. */
+.aviso-deslizavel { position: relative; overflow: hidden; border-radius: 20px; background: #b4392c; }
+.aviso-deslizavel-apagar { position: absolute; top: 0; right: 0; bottom: 0; display: grid; width: 96px; place-items: center; border: 0; background: transparent; color: #fff; opacity: 0; transition: opacity .12s ease; }
+/* O caixote so aparece quando largar ja faz alguma coisa. Ate la o
+   vermelho sozinho diz "estas a comecar algo" sem prometer o fim. */
+.aviso-deslizavel:has(.aviso-deslizavel-carta[data-caixote]) .aviso-deslizavel-apagar,
+.aviso-deslizavel-apagar:focus-visible { opacity: 1; }
+.aviso-deslizavel-apagar:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+/* touch-action: pan-y devolve o scroll vertical ao browser e deixa-nos so
+   o horizontal — sem isto, arrastar na diagonal prendia a lista. */
+.aviso-deslizavel-carta { position: relative; touch-action: pan-y; will-change: transform; }
+/* A carta tem de tapar o vermelho enquanto esta parada, senao via-se a
+   faixa pelos cantos arredondados do cartao. */
+.aviso-deslizavel-carta > article { background: #fff; }
+/* Enquanto se arrasta, o texto nao se seleciona nem as imagens saltam. */
+.aviso-deslizavel[data-aberto] .aviso-deslizavel-carta { user-select: none; }
+.pinterest-avisos .aviso-deslizavel { box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-avisos .aviso-deslizavel .avisos-lista article,
+.pinterest-avisos .aviso-deslizavel > div > article { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .aviso-deslizavel-apagar { transition: none; }
+}
