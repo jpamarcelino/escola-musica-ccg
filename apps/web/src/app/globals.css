@@ -4971,3 +4971,48 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 
 .pinterest-calendario :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width: 431px) { .pinterest-calendario { padding-inline: 24px; } .pinterest-calendario-folha { max-width: 700px; } .pinterest-calendario .calendario-meses { display: grid; grid-template-columns: 1fr 1fr; } }
+
+/* Design Pinterest - materiais: a escolha de caderno e o caderno em si.
+   O caderno e de quem tem a aula, nao da conta: com dois filhos ha dois
+   cadernos, e a primeira pagina existe so para desfazer essa duvida. */
+.pinterest-materiais { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-materiais-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-materiais-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-materiais-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-materiais-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-materiais-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; line-height: 1.45; }
+.pinterest-materiais-vazio { padding: 22px 18px; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); text-align: center; }
+.pinterest-materiais-vazio strong { display: block; font-size: 16px; font-weight: 720; }
+.pinterest-materiais-vazio p { margin-top: 6px; color: #797e85; font-size: 13.5px; line-height: 1.5; }
+.pinterest-materiais-vazio a { display: inline-flex; min-height: 46px; align-items: center; margin-top: 14px; padding: 0 20px; border-radius: 14px; background: #1b4f7a; color: #fff; font-size: 14.5px; font-weight: 700; text-decoration: none; }
+
+/* Aluno sem aulas a decorrer: continua a ver-se, para se perceber que o
+   perfil existe e que lhe falta a inscricao, mas nao abre nada. */
+.pinterest-materiais .pinterest-alunos > div { display: grid; grid-template-columns: 46px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 76px; padding: 12px 14px; opacity: .55; }
+.pinterest-materiais .pinterest-alunos > div + div,
+.pinterest-materiais .pinterest-alunos > a + div,
+.pinterest-materiais .pinterest-alunos > div + a { border-top: 1px solid #eceef0; }
+
+/* Separadores do caderno: video, partituras, metronomo. */
+.pinterest-materiais .materiais-conteudo { margin-top: 0; }
+.pinterest-materiais .materiais-separadores { display: flex; gap: 7px; margin-bottom: 20px; padding: 4px; overflow-x: auto; border: 0; border-radius: 15px; background: #e9ecef; scrollbar-width: none; }
+.pinterest-materiais .materiais-separadores::-webkit-scrollbar { display: none; }
+.pinterest-materiais .materiais-separador { min-width: max-content; flex: 1; padding: 9px 14px; border: 0; border-radius: 11px; color: #686e75; font-size: 13px; font-weight: 650; text-align: center; }
+.pinterest-materiais .materiais-separador[aria-selected="true"] { background: #fff; color: #17191c; box-shadow: 0 2px 8px rgba(31,35,39,.08); }
+.pinterest-materiais .materiais-conteudo > div:last-child { margin-top: 0; }
+.pinterest-materiais input, .pinterest-materiais button { border-radius: 14px; }
+.pinterest-materiais .rounded-full { border-radius: 50%; }
+
+/* Videos e partituras: cartoes brancos, um por item. */
+.pinterest-materiais :is(.material-videos,.material-partituras) { display: flex; flex-direction: column; gap: 10px; }
+.pinterest-materiais :is(.material-videos,.material-partituras) li + li { border-top: 0; }
+.pinterest-materiais :is(.material-videos,.material-partituras) a { padding: 12px; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-materiais .material-video-imagem { border-radius: 14px; }
+.pinterest-materiais .material-video-texto strong { color: #17191c; font-family: inherit; font-size: 15.5px; font-weight: 720; }
+.pinterest-materiais .material-video-texto > span { color: #4a5058; font-size: 13px; }
+.pinterest-materiais .material-video-texto small { color: #858a91; font-size: 11.5px; }
+.pinterest-materiais .material-pdf-icone { border-radius: 13px; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-materiais .material-pdf-abrir { color: #1b4f7a; font-weight: 650; }
+
+.pinterest-materiais :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width: 431px) { .pinterest-materiais { padding-inline: 24px; } }

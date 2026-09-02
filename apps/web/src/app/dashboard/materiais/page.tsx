@@ -1,7 +1,7 @@
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { EmptyState } from '@/components/empty-state'
 import { ehContaCCG } from '@/lib/navegacao'
 
 // A porta de entrada dos materiais, a partir da barra de baixo.
@@ -59,14 +59,13 @@ export default async function MateriaisDaContaPage() {
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina familia-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
+    <main id="conteudo-principal" className="pinterest-materiais">
+      <div className="pinterest-materiais-folha">
+        <header className="pinterest-materiais-cabecalho">
+          <Link href="/dashboard" className="pinterest-materiais-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Vídeos, partituras e metrónomo</p>
             <h1>Materiais</h1>
             <p>
               {alunos.length === 0
@@ -78,22 +77,22 @@ export default async function MateriaisDaContaPage() {
           </div>
         </header>
 
-        <section className="familia-alunos" aria-label="Escolher aluno">
+        <section aria-label="Escolher aluno">
           {alunos.length === 0 ? (
-            <EmptyState
-              titulo="Ainda não há cadernos"
-              descricao="Os materiais são de quem tem aulas. Adiciona primeiro a pessoa que vai frequentá-las."
-              acao={
-                <Link href="/dashboard/alunos" className="familia-adicionar-botao">
-                  Adicionar aluno
-                </Link>
-              }
-            />
+            <div className="pinterest-materiais-vazio">
+              <strong>Ainda não há cadernos</strong>
+              <p>
+                Os materiais são de quem tem aulas. Adiciona primeiro a pessoa que vai
+                frequentá-las.
+              </p>
+              <Link href="/dashboard/alunos">Adicionar aluno</Link>
+            </div>
           ) : (
-            <div>
+            <div className="pinterest-alunos">
               {alunos.map((aluno) => {
                 const papel =
                   aluno.propria_conta_id === user.id ? 'O titular da conta' : 'Dependente'
+                const inicial = aluno.nome.slice(0, 1).toUpperCase()
 
                 // Sem aulas: fica visível, mas não é destino. Deixa de o
                 // ser para o rato, para o teclado e para um leitor de
@@ -101,19 +100,30 @@ export default async function MateriaisDaContaPage() {
                 // no pedido de aula.
                 if (!comAulas.has(aluno.id)) {
                   return (
-                    <div key={aluno.id} className="familia-aluno-sem" aria-disabled="true">
-                      <strong>{aluno.nome}</strong>
-                      <span>{papel}</span>
-                      <small>Sem aulas a decorrer</small>
+                    <div key={aluno.id} aria-disabled="true">
+                      <span className="pinterest-aluno-avatar" aria-hidden="true">
+                        {inicial}
+                      </span>
+                      <span>
+                        <strong>{aluno.nome}</strong>
+                        <small>{papel} · sem aulas a decorrer</small>
+                      </span>
+                      <span />
                     </div>
                   )
                 }
 
                 return (
                   <Link key={aluno.id} href={`/aluno/${aluno.id}/materiais`}>
-                    <strong>{aluno.nome}</strong>
-                    <span>{papel}</span>
-                    <i aria-hidden="true">→</i>
+                    <span className="pinterest-aluno-avatar" aria-hidden="true">
+                      {inicial}
+                    </span>
+                    <span>
+                      <strong>{aluno.nome}</strong>
+                      <small>{papel}</small>
+                    </span>
+                    <span />
+                    <ChevronRight size={18} strokeWidth={2} aria-hidden="true" />
                   </Link>
                 )
               })}

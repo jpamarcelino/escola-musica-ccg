@@ -1,8 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { MateriaisClient } from './materiais-client'
-import { EmptyState } from '@/components/empty-state'
 
 export default async function MateriaisPage({
   params,
@@ -142,27 +142,38 @@ export default async function MateriaisPage({
         : `Tens ${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}.`
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina materiais-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href={voltarPara} className="partitura-voltar" aria-label={voltarPara === '/dashboard/materiais' ? 'Voltar à escolha de aluno' : 'Voltar ao início'}>←</Link>
-          {/* O subtítulo diz o que está cá dentro. Vídeos e partituras já
-              têm separador, mas ainda estão vazios — prometer material
-              que não existe é o que fazia esta página desiludir. */}
-          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Materiais</h1><p>{!temAulas ? 'Sem aulas a decorrer.' : resumoDoCaderno}</p></div>
+    <main id="conteudo-principal" className="pinterest-materiais">
+      <div className="pinterest-materiais-folha">
+        <header className="pinterest-materiais-cabecalho">
+          <Link
+            href={voltarPara}
+            className="pinterest-materiais-voltar"
+            aria-label={
+              voltarPara === '/dashboard/materiais' ? 'Voltar à escolha de aluno' : 'Voltar ao início'
+            }
+          >
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+          {/* O subtítulo diz o que está mesmo cá dentro. Prometer
+              material que não existe é o que fazia esta página
+              desiludir. */}
+          <div>
+            <h1>Caderno de {aluno.nome.split(' ')[0]}</h1>
+            <p>{!temAulas ? 'Sem aulas a decorrer.' : resumoDoCaderno}</p>
+          </div>
         </header>
         {temAulas ? (
           <MateriaisClient temMusica={temMusica} videos={videos} partituras={partituras} />
         ) : (
-          <EmptyState
-            titulo={`${aluno.nome.split(' ')[0]} ainda não tem aulas`}
-            descricao="Os materiais vêm das aulas — vídeos e partituras são do professor, e o metrónomo serve para estudar o que se deu. Assim que houver uma inscrição a decorrer, o caderno abre."
-            acao={
-              <Link href={`/aluno/${alunoId}/pedido`} className="familia-adicionar-botao">
-                Pedir uma aula
-              </Link>
-            }
-          />
+          <div className="pinterest-materiais-vazio">
+            <strong>{aluno.nome.split(' ')[0]} ainda não tem aulas</strong>
+            <p>
+              Os materiais vêm das aulas — vídeos e partituras são do professor, e o metrónomo
+              serve para estudar o que se deu. Assim que houver uma inscrição a decorrer, o
+              caderno abre.
+            </p>
+            <Link href={`/aluno/${alunoId}/pedido`}>Pedir uma aula</Link>
+          </div>
         )}
       </div>
     </main>
