@@ -107,9 +107,11 @@ em localhost. Nao publicar novamente sem indicacao do utilizador.
 
 O tema escuro da area familia/aluno foi implementado primeiro em localhost.
 A infraestrutura de aparencia ja existia (`claro`, `escuro`, `sistema` e
-`data-tema` no HTML); foi acrescentada a camada visual real. Paleta: fundo
-`#101214`, superficie `#191C1F`, superficie elevada `#202428`, linha
-`#30353A`, texto `#F4F5F6`, secundario `#A4ABB2` e azul CCG para foco.
+`data-tema` no HTML); foi acrescentada a camada visual real. Depois da
+primeira prova, a paleta subiu de preto para carvao: fundo `#131619`,
+superficie `#1D2227`, superficie elevada `#252B31`, linha `#343C44`, texto
+`#F7F8FA`, secundario `#B3BAC2`. O azul CCG aparece em foco, icones e fades
+subtis nos cartoes prioritarios, nao em todas as superficies.
 
 A camada cobre Home, agenda, avisos, mensalidades, conta, gestao e ficha de
 alunos, horarios, materiais, pedidos/reposicoes, formularios, estados vazios,

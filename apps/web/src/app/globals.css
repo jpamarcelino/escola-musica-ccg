@@ -6716,12 +6716,12 @@ input[type="month"] {
    aparencia.ts; esta camada cobre a area autenticada e os seus dialogos. */
 html[data-tema='escuro'] {
   color-scheme: dark;
-  --dark-bg: #101214;
-  --dark-surface: #191c1f;
-  --dark-raised: #202428;
-  --dark-border: #30353a;
-  --dark-text: #f4f5f6;
-  --dark-muted: #a4abb2;
+  --dark-bg: #131619;
+  --dark-surface: #1d2227;
+  --dark-raised: #252b31;
+  --dark-border: #343c44;
+  --dark-text: #f7f8fa;
+  --dark-muted: #b3bac2;
   --background: var(--dark-bg);
   --foreground: var(--dark-text);
   --color-ink: var(--dark-text);
@@ -6745,7 +6745,7 @@ html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-pedido-bloco,.pinterest-pedir-reposicao-aula,
   .pinterest-pedir-reposicao-formulario,.pinterest-pedir-reposicao-nota,
   .lista-item,.empty-editorial,article
-) { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+) { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 8px 22px rgba(0,0,0,.12); }
 
 html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-alunos > a,.pinterest-professor-seguintes a,
@@ -6765,7 +6765,7 @@ html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-atalhos a > span,.pinterest-agenda-atalhos a > span,
   .pinterest-professor-gestao a > span,.pinterest-conta-identidade > span,
   .pinterest-detalhe-inicial
-) { background: #243647; color: #9bc7ec; }
+) { background: #293b4c; color: #aed5f5; }
 
 html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-aula-data,.pinterest-aula-aluno,.pinterest-alunos small,
@@ -6818,7 +6818,7 @@ html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-detalhe .estado-vazio,
   .pinterest-pedido-opcao,
   .pinterest-pedido-conhecer
-) { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 6px 20px rgba(0,0,0,.16); }
+) { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 6px 20px rgba(0,0,0,.11); }
 
 html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-agenda .filtro-alunos a[aria-current='page'],
@@ -6856,3 +6856,32 @@ html[data-tema='escuro'] .app-shell-content :is(
 
 html[data-tema='escuro'] .app-shell-content :is(.filtro-alunos,.materiais-separadores) { background: #16191c; }
 html[data-tema='escuro'] .app-shell-content :is(.partitura-linha-tempo,.agenda-grelha) { --linha-tempo-fundo: var(--dark-surface); }
+
+/* Profundidade e luz de marca: poucos destaques recebem azul. O resto
+   fica em cinzas coerentes para o azul continuar a significar prioridade. */
+html[data-tema='escuro'] .app-shell-content .pinterest-aula {
+  border-color: #35495b;
+  background: linear-gradient(145deg,rgba(61,127,184,.28) 0%,rgba(40,72,98,.16) 38%,var(--dark-surface) 76%);
+  box-shadow: 0 12px 30px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.025);
+}
+html[data-tema='escuro'] .app-shell-content :is(.pinterest-mensalidades-resumo,.pinterest-detalhe-contexto,.pinterest-pedir-reposicao-aula) {
+  border-color: #35495b;
+  background: linear-gradient(145deg,rgba(61,127,184,.2),var(--dark-surface) 60%);
+}
+html[data-tema='escuro'] .app-shell-content :is(.pinterest-atalhos a,.pinterest-aluno-atalhos a) {
+  background: #20262b;
+}
+html[data-tema='escuro'] .app-shell-content :is(.pinterest-atalhos a,.pinterest-aluno-atalhos a):active { background: #293139; }
+html[data-tema='escuro'] .app-shell-content .pinterest-home-seccao-topo h2,
+html[data-tema='escuro'] .app-shell-content :is(.pinterest-agenda-cabecalho,.pinterest-avisos-cabecalho,.pinterest-conta-cabecalho,.pinterest-aluno-cabecalho) h1 {
+  color: #fff;
+}
+html[data-tema='escuro'] .app-shell-content :is(.pinterest-alunos b,.mensalidade-estado) { color: inherit; }
+html[data-tema='escuro'] .bottom-nav-bar { border-color: rgba(255,255,255,.11); background: #1a1e22 !important; }
+@media (min-width:1024px) {
+  html[data-tema='escuro'] .app-primary-nav .bottom-nav-bar {
+    border-color: #2e353b;
+    background: #191d21 !important;
+    box-shadow: 0 18px 48px rgba(0,0,0,.22) !important;
+  }
+}
