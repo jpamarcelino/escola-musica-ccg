@@ -6299,6 +6299,26 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
   }
 }
 
+/* Os campos de data e hora no Safari do iOS.
+   Sem "appearance: none" o iOS trata-os como controlos nativos e
+   dimensiona-os pelo conteudo, ignorando a largura que lhes damos — o
+   campo sai por fora do cartao e o "width: 100%" nao o segura. No Chrome
+   nunca se ve, o que torna isto o tipo de bug que so aparece no
+   telemovel de quem usa a app.
+   Ficou pior depois da regra dos 16 px acima: quanto maior a letra,
+   maior a largura minima que o iOS lhes atribui. Por isso a correccao e
+   global e nao de uma pagina — sao os mesmos campos em Pedidos, em
+   Horarios e nas Reposicoes. */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+}
+
 
 /* Design Pinterest — Secretaria (/admin). A base e a mesma da Home:
    `.pinterest-home` da o chao, o respiro para a barra de baixo, o foco e o
