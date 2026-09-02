@@ -760,3 +760,39 @@ conhecia e a migracao rebentou — tinham sido acrescentados quatro tipos
 de aviso entretanto. A 0058 passou a estender a constraint que esta na
 base de dados (`pg_get_constraintdef` + `replace`), o que a torna imune a
 isso e idempotente.
+
+## Escola de Musica para Bebes
+
+Modelacao (migracoes 0059 e 0060): a escola tem **duas turmas fixas**, com
+horario da escola e capacidade 10. Um professor de Bebes e um professor de
+Musica (ou Danca) com uma **atribuicao** a mais — o `programa` dele nao
+muda e a pagina normal dele fica intacta.
+
+As turmas espelham-se em `horarios` normais, um por professor atribuido,
+com `estado = 'bloqueado'` e `turma_bebes_id` a apontar para a turma. E a
+decisao que faz a agenda, as presencas e as mensalidades funcionarem sem
+saberem que os Bebes existem: para elas e uma matricula num horario. A
+ligacao e pelo `turma_bebes_id` e nao pela coincidencia de dia e hora —
+sem isso, mudar a hora criava um horario novo e deixava o antigo com os
+alunos la dentro.
+
+Quem faz o que:
+
+- **Secretaria** (`/admin/bebes`, design antigo de proposito porque o
+  resto de `/admin` ainda nao foi redesenhado): muda o horario das turmas,
+  atribui professores e aceita ou recusa inscricoes.
+- **Professor** (`/dashboard/bebes`): ve as turmas que da, quem esta
+  inscrito, e desmarca uma aula (a turma toda ou so uma crianca). Nao muda
+  a hora, e a pagina di-lo.
+
+O separador so aparece a quem da pelo menos uma turma — na Home e na
+propria rota, que redireciona quem nao tenha nenhuma. A pergunta vive em
+`lib/bebes.ts` para nao divergir entre os sitios que a fazem.
+
+`/dashboard/pedidos` do professor **exclui** as disciplinas de Bebes: a
+turma e da escola e quem inscreve e a secretaria. Sem essa exclusao, quem
+da Bebes via-as na fila dele e podia aceita-las por cima de quem decide.
+
+`desmarcarAulaProfessor` e `desmarcarDiaProfessor` passaram a aceitar um
+`voltarPara`: a mesma accao serve a agenda e os Bebes, e cada uma volta
+para si propria.

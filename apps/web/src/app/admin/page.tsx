@@ -1,16 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import {
-  Bell,
-  ChevronRight,
-  GraduationCap,
-  Inbox,
-  MessageSquare,
-  ShieldCheck,
-  Sparkles,
-  UsersRound,
-  WalletCards,
-} from 'lucide-react'
+import { Baby, Bell, ChevronRight, GraduationCap, Inbox, MessageSquare, ShieldCheck, Sparkles, UsersRound, WalletCards } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { saudacaoDoDia } from '@/components/hero-section'
 
@@ -169,6 +159,16 @@ export default async function AdminPage() {
                     ? `${recomendacoesPorValidar} por validar`
                     : 'Sem validações pendentes'}
                 </small>
+              </span>
+              <ChevronRight size={18} aria-hidden="true" />
+            </Link>
+            <Link href="/admin/bebes">
+              <span>
+                <Baby size={20} aria-hidden="true" />
+              </span>
+              <span>
+                <strong>Música para Bebés</strong>
+                <small>Horários das turmas e inscrições</small>
               </span>
               <ChevronRight size={18} aria-hidden="true" />
             </Link>

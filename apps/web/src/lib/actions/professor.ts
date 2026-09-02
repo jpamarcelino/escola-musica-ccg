@@ -763,7 +763,16 @@ export async function desmarcarAulaProfessor(formData: FormData) {
     p_data: data,
   })
 
-  const destino = horarioId ? `/dashboard/agenda/${horarioId}` : '/dashboard/agenda'
+  // A mesma acção serve a agenda e a página da escola de Bebés, e cada
+  // uma quer voltar para si própria. Quem chama diz para onde; sem isso,
+  // desmarcar a partir dos Bebés despejava o professor numa aula que ele
+  // não estava a ver.
+  const voltarPara = String(formData.get('voltarPara') ?? '').trim()
+  const destino = voltarPara.startsWith('/dashboard/')
+    ? voltarPara
+    : horarioId
+      ? `/dashboard/agenda/${horarioId}`
+      : '/dashboard/agenda'
 
   if (error) {
     redirect(`${destino}?erro=${encodeURIComponent(error.message || 'Não foi possível desmarcar a aula.')}`)
@@ -798,9 +807,13 @@ export async function desmarcarDiaProfessor(formData: FormData) {
     )
   }
 
+  const voltarPara = String(formData.get('voltarPara') ?? '').trim()
+  const base = voltarPara.startsWith('/dashboard/') ? voltarPara : '/dashboard/agenda'
+
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/agenda')
-  redirect(`/dashboard/agenda?dia=${encodeURIComponent(String(quantas ?? 0))}`)
+  revalidatePath(base)
+  redirect(`${base}?dia=${encodeURIComponent(String(quantas ?? 0))}`)
 }
 
 export async function desmatricularAluno(formData: FormData) {

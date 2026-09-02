@@ -6788,3 +6788,43 @@ input[type="month"] {
 .pinterest-editar-horario-perigo button { min-height: 42px; padding: 0 16px; border-radius: 999px; border-width: 1px; font-size: 13px; font-weight: 640; }
 .pinterest-editar-horario :is(a,button,input,select):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width: 431px) { .pinterest-editar-horario { padding-inline: 24px; } }
+
+/* Design Pinterest - Musica para Bebes, do lado de quem da as turmas.
+   Uma seccao por turma: o que e, quando e, quantos sao, e a lista de quem
+   vem. O horario nao se edita aqui — e da escola, e a nota di-lo em vez
+   de deixar procurar um botao que nao existe. */
+.pinterest-bebes { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-bebes-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-bebes-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-bebes-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-bebes-cabecalho h1 { font-size: 27px; font-weight: 760; line-height: 1.1; letter-spacing: 0; }
+.pinterest-bebes-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+.pinterest-bebes-mensagem { margin-bottom: 18px; padding: 13px 15px; border: 1px solid #e6e9ed; border-radius: 18px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-bebes-turma + .pinterest-bebes-turma { margin-top: 30px; }
+.pinterest-bebes-turma > header { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 15px; border: 1px solid #e4e8ec; border-radius: 22px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-bebes-turma > header > svg { box-sizing: content-box; padding: 11px; border-radius: 14px; background: #fff; color: #1b4f7a; }
+.pinterest-bebes-turma > header div { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-bebes-turma > header strong { overflow: hidden; font-size: 16px; font-weight: 730; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-bebes-turma > header span { margin-top: 3px; color: #6d737a; font-size: 12.5px; }
+/* A ocupacao e o numero que decide se ainda cabe mais alguem. */
+.pinterest-bebes-turma > header b { padding: 5px 10px; border-radius: 10px; background: #e7f1fa; color: #1b4f7a; font-size: 12.5px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pinterest-bebes-nota { margin: 11px 4px 0; color: #868c93; font-size: 12px; line-height: 1.45; }
+.pinterest-bebes-proxima { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 11px; align-items: center; margin-top: 12px; padding: 12px 15px; border: 1px solid #e6e9ed; border-radius: 18px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-bebes-proxima > p { min-width: 0; color: #4a5058; font-size: 12.5px; line-height: 1.35; }
+.pinterest-bebes-proxima button { min-height: 40px; padding: 0 14px; border-radius: 999px; border-width: 1px; font-size: 12.5px; font-weight: 640; white-space: nowrap; }
+.pinterest-bebes-turma > h2 { display: flex; align-items: center; gap: 8px; margin: 26px 2px 12px; font-size: 19px; font-weight: 740; letter-spacing: 0; }
+.pinterest-bebes-turma > h2 > svg { color: #7b8188; }
+.pinterest-bebes-lista { display: flex; flex-direction: column; gap: 10px; }
+.pinterest-bebes-aluno { overflow: hidden; border: 1px solid #e6e9ed; border-radius: 20px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-bebes-aluno > a { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 12px; align-items: center; min-height: 70px; padding: 12px 15px; color: #17191c; text-decoration: none; }
+.pinterest-bebes-inicial { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 14px; background: #e7f1fa; color: #1b4f7a; font-size: 16px; font-weight: 720; line-height: 1; }
+.pinterest-bebes-aluno > a > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-bebes-aluno strong { overflow: hidden; font-size: 15.5px; font-weight: 710; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-bebes-aluno small { overflow: hidden; margin-top: 3px; color: #757b82; font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-bebes-aluno > a > svg { color: #969ba1; }
+.pinterest-bebes-desmarcar { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 10px 15px; border-top: 1px solid #eef0f2; background: #fbfcfd; }
+.pinterest-bebes-desmarcar > p { min-width: 0; color: #868c93; font-size: 11.5px; }
+.pinterest-bebes-desmarcar button { min-height: 36px; padding: 0 13px; border-radius: 999px; border-width: 1px; font-size: 12px; font-weight: 640; white-space: nowrap; }
+.pinterest-bebes .estado-vazio { border-radius: 20px; background: #fff; }
+.pinterest-bebes :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width: 431px) { .pinterest-bebes { padding-inline: 24px; } }
