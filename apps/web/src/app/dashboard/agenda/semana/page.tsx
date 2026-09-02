@@ -139,8 +139,9 @@ export default async function SemanaPage() {
     .filter((b) => dias.includes(b.dia_semana))
     .map((b) => ({
       dia: b.dia_semana,
-      horaInicio: formatarHora(b.hora_inicio),
-      horaFim: formatarHora(b.hora_fim),
+      inicio: b.hora_inicio,
+      fim: b.hora_fim,
+      etiqueta: `${formatarHora(b.hora_inicio)}–${formatarHora(b.hora_fim)}`,
       titulo: b.disciplinas.length ? b.disciplinas.join(' · ') : b.alunos.join(', '),
       detalhe: b.alunos.join(', '),
     }))
