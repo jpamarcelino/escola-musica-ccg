@@ -127,6 +127,10 @@ Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam
 
 Proxima pagina sugerida: `/aluno/[alunoId]` (variante familia/aluno).
 
+### Nota sobre `/aluno/[alunoId]/reposicao/[aulaId]`
+
+O pedido de reposicao do aluno foi refeito no sistema Pinterest em `703dd56`: resumo da aula desmarcada, aviso de disponibilidade, vagas como alvos de toque completos, mensagem opcional e acoes finais claras. Lint, typecheck e build passam e a versao esta publicada. A conta de teste nao tem uma aula desmarcada com `reposicao_estado = sem_pedido`; a propria rota redireciona corretamente nesses casos. Falta apenas a inspecao visual autenticada a 360, 390 e 430 px quando existir um caso elegivel, por isso ainda nao recebeu `[x]`.
+
 ### Nota sobre `/dashboard/conta`
 
 A pagina foi reescrita no sistema Pinterest (cabecalho compacto, cartao de
@@ -164,6 +168,7 @@ Usar algo proximo deste texto com outro agente:
 - `f9c973c`: Agenda familiar mobile clara, com o padrao de lista cronologica aprovado.
 - `5c12018`: lista e detalhe de Avisos da familia, mobile claro.
 - `0e1940f`: reforco de hierarquia na lista de Avisos depois de validar o estado com apenas um aviso lido.
+- `703dd56`: pedido de reposicao do aluno redesenhado; aguarda um caso real elegivel para validacao visual final.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais
