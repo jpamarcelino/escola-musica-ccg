@@ -5431,8 +5431,11 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-detalhe-lista { display: flex; flex-direction: column; gap: 12px; }
 .pinterest-detalhe-aluno { overflow: hidden; border: 1px solid #e6e9ed; border-radius: 21px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
 .pinterest-detalhe-aluno > a { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 12px; align-items: center; min-height: 76px; padding: 13px 15px; color: #17191c; text-decoration: none; }
-.pinterest-detalhe-inicial { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 15px; background: #e7f1fa; color: #1b4f7a; font-size: 17px; font-weight: 720; }
-.pinterest-detalhe-aluno > a > span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-detalhe-inicial { display: grid; width: 44px; height: 44px; place-items: center; line-height: 1; border-radius: 15px; background: #e7f1fa; color: #1b4f7a; font-size: 17px; font-weight: 720; }
+/* :not(.pinterest-detalhe-inicial) porque a inicial tambem e um span
+   filho do <a>: sem a excecao, este seletor (mais especifico) trocava-lhe
+   o grid centrado por uma coluna flex e a letra encostava ao topo. */
+.pinterest-detalhe-aluno > a > span:not(.pinterest-detalhe-inicial) { display: flex; min-width: 0; flex-direction: column; }
 .pinterest-detalhe-aluno strong { overflow: hidden; font-size: 16px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
 .pinterest-detalhe-aluno small { overflow: hidden; margin-top: 3px; color: #757b82; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .pinterest-detalhe-aluno > a > svg { color: #969ba1; }
