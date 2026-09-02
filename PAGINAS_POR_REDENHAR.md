@@ -55,7 +55,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 - [ ] `/dashboard/horarios` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
 - [ ] `/professor/horarios/[id]`
-- [ ] `/dashboard/meus-alunos`
+- [ ] `/dashboard/meus-alunos` - professor - mobile - modo claro - implementado e publicado (`c4891d5`), estado vazio validado; falta validar com alunos reais
 - [ ] `/dashboard/meus-alunos/[matriculaId]`
 - [ ] `/dashboard/pedidos` - professor - mobile - modo claro - implementado, falta validar com um pedido real pendente
 - [ ] `/dashboard/presencas` - professor - mobile - modo claro - implementado e publicado (`60ca4c7`), estado sem pendencias validado; falta validar com aulas por confirmar
