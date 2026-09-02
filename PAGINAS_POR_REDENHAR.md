@@ -70,7 +70,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Administracao
 
-- [ ] `/admin`
+- [ ] `/admin` - administracao - mobile - modo claro - redesenhado no Pinterest, os dois estados do destaque vistos em ensaio a 360 e 430 px; falta ver com conta de administrador real
 - [ ] `/admin/conta`
 - [ ] `/admin/alunos`
 - [ ] `/admin/alunos/[alunoId]`

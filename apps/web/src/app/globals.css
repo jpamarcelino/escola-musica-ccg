@@ -6115,3 +6115,34 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-enviar-material :is(a,button,input,textarea):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
 @media (min-width:431px) { .pinterest-professor-aluno-detalhe,.pinterest-enviar-material { padding-inline:24px; } }
 @media (prefers-reduced-motion:reduce) { .pinterest-professor-aluno-detalhe *, .pinterest-enviar-material * { transition:none!important; } }
+
+/* Design Pinterest — Secretaria (/admin). A base e a mesma da Home:
+   `.pinterest-home` da o chao, o respiro para a barra de baixo, o foco e o
+   toque. So o que a secretaria tem a mais e que vive aqui.
+
+   O cartao de prioridade reaproveita `.pinterest-aula` de proposito: o fade
+   azul e o destaque que a direccao aprovou para "o que exige accao agora", e
+   na secretaria isso e o pedido a espera de professor. Sem pedidos, cai no
+   `.pinterest-aula-vazia` e encolhe — um cartao de 178 px a dizer que nao ha
+   nada a fazer rouba o ecra a quem trabalha nele. */
+.pinterest-admin-numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+/* Numero em cima, etiqueta em baixo. Com a etiqueta primeiro, "Aulas
+   confirmadas" ocupava duas linhas e empurrava o seu numero 7 px abaixo
+   dos outros dois — tres numeros lado a lado tem de partilhar a linha de
+   base, senao a coluna mais comprida parece um erro. */
+.pinterest-admin-numeros > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 3px; padding: 15px 10px; text-align: center; }
+.pinterest-admin-numeros > div + div { border-left: 1px solid #eceef0; }
+.pinterest-admin-numeros dt { color: #797e85; font-size: 11.5px; line-height: 1.25; }
+.pinterest-admin-numeros dd { font-size: 25px; font-weight: 750; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.pinterest-admin-operacoes { overflow: hidden; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-admin-operacoes a { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 68px; padding: 11px 14px; color: #17191c; text-decoration: none; }
+.pinterest-admin-operacoes a + a { border-top: 1px solid #eceef0; }
+.pinterest-admin-operacoes a > span:first-child { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 13px; background: #f0f2f4; color: #5d646b; }
+.pinterest-admin-operacoes a > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-admin-operacoes strong { font-size: 14.5px; font-weight: 680; }
+.pinterest-admin-operacoes small { overflow: hidden; margin-top: 3px; color: #797e85; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-admin-operacoes a > svg { color: #969ba1; }
+.pinterest-admin-destaque .pinterest-aula-aluno { align-self: start; }
+.pinterest-admin-destaque.pinterest-aula-vazia { min-height: 108px; padding-block: 16px; }
+.pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-aluno { grid-column: 2; align-self: center; color: #1b4f7a; font-size: 14px; }
+.pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-seta { bottom: auto; top: 50%; transform: translateY(-50%); }
