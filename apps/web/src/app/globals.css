@@ -6290,7 +6290,7 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-avisos .aviso-deslizavel > div > article { box-shadow: none; }
 @media (prefers-reduced-motion: reduce) {
   .aviso-deslizavel-apagar { transition: none; }
-
+}
 /* Design Pinterest — /admin/alunos no telemovel.
    A mesa da secretaria e feita para o computador: quatro colunas, cabecalho
    pegajoso, seleccao multipla e um painel ao lado. Isso funciona e nao se
