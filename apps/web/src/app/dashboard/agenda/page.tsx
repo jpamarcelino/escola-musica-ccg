@@ -311,10 +311,12 @@ export default async function AgendaPage({
           <>
             <div className="partitura-dias pinterest-agenda-dias">
               {[...porData.entries()].map(([data, aulas]) => {
-                // Só as da grelha semanal contam para desmarcar o dia: a
-                // função percorre matrículas, e um dia só de reposições
-                // não tem nada para ela apanhar.
+                // A contagem separada existe para a confirmação poder
+                // dizer o que vai mesmo acontecer: uma reposição não é
+                // uma aula da grelha, e desmarcá-la tem outra
+                // consequência para quem a esperava.
                 const daGrelha = aulas.filter((a) => !a.reposicao)
+                const reposicoesDoDia = aulas.length - daGrelha.length
                 return (
                   <section key={data} className="partitura-dia">
                     <header>
@@ -325,12 +327,30 @@ export default async function AgendaPage({
                       {/* A confirmação diz a data por extenso e quantas
                           aulas caem — é a diferença entre desmarcar um dia
                           e desmarcar o dia errado. */}
-                      {podeDesmarcar && daGrelha.length > 0 && (
+                      {podeDesmarcar && aulas.length > 0 && (
                         <BotaoAcaoDestruir
                           label="Desmarcar o dia"
                           variante="editorial"
-                          titulo="Desmarcar todas as aulas deste dia?"
-                          mensagem={`${formatarDataEscolar(data, { weekday: 'long', day: 'numeric', month: 'long' })} — ${daGrelha.length} ${daGrelha.length === 1 ? 'aula' : 'aulas'}.\n\nCada aluno é avisado de que vai haver reposição.`}
+                          titulo="Desmarcar tudo o que tens neste dia?"
+                          mensagem={[
+                            formatarDataEscolar(data, { weekday: 'long', day: 'numeric', month: 'long' }),
+                            ' — ',
+                            daGrelha.length > 0
+                              ? `${daGrelha.length} ${daGrelha.length === 1 ? 'aula' : 'aulas'}`
+                              : '',
+                            daGrelha.length > 0 && reposicoesDoDia > 0 ? ' e ' : '',
+                            reposicoesDoDia > 0
+                              ? `${reposicoesDoDia} ${reposicoesDoDia === 1 ? 'reposição' : 'reposições'}`
+                              : '',
+                            '.\n\n',
+                            daGrelha.length > 0
+                              ? 'Cada aluno é avisado de que vai haver reposição.'
+                              : '',
+                            daGrelha.length > 0 && reposicoesDoDia > 0 ? ' ' : '',
+                            reposicoesDoDia > 0
+                              ? 'As reposições deste dia são desmarcadas e voltam a poder ser remarcadas.'
+                              : '',
+                          ].join('')}
                           action={desmarcarDiaProfessor}
                         >
                           <input type="hidden" name="data" value={data} />

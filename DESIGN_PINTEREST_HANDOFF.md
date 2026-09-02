@@ -714,3 +714,23 @@ nova nao repete, herda.
 Uma varredura a procura de mais casos — a mesma propriedade com valores
 diferentes em blocos afastados — nao encontrou outros.
 
+
+## Desmarcar o dia apanha as reposicoes (0058)
+
+O bug nao era o botao faltar num dia so com reposicoes. Era um dia
+misto: o botao aparecia, dizia "2 aulas", desmarcava as duas — e a
+reposicao ficava la. O professor lia "dia desmarcado" e alguem aparecia
+na escola. A `desmarcar_dia` percorria so `matriculas`, e uma reposicao e
+uma linha avulsa em `reposicoes`.
+
+Agora apanha as duas coisas, no estado novo `cancelada` (nao `recusada`,
+que e a familia a dizer que nao pode). Todas as consultas da app filtram
+por `confirmada`/`proposta`, por isso uma reposicao cancelada sai das
+listas sozinha e a aula desmarcada de origem volta a poder receber outra.
+
+Licao para a proxima migracao que mexa num `check` de lista: **nao
+reescrever a lista a mao**. Escrevi-a com os valores das migracoes que
+conhecia e a migracao rebentou — tinham sido acrescentados quatro tipos
+de aviso entretanto. A 0058 passou a estender a constraint que esta na
+base de dados (`pg_get_constraintdef` + `replace`), o que a torna imune a
+isso e idempotente.
