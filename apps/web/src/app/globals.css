@@ -6106,15 +6106,24 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-enviar-material .materiais-separadores { display:flex; gap:6px; margin:0 0 14px; padding:4px; border:0; border-radius:15px; background:#e9ecef; }
 .pinterest-enviar-material .materiais-separador { display:flex; min-height:42px; flex:1; align-items:center; justify-content:center; gap:7px; padding:0 12px; border:0; border-radius:11px; color:#6d737a; font-size:13px; font-weight:650; }
 .pinterest-enviar-material .materiais-separador[aria-selected='true'] { background:#fff; color:#1b4f7a; box-shadow:0 2px 8px rgba(31,35,39,.08); }
-.pinterest-enviar-material .materiais-conteudo > div:last-child { margin-top:0; padding:18px; border:1px solid #e5e8ec; border-radius:22px; background:#fff; box-shadow:0 5px 18px rgba(31,35,39,.055); }
-.pinterest-enviar-material :is(input[type='text'],input[type='url'],input[type='file'],textarea) { width:100%; border:1px solid #e0e4e8; border-radius:13px; background:#fafbfc; font-family:inherit; }
+.pinterest-enviar-material .materiais-conteudo > div:last-child { margin-top:0; padding:8px 2px 0; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.pinterest-enviar-material :is(input[type='text'],input[type='url']) { width:100%; height:52px; padding:0 14px; border:1px solid #dfe3e7; border-radius:13px; background:#fff; font-family:inherit; font-size:15px; line-height:50px; }
+.pinterest-enviar-material textarea { width:100%; min-height:108px; height:auto; padding:14px; border:1px solid #dfe3e7; border-radius:13px; background:#fff; font-family:inherit; font-size:15px; line-height:1.5; }
+.pinterest-enviar-material input[type='file'] { width:100%; min-height:54px; height:auto; padding:7px; border:1px solid #dfe3e7; border-radius:13px; background:#fff; font-family:inherit; font-size:13px; line-height:36px; }
+.pinterest-enviar-material :is(label,.mensagem-legenda) { color:#5f656c!important; font-size:12.5px; font-weight:650; }
+.pinterest-enviar-material fieldset { margin:0; padding:0; border:0; background:transparent; }
 .pinterest-enviar-material .material-link-linha { display:grid; grid-template-columns:1fr; gap:8px; }
 .pinterest-enviar-material .material-procurar, .pinterest-enviar-material .recomendacao-submeter { min-height:50px; border:0; border-radius:15px; background:#1b4f7a; color:#fff; font-size:14.5px; font-weight:700; box-shadow:0 5px 16px rgba(27,79,122,.16); }
 .pinterest-enviar-material .material-ajuda { color:#777d84; font-size:11.5px; line-height:1.5; }
 .pinterest-enviar-material .material-previsao { overflow:hidden; padding:10px; border:1px solid #e5e8ec; border-radius:16px; background:#fafbfc; }
 .pinterest-enviar-material .material-previsao img { border-radius:11px; }
 .pinterest-enviar-material .material-previsao strong { color:#20242a; font-family:inherit; font-size:14px; }
-.pinterest-enviar-material .seletor-alunos-campo { border-color:#e0e4e8; border-radius:13px; background:#fafbfc; }
+.pinterest-enviar-material .seletor-alunos { padding:0; border:0; background:transparent; }
+.pinterest-enviar-material .seletor-alunos-topo { align-items:center; }
+.pinterest-enviar-material .seletor-alunos-campo { min-height:52px; padding:0 13px; border-color:#dfe3e7; border-radius:13px; background:#fff; }
+.pinterest-enviar-material .seletor-alunos-campo input { height:50px; min-height:50px; padding:0; border:0; background:transparent; line-height:50px; }
+.pinterest-enviar-material .seletor-alunos-escolhidos { min-height:20px; margin-top:10px; }
+.pinterest-enviar-material .seletor-alunos-nenhum { margin:0; color:#858a91; font-size:12px; }
 .pinterest-enviar-material .seletor-alunos-resultados { border-color:#e0e4e8; border-radius:14px; box-shadow:0 12px 30px rgba(31,35,39,.13); }
 .pinterest-enviar-material .seletor-aluno-etiqueta { border:0; border-radius:11px; background:#e7f1fa; color:#1b4f7a; }
 .pinterest-enviar-material :is(a,button,input,textarea):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
