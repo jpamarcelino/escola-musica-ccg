@@ -123,8 +123,10 @@ export default async function MateriaisPage({
     // que oferecer um cartão que não abre.
     .filter((m) => m.url !== null)
 
-  // O subtítulo diz o que há mesmo lá dentro. Prometer material que não
-  // existe era o que fazia esta página desiludir.
+  // O subtítulo conta o que o professor deixou: vídeos e partituras. O
+  // metrónomo não entra — está sempre lá, é uma ferramenta e não material
+  // do caderno, e anunciá-lo em todas as linhas dizia "tens uma coisa
+  // nova" quando não havia nada de novo.
   const partes: string[] = []
   if (videos.length > 0) {
     partes.push(`${videos.length} ${videos.length === 1 ? 'vídeo' : 'vídeos'}`)
@@ -132,7 +134,6 @@ export default async function MateriaisPage({
   if (partituras.length > 0) {
     partes.push(`${partituras.length} ${partituras.length === 1 ? 'partitura' : 'partituras'}`)
   }
-  if (temMusica) partes.push('o metrónomo')
 
   const resumoDoCaderno =
     partes.length === 0

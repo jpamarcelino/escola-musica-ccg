@@ -5014,5 +5014,16 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-materiais .material-pdf-icone { border-radius: 13px; background: #e7f1fa; color: #1b4f7a; }
 .pinterest-materiais .material-pdf-abrir { color: #1b4f7a; font-weight: 650; }
 
+/* Os estados vazios dos separadores. O EmptyState é partilhado e traz o
+   traço e a serifa do desenho antigo; aqui usa o mesmo cartão branco das
+   Mensalidades, para os dois ecrãs dizerem "ainda não há nada" da mesma
+   maneira. */
+.pinterest-materiais .empty-editorial { margin-top: 2px; padding: 20px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-materiais .empty-editorial::before { display: none; }
+.pinterest-materiais .empty-editorial-titulo { max-width: none; color: #17191c; font-family: inherit; font-size: 17px; font-weight: 740; line-height: 1.3; }
+.pinterest-materiais .empty-editorial-descricao { max-width: none; margin-top: 5px; color: #777e85; font-size: 13px; line-height: 1.5; }
+.pinterest-materiais .empty-editorial-acao { margin-top: 16px; }
+.pinterest-materiais .empty-editorial-acao a { display: inline-flex; min-height: 46px; align-items: center; padding: 0 20px; border-radius: 14px; background: #1b4f7a; color: #fff; font-size: 14.5px; font-weight: 700; text-decoration: none; }
+
 .pinterest-materiais :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width: 431px) { .pinterest-materiais { padding-inline: 24px; } }
