@@ -108,6 +108,8 @@ Cancelamentos e transferencias agrupa cada decisao rara numa superficie branca p
 
 A Home do professor foi implementada e publicada em `f82337d`. Mantem a linguagem da Home familiar, mas ordena o trabalho do professor: presencas urgentes, proxima aula, acessos frequentes e gestao. O estado real sem horarios, a navegacao completa e a responsividade foram validados a 360 px, 390 px e 430 px. Falta validar visualmente o cartao com aulas reais antes de marcar a variante como concluida.
 
+A entrada de Presencas do professor foi implementada e publicada em `60ca4c7`. O estado real sem pendencias usa um resumo verde suave e dois destinos brancos para rever confirmacoes e consultar historico. Foi validada autenticada a 360 px, 390 px e 430 px, sem overflow. Falta validar o resumo acionavel quando existirem aulas por confirmar antes de receber `[x]`.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
@@ -173,6 +175,7 @@ Usar algo proximo deste texto com outro agente:
 - `0e1940f`: reforco de hierarquia na lista de Avisos depois de validar o estado com apenas um aviso lido.
 - `703dd56`: pedido de reposicao do aluno redesenhado; aguarda um caso real elegivel para validacao visual final.
 - `f82337d`: Home do professor mobile clara; publicada e validada sem horarios, aguarda dados de aulas reais para fechar.
+- `60ca4c7`: entrada de Presencas mobile clara; publicada e validada sem pendencias, aguarda uma aula por confirmar para fechar.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais

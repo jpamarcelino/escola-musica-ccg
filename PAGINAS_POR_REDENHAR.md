@@ -57,7 +57,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/meus-alunos`
 - [ ] `/dashboard/meus-alunos/[matriculaId]`
 - [ ] `/dashboard/pedidos`
-- [ ] `/dashboard/presencas`
+- [ ] `/dashboard/presencas` - professor - mobile - modo claro - implementado e publicado (`60ca4c7`), estado sem pendencias validado; falta validar com aulas por confirmar
 - [ ] `/dashboard/presencas/[horarioId]`
 - [ ] `/dashboard/presencas/confirmar`
 - [ ] `/dashboard/presencas/historico`
