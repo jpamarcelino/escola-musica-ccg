@@ -5,6 +5,7 @@ import { criarConviteProfessor } from '@/lib/actions/convites'
 import { ConvidarProfessorForm } from '@/components/convite-forms'
 import { EmptyState } from '@/components/empty-state'
 import { ListaComPesquisa } from '@/components/lista-com-pesquisa'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Professor = {
   id: string
@@ -51,7 +52,7 @@ export default async function AdminProfessoresPage() {
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Diretório escolar</p><h1>Professores</h1><p>{professores.length} {professores.length === 1 ? 'registo' : 'registos'}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras><div><p className="partitura-sobretitulo">Diretório escolar</p><h1>Professores</h1><p>{professores.length} {professores.length === 1 ? 'registo' : 'registos'}</p></div></header>
 
         {/* Os pedidos vêm antes do convite: é a única coisa desta
             página que está à espera de alguém. */}

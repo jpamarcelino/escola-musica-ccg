@@ -8,6 +8,7 @@ import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { formatarDataEscolar, formatarHora, hojeISO } from '@ccg/core'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Vaga = {
   id: number
@@ -70,9 +71,7 @@ export default async function ReposicoesPage({
     <main id="conteudo-principal" className="partitura-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
-          </Link>
+          <VoltarAtras destino="/dashboard" className="partitura-voltar" rotulo="Voltar ao início">←</VoltarAtras>
           <div>
             <p className="partitura-sobretitulo">Aulas de reposição</p>
             <h1>Horários de reposição</h1>

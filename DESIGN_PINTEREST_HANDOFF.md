@@ -534,3 +534,27 @@ direccao, ja tinha o seu proprio tratamento Pinterest
 As classes base `.avisos-lista`, `.avisos-outra-caixa` e `.avisos-pagina`
 continuam a servir `/admin/avisos`, que ainda nao foi redesenhada. Nao as
 apagar.
+
+## A seta de voltar volta mesmo
+
+Todas as setas da app passaram a `VoltarAtras` — 48 ligacoes fixas em 47
+ficheiros, incluindo a area de administracao. Uma ligacao fixa nao volta:
+vai sempre ao mesmo sitio, venha a pessoa de onde vier. Quem abria um
+aviso da caixa de entrada e carregava na seta saltava por cima do sitio
+onde estava.
+
+O `destino` que la estava ficou como rede, para quando nao ha historico:
+aba nova, PWA a arrancar naquele ecra, ou endereco aberto de uma
+notificacao push.
+
+Dois detalhes do componente, para nao se perderem:
+
+- `children` mantem a seta de texto das folhas que ainda nao estao no
+  Design Pinterest — a marcacao muda sem o aspeto mudar com ela;
+- `tamanho` existe porque as folhas desenham a seta a medidas diferentes
+  (20 px, 23 px no Pinterest, 24 px nos fluxos de presencas). Uniformizar
+  encolhia metade das setas da app numa alteracao que nao era de desenho.
+
+O `PageHeader` deixou de escolher entre `BackButton` e
+`BotaoVoltarHistorico` e usa sempre o mesmo componente. Os dois antigos
+ficaram sem uso e podem ser apagados numa limpeza.

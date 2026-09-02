@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import {
@@ -12,6 +11,7 @@ import {
   agoraNaEscola,
   type DiaSemana,
 } from '@ccg/core'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // Altura de uma hora na grelha. Mais baixa do que o HOUR_HEIGHT de 64 px
 // usado nas grelhas de secretaria: aqui o objetivo é a semana inteira
@@ -105,13 +105,7 @@ export default async function SemanaPage() {
       <main id="conteudo-principal" className="pinterest-semana">
         <div className="pinterest-semana-folha">
           <header className="pinterest-semana-cabecalho">
-            <Link
-              href="/dashboard/agenda"
-              className="pinterest-semana-voltar"
-              aria-label="Voltar à agenda"
-            >
-              <ChevronLeft size={23} aria-hidden="true" />
-            </Link>
+            <VoltarAtras destino="/dashboard/agenda" className="pinterest-semana-voltar" rotulo="Voltar à agenda" tamanho={23} />
             <div>
               <h1>Semana</h1>
               <p>A tua grelha de horários</p>
@@ -149,13 +143,7 @@ export default async function SemanaPage() {
     <main id="conteudo-principal" className="pinterest-semana">
       <div className="pinterest-semana-folha">
         <header className="pinterest-semana-cabecalho">
-          <Link
-            href="/dashboard/agenda"
-            className="pinterest-semana-voltar"
-            aria-label="Voltar à agenda"
-          >
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard/agenda" className="pinterest-semana-voltar" rotulo="Voltar à agenda" tamanho={23} />
           <div>
             <h1>Semana</h1>
             <p>A tua grelha de horários</p>

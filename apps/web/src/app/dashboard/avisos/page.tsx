@@ -5,7 +5,8 @@ import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
 import { ehContaCCG } from '@/lib/navegacao'
 import { accaoDoAviso, avisoDoPapel, type PapelAviso, type TipoAviso } from '@/lib/avisos'
-import { Bell, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Bell, ChevronRight } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Notificacao = {
   id: number
@@ -103,9 +104,7 @@ export default async function AvisosPage({
     <main id="conteudo-principal" className="pinterest-avisos">
       <div className="pinterest-avisos-folha">
         <header className="pinterest-avisos-cabecalho">
-          <Link href="/dashboard" className="pinterest-avisos-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-avisos-voltar" rotulo="Voltar ao início" tamanho={23} />
           <div>
             <h1>Avisos</h1>
             <p>

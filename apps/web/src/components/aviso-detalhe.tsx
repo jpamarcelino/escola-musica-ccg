@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { MarcarAvisoLido } from '@/components/marcar-aviso-lido'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // Um aviso, sozinho na sua página.
 //
@@ -43,9 +44,7 @@ export function AvisoDetalhe({
     <main id="conteudo-principal" className={pinterest ? 'pinterest-aviso' : 'partitura-pagina aviso-pagina'}>
       <div className={pinterest ? 'pinterest-aviso-folha' : 'partitura-folha'}>
         <header className={pinterest ? 'pinterest-aviso-cabecalho' : 'partitura-agenda-cabecalho'}>
-          <Link href={voltarPara} className={pinterest ? 'pinterest-aviso-voltar' : 'partitura-voltar'} aria-label="Voltar aos avisos">
-            {pinterest ? <ChevronLeft size={23} aria-hidden="true" /> : '←'}
-          </Link>
+          <VoltarAtras destino={voltarPara} className={pinterest ? 'pinterest-aviso-voltar' : 'partitura-voltar'} rotulo="Voltar aos avisos">{pinterest ? <ChevronLeft size={23} aria-hidden="true" /> : '←'}</VoltarAtras>
           <div>
             <p className="partitura-sobretitulo">{sobretitulo}</p>
             <h1>{titulo}</h1>

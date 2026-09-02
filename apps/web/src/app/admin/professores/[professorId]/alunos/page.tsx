@@ -69,7 +69,7 @@ export default async function AdminProfessorAlunosPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href={`/admin/professores/${professorId}`} className="partitura-voltar" aria-label="Voltar à ficha do professor">←</Link><div><p className="partitura-sobretitulo">Alunos do professor</p><h1>{professorData.nome}</h1><p>{alunos.length} {alunos.length === 1 ? 'aluno' : 'alunos'}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino={`/admin/professores/${professorId}`} className="partitura-voltar" rotulo="Voltar à ficha do professor">←</VoltarAtras><div><p className="partitura-sobretitulo">Alunos do professor</p><h1>{professorData.nome}</h1><p>{alunos.length} {alunos.length === 1 ? 'aluno' : 'alunos'}</p></div></header>
 
         {alunos.length === 0 ? (
           <p className="text-[13px]" style={{ color: 'var(--color-tinta-suave)' }}>
@@ -86,4 +86,4 @@ export default async function AdminProfessorAlunosPage({
     </main>
   )
 }
-import Link from 'next/link'
+import { VoltarAtras } from '@/components/voltar-atras'

@@ -5,13 +5,14 @@ import { EmptyState } from '@/components/empty-state'
 import { SubmitButton } from '@/components/submit-button'
 import { classesCampo } from '@/components/campo-formulario'
 import { formatarDataEscolar } from '@ccg/core'
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CalendarDays, ChevronRight } from 'lucide-react'
 import {
   aceitarPropostaHorario,
   recusarPropostaHorario,
   aceitarReposicaoProposta,
   recusarReposicaoProposta,
 } from '@/lib/actions/aluno'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type AulaFamilia = {
   // Chave da linha. As aulas normais repetem-se, e a matrícula chega para
@@ -241,9 +242,7 @@ export async function AgendaFamilia({
     <main id="conteudo-principal" className="pinterest-agenda">
       <div className="pinterest-agenda-folha">
         <header className="pinterest-agenda-cabecalho">
-          <Link href="/dashboard" className="pinterest-agenda-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-agenda-voltar" rotulo="Voltar ao início" tamanho={23} />
           <div>
             <h1>Agenda</h1>
             <p>{aulas[0] ? `Próxima aula às ${formatarHora(aulas[0].hora_inicio)}` : 'As próximas aulas da família'}</p>

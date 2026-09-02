@@ -4,6 +4,7 @@ import { getAuthContext, getAvisosPorLer } from '@/lib/auth-context'
 import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
 import { accaoDoAviso, avisoDoPapel, type TipoAviso } from '@/lib/avisos'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Notificacao = {
   id: number
@@ -75,9 +76,7 @@ export default async function AdminAvisosPage() {
     <main id="conteudo-principal" className="partitura-pagina avisos-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">
-            ←
-          </Link>
+          <VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras>
           <div>
             <p className="partitura-sobretitulo">Secretaria</p>
             <h1>Avisos</h1>

@@ -90,7 +90,7 @@ export default async function AdminContaPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-conta-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Definições pessoais</p><h1>Conta</h1><p>{user.email}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras><div><p className="partitura-sobretitulo">Definições pessoais</p><h1>Conta</h1><p>{user.email}</p></div></header>
 
         {erro && (
           <p className="admin-alerta" role="alert">{erro}</p>
@@ -162,4 +162,4 @@ export default async function AdminContaPage({
     </main>
   )
 }
-import Link from 'next/link'
+import { VoltarAtras } from '@/components/voltar-atras'

@@ -6,6 +6,7 @@ import { MensalidadesFamilia } from './mensalidades-familia'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
 import { MESES_ANO_LETIVO, euros, eurosOuTexto, parteDoProfessor } from '@ccg/core'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type MatriculaDoProfessor = {
   id: number
@@ -179,7 +180,7 @@ export default async function MensalidadesProfessorPage({
     <main id="conteudo-principal" className="partitura-pagina mensalidades-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+          <VoltarAtras destino="/dashboard" className="partitura-voltar" rotulo="Voltar ao início">←</VoltarAtras>
           <div><p className="partitura-sobretitulo">Extrato mensal</p><h1>Mensalidades</h1><p>{escolhido.label} de {escolhido.ano}{foraDoAnoLetivo() ? ` — o ano letivo ${MESES_ANO_LETIVO[0].ano}/${String((MESES_ANO_LETIVO[0].ano + 1) % 100).padStart(2, '0')} começa em ${MESES_ANO_LETIVO[0].label.toLowerCase()}` : ''}</p></div>
         </header>
 

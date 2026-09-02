@@ -1,10 +1,10 @@
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { removerAdministrador } from '@/lib/actions/admin'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemNota } from '@/components/mensagem'
 import type { PerfisEscolaTipo } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 const ROTULO_TIPO: Record<string, string> = {
   conta: 'Conta CCG',
@@ -70,13 +70,7 @@ export default async function AdministradorPage({
     <main id="conteudo-principal" className="partitura-pagina admin-permissoes-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link
-            href="/admin/administradores"
-            className="partitura-voltar"
-            aria-label="Voltar aos administradores"
-          >
-            ←
-          </Link>
+          <VoltarAtras destino="/admin/administradores" className="partitura-voltar" rotulo="Voltar aos administradores">←</VoltarAtras>
           <div>
             <p className="partitura-sobretitulo">Administrador</p>
             <h1>{nome}</h1>

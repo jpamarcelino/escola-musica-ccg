@@ -1,10 +1,10 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
 import { carregarAlunosAlvo, carregarProfessoresAlvo } from '@/lib/alvos-mensagem'
 import { MensagemEscolaForm } from '@/components/mensagem-escola-form'
 import { EmptyState } from '@/components/empty-state'
 import { descreverAlvo, type MensagemEnviada } from '@/lib/mensagens-historico'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // A secretaria escreve para a escola.
 //
@@ -48,9 +48,7 @@ export default async function AdminMensagensPage() {
     <main id="conteudo-principal" className="partitura-pagina mensagens-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">
-            ←
-          </Link>
+          <VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras>
           <div>
             <p className="partitura-sobretitulo">Secretaria</p>
             <h1>Mensagens</h1>

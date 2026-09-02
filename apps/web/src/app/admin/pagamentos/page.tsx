@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 export default async function PagamentosPage() {
   const supabase = await createClient()
@@ -25,7 +26,7 @@ export default async function PagamentosPage() {
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-financas-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Controlo financeiro</p><h1>Mensalidades</h1><p>Confirmações mensais e arquivo de pagamentos.</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras><div><p className="partitura-sobretitulo">Controlo financeiro</p><h1>Mensalidades</h1><p>Confirmações mensais e arquivo de pagamentos.</p></div></header>
 
         <nav className="admin-escolha" aria-label="Áreas de mensalidades">
           <Link href="/admin/pagamentos/confirmar"><span className="partitura-indice">01 · Ação mensal</span><strong>Por confirmar</strong><p>Rever os pagamentos em falta, organizados por professor.</p><i aria-hidden="true">→</i></Link>

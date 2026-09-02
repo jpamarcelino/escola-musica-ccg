@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { aceitarReposicao, recusarReposicao, marcarReposicaoManual } from '@/lib/actions/professor'
@@ -7,7 +6,7 @@ import { Rotulo, classesCampo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { formatarDataEscolar, formatarHora, hojeISO, plural } from '@ccg/core'
-import { ChevronLeft } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Pedido = {
   id: number
@@ -142,9 +141,7 @@ export default async function PedidosReposicaoPage({
     <main id="conteudo-principal" className="pinterest-reposicoes-pedidos">
       <div className="pinterest-reposicoes-pedidos-folha">
         <header className="pinterest-reposicoes-pedidos-cabecalho">
-          <Link href="/dashboard/reposicoes" className="pinterest-reposicoes-pedidos-voltar" aria-label="Voltar aos horários de reposição">
-            <ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard/reposicoes" className="pinterest-reposicoes-pedidos-voltar" rotulo="Voltar aos horários de reposição" tamanho={24} />
           <div>
             <h1>Marcar reposição</h1>
             <p>

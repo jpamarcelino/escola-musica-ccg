@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { CalendarDays, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
+import { CalendarDays, ChevronRight, LayoutGrid } from 'lucide-react'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { formatarHora, formatarSala, agoraNaEscola, estadoTemporalAula, hojeISO, formatarDataEscolar, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
@@ -9,6 +9,7 @@ import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { desmarcarDiaProfessor } from '@/lib/actions/professor'
 import { AgendaFamilia } from './agenda-familia'
 import { ehContaCCG } from '@/lib/navegacao'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Confirmado = {
   id: number
@@ -251,9 +252,7 @@ export default async function AgendaPage({
     <main id="conteudo-principal" className="pinterest-agenda pinterest-agenda-professor">
       <div className="pinterest-agenda-folha">
         <header className="pinterest-agenda-cabecalho">
-          <Link href="/dashboard" className="pinterest-agenda-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-agenda-voltar" rotulo="Voltar ao início" tamanho={23} />
           <div>
             <h1>Agenda</h1>
             <p>

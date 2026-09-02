@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
 import { datasDoDia, INICIO_PRESENCAS, hojeISO, type DiaSemana } from '@ccg/core'
-import { CheckCircle2, ChevronLeft, ChevronRight, ClipboardCheck, History } from 'lucide-react'
+import { CheckCircle2, ChevronRight, ClipboardCheck, History } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Horario = {
   id: number
@@ -77,7 +78,7 @@ export default async function PresencasPage() {
     <main id="conteudo-principal" className="pinterest-presencas">
       <div className="pinterest-presencas-folha">
         <header className="pinterest-presencas-cabecalho">
-          <Link href="/dashboard" className="pinterest-presencas-voltar" aria-label="Voltar ao início"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-presencas-voltar" rotulo="Voltar ao início" tamanho={24} />
           <div><h1>Presenças</h1><p>{porConfirmar > 0 ? 'Há aulas que precisam da tua atenção.' : 'Tudo confirmado até hoje.'}</p></div>
         </header>
 

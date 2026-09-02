@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { formatarSala, calcularIdade, euros, eurosOuTexto, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado, PresencaEstado } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type AlunoPerfil = {
   nome: string
@@ -172,7 +173,7 @@ export default async function AdminAlunoPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-ficha-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/alunos" className="partitura-voltar" aria-label="Voltar ao diretório de alunos">←</Link><div><p className="partitura-sobretitulo">Ficha de aluno</p><h1>{aluno.nome}</h1><p>{idade !== null ? `${idade} anos · ` : ''}{matriculas.length} {matriculas.length === 1 ? 'matrícula' : 'matrículas'}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/alunos" className="partitura-voltar" rotulo="Voltar ao diretório de alunos">←</VoltarAtras><div><p className="partitura-sobretitulo">Ficha de aluno</p><h1>{aluno.nome}</h1><p>{idade !== null ? `${idade} anos · ` : ''}{matriculas.length} {matriculas.length === 1 ? 'matrícula' : 'matrículas'}</p></div></header>
 
         <div className="admin-ficha-grelha"><aside><section className="admin-ficha-seccao">
           <h2 className="secao-titulo">Encarregado de educação</h2>

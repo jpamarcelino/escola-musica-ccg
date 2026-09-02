@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { ChevronLeft, ChevronDown, Phone } from 'lucide-react'
+import { ChevronDown, Phone } from 'lucide-react'
 import { getAuthContext } from '@/lib/auth-context'
 import { confirmarHorario, proporHorarioNoPedido, recusarPedido } from '@/lib/actions/professor'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
@@ -8,6 +7,7 @@ import { EmptyState } from '@/components/empty-state'
 import { SubmitButton } from '@/components/submit-button'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { agoraNaEscola, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Pedido = {
   id: number
@@ -120,9 +120,7 @@ export default async function PedidosPage({
     <main id="conteudo-principal" className="pinterest-pedidos">
       <div className="pinterest-pedidos-folha">
         <header className="pinterest-pedidos-cabecalho">
-          <Link href="/dashboard" className="pinterest-pedidos-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-pedidos-voltar" rotulo="Voltar ao início" tamanho={23} />
           <div>
             <h1>Pedidos</h1>
             <p>

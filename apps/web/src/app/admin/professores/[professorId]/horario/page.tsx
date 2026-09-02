@@ -1,5 +1,4 @@
 import type { CSSProperties } from 'react'
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import {
@@ -16,6 +15,7 @@ import { SubmitButton } from '@/components/submit-button'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { criarHorariosDeProfessor } from '@/lib/actions/admin'
 import type { PerfisEscolaPrograma } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Confirmado = {
   id: number
@@ -153,7 +153,7 @@ export default async function AdminProfessorHorarioPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina horarios-pagina admin-horario-professor">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href={`/admin/professores/${professorId}`} className="partitura-voltar" aria-label="Voltar à ficha do professor">←</Link><div><p className="partitura-sobretitulo">Horário semanal</p><h1>{professorData.nome}</h1><p>{blocos.length} {blocos.length === 1 ? 'aula confirmada' : 'aulas confirmadas'}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino={`/admin/professores/${professorId}`} className="partitura-voltar" rotulo="Voltar à ficha do professor">←</VoltarAtras><div><p className="partitura-sobretitulo">Horário semanal</p><h1>{professorData.nome}</h1><p>{blocos.length} {blocos.length === 1 ? 'aula confirmada' : 'aulas confirmadas'}</p></div></header>
 
         {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
         {criados && (

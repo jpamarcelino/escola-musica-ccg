@@ -14,13 +14,14 @@ import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-seleci
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
 import { BotaoApagarHorariosSelecionados } from '@/components/horarios-apagar-selecionados'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
-import { ChevronDown, ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
+import { ChevronDown, ChevronRight, Pencil } from 'lucide-react'
 import Link from 'next/link'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemErro } from '@/components/mensagem'
 import { SubmitButton } from '@/components/submit-button'
 import { HorariosToolbar } from '@/components/horarios-toolbar'
 import type { HorarioEstado } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type HorarioProfessor = {
   id: number
@@ -123,9 +124,7 @@ export default async function HorariosPage({
     <main id="conteudo-principal" className="pinterest-horarios">
       <div className="pinterest-horarios-folha">
         <header className="pinterest-horarios-cabecalho">
-          <Link href="/dashboard" className="pinterest-horarios-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-horarios-voltar" rotulo="Voltar ao início" tamanho={23} />
           <div>
             <h1>Horários</h1>
             <p>As horas em que dás aulas</p>

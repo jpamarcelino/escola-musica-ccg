@@ -2,10 +2,11 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { criarAluno } from '@/lib/actions/aluno'
-import { ChevronLeft, ChevronRight, UserPlus, UserRound } from 'lucide-react'
+import { ChevronRight, UserPlus, UserRound } from 'lucide-react'
 import { SubmitButton } from '@/components/submit-button'
 import { calcularIdade, hojeISO, TEXTOS_LEGAIS } from '@ccg/core'
 import { ehContaCCG } from '@/lib/navegacao'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // Gestão dos perfis de aluno da Conta CCG.
 //
@@ -50,9 +51,7 @@ export default async function AlunosPage({
     <main id="conteudo-principal" className="pinterest-alunos-pagina">
       <div className="pinterest-alunos-folha">
         <header className="pinterest-alunos-cabecalho">
-          <Link href="/dashboard" className="pinterest-alunos-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-alunos-voltar" rotulo="Voltar ao início" />
           <div>
             <h1>Alunos</h1>
             <p>

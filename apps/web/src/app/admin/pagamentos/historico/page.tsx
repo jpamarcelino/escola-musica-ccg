@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { LinhaLista, GrupoLista } from '@/components/lista'
 import { EmptyState } from '@/components/empty-state'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Professor = {
   id: string
@@ -44,7 +44,7 @@ export default async function HistoricoPagamentosPage() {
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos" className="partitura-voltar" aria-label="Voltar a mensalidades">←</Link><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>Histórico</h1><p>Seleciona um professor para consultar o registo mensal.</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/pagamentos" className="partitura-voltar" rotulo="Voltar a mensalidades">←</VoltarAtras><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>Histórico</h1><p>Seleciona um professor para consultar o registo mensal.</p></div></header>
 
         {professores.length === 0 ? (
           <EmptyState titulo="Ainda não há professores registados" />

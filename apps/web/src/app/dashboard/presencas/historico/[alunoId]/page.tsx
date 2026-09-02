@@ -1,10 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatarDataEscolar } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import type { PresencaEstado } from '@ccg/types'
-import { ChevronLeft } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Matricula = {
   id: number
@@ -92,7 +91,7 @@ export default async function HistoricoAlunoPage({
     <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-presencas-historico-aluno">
       <div className="pinterest-presencas-fluxo-folha">
         <header className="pinterest-presencas-fluxo-cabecalho">
-          <Link href="/dashboard/presencas/historico" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar ao histórico"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <VoltarAtras destino="/dashboard/presencas/historico" className="pinterest-presencas-fluxo-voltar" rotulo="Voltar ao histórico" tamanho={24} />
           <div><h1>{alunoData.nome}</h1><p>Histórico individual</p></div>
         </header>
 

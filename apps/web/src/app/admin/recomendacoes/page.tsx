@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { BotaoSecundario } from '@/components/botao-secundario'
 import type { RecomendacaoEstado } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type RecomendacaoLinha = {
   id: number
@@ -89,7 +90,7 @@ export default async function RecomendacoesPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina recomendacoes-admin-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">←</Link><div><p className="partitura-sobretitulo">Projeto-piloto · 2026/2027</p><h1>Recomendações</h1><p>Acompanhar validações e benefícios atribuídos.</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras><div><p className="partitura-sobretitulo">Projeto-piloto · 2026/2027</p><h1>Recomendações</h1><p>Acompanhar validações e benefícios atribuídos.</p></div></header>
 
         {erro && <p className="admin-alerta" role="alert">{decodeURIComponent(erro)}</p>}
 

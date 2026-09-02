@@ -1,10 +1,10 @@
 import { Fragment } from 'react'
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { atualizarHistoricoMensalidades } from '@/lib/actions/pagamentos'
 import { MESES_ANO_LETIVO, rotuloMes } from '@ccg/core'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type MatriculaAtual = {
   aluno_id: string
@@ -143,7 +143,7 @@ export default async function HistoricoPagamentosProfessorPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-historico-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos/historico" className="partitura-voltar" aria-label="Voltar ao histórico">←</Link><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>{professorData.nome}</h1><p>Ano letivo completo · {alunos.size} {alunos.size === 1 ? 'aluno' : 'alunos'}{linhas.length !== alunos.size && ` · ${linhas.length} disciplinas`}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/pagamentos/historico" className="partitura-voltar" rotulo="Voltar ao histórico">←</VoltarAtras><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>{professorData.nome}</h1><p>Ano letivo completo · {alunos.size} {alunos.size === 1 ? 'aluno' : 'alunos'}{linhas.length !== alunos.size && ` · ${linhas.length} disciplinas`}</p></div></header>
 
         {linhas.length === 0 ? (
           <EmptyState titulo="Ainda não há histórico de mensalidades" />

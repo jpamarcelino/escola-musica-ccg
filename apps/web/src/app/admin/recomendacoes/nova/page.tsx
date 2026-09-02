@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { SubmitButton } from '@/components/submit-button'
 import { recusarIndicacao, registarRecomendacao } from '@/lib/actions/recomendacoes'
 import type { MatriculaEstado } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type ProfessorAderente = {
   id: string
@@ -109,7 +110,7 @@ export default async function NovaRecomendacaoPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina recomendacao-nova-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/recomendacoes" className="partitura-voltar" aria-label="Voltar às recomendações">←</Link><div><p className="partitura-sobretitulo">Novo registo</p><h1>Registar recomendação</h1><p>Professor, alunos e confirmação administrativa.</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/recomendacoes" className="partitura-voltar" rotulo="Voltar às recomendações">←</VoltarAtras><div><p className="partitura-sobretitulo">Novo registo</p><h1>Registar recomendação</h1><p>Professor, alunos e confirmação administrativa.</p></div></header>
 
         {erro && (
           <p className="admin-alerta" role="alert">

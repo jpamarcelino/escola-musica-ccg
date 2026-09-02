@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { aceitarDisciplina, recusarDisciplina } from '@/lib/actions/admin'
@@ -7,6 +6,7 @@ import { classesCampo } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { formatarDataEscolar } from '@ccg/core'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Pedido = {
   id: number
@@ -65,9 +65,7 @@ export default async function DisciplinasPage({
     <main id="conteudo-principal" className="partitura-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/admin/professores" className="partitura-voltar" aria-label="Voltar aos professores">
-            ←
-          </Link>
+          <VoltarAtras destino="/admin/professores" className="partitura-voltar" rotulo="Voltar aos professores">←</VoltarAtras>
           <div>
             <p className="partitura-sobretitulo">Professores</p>
             <h1>Pedidos de disciplina</h1>

@@ -1,9 +1,10 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, BookOpen, CalendarDays, Bell, Clock } from 'lucide-react'
+import { BookOpen, CalendarDays, Bell, Clock } from 'lucide-react'
 import { getAuthContext } from '@/lib/auth-context'
 import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, formatarHora, formatarSala, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Matricula = {
   id: number
@@ -53,9 +54,7 @@ export default async function AlunoHubPage({
     <main id="conteudo-principal" className="pinterest-aluno">
       <div className="pinterest-aluno-folha">
         <header className="pinterest-aluno-cabecalho">
-          <Link href="/dashboard" className="pinterest-aluno-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-aluno-voltar" rotulo="Voltar ao início" />
           <div>
             <h1>{aluno.nome}</h1>
             <p>{dataHoje}</p>

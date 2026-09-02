@@ -20,8 +20,9 @@ import {
 } from '@/components/conta-forms'
 import { ehContaCCG } from '@/lib/navegacao'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
+import { ChevronRight, LogOut } from 'lucide-react'
 import { CCG } from '@/lib/legal'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 export default async function ContaPage({
   searchParams,
@@ -146,9 +147,7 @@ export default async function ContaPage({
     <main id="conteudo-principal" className="pinterest-conta">
       <div className="pinterest-conta-folha">
         <header className="pinterest-conta-cabecalho">
-          <Link href="/dashboard" className="pinterest-conta-voltar" aria-label="Voltar">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-conta-voltar" rotulo="Voltar" />
           <div>
             <h1>Conta</h1>
             <p>Os teus dados e as definições da aplicação.</p>

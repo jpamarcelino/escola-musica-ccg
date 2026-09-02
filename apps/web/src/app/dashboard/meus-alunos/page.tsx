@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { calcularIdade, formatarHora, type DiaSemana } from '@ccg/core'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Linha = {
   id: number
@@ -57,9 +58,7 @@ export default async function MeusAlunosPage() {
     <main id="conteudo-principal" className="pinterest-professor-alunos">
       <div className="pinterest-professor-alunos-folha">
         <header className="pinterest-professor-alunos-cabecalho">
-          <Link href="/dashboard" className="pinterest-professor-alunos-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-professor-alunos-voltar" rotulo="Voltar ao início" tamanho={24} />
           <div>
             <h1>Alunos</h1>
             <p>

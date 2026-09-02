@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SubmitButton } from '@/components/submit-button'
@@ -10,6 +9,7 @@ import {
 } from '@/lib/actions/recomendacoes'
 import { MESES_ANO_LETIVO, euros } from '@ccg/core'
 import type { BeneficioEstado, RecomendacaoEstado } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Recomendacao = {
   id: number
@@ -99,7 +99,7 @@ export default async function RecomendacaoPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina recomendacao-detalhe-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/recomendacoes" className="partitura-voltar" aria-label="Voltar às recomendações">←</Link><div><p className="partitura-sobretitulo">{recomendacao.professor_nome}{recomendacao.modalidade && ` · ${recomendacao.modalidade}`}</p><h1>{recomendacao.recomendador_nome} <span aria-hidden="true">→</span> {recomendacao.novo_aluno_nome}</h1><p>Registada em {new Intl.DateTimeFormat('pt-PT').format(new Date(recomendacao.criado_em))}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/recomendacoes" className="partitura-voltar" rotulo="Voltar às recomendações">←</VoltarAtras><div><p className="partitura-sobretitulo">{recomendacao.professor_nome}{recomendacao.modalidade && ` · ${recomendacao.modalidade}`}</p><h1>{recomendacao.recomendador_nome} <span aria-hidden="true">→</span> {recomendacao.novo_aluno_nome}</h1><p>Registada em {new Intl.DateTimeFormat('pt-PT').format(new Date(recomendacao.criado_em))}</p></div></header>
 
         {erro && (
           <p className="admin-alerta" role="alert">

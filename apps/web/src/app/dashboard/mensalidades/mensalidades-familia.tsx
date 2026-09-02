@@ -3,7 +3,8 @@ import { EmptyState } from '@/components/empty-state'
 import { MensagemNota } from '@/components/mensagem'
 import { MESES_ANO_LETIVO, estadoMensalidade, euros, type EstadoMensalidade } from '@ccg/core'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { CheckCircle2, ChevronLeft, Clock3, ReceiptText } from 'lucide-react'
+import { CheckCircle2, Clock3, ReceiptText } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // O que a família tem a pagar, mês a mês.
 //
@@ -76,9 +77,7 @@ export async function MensalidadesFamilia({
     <main id="conteudo-principal" className="pinterest-mensalidades">
       <div className="pinterest-mensalidades-folha">
         <header className="pinterest-mensalidades-cabecalho">
-          <Link href="/dashboard" className="pinterest-mensalidades-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-mensalidades-voltar" rotulo="Voltar ao início" tamanho={23} />
           <div>
             <h1>Mensalidades</h1>
             <p>Pagamentos da família</p>

@@ -1,11 +1,11 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { carregarAlunosAlvo } from '@/lib/alvos-mensagem'
 import { MensagemEscolaForm } from '@/components/mensagem-escola-form'
 import { EmptyState } from '@/components/empty-state'
 import { descreverAlvo, type MensagemEnviada } from '@/lib/mensagens-historico'
-import { ChevronLeft, History, Send } from 'lucide-react'
+import { History, Send } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // O professor escreve aos seus alunos.
 //
@@ -43,9 +43,7 @@ export default async function ProfessorMensagensPage() {
     <main id="conteudo-principal" className="pinterest-mensagens">
       <div className="pinterest-mensagens-folha">
         <header className="pinterest-mensagens-cabecalho">
-          <Link href="/dashboard" className="pinterest-mensagens-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={24} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-mensagens-voltar" rotulo="Voltar ao início" tamanho={24} />
           <div>
             <h1>Mensagens</h1>
             <p>Escreve diretamente às famílias dos teus alunos.</p>

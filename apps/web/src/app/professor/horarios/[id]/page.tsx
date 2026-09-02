@@ -1,5 +1,4 @@
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { atualizarHorario, apagarHorario } from '@/lib/actions/professor'
 import { DIAS_SEMANA } from '@ccg/core'
@@ -7,6 +6,7 @@ import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { SubmitButton } from '@/components/submit-button'
 import { Rotulo, classesCampo } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 export default async function EditarHorarioPage({
   params,
@@ -55,7 +55,7 @@ export default async function EditarHorarioPage({
     <main id="conteudo-principal" className="partitura-pagina editar-horario-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/horarios" className="partitura-voltar" aria-label="Voltar aos horários">←</Link>
+          <VoltarAtras destino="/dashboard/horarios" className="partitura-voltar" rotulo="Voltar aos horários">←</VoltarAtras>
           <div><p className="partitura-sobretitulo">Disponibilidade semanal</p><h1>Editar horário</h1><p>{horario.dia_semana} · {horario.hora_inicio.slice(0, 5)}–{horario.hora_fim.slice(0, 5)}</p></div>
         </header>
 

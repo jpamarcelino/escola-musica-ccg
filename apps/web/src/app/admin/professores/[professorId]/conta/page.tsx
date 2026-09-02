@@ -83,7 +83,7 @@ export default async function AdminProfessorContaPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-subficha-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href={`/admin/professores/${professorId}`} className="partitura-voltar" aria-label="Voltar à ficha do professor">←</Link><div><p className="partitura-sobretitulo">Conta · {professor.admin ? 'Administrador' : 'Professor'}</p><h1>{professor.nome}</h1><p>Dados de contacto, escola e disciplinas.</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino={`/admin/professores/${professorId}`} className="partitura-voltar" rotulo="Voltar à ficha do professor">←</VoltarAtras><div><p className="partitura-sobretitulo">Conta · {professor.admin ? 'Administrador' : 'Professor'}</p><h1>{professor.nome}</h1><p>Dados de contacto, escola e disciplinas.</p></div></header>
 
         <div className="admin-dados-registo">
           <p className="lista-item-sub">
@@ -163,10 +163,10 @@ export default async function AdminProfessorContaPage({
     </main>
   )
 }
-import Link from 'next/link'
 import Image from 'next/image'
 import type { PerfisEscolaPrograma } from '@ccg/types'
 import { guardarFichaProfessor } from '@/lib/actions/ficha-professor'
 import { classesCampo, Rotulo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { SubmitButton } from '@/components/submit-button'
+import { VoltarAtras } from '@/components/voltar-atras'

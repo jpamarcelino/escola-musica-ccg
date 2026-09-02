@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
-import { ChevronLeft, ChevronRight, UserRound } from 'lucide-react'
+import { ChevronRight, UserRound } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type MatriculaAluno = {
   id: number
@@ -71,7 +72,7 @@ export default async function HistoricoPresencasPage() {
     <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-presencas-historico-lista">
       <div className="pinterest-presencas-fluxo-folha">
         <header className="pinterest-presencas-fluxo-cabecalho">
-          <Link href="/dashboard/presencas" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar a presenças"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <VoltarAtras destino="/dashboard/presencas" className="pinterest-presencas-fluxo-voltar" rotulo="Voltar a presenças" tamanho={24} />
           <div><h1>Histórico</h1><p>{alunos.length > 0 ? `${alunos.length} ${alunos.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}` : 'Presenças por aluno.'}</p></div>
         </header>
 

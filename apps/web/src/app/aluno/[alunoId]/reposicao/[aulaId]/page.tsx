@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
 import { pedirReposicao } from '@/lib/actions/aluno'
@@ -7,7 +6,8 @@ import { classesCampo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemNota } from '@/components/mensagem'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { formatarDataEscolar, formatarHora, hojeISO } from '@ccg/core'
-import { CalendarClock, ChevronLeft } from 'lucide-react'
+import { CalendarClock } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Vaga = {
   id: number
@@ -70,9 +70,7 @@ export default async function PedirReposicaoPage({
     <main id="conteudo-principal" className="pinterest-pedir-reposicao">
       <div className="pinterest-pedir-reposicao-folha">
         <header className="pinterest-pedir-reposicao-cabecalho">
-          <Link href={`/aluno/${alunoId}/horario`} className="pinterest-pedir-reposicao-voltar" aria-label="Voltar ao horário">
-            <ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino={`/aluno/${alunoId}/horario`} className="pinterest-pedir-reposicao-voltar" rotulo="Voltar ao horário" tamanho={24} />
           <div>
             <h1>Marcar reposição</h1>
             <p>Escolhe os horários que te dão jeito.</p>

@@ -1,8 +1,9 @@
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { ehContaCCG } from '@/lib/navegacao'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // A porta de entrada dos materiais, a partir da barra de baixo.
 //
@@ -62,9 +63,7 @@ export default async function MateriaisDaContaPage() {
     <main id="conteudo-principal" className="pinterest-materiais">
       <div className="pinterest-materiais-folha">
         <header className="pinterest-materiais-cabecalho">
-          <Link href="/dashboard" className="pinterest-materiais-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-materiais-voltar" rotulo="Voltar ao início" />
           <div>
             <h1>Materiais</h1>
             <p>

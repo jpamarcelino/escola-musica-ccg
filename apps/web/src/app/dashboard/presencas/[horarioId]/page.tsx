@@ -1,12 +1,11 @@
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { formatarHora, formatarSala, dataMaisRecenteDoDia, type DiaSemana } from '@ccg/core'
 import { marcarPresencas } from '@/lib/actions/presencas'
 import { MensagemErro } from '@/components/mensagem'
 import { PresencasChamadaForm } from '@/components/presencas-chamada-form'
-import { ChevronLeft } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Aluno = {
   id: number
@@ -71,7 +70,7 @@ export default async function PresencasHorarioPage({
     <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-chamada-presencas">
       <div className="pinterest-presencas-fluxo-folha">
         <header className="pinterest-presencas-fluxo-cabecalho">
-          <Link href="/dashboard/presencas/confirmar" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar às aulas por confirmar"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <VoltarAtras destino="/dashboard/presencas/confirmar" className="pinterest-presencas-fluxo-voltar" rotulo="Voltar às aulas por confirmar" tamanho={24} />
           <div><h1>Fazer chamada</h1><p>{horario.dia_semana} · {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
         </header>
 

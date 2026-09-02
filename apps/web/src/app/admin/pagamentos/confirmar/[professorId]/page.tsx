@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
@@ -8,6 +7,7 @@ import {
   marcarMensalidadePaga,
   definirNumeroFatura,
 } from '@/lib/actions/pagamentos'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type MatriculaResumo = {
   id: number
@@ -129,7 +129,7 @@ export default async function ConfirmarMensalidadesProfessorPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-cobranca-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/pagamentos/confirmar" className="partitura-voltar" aria-label="Voltar à lista de confirmações">←</Link><div><p className="partitura-sobretitulo">Mensalidades · {String(mes).padStart(2, '0')}/{ano}</p><h1>{professorData.nome}</h1><p>{porConfirmar.length} {porConfirmar.length === 1 ? 'pagamento por confirmar' : 'pagamentos por confirmar'}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/pagamentos/confirmar" className="partitura-voltar" rotulo="Voltar à lista de confirmações">←</VoltarAtras><div><p className="partitura-sobretitulo">Mensalidades · {String(mes).padStart(2, '0')}/{ano}</p><h1>{professorData.nome}</h1><p>{porConfirmar.length} {porConfirmar.length === 1 ? 'pagamento por confirmar' : 'pagamentos por confirmar'}</p></div></header>
 
         {erro && <p className="admin-alerta" role="alert">{decodeURIComponent(erro)}</p>}
 

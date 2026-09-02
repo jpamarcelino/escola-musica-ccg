@@ -4,7 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { formatarHora, formatarSala, agoraNaEscola, datasDoDia, formatarDataEscolar, INICIO_PRESENCAS, hojeISO, plural, type DiaSemana } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Horario = {
   id: number
@@ -119,7 +120,7 @@ export default async function ConfirmarPresencasPage({
     <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-confirmar-presencas">
       <div className="pinterest-presencas-fluxo-folha">
         <header className="pinterest-presencas-fluxo-cabecalho">
-          <Link href="/dashboard/presencas" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar a presenças"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <VoltarAtras destino="/dashboard/presencas" className="pinterest-presencas-fluxo-voltar" rotulo="Voltar a presenças" tamanho={24} />
           <div><h1>Por confirmar</h1><p>{pendentes.length > 0 ? 'Começa pelas aulas mais antigas.' : 'Está tudo em dia.'}</p></div>
         </header>
 

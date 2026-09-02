@@ -3,23 +3,36 @@
 import { usePathname, useRouter } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 
-// Seta de voltar para páginas que se alcançam de vários sítios.
+// A seta de voltar da app inteira.
 //
-// Os documentos legais abrem-se do rodapé público, do registo e da área
-// de Conta. Uma ligação fixa manda toda a gente para o mesmo destino: quem
-// vinha da Conta ia parar ao índice legal, e ao sair do índice caía na
-// página Hoje — três ecrãs para voltar a um.
+// Uma ligação fixa não volta: vai sempre ao mesmo sítio, venha a pessoa
+// de onde vier. Quem abria um aviso a partir da caixa de entrada e
+// carregava na seta ia parar ao mesmo ecrã que quem lá tinha chegado por
+// outro caminho — e a página de onde vinha ficava a duas ou três
+// navegações de distância.
 //
-// O "destino" fica como rede: numa aba aberta de raiz nesta página, ou na
-// PWA a arrancar aqui, não há para onde recuar.
+// O "destino" fica como rede: numa aba aberta de raiz nesta página, na
+// PWA a arrancar aqui, ou num endereço aberto de uma notificação, não há
+// para onde recuar.
+//
+// "children" existe para os ecrãs que ainda não estão no Design Pinterest
+// e desenham a seta com uma seta de texto — assim a marcação muda sem o
+// aspeto mudar com ela.
 export function VoltarAtras({
   destino,
   className,
   rotulo = 'Voltar',
+  tamanho = 20,
+  children,
 }: {
   destino: string
   className?: string
   rotulo?: string
+  // Cada folha desenha a seta ao seu tamanho: 23 px no Design Pinterest,
+  // 24 px nos fluxos de presencas. Ficar por um so tamanho era encolher
+  // metade das setas da app numa alteracao que nao e de desenho.
+  tamanho?: number
+  children?: React.ReactNode
 }) {
   const router = useRouter()
   const caminho = usePathname()
@@ -47,7 +60,7 @@ export function VoltarAtras({
         else router.push(destino)
       }}
     >
-      <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+      {children ?? <ChevronLeft size={tamanho} strokeWidth={2} aria-hidden="true" />}
     </button>
   )
 }

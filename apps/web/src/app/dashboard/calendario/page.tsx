@@ -1,11 +1,10 @@
-import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { CalendarioAnoLetivo } from '@/components/calendario-ano-letivo'
 import { calendarioDaFamilia, calendarioDoProfessor } from '@/lib/calendario'
 import { ehContaCCG } from '@/lib/navegacao'
 import { ANO_LETIVO_FIM, ANO_LETIVO_INICIO, formatarDataEscolar } from '@ccg/core'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // O calendário do ano letivo, o mesmo para as famílias e para os
 // professores. É a mesma página e não duas porque é o mesmo calendário —
@@ -31,9 +30,7 @@ export default async function CalendarioPage() {
     <main id="conteudo-principal" className="pinterest-calendario">
       <div className="pinterest-calendario-folha">
         <header className="pinterest-calendario-cabecalho">
-          <Link href="/dashboard/agenda" className="pinterest-calendario-voltar" aria-label="Voltar à agenda">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard/agenda" className="pinterest-calendario-voltar" rotulo="Voltar à agenda" />
           <div>
             {/* "Calendário" e não "Calendário do ano letivo": num
                 telemóvel o nome longo parte-se em duas linhas e empurra

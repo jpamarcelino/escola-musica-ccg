@@ -1,5 +1,4 @@
-import { BackButton } from '@/components/back-button'
-import { BotaoVoltarHistorico } from '@/components/botao-voltar-historico'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // Cabeçalho das páginas interiores (REDESIGN_PLAN_V2 secção 4): fundo
 // branco, título em Fraunces, BackButton. O hero em gradiente é só para
@@ -8,23 +7,16 @@ export function PageHeader({
   titulo,
   subtitulo,
   voltar,
-  voltarPeloHistorico = false,
 }: {
   titulo: React.ReactNode
   subtitulo?: React.ReactNode
-  // Para onde a seta aponta. Com "voltarPeloHistorico", passa a ser só o
-  // destino de recurso: a seta recua de verdade, e só cai aqui quando não
-  // há nada para onde recuar.
+  // Destino de recurso e não destino da seta: ela recua de verdade, e só
+  // cai aqui quando não há nada para onde recuar.
   voltar: string
-  voltarPeloHistorico?: boolean
 }) {
   return (
     <div className="flex items-center gap-[12px]">
-      {voltarPeloHistorico ? (
-        <BotaoVoltarHistorico href={voltar} />
-      ) : (
-        <BackButton href={voltar} />
-      )}
+      <VoltarAtras destino={voltar} className="back-button" />
       <div className="min-w-0">
         <h1
           className="truncate text-[24px] font-semibold leading-[1.2]"

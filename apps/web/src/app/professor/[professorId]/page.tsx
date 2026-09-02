@@ -1,9 +1,8 @@
-import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
 import { RodapeLegal } from '@/components/rodape-legal'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type FichaPublica = {
   professor_id: string
@@ -54,9 +53,7 @@ export default async function FichaProfessorPage({
   return (
     <div className="pinterest-publico-pagina">
       <main id="conteudo-principal" className="ficha-professor">
-        <Link href={destinoVoltar} className="ficha-professor-voltar" aria-label="Voltar">
-          <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-        </Link>
+        <VoltarAtras destino={destinoVoltar} className="ficha-professor-voltar" rotulo="Voltar" />
 
         <section className="ficha-professor-identidade">
           <span className="ficha-professor-retrato">

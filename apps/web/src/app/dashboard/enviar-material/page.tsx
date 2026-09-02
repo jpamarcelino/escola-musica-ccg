@@ -1,9 +1,8 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { carregarAlunosAlvo } from '@/lib/alvos-mensagem'
 import { EscolhaMaterial } from './escolha-material'
-import { ChevronLeft } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 // Onde o professor deixa material de estudo.
 //
@@ -36,9 +35,7 @@ export default async function EnviarMaterialPage({
     <main id="conteudo-principal" className="pinterest-enviar-material">
       <div className="pinterest-enviar-material-folha">
         <header className="pinterest-enviar-material-cabecalho">
-          <Link href="/dashboard" className="pinterest-enviar-material-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={24} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/dashboard" className="pinterest-enviar-material-voltar" rotulo="Voltar ao início" tamanho={24} />
           <div>
             <h1>Enviar material</h1>
             <p>Partilha um vídeo ou uma partitura com os teus alunos.</p>

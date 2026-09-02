@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { evolucaoDeAlunos, hojeISO, type MatriculaParaEvolucao } from '@ccg/core'
 import { createClient } from '@/lib/supabase/server'
@@ -6,6 +5,7 @@ import { GraficoEvolucaoAlunos } from '@/components/grafico-evolucao-alunos'
 import { LinhaLista, GrupoLista } from '@/components/lista'
 import { SubmitButton } from '@/components/submit-button'
 import { definirAdesaoRecomendacao } from '@/lib/actions/recomendacoes'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 export default async function AdminProfessorPage({
   params,
@@ -69,7 +69,7 @@ export default async function AdminProfessorPage({
   return (
     <main id="conteudo-principal" className="partitura-pagina admin-professor-pagina">
       <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><Link href="/admin/professores" className="partitura-voltar" aria-label="Voltar ao diretório de professores">←</Link><div><p className="partitura-sobretitulo">Ficha de professor</p><h1>{professorData.nome}</h1><p>{professorPerfil.adere_recomendacao ? 'Aderente ao Programa de Recomendação' : 'Gestão de conta e atividade letiva'}</p></div></header>
+        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/professores" className="partitura-voltar" rotulo="Voltar ao diretório de professores">←</VoltarAtras><div><p className="partitura-sobretitulo">Ficha de professor</p><h1>{professorData.nome}</h1><p>{professorPerfil.adere_recomendacao ? 'Aderente ao Programa de Recomendação' : 'Gestão de conta e atividade letiva'}</p></div></header>
 
         <div className="admin-professor-atalhos"><GrupoLista>
           <LinhaLista href={`/admin/professores/${professorId}/conta`} titulo="Conta" />

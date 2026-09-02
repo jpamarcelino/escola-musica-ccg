@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/empty-state'
 import { MensagemErro } from '@/components/mensagem'
 import { classesCampo } from '@/components/campo-formulario'
 import type { PerfisEscolaTipo } from '@ccg/types'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 const ROTULO_TIPO: Record<string, string> = {
   conta: 'Conta CCG',
@@ -99,9 +100,7 @@ export default async function AdminAdministradoresPage({
     <main id="conteudo-principal" className="partitura-pagina admin-permissoes-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/admin" className="partitura-voltar" aria-label="Voltar à visão geral">
-            ←
-          </Link>
+          <VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras>
           <div>
             <p className="partitura-sobretitulo">Super administração</p>
             <h1>Administradores</h1>
