@@ -58,13 +58,22 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 z-[80] flex justify-center px-[12px]"
+      className="app-primary-nav fixed inset-x-0 z-[80] flex justify-center px-[12px]"
       style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))' }}
     >
       <div
         className="bottom-nav-bar relative flex w-full max-w-[430px] items-stretch gap-[2px] rounded-[var(--radius-pill)] px-[8px] py-[8px]"
         style={{ backgroundColor: 'var(--color-ink)', boxShadow: 'var(--shadow-flutuante)' }}
       >
+        <div className="desktop-nav-brand" aria-hidden="true">
+          <span className="desktop-nav-brand-mark">
+            <SimboloCCG />
+          </span>
+          <span>
+            <strong>Escola de Música</strong>
+            <small>Centro Cultural da Guarda</small>
+          </span>
+        </div>
         {itens.map((item) => {
           const Icone = ICONES[item.icone]
           const correspondencia = item.correspondencia ?? 'prefixo'
@@ -103,7 +112,7 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
                   "Pagamentos" e "Professores" apareciam cortados a meio
                   ("Pagament…", "Professor…"). Uma etiqueta de navegação
                   truncada deixa de ser uma etiqueta. */}
-              <span className="max-w-full truncate text-[11px] font-medium leading-none tracking-[-0.01em]">
+              <span className="bottom-nav-label max-w-full truncate text-[11px] font-medium leading-none tracking-[-0.01em]">
                 {item.label}
               </span>
             </Link>

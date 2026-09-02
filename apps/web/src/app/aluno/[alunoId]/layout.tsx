@@ -16,7 +16,7 @@ export default async function AlunoLayout({
 
   return (
     <>
-      {children}
+      <div className="app-shell-content">{children}</div>
       <BottomNavigation itens={comAvisosPorLer(navAluno(alunoId), await getAvisosPorLer('familia'))} />
     </>
   )

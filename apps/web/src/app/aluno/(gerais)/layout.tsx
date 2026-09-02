@@ -28,7 +28,7 @@ async function NavegacaoGeral() {
 export default function AlunoGeraisLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {children}
+      <div className="app-shell-content">{children}</div>
       <Suspense fallback={null}>
         <NavegacaoGeral />
       </Suspense>

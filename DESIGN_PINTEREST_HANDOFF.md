@@ -76,6 +76,23 @@ Uma pagina so recebe `[x]` quando:
 
 Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao conclui automaticamente as outras.
 
+## Fundacao desktop
+
+A estrutura desktop autenticada foi iniciada em setembro de 2026. O componente
+partilhado `BottomNavigation` conserva a barra inferior ate 1023 px e passa a
+uma navegacao lateral fixa a partir de 1024 px. Os layouts de `/dashboard`,
+`/aluno/[alunoId]` e `/aluno/(gerais)` reservam agora a coluna da navegacao sem
+alterar a composicao mobile.
+
+Padrao base:
+
+- lateral escura de 232-240 px, com marca, icones, rotulos e pagina ativa;
+- margem exterior de 20-28 px e area de trabalho sobre `#F5F6F8`;
+- conteudo começa depois da lateral, sem sobreposicao;
+- breakpoint desktop em 1024 px; tablets e telemoveis mantêm a navegacao inferior;
+- este passo conclui apenas a moldura. Cada pagina continua pendente em desktop
+  ate receber composicao propria e validacao a 1024, 1440 e largura ampla.
+
 ## Estado aprovado ate agora
 
 ### Concluido

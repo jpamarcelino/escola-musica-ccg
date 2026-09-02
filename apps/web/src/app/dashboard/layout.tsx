@@ -59,7 +59,7 @@ export default function DashboardLayout({
       <Suspense fallback={null}>
         <PortaoLegalDoDashboard />
       </Suspense>
-      {children}
+      <div className="app-shell-content">{children}</div>
       {/* A navegação depende do perfil, mas não deve bloquear o loading da
           página. O Suspense permite enviar o fallback imediatamente enquanto
           esta consulta decorre em paralelo com o conteúdo. */}

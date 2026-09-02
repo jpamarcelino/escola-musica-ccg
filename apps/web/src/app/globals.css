@@ -149,6 +149,98 @@ body {
    destacar mesmo quando cai por cima de um traço do ícone. */
 .bottom-nav-ponto { position: absolute; top: -2px; right: -3px; width: 8px; height: 8px; border-radius: 999px; background: #E0523F; box-shadow: 0 0 0 2px var(--color-ink); }
 .bottom-nav-marca { position: absolute; top: -15px; left: 50%; width: 25px; height: auto; padding: 4px; border-radius: 50%; background: var(--color-ink); color: var(--marca-ciano); transform: translateX(-50%); pointer-events: none; }
+.desktop-nav-brand { display: none; }
+
+/* Estrutura autenticada responsiva. Ate 1023px conserva integralmente a
+   navegacao inferior aprovada no telemovel. A partir dai, a mesma
+   navegacao transforma-se numa lateral estavel e liberta a largura do
+   ecrã para as grelhas desktop das paginas. */
+@media (min-width: 1024px) {
+  .app-shell-content {
+    min-height: 100dvh;
+    padding-left: 272px;
+    background: #f5f6f8;
+  }
+
+  .app-primary-nav {
+    inset: 20px auto 20px 20px !important;
+    width: 232px;
+    padding: 0;
+  }
+
+  .app-primary-nav .bottom-nav-bar {
+    display: flex;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 18px 12px 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 28px;
+    background: #241f1c !important;
+    box-shadow: 0 16px 44px rgba(36,31,28,.16) !important;
+  }
+
+  .desktop-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 2px 4px 22px;
+    padding: 2px 4px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+    color: #fff;
+  }
+
+  .desktop-nav-brand-mark {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255,255,255,.08);
+    color: var(--marca-ciano);
+  }
+
+  .desktop-nav-brand-mark svg { width: 23px; height: 25px; }
+  .desktop-nav-brand strong { display: block; font-size: 13px; font-weight: 700; line-height: 1.2; }
+  .desktop-nav-brand small { display: block; margin-top: 3px; color: rgba(255,255,255,.56); font-size: 9.5px; line-height: 1.25; }
+
+  .app-primary-nav .bottom-nav-item {
+    min-height: 48px;
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 14px;
+    border-radius: 14px;
+  }
+
+  .app-primary-nav .bottom-nav-item::before { inset: 0; border-radius: 14px; }
+  .app-primary-nav .bottom-nav-item[aria-current='page']::before { background: rgba(255,255,255,.13); }
+  .app-primary-nav .bottom-nav-label { font-size: 13.5px; font-weight: 600; }
+  .app-primary-nav .bottom-nav-icon { width: 21px; height: 21px; }
+  .app-primary-nav .bottom-nav-ativo {
+    inset: 13px auto 13px 0;
+    width: 3px;
+    height: auto;
+    border-radius: 0 999px 999px 0;
+  }
+
+  .app-primary-nav .bottom-nav-marca { display: none; }
+  .app-primary-nav .bottom-nav-ponto { top: -3px; right: -4px; }
+
+  .app-shell-content > :is(main,div):first-child {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1440px) {
+  .app-shell-content { padding-left: 292px; }
+  .app-primary-nav { left: 28px !important; width: 240px; }
+}
 
 .empty-editorial {
   position: relative;
