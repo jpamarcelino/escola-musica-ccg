@@ -103,6 +103,20 @@ social que abre no computador sem se transformar noutro produto.
 Enquanto o limite de deploys da Vercel estiver esgotado, trabalhar e validar
 em localhost. Nao publicar novamente sem indicacao do utilizador.
 
+## Tema escuro
+
+O tema escuro da area familia/aluno foi implementado primeiro em localhost.
+A infraestrutura de aparencia ja existia (`claro`, `escuro`, `sistema` e
+`data-tema` no HTML); foi acrescentada a camada visual real. Paleta: fundo
+`#101214`, superficie `#191C1F`, superficie elevada `#202428`, linha
+`#30353A`, texto `#F4F5F6`, secundario `#A4ABB2` e azul CCG para foco.
+
+A camada cobre Home, agenda, avisos, mensalidades, conta, gestao e ficha de
+alunos, horarios, materiais, pedidos/reposicoes, formularios, estados vazios,
+zonas de perigo e dialogos. A build passa numa pasta separada para nao
+corromper o servidor dev. Ainda nao marcar as rotas como concluidas ate uma
+sessao de familia autenticada ser percorrida visualmente em localhost.
+
 ## Estado aprovado ate agora
 
 ### Concluido

@@ -47,6 +47,8 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Familia e aluno
 
+- [ ] Area familia/aluno - mobile e desktop - modo escuro - sistema implementado em localhost; falta auditoria visual autenticada rota a rota
+
 - [ ] `/dashboard/alunos` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/materiais` - familia - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/aluno/[alunoId]` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real

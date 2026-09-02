@@ -6711,3 +6711,148 @@ input[type="month"] {
 
   .app-shell-content .pinterest-home-folha { max-width: 720px; }
 }
+
+/* Tema escuro Pinterest. A escolha ja e aplicada ao <html> por
+   aparencia.ts; esta camada cobre a area autenticada e os seus dialogos. */
+html[data-tema='escuro'] {
+  color-scheme: dark;
+  --dark-bg: #101214;
+  --dark-surface: #191c1f;
+  --dark-raised: #202428;
+  --dark-border: #30353a;
+  --dark-text: #f4f5f6;
+  --dark-muted: #a4abb2;
+  --background: var(--dark-bg);
+  --foreground: var(--dark-text);
+  --color-ink: var(--dark-text);
+  --color-surface-raised: var(--dark-raised);
+}
+html[data-tema='escuro'] body { background: var(--dark-bg); color: var(--dark-text); }
+html[data-tema='escuro'] .app-shell-content { background: var(--dark-bg); }
+html[data-tema='escuro'] .app-shell-content main[class*='pinterest-'] { background: var(--dark-bg); color: var(--dark-text); }
+html[data-tema='escuro'] .app-shell-content main[class*='pinterest-'] :is(h1,h2,h3,h4,strong,dd) { color: var(--dark-text); }
+html[data-tema='escuro'] .app-shell-content main[class*='pinterest-'] :is(p,small,time,dt,label) { color: var(--dark-muted); }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-aula,.pinterest-alunos,.pinterest-atalhos a,
+  .pinterest-professor-seguintes,.pinterest-professor-gestao,
+  .pinterest-agenda-atalhos a,.pinterest-agenda-calendario,
+  .pinterest-detalhe-contexto,.pinterest-detalhe-seccao,
+  .pinterest-alunos-seccao,.pinterest-aluno-seccao,.pinterest-aluno-aula,
+  .pinterest-horario-aula,.pinterest-materiais-vazio,
+  .pinterest-mensalidades-resumo,.pinterest-mensalidades-nota,
+  .pinterest-conta-cartao,.pinterest-conta-seccao,.pinterest-conta-avancado-seccao,
+  .pinterest-pedido-bloco,.pinterest-pedir-reposicao-aula,
+  .pinterest-pedir-reposicao-formulario,.pinterest-pedir-reposicao-nota,
+  .lista-item,.empty-editorial,article
+) { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-alunos > a,.pinterest-professor-seguintes a,
+  .pinterest-professor-gestao a,.pinterest-conta-lista a,
+  .pinterest-detalhe-lista > *,.pinterest-mensalidades-seccao > *,
+  .pinterest-avisos-seccao article
+) { border-color: var(--dark-border); color: var(--dark-text); }
+
+html[data-tema='escuro'] .app-shell-content :is(input:not([type='checkbox']):not([type='radio']),select,textarea) {
+  border-color: var(--dark-border); background: var(--dark-raised); color: var(--dark-text); caret-color: #78aede;
+}
+html[data-tema='escuro'] .app-shell-content :is(input,select,textarea)::placeholder { color: #778089; opacity: 1; }
+html[data-tema='escuro'] .app-shell-content :is(input,select,textarea):focus { border-color: #78aede; box-shadow: 0 0 0 3px rgba(120,174,222,.22); }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-aula-icone,.pinterest-aluno-avatar,.pinterest-home-avatar,
+  .pinterest-atalhos a > span,.pinterest-agenda-atalhos a > span,
+  .pinterest-professor-gestao a > span,.pinterest-conta-identidade > span,
+  .pinterest-detalhe-inicial
+) { background: #243647; color: #9bc7ec; }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-aula-data,.pinterest-aula-aluno,.pinterest-alunos small,
+  .pinterest-home-seccao-topo > a,.pinterest-detalhe-seccao p,
+  .pinterest-conta-nota,.lista-item-sub,.empty-editorial-descricao
+) { color: var(--dark-muted); }
+
+html[data-tema='escuro'] .app-shell-content :is(.pinterest-home-alerta,.pinterest-agenda-mensagem,.pinterest-pedido-ajuda) {
+  border-color: #4a402c; background: #292419; color: #f2e3bd;
+}
+html[data-tema='escuro'] .app-shell-content :is(.pinterest-home-alerta small,.pinterest-agenda-mensagem p) { color: #c6b88f; }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-agenda-voltar,.pinterest-avisos-voltar,.pinterest-detalhe-voltar,
+  .pinterest-alunos-voltar,.pinterest-aluno-voltar,.pinterest-horario-voltar,
+  .pinterest-materiais-voltar,.pinterest-mensalidades-voltar,
+  .pinterest-conta-voltar,.pinterest-pedir-reposicao-voltar
+) { border-color: var(--dark-border); background: var(--dark-raised); color: var(--dark-text); box-shadow: none; }
+
+html[data-tema='escuro'] .modal-fundo { background: rgba(0,0,0,.72); }
+html[data-tema='escuro'] :is(.modal-caixa,.sheet-caixa,.pinterest-dialogo) {
+  border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 24px 70px rgba(0,0,0,.48);
+}
+html[data-tema='escuro'] :is(.modal-caixa,.sheet-caixa,.pinterest-dialogo) :is(h2,h3,strong) { color: var(--dark-text); }
+html[data-tema='escuro'] :is(.modal-caixa,.sheet-caixa,.pinterest-dialogo) :is(p,small) { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-dialogo-cancelar { border-color: var(--dark-border); background: var(--dark-raised); color: var(--dark-text); }
+html[data-tema='escuro'] .app-primary-nav .bottom-nav-bar { background: #181614 !important; }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-agenda .agenda-ligacao-calendario,
+  .pinterest-agenda-dias .partitura-linha-tempo,
+  .pinterest-agenda .estado-vazio,
+  .pinterest-agenda-semana,
+  .pinterest-avisos .avisos-outra-caixa,
+  .pinterest-aviso .aviso-corpo,
+  .pinterest-aviso .aviso-accao,
+  .pinterest-mensalidades-meses a,
+  .pinterest-mensalidades .mensalidade-lista article,
+  .pinterest-conta-identidade,
+  .pinterest-conta-lista,
+  .pinterest-alunos-vazio,
+  .pinterest-materiais :is(.material-videos,.material-partituras) a,
+  .pinterest-aluno-vazio,
+  .pinterest-aluno-atalhos a,
+  .pinterest-horario .partitura-linha-tempo,
+  .pinterest-horario .aluno-pedir-mais,
+  .pinterest-pedir-reposicao-opcoes label,
+  .pinterest-pedir-reposicao-vazio,
+  .pinterest-detalhe-aluno,
+  .pinterest-detalhe .estado-vazio,
+  .pinterest-pedido-opcao,
+  .pinterest-pedido-conhecer
+) { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 6px 20px rgba(0,0,0,.16); }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-agenda .filtro-alunos a[aria-current='page'],
+  .pinterest-avisos .filtro-alunos a[aria-current='page'],
+  .pinterest-materiais .materiais-separador[aria-selected='true']
+) { background: var(--dark-raised); color: var(--dark-text); box-shadow: none; }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-mensalidades-nota > *,
+  .pinterest-pedir-reposicao-nota > *
+) { border-color: var(--dark-border) !important; background: var(--dark-surface) !important; color: var(--dark-muted) !important; }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-agenda .proposta-horario,
+  .pinterest-pedido-aviso
+) { border-color: #4a402c; background: #292419; color: #e7d8b1; }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-conta-avancado-perigo,
+  .detalhe-zona-perigo,
+  .pinterest-editar-horario-perigo
+) { border-color: #563336; background: #24191b; }
+
+html[data-tema='escuro'] .app-shell-content :is(
+  .pinterest-agenda .agenda-ligacao-calendario,
+  .pinterest-agenda-semana,
+  .pinterest-avisos .avisos-outra-caixa,
+  .pinterest-aviso .aviso-accao,
+  .pinterest-aluno-aula,
+  .pinterest-aluno-atalhos a,
+  .pinterest-horario .aluno-pedir-mais,
+  .pinterest-pedido-opcao,
+  .pinterest-pedido-conhecer
+) { color: var(--dark-text); }
+
+html[data-tema='escuro'] .app-shell-content :is(.filtro-alunos,.materiais-separadores) { background: #16191c; }
+html[data-tema='escuro'] .app-shell-content :is(.partitura-linha-tempo,.agenda-grelha) { --linha-tempo-fundo: var(--dark-surface); }

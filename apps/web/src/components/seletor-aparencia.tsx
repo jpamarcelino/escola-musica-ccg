@@ -66,10 +66,7 @@ export function SeletorAparencia() {
           )
         })}
       </div>
-      <p className="text-xs text-foreground/50">
-        A escolha fica guardada neste aparelho. O tema escuro ainda está a ser feito — por
-        enquanto os ecrãs continuam claros nas três opções.
-      </p>
+      <p className="text-xs text-foreground/50">A escolha fica guardada neste aparelho.</p>
     </div>
   )
 }
