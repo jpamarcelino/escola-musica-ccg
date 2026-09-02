@@ -8,7 +8,6 @@ import {
   atualizarPasswordConta,
   logout,
 } from '@/lib/actions/auth'
-import { PageHeader } from '@/components/page-header'
 import { Rotulo, classesCampo } from '@/components/campo-formulario'
 import { AtivarNotificacoes } from '@/components/ativar-notificacoes'
 import { SeletorAparencia } from '@/components/seletor-aparencia'
@@ -19,9 +18,9 @@ import {
   EditarEmailForm,
   AlterarPasswordForm,
 } from '@/components/conta-forms'
-import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { ehContaCCG } from '@/lib/navegacao'
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
 import { DOCUMENTOS, CCG } from '@/lib/legal'
 
 export default async function ContaPage({
@@ -144,66 +143,94 @@ export default async function ContaPage({
   const chavePublica = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ''
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <PageHeader voltar="/dashboard" titulo="Conta" />
+    <main id="conteudo-principal" className="pinterest-conta">
+      <div className="pinterest-conta-folha">
+        <header className="pinterest-conta-cabecalho">
+          <Link href="/dashboard" className="pinterest-conta-voltar" aria-label="Voltar">
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+          <div>
+            <h1>Conta</h1>
+            <p>Os teus dados e as definições da aplicação.</p>
+          </div>
+        </header>
 
-        {(erroHorarios || erro) && (
-          <p className="rounded border border-red-600/30 p-3 text-sm text-red-600">
-            {erroHorarios || erro}
-          </p>
-        )}
+        {(erroHorarios || erro) && <p className="pinterest-conta-erro">{erroHorarios || erro}</p>}
 
-        <section className="space-y-4">
-          <h2 className="font-semibold">Dados</h2>
-          <EditarNomeForm action={atualizarNomeConta} nomeAtual={profile.nome} />
-          <EditarNifForm action={atualizarNifConta} nifAtual={profile.nif ?? ''} />
-          {!ehProfessor && (
-            <EditarEmailForm action={atualizarEmailConta} emailAtual={user.email ?? ''} />
-          )}
+        {/* Quem está autenticado, à cabeça e sem nada para carregar: numa
+            página de definições, a primeira pergunta é sempre "esta conta
+            é a minha?". */}
+        <div className="pinterest-conta-identidade">
+          <span aria-hidden="true">{profile.nome.slice(0, 1).toUpperCase()}</span>
+          <div>
+            <strong>{profile.nome}</strong>
+            <small>{user.email}</small>
+            <span className="pinterest-conta-papel">
+              {ehProfessor ? 'Professor' : 'Conta CCG'}
+              {profile.admin ? ' · Secretaria' : ''}
+            </span>
+          </div>
+        </div>
+
+        <section className="pinterest-conta-seccao">
+          <h2>Dados</h2>
+          <div className="pinterest-conta-cartao">
+            <EditarNomeForm action={atualizarNomeConta} nomeAtual={profile.nome} />
+            <EditarNifForm action={atualizarNifConta} nifAtual={profile.nif ?? ''} />
+            {!ehProfessor && (
+              <EditarEmailForm action={atualizarEmailConta} emailAtual={user.email ?? ''} />
+            )}
+          </div>
           {ehProfessor && (
-            <p className="text-sm">
-              <span className="text-foreground/60">Email: </span>
-              {user.email}
+            <p className="pinterest-conta-nota">
+              O email desta conta é {user.email}. Para o mudar, fala com a secretaria.
             </p>
           )}
         </section>
 
         {profile.admin && (
-          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-            <h2 className="font-semibold">Administração</h2>
+          <section className="pinterest-conta-seccao">
+            <h2>Administração</h2>
             {/* O único caminho para /admin a partir do painel de quem dá
                 aulas. Administrar é uma marca no perfil e não um tipo: um
                 professor pode ser administrador, e para esses o painel da
                 escola existia sem ter porta — só lá chegava quem soubesse
                 escrever o endereço à mão. */}
-            <p className="text-sm text-foreground/60">
-              Tens acesso à gestão da escola: alunos, professores, mensalidades e
-              recomendações.
+            <div className="pinterest-conta-lista">
+              <Link href="/admin">
+                <span>Ir para o painel da escola</span>
+                <span aria-hidden="true">
+                  <ChevronRight size={18} strokeWidth={2} />
+                </span>
+              </Link>
+            </div>
+            <p className="pinterest-conta-nota">
+              Tens acesso à gestão da escola: alunos, professores, mensalidades e recomendações.
             </p>
-            <LigacaoTerciaria href="/admin">Ir para o painel da escola</LigacaoTerciaria>
           </section>
         )}
 
-        <section className="space-y-3">
-          <h2 className="font-semibold">Alterar password</h2>
-          <AlterarPasswordForm action={atualizarPasswordConta} />
+        <section className="pinterest-conta-seccao">
+          <h2>Password</h2>
+          <div className="pinterest-conta-cartao">
+            <AlterarPasswordForm action={atualizarPasswordConta} />
+          </div>
         </section>
 
         {ehProfessor && (
           <>
-            <section className="space-y-3">
-              <h2 className="font-semibold">Disciplinas que ensinas</h2>
+            <section className="pinterest-conta-seccao">
+              <h2>Disciplinas que ensinas</h2>
               {meusInstrumentos.length === 0 ? (
-                <p className="text-sm text-foreground/60">
+                <p className="pinterest-conta-nota">
                   Ainda não tens nenhuma disciplina atribuída.
                 </p>
               ) : (
-                <ul className="space-y-1 text-sm">
+                <ul className="pinterest-conta-cartao pinterest-conta-disciplinas">
                   {meusInstrumentos.map((i) => (
                     <li key={i.id}>
-                      <strong className="font-medium">{i.nome}</strong>
-                      {i.especialidade ? ` · ${i.especialidade}` : ''}
+                      {i.nome}
+                      {i.especialidade ? <span> · {i.especialidade}</span> : null}
                     </li>
                   ))}
                 </ul>
@@ -213,12 +240,12 @@ export default async function ContaPage({
                   clique. Tirar também não é dele — uma disciplina pode
                   ter alunos inscritos, e a matrícula não pode ficar sem
                   o professor que a dá. */}
-              <p className="text-xs text-foreground/50">
+              <p className="pinterest-conta-nota">
                 Para deixar de dar uma destas, fala com a secretaria.
               </p>
 
               {porPedir.length > 0 && (
-                <form action={pedirInstrumento} className="space-y-3 pt-2">
+                <form action={pedirInstrumento} className="pinterest-conta-cartao space-y-3">
                   <div className="space-y-[6px]">
                     <Rotulo htmlFor="instrumentoId">Pedir para ensinar</Rotulo>
                     <select
@@ -260,7 +287,7 @@ export default async function ContaPage({
               )}
 
               {pedidos.length > 0 && (
-                <div className="space-y-2 pt-2">
+                <div className="space-y-2 pt-3">
                   <h3 className="text-[13px] font-semibold">Pedidos</h3>
                   {pedidos.map((p) => (
                     <div key={p.id} className="lista-item">
@@ -284,57 +311,70 @@ export default async function ContaPage({
             professor e da secretaria ao mesmo tempo liga uma vez e
             recebe tudo. Por isso esta secção está fora do bloco de
             professor. */}
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-          <h2 className="font-semibold">Aparência</h2>
-          <SeletorAparencia />
+        <section className="pinterest-conta-seccao">
+          <h2>Aparência</h2>
+          <div className="pinterest-conta-cartao">
+            <SeletorAparencia />
+          </div>
         </section>
 
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-          <h2 className="font-semibold">Notificações no telemóvel</h2>
-          {chavePublica ? (
-            <AtivarNotificacoes chavePublica={chavePublica} endpointsGuardados={endpoints} />
-          ) : (
-            <p className="text-sm text-foreground/60">
-              As notificações ainda não estão configuradas nesta instalação.
-            </p>
-          )}
-        </section>
-
-        <section className="border-t border-[var(--color-linha)] pt-6">
-          <form action={logout}>
-            <LigacaoTerciaria>Sair da conta</LigacaoTerciaria>
-          </form>
+        <section className="pinterest-conta-seccao">
+          <h2>Notificações</h2>
+          <div className="pinterest-conta-cartao">
+            {chavePublica ? (
+              <AtivarNotificacoes chavePublica={chavePublica} endpointsGuardados={endpoints} />
+            ) : (
+              <p className="pinterest-conta-nota" style={{ margin: 0 }}>
+                As notificações ainda não estão configuradas nesta instalação.
+              </p>
+            )}
+          </div>
         </section>
 
         {/* As mesmas ligações do rodapé público, aqui dentro. Quem já
             entrou não passa pelo rodapé das páginas de entrada, e tem de
             continuar a chegar aos documentos — e ao contacto para
             exercer direitos — sem sair da app. */}
-        <section className="conta-legal space-y-2 border-t border-[var(--color-linha)] pt-6">
-          <h2 className="font-semibold">Privacidade e informação legal</h2>
-          <ul>
+        <section className="pinterest-conta-seccao">
+          <h2>Privacidade e informação legal</h2>
+          <div className="pinterest-conta-lista">
             {DOCUMENTOS.map((d) => (
-              <li key={d.tipo}>
-                <Link href={d.caminho}>{d.titulo}</Link>
-              </li>
+              <Link key={d.tipo} href={d.caminho}>
+                <span>{d.titulo}</span>
+                <span aria-hidden="true">
+                  <ChevronRight size={18} strokeWidth={2} />
+                </span>
+              </Link>
             ))}
-          </ul>
-          <p className="conta-legal-nota">
+          </div>
+          <p className="pinterest-conta-nota">
             Para exercer direitos sobre os teus dados — acesso, retificação, apagamento,
             oposição, portabilidade — escreve para{' '}
-            <a href={`mailto:${CCG.email}`}>{CCG.email}</a>. O encerramento da conta faz-se na
-            página abaixo.
+            <a href={`mailto:${CCG.email}`}>{CCG.email}</a>.
           </p>
         </section>
 
         {/* Cancelar matrículas, passar alunos para outra conta e apagar a
             conta mudaram-se para uma página à parte: são raras, não se
             desfazem, e ao lado do nome e da password liam-se como mais um
-            campo a preencher. */}
-        <section className="space-y-2 border-t border-[var(--color-linha)] pt-6">
-          <LigacaoTerciaria href="/dashboard/conta/avancado">
-            Cancelamentos e transferências
-          </LigacaoTerciaria>
+            campo a preencher. Sair fica na mesma lista, no fim de tudo —
+            é o último sítio onde se toca por engano. */}
+        <section className="pinterest-conta-seccao">
+          <h2>Conta</h2>
+          <div className="pinterest-conta-lista">
+            <Link href="/dashboard/conta/avancado">
+              <span>Cancelamentos e transferências</span>
+              <span aria-hidden="true">
+                <ChevronRight size={18} strokeWidth={2} />
+              </span>
+            </Link>
+            <form action={logout}>
+              <button type="submit">Sair da conta</button>
+              <span aria-hidden="true">
+                <LogOut size={17} strokeWidth={2} />
+              </span>
+            </form>
+          </div>
         </section>
       </div>
     </main>

@@ -118,7 +118,19 @@ Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam
 6. Criar modo escuro a partir dos componentes ja estabilizados.
 7. Redesenhar e validar as 10 paginas publicas no mesmo sistema visual; nenhuma esta atualmente concluida no Design Pinterest.
 
-Proxima pagina sugerida: `/dashboard/conta`.
+Proxima pagina sugerida: `/dashboard/alunos`.
+
+### Nota sobre `/dashboard/conta`
+
+A pagina foi reescrita no sistema Pinterest (cabecalho compacto, cartao de
+identidade, uma seccao por assunto e listas de ligacoes para os destinos
+raros). Lint, typecheck e build passam.
+
+Nao recebeu `[x]`: os pontos 4 e 8 da definicao de concluida — testar com
+a conta adequada e inspecionar no browser — exigem sessao iniciada, e o
+agente que a escreveu nao entra em contas do dono do projeto. Falta
+percorre-la autenticado a 360, 390 e 430 px e confirmar os formularios de
+nome, NIF, email e password antes de a marcar.
 
 ## Processo por pagina
 
