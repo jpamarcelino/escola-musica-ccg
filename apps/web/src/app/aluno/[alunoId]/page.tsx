@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, BookOpen, CalendarDays, Bell, Clock } from 'lucide-react'
+import { ChevronLeft, BookOpen, CalendarDays, Bell, Clock } from 'lucide-react'
 import { getAuthContext } from '@/lib/auth-context'
 import { agoraNaEscola, estadoTemporalAula, proximaOcorrenciaDeAula, formatarHora, formatarSala, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
@@ -103,7 +103,6 @@ export default async function AlunoHubPage({
                       {` · até às ${formatarHora(horario.hora_fim)}`}
                       {sala ? ` · ${sala}` : ''}
                     </span>
-                    <ChevronRight size={18} strokeWidth={2} aria-hidden="true" />
                   </Link>
                 )
               })}

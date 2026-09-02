@@ -5105,13 +5105,12 @@ body:has(.auth-pagina) { background: var(--color-papel); }
    Home; as outras ficam brancas. Deixaram de ser acordeoes: abrir cada
    aula para ver a sala escondia a informacao que se veio buscar. */
 .pinterest-aluno-aulas { display: flex; flex-direction: column; gap: 10px; }
-.pinterest-aluno-aula { display: grid; grid-template-columns: 58px minmax(0,1fr) auto; gap: 4px 12px; padding: 14px 15px; border: 1px solid #e3e9ef; border-radius: 21px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-aluno-aula { display: grid; grid-template-columns: 58px minmax(0,1fr); gap: 4px 12px; padding: 14px 15px; border: 1px solid #e3e9ef; border-radius: 21px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
 .pinterest-aluno-aula[data-destaque="true"] { background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); }
 .pinterest-aluno-aula time { grid-row: 1 / span 3; align-self: center; color: #1b4f7a; font-size: 15px; font-weight: 750; font-variant-numeric: tabular-nums; }
 .pinterest-aluno-aula small { color: #26716b; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .pinterest-aluno-aula strong { overflow: hidden; font-size: 16.5px; font-weight: 730; text-overflow: ellipsis; white-space: nowrap; }
 .pinterest-aluno-aula span:last-of-type { color: #757b82; font-size: 12.5px; line-height: 1.4; }
-.pinterest-aluno-aula > svg { grid-row: 1 / span 3; align-self: center; color: #999ea4; }
 
 .pinterest-aluno-vazio { padding: 22px 18px; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); text-align: center; }
 .pinterest-aluno-vazio strong { display: block; font-size: 16px; font-weight: 720; }
@@ -5158,12 +5157,12 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-horario .aluno-aula-registo:last-child { border-bottom: 0; }
 .pinterest-horario .aluno-aula-registo > summary,
 .pinterest-horario .aluno-aula-registo > p:first-child { padding: 13px 15px; }
-.pinterest-horario .aluno-aula-registo summary { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; gap: 3px 11px; align-items: center; }
+.pinterest-horario .aluno-aula-registo summary { display: grid; grid-template-columns: 56px minmax(0,1fr); gap: 3px 11px; align-items: center; cursor: pointer; list-style: none; }
+.pinterest-horario .aluno-aula-registo summary::-webkit-details-marker { display: none; }
 .pinterest-horario .aluno-aula-registo summary time { grid-row: 1 / span 3; align-self: center; padding: 0; color: #1b4f7a; font-size: 15px; font-weight: 750; font-variant-numeric: tabular-nums; }
 .pinterest-horario .aluno-aula-registo summary small { color: #757b82; font-size: 11px; letter-spacing: 0; }
 .pinterest-horario .aluno-aula-registo summary strong { overflow: hidden; color: #17191c; font-family: inherit; font-size: 16px; font-weight: 730; text-overflow: ellipsis; white-space: nowrap; }
 .pinterest-horario .aluno-aula-registo summary b { color: #757b82; font-size: 12px; font-weight: 400; }
-.pinterest-horario .aluno-aula-registo summary i { grid-row: 1 / span 3; align-self: center; color: #999ea4; font-style: normal; }
 .pinterest-horario .aluno-aula-registo > div { padding: 0 15px 15px; }
 .pinterest-horario .aluno-aula-registo > div p { color: #757b82; font-size: 12.5px; }
 .pinterest-horario .aluno-aula-desmarcada,

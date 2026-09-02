@@ -216,7 +216,7 @@ export default async function ConsultarHorarioPage({
                 const horario = m.horarios!
                 return (
                   <details key={m.id} className="aluno-aula-registo">
-                    <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" /><span><small>{formatarDataEscolar(m.proxima, { weekday: 'long', day: 'numeric', month: 'long' })}</small><strong>{m.instrumentos?.nome}</strong><b>{m.profiles?.nome}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</b></span><i aria-hidden="true">+</i></summary>
+                    <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" /><span><small>{formatarDataEscolar(m.proxima, { weekday: 'long', day: 'numeric', month: 'long' })}</small><strong>{m.instrumentos?.nome}</strong><b>{m.profiles?.nome}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</b></span></summary>
                     {/* Cancelar a matrícula estava aqui, debaixo do horário de cada
                           aula. Esta página é para consultar quando é a próxima
                           aula — não é onde se desfaz uma inscrição, e a
