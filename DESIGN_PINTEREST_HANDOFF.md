@@ -86,6 +86,7 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/dashboard/avisos/[avisoId]` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/mensalidades` - variante familia - mobile - modo claro (`fc4402d`, estado vazio finalizado em `754460e`).
 - `/` - publica - mobile - modo claro.
+- `/pedir-aula` - publica - mobile - modo claro.
 
 Inclui:
 
@@ -139,6 +140,35 @@ Duas armadilhas encontradas e resolvidas, ambas so visiveis no browser:
 O rodape legal vive fora do `<main>` e apanhava o fundo do body; o
 cinzento passou para um involucro que envolve os dois.
 
+### Nota sobre `/pedir-aula`
+
+Os cinco passos, os dois becos e o estado bloqueado, no sistema.
+
+O `Wizard` e partilhado com `/aluno/[alunoId]/pedido`, que ainda nao esta
+redesenhado. A prop `publico`, que ja existia para decidir o rodape
+legal, passa a decidir tambem a moldura: o percurso autenticado fica
+exatamente como estava. Redesenha-lo sem o conseguir ver seria adivinhar.
+
+Pela mesma razao nao se tocou no `CartaoLink` nem no `ListaEscolhas` — o
+percurso publico tem marcacao propria. O `CartaoLink` traz estilos
+inline que o CSS nao sobrepoe sem `!important`, e o handoff pede para so
+consolidar componentes depois de haver dois ou tres exemplos reais.
+
+Progresso em cinco tracos em vez de bolas; escolhas ja feitas como
+pastilhas de 44px em que se toca para voltar atras.
+
+Tres armadilhas, todas so visiveis no browser:
+
+- `.pinterest-pedido label { display: block }` apanhou os blocos da
+  grelha de horarios, que SAO labels: desfez-lhes o flex em coluna e as
+  duas horas colaram-se numa so, "10h10h50". A regra passou a excluir
+  `.horario-bloco`;
+- o cabecalho da marca vive fora do `<main>` e ficava numa faixa branca
+  sobre o cinzento. Resolvido como o projeto ja resolvia para as paginas
+  de papel: `body:has(.pinterest-publico-pagina)`;
+- um professor sem foto ficava com uma caixa cinzenta vazia, que se le
+  como imagem que nao carregou. Cai para a inicial.
+
 ## Ordem de trabalho recomendada
 
 1. Fechar o percurso familiar mobile claro: Agenda, Avisos, Conta, Gerir alunos, Mensalidades e paginas do aluno.
@@ -147,9 +177,9 @@ cinzento passou para um involucro que envolve os dois.
 4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
-7. Redesenhar e validar as restantes paginas publicas no mesmo sistema visual. A `/` ja esta; faltam nove.
+7. Redesenhar e validar as restantes paginas publicas no mesmo sistema visual. A `/` e a `/pedir-aula` ja estao; faltam oito.
 
-Proxima pagina sugerida: `/pedir-aula`, que e para onde a `/` manda toda a gente. Em alternativa, `/aluno/[alunoId]` (variante familia/aluno) se o percurso com sessao voltar a ser prioridade.
+Proxima pagina sugerida: `/registo` e `/login`, que sao o fim do percurso publico — quem escolhe horarios acaba num deles.
 
 ### Nota sobre `/dashboard/conta`
 

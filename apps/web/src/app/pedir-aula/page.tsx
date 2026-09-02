@@ -1,9 +1,10 @@
+import Image from 'next/image'
 import Link from 'next/link'
+import { ChevronRight, Info } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DIAS_SEMANA, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separarFaixaEtaria, parseFaixaEtaria, dentroDaFaixa, elegivelParaDisciplina, HOUR_HEIGHT, paraMinutos } from '@ccg/core'
-import { CartaoLink } from '@/components/cartao-link'
-import { Wizard, ListaEscolhas } from '@/components/wizard'
+import { Wizard } from '@/components/wizard'
 import { SeletorIdade } from '@/components/seletor-idade'
 import type { ProfessorParaRecomendacao } from '@/components/campo-recomendacao'
 import { FormularioPedido } from './formulario-pedido'
@@ -147,7 +148,7 @@ export default async function PedirAulaPage({
         ]}
       >
         {sugestao && (
-          <p className="wizard-sem-opcoes">
+          <p className="pinterest-pedido-aviso">
             {sugestao.texto}
             {sugestao.acao && (
               <>
@@ -158,19 +159,52 @@ export default async function PedirAulaPage({
           </p>
         )}
 
-        <ListaEscolhas>
-          {ordenados.map((i) => (
-            <CartaoLink
-              key={i.id}
-              href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${i.id}`}
-              nome={programa === 'danca' ? i.titulo : i.nome}
-              descricao={i.idade ?? undefined}
-              icone={i.imagem_url ?? undefined}
-              iconeTamanho={34}
-              bloqueado={!i.elegivel}
-            />
-          ))}
-        </ListaEscolhas>
+        {/* Marcação própria do percurso público em vez do CartaoLink: o
+            componente traz estilos inline que o CSS não sobrepõe, e é
+            usado pelo percurso autenticado, que ainda tem o aspeto
+            antigo. O handoff pede para só consolidar componentes depois
+            de haver dois ou três exemplos reais. */}
+        <div className="pinterest-pedido-opcoes">
+          {ordenados.map((i) => {
+            const nome = programa === 'danca' ? i.titulo : i.nome
+            return i.elegivel ? (
+              <Link
+                key={i.id}
+                href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${i.id}`}
+                className="pinterest-pedido-opcao"
+              >
+                <span className="pinterest-pedido-opcao-imagem">
+                  {i.imagem_url ? (
+                    <Image src={i.imagem_url} width={80} height={80} alt="" />
+                  ) : null}
+                </span>
+                <span className="pinterest-pedido-opcao-texto">
+                  <strong>{nome}</strong>
+                  {i.idade ? <small>{i.idade}</small> : null}
+                </span>
+                <ChevronRight size={20} strokeWidth={2} aria-hidden="true" />
+              </Link>
+            ) : (
+              // A etiqueta vai dentro do bloco de texto e não numa linha
+              // própria da grelha: solta, abria um vazio por baixo do
+              // nome e fazia o cartão bloqueado ficar maior do que os que
+              // se podem escolher.
+              <div key={i.id} className="pinterest-pedido-opcao" aria-disabled="true">
+                <span className="pinterest-pedido-opcao-imagem">
+                  {i.imagem_url ? (
+                    <Image src={i.imagem_url} width={80} height={80} alt="" />
+                  ) : null}
+                </span>
+                <span className="pinterest-pedido-opcao-texto">
+                  <strong>{nome}</strong>
+                  {i.idade ? <small>{i.idade}</small> : null}
+                  <span className="pinterest-pedido-opcao-nota">Fora da faixa etária</span>
+                </span>
+                <span />
+              </div>
+            )
+          })}
+        </div>
       </Wizard>
     )
   }
@@ -183,8 +217,14 @@ export default async function PedirAulaPage({
 
   if (instrumentoAtual && !elegivelParaDisciplina(idadeNum, programa, instrumentoAtual.nome)) {
     return (
-      <Wizard title="Não disponível para esta idade" voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}>
-        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
+      // Este beco é da página pública como qualquer outro passo — sem
+      // `publico` ficava com a moldura antiga e o rodapé legal sumia.
+      <Wizard
+        publico
+        title="Não disponível para esta idade"
+        voltar={`/pedir-aula?programa=${programa}&idade=${idadeNum}`}
+      >
+        <p className="pinterest-pedido-vazio">
           Esta disciplina não está disponível para a idade indicada.
         </p>
       </Wizard>
@@ -222,25 +262,46 @@ export default async function PedirAulaPage({
         ]}
       >
         {professores.length ? (
-          <ListaEscolhas>
+          <div className="pinterest-pedido-opcoes">
             {professores.map((p) => (
-              <CartaoLink
-                key={p.professor_id}
-                href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}&professor=${p.professor_id}`}
-                nome={p.nome}
-                descricao={p.especialidade ?? undefined}
-                icone={p.foto_url ?? undefined}
-                iconeTamanho={46}
-                iconeCobre
-                infoHref={`/professor/${p.professor_id}?voltar=${encodeURIComponent(
-                  `/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`
-                )}`}
-                infoRotulo={`Conhecer ${p.nome}`}
-              />
+              // Duas ações no mesmo cartão — escolher e conhecer — e um
+              // link não pode viver dentro de outro. Ficam lado a lado.
+              <div key={p.professor_id} className="pinterest-pedido-opcao-dupla">
+                <Link
+                  href={`/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}&professor=${p.professor_id}`}
+                  className="pinterest-pedido-opcao"
+                >
+                  {/* Sem foto, a inicial — uma caixa cinzenta vazia
+                      lê-se como imagem que não carregou. */}
+                  <span className="pinterest-pedido-opcao-imagem" data-cobre="sim">
+                    {p.foto_url ? (
+                      <Image src={p.foto_url} width={104} height={104} alt="" />
+                    ) : (
+                      <span className="pinterest-pedido-opcao-inicial" aria-hidden="true">
+                        {p.nome.trim().charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </span>
+                  <span className="pinterest-pedido-opcao-texto">
+                    <strong>{p.nome}</strong>
+                    {p.especialidade ? <small>{p.especialidade}</small> : null}
+                  </span>
+                  <ChevronRight size={20} strokeWidth={2} aria-hidden="true" />
+                </Link>
+                <Link
+                  href={`/professor/${p.professor_id}?voltar=${encodeURIComponent(
+                    `/pedir-aula?programa=${programa}&idade=${idadeNum}&instrumento=${instrumento}`
+                  )}`}
+                  className="pinterest-pedido-conhecer"
+                  aria-label={`Conhecer ${p.nome}`}
+                >
+                  <Info size={19} strokeWidth={2} aria-hidden="true" />
+                </Link>
+              </div>
             ))}
-          </ListaEscolhas>
+          </div>
         ) : (
-          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
+          <p className="pinterest-pedido-vazio">
             Ainda não há professores para esta disciplina.
           </p>
         )}
