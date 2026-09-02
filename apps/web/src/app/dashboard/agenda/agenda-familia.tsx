@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/empty-state'
 import { SubmitButton } from '@/components/submit-button'
 import { classesCampo } from '@/components/campo-formulario'
 import { formatarDataEscolar } from '@ccg/core'
+import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   aceitarPropostaHorario,
   recusarPropostaHorario,
@@ -238,25 +239,26 @@ export async function AgendaFamilia({
   const agora = agoraNaEscola()
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina partitura-agenda">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
+    <main id="conteudo-principal" className="pinterest-agenda">
+      <div className="pinterest-agenda-folha">
+        <header className="pinterest-agenda-cabecalho">
+          <Link href="/dashboard" className="pinterest-agenda-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={23} aria-hidden="true" />
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Em família</p>
             <h1>Agenda</h1>
-            {aulas[0] && <p>A próxima aula começa às {formatarHora(aulas[0].hora_inicio)}.</p>}
+            <p>{aulas[0] ? `Próxima aula às ${formatarHora(aulas[0].hora_inicio)}` : 'As próximas aulas da família'}</p>
           </div>
         </header>
 
         {/* A agenda responde a "o que tenho esta semana"; o calendário
             responde a "há aula no dia 8?". São perguntas diferentes e é
             aqui que a segunda aparece a quem veio fazer a primeira. */}
-        <nav className="pt-2">
+        <nav className="pinterest-agenda-calendario" aria-label="Calendário escolar">
           <Link href="/dashboard/calendario" className="agenda-ligacao-calendario">
-            Calendário do ano letivo
+            <CalendarDays size={20} aria-hidden="true" />
+            <span><strong>Calendário escolar</strong><small>Férias, feriados e interrupções</small></span>
+            <ChevronRight size={19} aria-hidden="true" />
           </Link>
         </nav>
 
@@ -407,7 +409,7 @@ export async function AgendaFamilia({
             }
           />
         ) : (
-          <div className="partitura-dias">
+          <div className="partitura-dias pinterest-agenda-dias">
             {[...porData.entries()].map(([data, doDia]) => {
               const partes = partesData(data)
               return (
@@ -450,9 +452,7 @@ export async function AgendaFamilia({
                               {aula.sala ? ` · ${aula.sala}` : ''}
                             </span>
                           </span>
-                          <span className="partitura-seta" aria-hidden="true">
-                            →
-                          </span>
+                          <ChevronRight className="partitura-seta" size={19} aria-hidden="true" />
                         </Link>
                       )
                     })}

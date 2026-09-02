@@ -259,6 +259,52 @@ body {
 .pinterest-atalhos small { align-self: start; color: #858a91; font-size: 11px; }
 .pinterest-home :is(a,button):active { transform: scale(.98); }
 .pinterest-home :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+
+/* Design Pinterest - agenda familiar, mobile e modo claro. */
+.pinterest-agenda { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-agenda-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-agenda-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-agenda-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-agenda-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-agenda-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+.pinterest-agenda-calendario { margin-bottom: 28px; }
+.pinterest-agenda .agenda-ligacao-calendario { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 70px; padding: 12px 14px; border: 1px solid #e4e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-agenda .agenda-ligacao-calendario > svg:first-child { box-sizing: content-box; padding: 10px; border-radius: 13px; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-agenda .agenda-ligacao-calendario span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-agenda .agenda-ligacao-calendario strong { font-size: 14px; }
+.pinterest-agenda .agenda-ligacao-calendario small { overflow: hidden; margin-top: 2px; color: #7b8188; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-agenda .agenda-ligacao-calendario > svg:last-child { color: #969ba1; }
+.pinterest-agenda .filtro-alunos { display: flex; gap: 7px; margin: 0 0 24px; padding: 4px; overflow-x: auto; border-radius: 15px; background: #e9ecef; scrollbar-width: none; }
+.pinterest-agenda .filtro-alunos::-webkit-scrollbar { display: none; }
+.pinterest-agenda .filtro-alunos a { min-width: max-content; flex: 1; padding: 9px 14px; border: 0; border-radius: 11px; color: #686e75; font-size: 13px; font-weight: 650; text-align: center; text-decoration: none; }
+.pinterest-agenda .filtro-alunos a[aria-current="page"] { background: #fff; color: #17191c; box-shadow: 0 2px 8px rgba(31,35,39,.08); }
+.pinterest-agenda .proposta-horario { margin: 0 0 14px; padding: 17px; border: 1px solid #e7ddb8; border-radius: 21px; background: #fff9e8; box-shadow: none; }
+.pinterest-agenda .proposta-horario h2 { color: #342f20; font-family: inherit; font-size: 17px; letter-spacing: 0; }
+.pinterest-agenda .proposta-horario p { margin-top: 8px; color: #635d4b; font-size: 13px; line-height: 1.55; }
+.pinterest-agenda .proposta-horario-mensagem { padding: 10px 12px; border: 0; border-radius: 12px; background: rgba(255,255,255,.7); }
+.pinterest-agenda .proposta-horario-acoes { gap: 8px; }
+.pinterest-agenda .proposta-horario-acoes button { min-height: 46px; border-radius: 14px; }
+.pinterest-agenda-dias.partitura-dias { margin-top: 0; }
+.pinterest-agenda-dias .partitura-dia + .partitura-dia { margin-top: 30px; }
+.pinterest-agenda-dias .partitura-dia > header { grid-template-columns: 45px minmax(0,1fr); gap: 10px; margin: 0 2px 10px; }
+.pinterest-agenda-dias .partitura-dia-numero { display: grid; width: 45px; height: 45px; place-items: center; border-radius: 14px; background: #e7f1fa; color: #1b4f7a; font-family: inherit; font-size: 18px; font-weight: 750; }
+.pinterest-agenda-dias .partitura-dia header strong { font-size: 16px; }
+.pinterest-agenda-dias .partitura-dia header small { margin-top: 2px; color: #80858c; font-size: 11px; }
+.pinterest-agenda-dias .partitura-linha-tempo { overflow: hidden; border: 1px solid #e6e9ed; border-radius: 21px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-agenda-dias .partitura-linha-tempo::before,
+.pinterest-agenda-dias .partitura-marca { display: none; }
+.pinterest-agenda-dias .partitura-aula { grid-template-columns: 52px minmax(0,1fr) auto; gap: 11px; min-height: 84px; padding: 13px 14px; border-bottom-color: #eceef0; }
+.pinterest-agenda-dias .partitura-aula:last-child { border-bottom: 0; }
+.pinterest-agenda-dias .partitura-aula time { align-self: center; padding: 0; color: #1b4f7a; font-size: 14px; font-weight: 750; }
+.pinterest-agenda-dias .partitura-aula-conteudo small { margin: 0 0 2px; color: #26716b; font-size: 9px; letter-spacing: 0; }
+.pinterest-agenda-dias .partitura-aula-conteudo strong { overflow: hidden; color: #17191c; font-family: inherit; font-size: 16px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-agenda-dias .partitura-aula-conteudo span { display: -webkit-box; margin-top: 3px; overflow: hidden; color: #757b82; font-size: 11px; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.pinterest-agenda-dias .partitura-seta { box-sizing: content-box; padding: 10px 0 10px 8px; color: #999ea4; }
+.pinterest-agenda .estado-vazio { border-radius: 21px; background: #fff; }
+.pinterest-agenda :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+.pinterest-agenda :is(a,button):active { transform: scale(.98); }
+@media (min-width: 431px) { .pinterest-agenda { padding-inline: 24px; } }
+@media (prefers-reduced-motion: reduce) { .pinterest-agenda :is(a,button) { transition: none; } }
 @media (min-width: 768px) {
   .pinterest-home { padding-inline: 24px; }
 }
