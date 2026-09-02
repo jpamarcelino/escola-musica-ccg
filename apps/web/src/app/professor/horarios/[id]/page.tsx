@@ -7,6 +7,7 @@ import { SubmitButton } from '@/components/submit-button'
 import { Rotulo, classesCampo } from '@/components/campo-formulario'
 import { MensagemErro } from '@/components/mensagem'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { Clock, Users } from 'lucide-react'
 
 export default async function EditarHorarioPage({
   params,
@@ -51,20 +52,65 @@ export default async function EditarHorarioPage({
     .map((c) => c.alunos?.nome)
     .filter((nome): nome is string => Boolean(nome))
 
+  const bloqueado = horario.estado === 'bloqueado'
+
   return (
-    <main id="conteudo-principal" className="partitura-pagina editar-horario-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/dashboard/horarios" className="partitura-voltar" rotulo="Voltar aos horários">←</VoltarAtras>
-          <div><p className="partitura-sobretitulo">Disponibilidade semanal</p><h1>Editar horário</h1><p>{horario.dia_semana} · {horario.hora_inicio.slice(0, 5)}–{horario.hora_fim.slice(0, 5)}</p></div>
+    <main id="conteudo-principal" className="pinterest-editar-horario">
+      <div className="pinterest-editar-horario-folha">
+        <header className="pinterest-editar-horario-cabecalho">
+          <VoltarAtras
+            destino="/dashboard/horarios"
+            className="pinterest-editar-horario-voltar"
+            rotulo="Voltar aos horários"
+            tamanho={23}
+          />
+          <div>
+            <h1>Editar horário</h1>
+            <p>Uma hora da tua disponibilidade semanal</p>
+          </div>
         </header>
 
-        {erro && <MensagemErro>{erro}</MensagemErro>}
+        {/* O que se está a editar, antes dos campos que o vão mudar. Sem
+            isto, quem chega de uma lista de catorze horas iguais não tem
+            como confirmar que abriu a certa. */}
+        <div className="pinterest-editar-horario-contexto">
+          <Clock size={20} aria-hidden="true" />
+          <div>
+            <strong>
+              {horario.dia_semana} · {horario.hora_inicio.slice(0, 5)}–
+              {horario.hora_fim.slice(0, 5)}
+            </strong>
+            <span>{bloqueado ? 'Bloqueado' : alunosConfirmados.length > 0 ? 'Ocupado' : 'Disponível'}</span>
+          </div>
+        </div>
 
-        <form action={atualizarHorario} className="editar-horario-form">
+        {erro && (
+          <div className="pinterest-editar-horario-mensagem">
+            <MensagemErro>{erro}</MensagemErro>
+          </div>
+        )}
+
+        {/* Quem já lá está vem antes do formulário e não depois: mudar a
+            hora de uma aula que tem alunos não é a mesma decisão que
+            mudar uma vaga vazia, e isso tem de se saber antes de mexer
+            nos campos. */}
+        {alunosConfirmados.length > 0 && (
+          <div className="pinterest-editar-horario-alunos">
+            <Users size={19} aria-hidden="true" />
+            <div>
+              <strong>
+                {alunosConfirmados.length}{' '}
+                {alunosConfirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}
+              </strong>
+              <span>{alunosConfirmados.join(', ')}</span>
+            </div>
+          </div>
+        )}
+
+        <form action={atualizarHorario} className="pinterest-editar-horario-form">
           <input type="hidden" name="horarioId" value={horario.id} />
 
-          <div className="editar-horario-campo">
+          <div className="pinterest-editar-horario-campo">
             <Rotulo htmlFor="diaSemana">Dia da semana</Rotulo>
             <select
               id="diaSemana"
@@ -81,8 +127,8 @@ export default async function EditarHorarioPage({
             </select>
           </div>
 
-          <div className="editar-horario-horas">
-            <div className="editar-horario-campo">
+          <div className="pinterest-editar-horario-horas">
+            <div className="pinterest-editar-horario-campo">
               <Rotulo htmlFor="horaInicio">Das</Rotulo>
               <input
                 id="horaInicio"
@@ -95,7 +141,7 @@ export default async function EditarHorarioPage({
                 className={classesCampo}
               />
             </div>
-            <div className="editar-horario-campo">
+            <div className="pinterest-editar-horario-campo">
               <Rotulo htmlFor="horaFim">Até</Rotulo>
               <input
                 id="horaFim"
@@ -110,21 +156,29 @@ export default async function EditarHorarioPage({
             </div>
           </div>
 
-          {alunosConfirmados.length > 0 && (
-            <aside><strong>{alunosConfirmados.length} {alunosConfirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}</strong><span>{alunosConfirmados.join(', ')}</span></aside>
-          )}
-
-          <SubmitButton
-            textoAGuardar="A guardar…"
-            className="editar-horario-guardar"
-          >
+          <SubmitButton textoAGuardar="A guardar…" className="pinterest-editar-horario-guardar">
             Guardar alterações
           </SubmitButton>
         </form>
 
-        <section className="detalhe-zona-perigo">
-          <div><strong>Apagar horário</strong><small>{alunosConfirmados.length > 0 ? 'Já existem alunos confirmados; considera bloqueá-lo.' : 'Esta ação não pode ser anulada.'}</small></div>
-          <BotaoAcaoDestruir label="Apagar horário" variante="editorial" mensagem={alunosConfirmados.length > 0 ? 'Tens a certeza que queres apagar este horário? Já tens alunos confirmados nele — considera bloqueá-lo em vez de apagar.' : 'Tens a certeza que queres apagar este horário? Esta ação é irreversível.'} action={apagarHorario}>
+        <section className="pinterest-editar-horario-perigo">
+          <strong>Apagar horário</strong>
+          <small>
+            {alunosConfirmados.length > 0
+              ? 'Já tens alunos confirmados nesta hora. Bloqueá-la em Horários fecha-a a pedidos novos sem desfazer as aulas que já existem.'
+              : 'A vaga desaparece da tua semana. Não há como a recuperar.'}
+          </small>
+          <BotaoAcaoDestruir
+            label="Apagar horário"
+            variante="editorial"
+            titulo="Apagar esta hora?"
+            mensagem={
+              alunosConfirmados.length > 0
+                ? `${horario.dia_semana}, ${horario.hora_inicio.slice(0, 5)}–${horario.hora_fim.slice(0, 5)}, com ${alunosConfirmados.length} ${alunosConfirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}.\n\nConsidera bloqueá-la em vez de a apagar.`
+                : `${horario.dia_semana}, ${horario.hora_inicio.slice(0, 5)}–${horario.hora_fim.slice(0, 5)}.\n\nA vaga desaparece da tua semana e não há como a recuperar.`
+            }
+            action={apagarHorario}
+          >
             <input type="hidden" name="horarioId" value={horario.id} />
           </BotaoAcaoDestruir>
         </section>

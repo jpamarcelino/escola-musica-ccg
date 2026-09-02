@@ -6540,3 +6540,40 @@ input[type="month"] {
 /* Uma disciplina fora da faixa etaria continua visivel e continua fora de
    alcance — o estado nao muda, so a maneira de o mostrar. */
 .pinterest-pedir-privado .wizard-escolhas > .cartao-bloqueado { background: #f3f4f6 !important; border-color: #e6e8eb !important; box-shadow: none; opacity: .72; }
+
+/* Design Pinterest - editar uma hora do horario do professor.
+   E a ultima pagina da area de professor. Ordem: o que se esta a editar,
+   quem la esta, os campos, e so no fim o apagar. */
+.pinterest-editar-horario { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-editar-horario-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-editar-horario-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-editar-horario-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-editar-horario-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-editar-horario-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+.pinterest-editar-horario-contexto { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; margin-bottom: 14px; padding: 15px; border: 1px solid #e4e8ec; border-radius: 22px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-editar-horario-contexto > svg { box-sizing: content-box; padding: 11px; border-radius: 14px; background: #fff; color: #1b4f7a; }
+.pinterest-editar-horario-contexto div { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-editar-horario-contexto strong { font-size: 16px; font-weight: 730; }
+.pinterest-editar-horario-contexto span { margin-top: 3px; color: #6d737a; font-size: 12.5px; }
+.pinterest-editar-horario-mensagem { margin-bottom: 14px; padding: 13px 15px; border: 1px solid #e6e9ed; border-radius: 18px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-editar-horario-alunos { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 11px; align-items: center; margin-bottom: 14px; padding: 13px 15px; border: 1px solid #e7ddb8; border-radius: 20px; background: #fff9e8; }
+.pinterest-editar-horario-alunos > svg { box-sizing: content-box; padding: 10px; border-radius: 13px; background: #fff; color: #8a631b; }
+.pinterest-editar-horario-alunos div { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-editar-horario-alunos strong { color: #342f20; font-size: 14px; font-weight: 700; }
+.pinterest-editar-horario-alunos span { margin-top: 2px; color: #635d4b; font-size: 12px; line-height: 1.4; }
+.pinterest-editar-horario-form { display: flex; flex-direction: column; gap: 14px; padding: 16px; border: 1px solid #e6e9ed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-editar-horario-campo { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.pinterest-editar-horario-campo label { color: #7b8188; font-size: 12px; font-weight: 640; }
+.pinterest-editar-horario-horas { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; }
+.pinterest-editar-horario :is(input,select) { width: 100%; min-width: 0; height: 52px; padding: 0 14px; border: 1px solid #e0e4e8; border-radius: 14px; background: #fff; color: #17191c; font-family: inherit; }
+.pinterest-editar-horario :is(input,select):focus { border-color: #78aede; box-shadow: 0 0 0 3px rgba(120,174,222,.28); outline: none; }
+.pinterest-editar-horario-guardar { display: flex; min-height: 52px; align-items: center; justify-content: center; margin-top: 2px; border-radius: 16px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 680; }
+.pinterest-editar-horario-guardar:disabled { opacity: .5; }
+/* Apagar fica noutra superficie e no fim: e a unica accao desta pagina
+   que nao se desfaz. */
+.pinterest-editar-horario-perigo { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; margin-top: 26px; padding: 16px; border: 1px solid #efdfe1; border-radius: 20px; background: #fff; }
+.pinterest-editar-horario-perigo strong { font-size: 14.5px; font-weight: 700; }
+.pinterest-editar-horario-perigo small { margin-bottom: 9px; color: #7b8188; font-size: 12.5px; line-height: 1.45; }
+.pinterest-editar-horario-perigo button { min-height: 42px; padding: 0 16px; border-radius: 999px; border-width: 1px; font-size: 13px; font-weight: 640; }
+.pinterest-editar-horario :is(a,button,input,select):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width: 431px) { .pinterest-editar-horario { padding-inline: 24px; } }

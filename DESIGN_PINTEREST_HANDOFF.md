@@ -669,3 +669,28 @@ percurso publico so ha um, por isso nunca se viu; no autenticado ha o
 subtitulo "Segue os passos para encontrar a opcao certa.", que saia todo
 em maiusculas espacadas. Passou a `:first-of-type`.
 
+
+## Editar uma hora do horario
+
+`/professor/horarios/[id]` era a ultima rota da area de professor fora do
+Design Pinterest. A ordem da pagina mudou, e nao so o aspeto:
+
+1. o que se esta a editar (dia, hora e estado) num cartao com o fade
+   azul — quem chega de uma lista de catorze horas iguais nao tinha como
+   confirmar que abriu a certa;
+2. quem ja la esta, antes dos campos e nao depois. Mudar a hora de uma
+   aula que tem alunos nao e a mesma decisao que mudar uma vaga vazia, e
+   isso tem de se saber antes de mexer nos campos, nao a seguir;
+3. os campos;
+4. apagar, noutra superficie e no fim.
+
+A confirmacao de apagar passou a dizer qual e a hora e quantos alunos
+tem, em vez de "tens a certeza". E com alunos confirmados sugere bloquear
+em Horarios, que e a saida que nao desfaz aulas.
+
+## Area de professor concluida
+
+Com esta, todas as rotas que um professor alcanca estao implementadas no
+Design Pinterest. Falta a validacao com conta real em quase todas — nenhuma
+tem `[x]` por isso. As duas rotas que sobram no ficheiro
+(`/professor/[professorId]` e as publicas) sao da lista publica.
