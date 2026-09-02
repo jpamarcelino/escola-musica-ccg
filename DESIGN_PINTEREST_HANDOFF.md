@@ -114,6 +114,8 @@ O fluxo seguinte de Presencas foi implementado e publicado em `890059f`. `/dashb
 
 Depois de feedback de falta de clareza, a chamada individual foi revista em `8d4c9ca`: o titulo passou a explicar a tarefa, o progresso ganhou barra visual e cada estado e agora uma linha larga com icone, nome e explicacao (`Presente / Veio a aula`, `Falta avisada / Avisou antes`, `Sem aviso / Nao avisou`). As tres cores so ganham peso depois da selecao.
 
+O Historico de Presencas e o detalhe por aluno foram implementados e publicados em `24cb560`. O indice usa um cartao por aluno com contagem discreta; o detalhe abre com percentagem de presencas e agrupa os registos por mes, usando verde, amarelo e vermelho apenas nos estados. O estado vazio do indice foi validado autenticado a 360 px, 390 px e 430 px. A conta de teste nao tem alunos, por isso as listas preenchidas e o detalhe individual aguardam dados reais.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
@@ -182,6 +184,7 @@ Usar algo proximo deste texto com outro agente:
 - `60ca4c7`: entrada de Presencas mobile clara; publicada e validada sem pendencias, aguarda uma aula por confirmar para fechar.
 - `890059f`: lista por confirmar e chamada individual redesenhadas; estado vazio publicado e validado, estados com aulas aguardam dados reais.
 - `8d4c9ca`: segunda iteracao da chamada individual, com estados explicitos e progresso visual depois de feedback de falta de clareza.
+- `24cb560`: Historico de Presencas e detalhe individual mobile claro; estado vazio validado, estados preenchidos aguardam dados reais.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais
