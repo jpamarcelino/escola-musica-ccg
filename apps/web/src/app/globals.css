@@ -4774,3 +4774,55 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-conta :is(a,button):active { transform: scale(.99); }
 @media (min-width: 431px) { .pinterest-conta { padding-inline: 24px; } }
 @media (prefers-reduced-motion: reduce) { .pinterest-conta :is(a,button) { transition: none; transform: none; } }
+
+/* Design Pinterest - informacao legal: o indice e cada documento.
+   Texto contratual longo, lido no telemovel: uma superficie branca so,
+   medida de linha confortavel e titulos que se distinguem sem serem
+   decorativos. O conteudo e o mesmo de sempre; muda a leitura. */
+.pinterest-legal { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-legal-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-legal-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-legal-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-legal-cabecalho h1 { overflow-wrap: anywhere; font-size: 27px; font-weight: 760; line-height: 1.1; letter-spacing: 0; }
+.pinterest-legal-cabecalho p { margin-top: 5px; color: #767c84; font-size: 13.5px; line-height: 1.45; }
+
+/* Indice: um cartao por documento, com o resumo por baixo do titulo. */
+.pinterest-legal-indice { display: flex; flex-direction: column; gap: 10px; }
+.pinterest-legal-indice a { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 12px; align-items: center; padding: 15px 16px; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-legal-indice strong { grid-column: 1; font-size: 16px; font-weight: 720; overflow-wrap: anywhere; }
+.pinterest-legal-indice small { grid-column: 1; color: #797e85; font-size: 12.5px; line-height: 1.45; }
+.pinterest-legal-indice svg { grid-column: 2; grid-row: 1 / span 2; color: #969ba1; }
+
+.pinterest-legal-seccao { margin-top: 26px; }
+.pinterest-legal-seccao > h2 { margin: 0 2px 10px; font-size: 21px; font-weight: 740; line-height: 1.2; }
+
+/* O corpo do documento. Um cartao so, para o texto nao ficar aos saltos
+   entre superficies a cada titulo. */
+.pinterest-legal-corpo { padding: 18px 17px 20px; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-legal-corpo > section + section { margin-top: 26px; padding-top: 22px; border-top: 1px solid #eceef0; }
+.pinterest-legal-corpo h2 { margin: 0 0 10px; color: #1b4f7a; font-size: 16.5px; font-weight: 740; line-height: 1.3; overflow-wrap: anywhere; }
+.pinterest-legal-corpo p { margin: 0 0 11px; color: #3d434a; font-size: 15px; line-height: 1.62; overflow-wrap: anywhere; }
+.pinterest-legal-corpo p:last-child { margin-bottom: 0; }
+.pinterest-legal-corpo ul { margin: 0 0 11px; padding-left: 20px; }
+.pinterest-legal-corpo li { margin-bottom: 7px; color: #3d434a; font-size: 15px; line-height: 1.55; }
+.pinterest-legal-corpo li:last-child { margin-bottom: 0; }
+.pinterest-legal-corpo a { color: #1b4f7a; text-decoration: underline; text-underline-offset: 2px; }
+
+/* A tabela rola dentro da sua propria caixa: a 360px uma tabela de duas
+   colunas com frases inteiras nao cabe, e deixar a pagina inteira rolar
+   de lado tornaria o texto todo dificil de ler. */
+.pinterest-legal-tabela-caixa { margin: 0 0 12px; overflow-x: auto; border: 1px solid #e8eaed; border-radius: 14px; -webkit-overflow-scrolling: touch; }
+.pinterest-legal-tabela { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.pinterest-legal-tabela th, .pinterest-legal-tabela td { padding: 10px 12px; border-bottom: 1px solid #eceef0; text-align: left; vertical-align: top; line-height: 1.5; min-width: 132px; }
+.pinterest-legal-tabela th { background: #f7f8fa; color: #4a5058; font-size: 12px; font-weight: 700; }
+.pinterest-legal-tabela td { color: #3d434a; }
+.pinterest-legal-tabela tr:last-child td { border-bottom: 0; }
+
+.pinterest-legal-nota { margin: 12px 2px 0; color: #797e85; font-size: 12.5px; line-height: 1.55; }
+.pinterest-legal-nota a { color: #1b4f7a; }
+.pinterest-legal-voltar-indice { display: flex; min-height: 52px; align-items: center; justify-content: center; margin-top: 22px; border-radius: 16px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 700; text-decoration: none; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
+
+.pinterest-legal :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+.pinterest-legal :is(a,button):active { transform: scale(.99); }
+@media (min-width: 431px) { .pinterest-legal { padding-inline: 24px; } }
+@media (prefers-reduced-motion: reduce) { .pinterest-legal :is(a,button) { transition: none; transform: none; } }

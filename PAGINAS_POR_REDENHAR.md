@@ -21,8 +21,8 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/esqueci-password`
 - [ ] `/redefinir-password`
 - [ ] `/instalar`
-- [ ] `/legal`
-- [ ] `/legal/[documento]`
+- [ ] `/legal` - publica - mobile - modo claro - implementado, falta validar visualmente
+- [ ] `/legal/[documento]` - publica - mobile - modo claro - implementado, falta validar visualmente
 
 ## Internas partilhadas
 

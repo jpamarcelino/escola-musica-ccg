@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 import { formatarDataEscolar } from '@ccg/core'
 import type { DocumentoLegal } from '@/lib/legal'
 import { LIVRO_RECLAMACOES_URL } from '@/lib/legal'
@@ -9,36 +10,33 @@ import { LIVRO_RECLAMACOES_URL } from '@/lib/legal'
 // imprimida, guardada em PDF pelo browser e copiada. Um texto contratual
 // que só existe dentro de uma janela que fecha não cumpre o dever de
 // informação permanente.
+//
+// O texto é o mesmo de sempre — o que mudou foi a leitura: uma superfície
+// branca só, para o olho não saltar entre cartões a cada título, e uma
+// medida de linha que se aguenta num telemóvel.
 export function DocumentoLegalPagina({ documento }: { documento: DocumentoLegal }) {
+  const data = (valor: string) =>
+    formatarDataEscolar(valor, { day: 'numeric', month: 'long', year: 'numeric' })
+
   return (
-    <main id="conteudo-principal" className="partitura-pagina legal-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/legal" className="partitura-voltar" aria-label="Voltar à informação legal">
-            ←
+    <main id="conteudo-principal" className="pinterest-legal">
+      <div className="pinterest-legal-folha">
+        <header className="pinterest-legal-cabecalho">
+          <Link href="/legal" className="pinterest-legal-voltar" aria-label="Voltar à informação legal">
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Centro Cultural da Guarda</p>
             <h1>{documento.titulo}</h1>
             <p>
-              Versão {documento.versao} · Elaborado em{' '}
-              {formatarDataEscolar(documento.elaboradoEm, {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
+              Versão {documento.versao} · Elaborado em {data(documento.elaboradoEm)}
               {documento.entradaEmVigor
-                ? ` · Em vigor desde ${formatarDataEscolar(documento.entradaEmVigor, {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}`
+                ? ` · Em vigor desde ${data(documento.entradaEmVigor)}`
                 : ' · Entrada em vigor a definir'}
             </p>
           </div>
         </header>
 
-        <article className="legal-corpo">
+        <article className="pinterest-legal-corpo">
           {documento.seccoes.map((s) => (
             <section key={`${s.numero ?? ''}${s.titulo}`}>
               <h2>{s.numero ? `${s.numero}. ${s.titulo}` : s.titulo}</h2>
@@ -54,12 +52,8 @@ export function DocumentoLegalPagina({ documento }: { documento: DocumentoLegal 
                   )
                 }
                 return (
-                  /* A tabela rola dentro da sua própria caixa: a 375px uma
-                     tabela de duas colunas com frases inteiras não cabe, e
-                     deixar a página inteira rolar de lado tornaria o texto
-                     todo difícil de ler. */
-                  <div key={i} className="legal-tabela-caixa">
-                    <table className="legal-tabela">
+                  <div key={i} className="pinterest-legal-tabela-caixa">
+                    <table className="pinterest-legal-tabela">
                       <thead>
                         <tr>
                           <th scope="col">{b.colunas[0]}</th>
@@ -95,9 +89,9 @@ export function DocumentoLegalPagina({ documento }: { documento: DocumentoLegal 
           )}
         </article>
 
-        <nav className="legal-outros" aria-label="Outros documentos">
-          <Link href="/legal">Ver todos os documentos legais</Link>
-        </nav>
+        <Link href="/legal" className="pinterest-legal-voltar-indice">
+          Ver todos os documentos legais
+        </Link>
       </div>
     </main>
   )
