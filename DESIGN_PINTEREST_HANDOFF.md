@@ -694,3 +694,23 @@ Com esta, todas as rotas que um professor alcanca estao implementadas no
 Design Pinterest. Falta a validacao com conta real em quase todas — nenhuma
 tem `[x]` por isso. As duas rotas que sobram no ficheiro
 (`/professor/[professorId]` e as publicas) sao da lista publica.
+
+## Restos das regras substituidas
+
+Redesenhar uma pagina deixa no globals.css o bloco antigo dela. Nao da
+erro nenhum, e na maior parte das propriedades a regra nova ganha por vir
+depois — mas so nas que ela repete. As outras continuam a aplicar-se.
+
+Aconteceu na ficha do professor: o `.ficha-professor-retrato` antigo dava
+`margin-top: 30px` a um retrato que ocupava a largura toda, e essa margem
+sobreviveu ao redesenho. O retrato passou a uma caixa de 96 px numa
+grelha, e a margem empurrava-o para baixo do nome e crescia o cartao 32 px
+— 160 em vez de 128. Estava assim em producao.
+
+Regra pratica: depois de redesenhar uma pagina, procurar no globals.css as
+classes que ela usa e ver o que ficou definido mais acima. O que a regra
+nova nao repete, herda.
+
+Uma varredura a procura de mais casos — a mesma propriedade com valores
+diferentes em blocos afastados — nao encontrou outros.
+
