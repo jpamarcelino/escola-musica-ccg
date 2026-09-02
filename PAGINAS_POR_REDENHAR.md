@@ -6,9 +6,9 @@ Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por 
 
 - [x] `/dashboard` - familia/aluno - mobile - modo claro (`d9b22d2`, acabamento `067da9d`)
 
-## Publicas herdadas da main
+## Publicas pendentes no Design Pinterest
 
-Estas rotas existem e estao fora da fase interna atual. Nao as considerar concluidas no Design Pinterest sem uma revisao propria.
+Estas rotas funcionam com o design herdado da `main`, mas todas precisam de redesign ou revisao completa antes de receberem `[x]`.
 
 - [ ] `/`
 - [ ] `/pedir-aula`

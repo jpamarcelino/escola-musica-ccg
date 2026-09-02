@@ -99,7 +99,7 @@ Inclui:
 - `/dashboard` - modo escuro;
 - estados de outros papeis que possam usar a rota.
 
-Todas as restantes paginas internas continuam pendentes ate serem marcadas no inventario.
+Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam pendentes ate serem marcadas no inventario. O facto de uma pagina estar funcional ou ter recebido um redesign noutra branch nao a torna concluida no Design Pinterest.
 
 ## Ordem de trabalho recomendada
 
@@ -109,6 +109,7 @@ Todas as restantes paginas internas continuam pendentes ate serem marcadas no in
 4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
+7. Redesenhar e validar as 10 paginas publicas no mesmo sistema visual; nenhuma esta atualmente concluida no Design Pinterest.
 
 Proxima pagina sugerida: `/dashboard/agenda`, porque e uma acao primaria da Home e estabelece o padrao para listas cronologicas e detalhes de aula.
 
@@ -134,4 +135,3 @@ Usar algo proximo deste texto com outro agente:
 - `d9b22d2`: nova estrutura da Home familiar mobile.
 - `61ad8c1`: experiencia rejeitada; cartao inteiro azul ficou demasiado pesado. Nao repetir.
 - `067da9d`: solucao aprovada; cartao branco com fade azul subtil.
-
