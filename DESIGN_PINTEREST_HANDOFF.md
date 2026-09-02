@@ -85,6 +85,7 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/dashboard/avisos` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/avisos/[avisoId]` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/mensalidades` - variante familia - mobile - modo claro (`fc4402d`, estado vazio finalizado em `754460e`).
+- `/` - publica - mobile - modo claro.
 
 Inclui:
 
@@ -111,6 +112,33 @@ Mensalidades estabelece o padrao para resumo financeiro familiar: um resumo mens
 
 Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam pendentes ate serem marcadas no inventario. O facto de uma pagina estar funcional ou ter recebido um redesign noutra branch nao a torna concluida no Design Pinterest.
 
+### Nota sobre `/`
+
+A home publica passou ao sistema Pinterest. Saiu o carrossel editorial:
+rodava sozinho de cinco em cinco segundos e mostrava uma escola de cada
+vez, escondendo dois tercos da oferta. As tres cabem as tres no ecra.
+
+Com isso a pagina deixou de precisar de um componente de cliente com
+temporizador e estado — e e a pagina mais visitada do site.
+
+As tres escolas sao cartoes brancos com a ilustracao numa caixa pastel de
+64px (verde-agua, indigo, ambar — as mesmas dos acessos rapidos da Hoje),
+nome, disciplinas, a frase que ja existia, e seta. Os destinos nao
+mudaram: cada uma entra no assistente com o programa escolhido.
+
+Duas armadilhas encontradas e resolvidas, ambas so visiveis no browser:
+
+- a grelha do cartao com colocacao automatica mandava o nome para a
+  coluna de 20px da seta, e o texto partia letra a letra. Todo o texto
+  passou para um `span` unico em coluna, como `.pinterest-alunos` ja
+  fazia;
+- a 360px o cabecalho precisa de 357px e so tem 328: o "Criar conta"
+  saia do ecra. A marca passou a encolher com `min-width: 0` e o nome
+  corta com reticencias.
+
+O rodape legal vive fora do `<main>` e apanhava o fundo do body; o
+cinzento passou para um involucro que envolve os dois.
+
 ## Ordem de trabalho recomendada
 
 1. Fechar o percurso familiar mobile claro: Agenda, Avisos, Conta, Gerir alunos, Mensalidades e paginas do aluno.
@@ -119,9 +147,9 @@ Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam
 4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
-7. Redesenhar e validar as 10 paginas publicas no mesmo sistema visual; nenhuma esta atualmente concluida no Design Pinterest.
+7. Redesenhar e validar as restantes paginas publicas no mesmo sistema visual. A `/` ja esta; faltam nove.
 
-Proxima pagina sugerida: `/aluno/[alunoId]` (variante familia/aluno).
+Proxima pagina sugerida: `/pedir-aula`, que e para onde a `/` manda toda a gente. Em alternativa, `/aluno/[alunoId]` (variante familia/aluno) se o percurso com sessao voltar a ser prioridade.
 
 ### Nota sobre `/dashboard/conta`
 

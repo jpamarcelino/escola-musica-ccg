@@ -1,85 +1,122 @@
-'use client'
-
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { ChevronRight, Download, LogIn } from 'lucide-react'
 import { SimboloCCG } from '@/components/simbolo-ccg'
 
+// As três escolas. O `href` entra no assistente já com a escola
+// escolhida, pelo que o passo de escolher escola é saltado — a idade é
+// pedida logo a seguir, em pop-up. Os textos são os que já existiam.
 const OFERTA = [
-  { id: 'musica', nome: 'Música', detalhe: 'Piano · guitarra · canto · bateria', texto: 'Aprender a escutar, repetir e encontrar uma voz própria.', imagens: ['/instrumentos/piano.png', '/instrumentos/guitarra.png', '/instrumentos/bateria.png'] },
-  { id: 'danca', nome: 'Dança', detalhe: 'Ballet · contemporâneo · estilos urbanos', texto: 'Descobrir o corpo, o espaço e a expressão através do movimento.', imagens: ['/instrumentos/ballet-classico.png', '/instrumentos/danca-contemporanea.png', '/instrumentos/estilos-urbanos.png'] },
-  { id: 'bebes', nome: 'Primeiros sons', detalhe: 'Música para bebés · 0–5 anos', texto: 'Uma primeira relação com som, ritmo e criação em família.', imagens: ['/instrumentos/bebes-0-3.png', '/instrumentos/bebes-3-5.png'] },
+  {
+    id: 'musica',
+    nome: 'Música',
+    detalhe: 'Piano · guitarra · canto · bateria',
+    texto: 'Aprender a escutar, repetir e encontrar uma voz própria.',
+    imagem: '/instrumentos/piano.png',
+  },
+  {
+    id: 'danca',
+    nome: 'Dança',
+    detalhe: 'Ballet · contemporâneo · estilos urbanos',
+    texto: 'Descobrir o corpo, o espaço e a expressão através do movimento.',
+    imagem: '/instrumentos/ballet-classico.png',
+  },
+  {
+    id: 'bebes',
+    nome: 'Primeiros sons',
+    detalhe: 'Música para bebés · 0 aos 5 anos',
+    texto: 'Uma primeira relação com som, ritmo e criação em família.',
+    imagem: '/instrumentos/bebes-0-3.png',
+  },
 ] as const
 
+// A porta de entrada de quem não tem conta.
+//
+// Substituiu um carrossel que rodava sozinho de cinco em cinco segundos e
+// pedia um componente de cliente com temporizador e estado. As três
+// escolas cabem as três no ecrã; mostrar uma de cada vez escondia duas
+// terças partes da oferta e obrigava a esperar para as ver. Agora a
+// página não leva JavaScript nenhum.
 export function PublicHomeExperience() {
-  const [ativa, setAtiva] = useState<(typeof OFERTA)[number]['id']>('musica')
-  const [pausado, setPausado] = useState(false)
-  const selecionada = OFERTA.find((item) => item.id === ativa) ?? OFERTA[0]
-  const indiceAtivo = OFERTA.findIndex((item) => item.id === ativa)
-
-  useEffect(() => {
-    if (pausado || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const intervalo = window.setInterval(() => {
-      setAtiva((atual) => {
-        const indice = OFERTA.findIndex((item) => item.id === atual)
-        return OFERTA[(indice + 1) % OFERTA.length].id
-      })
-    }, 5200)
-    return () => window.clearInterval(intervalo)
-  }, [pausado])
-
-  function mover(direcao: -1 | 1) {
-    setPausado(true)
-    setAtiva(OFERTA[(indiceAtivo + direcao + OFERTA.length) % OFERTA.length].id)
-  }
-
   return (
-    <main id="conteudo-principal" className={`publico-vivo publico-vivo-${ativa}`}>
-      <nav className="publico-vivo-nav" aria-label="Navegação principal">
-        {/* Também aqui é ligação, e não texto: quem desce a home e quer
-            recomeçar do topo procura a marca, e nas outras páginas ela
-            leva ao início — se aqui não fizesse nada, a regra deixava de
-            valer justamente onde se aprende. */}
-        <Link href="/" className="publico-vivo-marca" aria-label="Centro Cultural da Guarda — ir para o início"><SimboloCCG /><small>Centro Cultural da Guarda</small></Link>
-        <div><Link href="/login">Entrar</Link><Link href="/registo">Criar conta</Link></div>
+    <main id="conteudo-principal" className="pinterest-publico">
+      <nav className="pinterest-publico-topo" aria-label="Navegação principal">
+        <Link
+          href="/"
+          className="pinterest-publico-marca"
+          aria-label="Centro Cultural da Guarda — ir para o início"
+        >
+          <SimboloCCG />
+          <small>Centro Cultural da Guarda</small>
+        </Link>
+        <div className="pinterest-publico-entrar">
+          <Link href="/login">Entrar</Link>
+          <Link href="/registo">Criar conta</Link>
+        </div>
       </nav>
 
-      <section className="publico-vivo-hero" aria-labelledby="publico-vivo-titulo">
-        <div className="publico-vivo-intro">
-          <p>Centro Cultural da Guarda</p>
-          <h1 id="publico-vivo-titulo">Onde começa<br/><em>uma prática.</em></h1>
-          <span>Escolhe uma direção. A página acompanha a tua descoberta.</span>
-        </div>
+      <header className="pinterest-publico-intro">
+        <p>Escolas Artísticas</p>
+        <h1>Onde começa uma prática.</h1>
+        <span>
+          Música, dança e primeiros sons, no Centro Cultural da Guarda. Escolhe uma
+          escola e diz quando podes.
+        </span>
+      </header>
 
-        <Link href={`/pedir-aula?programa=${selecionada.id}`} className="publico-vivo-visual" aria-label={`Ver aulas de ${selecionada.nome}`}>
-          <span className="publico-vivo-visual-indice">0{indiceAtivo + 1}</span>
-          <div className="publico-vivo-colagem" key={selecionada.id} aria-hidden="true">
-            {selecionada.imagens.map((imagem, indice) => <Image key={imagem} src={imagem} width={230} height={230} alt="" priority={indice === 0} className={`publico-vivo-imagem publico-vivo-imagem-${indice + 1}`} />)}
-          </div>
-          <div className="publico-vivo-visual-texto" aria-live="polite"><strong>{selecionada.nome}</strong><p>{selecionada.detalhe}</p><span>Ver tipos de aula <i aria-hidden="true">↗</i></span></div>
-        </Link>
-
-        <div className="publico-vivo-escolha">
-          <p>O que queres descobrir?</p>
-          <div aria-label="Oferta artística">
-            {OFERTA.map((item) => {
-              const selecionado = item.id === ativa
-              return (
-                <Link key={item.id} href={`/pedir-aula?programa=${item.id}`} aria-current={selecionado ? 'true' : undefined} onMouseEnter={() => setAtiva(item.id)} onFocus={() => setAtiva(item.id)}>
-                  <span>{item.nome}</span><small>Ver aulas</small>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        <div className="publico-vivo-reveal" key={selecionada.id}>
-          <p>{selecionada.texto}</p>
-          <div className="publico-vivo-controlos" aria-label="Controlos do carrossel"><button type="button" onClick={() => mover(-1)} aria-label="Anterior">←</button><span>{indiceAtivo + 1} / {OFERTA.length}</span><button type="button" onClick={() => mover(1)} aria-label="Seguinte">→</button><button type="button" onClick={() => setPausado((valor) => !valor)}>{pausado ? 'Retomar' : 'Pausar'}</button></div>
+      <section className="pinterest-publico-seccao" aria-labelledby="publico-oferta">
+        <h2 id="publico-oferta">O que queres aprender?</h2>
+        <div className="pinterest-publico-escolas">
+          {OFERTA.map((escola) => (
+            <Link
+              key={escola.id}
+              href={`/pedir-aula?programa=${escola.id}`}
+              className="pinterest-publico-escola"
+            >
+              <span className="pinterest-publico-escola-imagem">
+                <Image src={escola.imagem} width={88} height={88} alt="" />
+              </span>
+              {/* Todo o texto dentro de um só filho da grelha. Solto, a
+                  colocação automática mandava o nome para a coluna da
+                  seta e a linha partia letra a letra. */}
+              <span className="pinterest-publico-escola-texto">
+                <strong>{escola.nome}</strong>
+                <small>{escola.detalhe}</small>
+                <p>{escola.texto}</p>
+              </span>
+              <ChevronRight size={20} strokeWidth={2} aria-hidden="true" />
+            </Link>
+          ))}
         </div>
       </section>
 
-      <footer className="publico-vivo-rodape"><p>Pela Guarda, pela arte e pela cultura.</p><Link href="/instalar">Levar a aplicação contigo</Link></footer>
+      <section className="pinterest-publico-seccao" aria-labelledby="publico-conta">
+        <h2 id="publico-conta">Já tens conta?</h2>
+        <div className="pinterest-publico-lista">
+          <Link href="/login">
+            <span>
+              <LogIn size={19} strokeWidth={2} aria-hidden="true" />
+            </span>
+            <span>
+              <strong>Entrar</strong>
+              <small>Ver as aulas, os avisos e as mensalidades</small>
+            </span>
+            <ChevronRight size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+          <Link href="/instalar">
+            <span>
+              <Download size={19} strokeWidth={2} aria-hidden="true" />
+            </span>
+            <span>
+              <strong>Levar a aplicação contigo</strong>
+              <small>Instalar no telemóvel, sem passar por uma loja</small>
+            </span>
+            <ChevronRight size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
+      <p className="pinterest-publico-assinatura">Pela Guarda, pela arte e pela cultura.</p>
     </main>
   )
 }

@@ -18,9 +18,13 @@ export default async function Home() {
   }
 
   return (
-    <>
+    // O fundo cinzento é do invólucro e não do <main>: o rodapé legal
+    // fica fora do main (é do documento, não do conteúdo) e sem isto
+    // apanhava o fundo do body — via-se a emenda entre o cinzento da
+    // página e o branco por baixo.
+    <div className="pinterest-publico-pagina">
       <PublicHomeExperience />
       <RodapeLegal />
-    </>
+    </div>
   )
 }

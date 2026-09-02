@@ -5016,3 +5016,105 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 
 .pinterest-materiais :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width: 431px) { .pinterest-materiais { padding-inline: 24px; } }
+
+/* ── Home pública, no sistema Pinterest ─────────────────────────────
+   A porta de entrada de quem ainda não tem conta. Segue a mesma
+   linguagem da página Hoje — fundo cinzento claro, superfícies brancas,
+   hierarquia por tamanho — com duas diferenças que vêm de não haver
+   sessão: não há barra inferior (daí o `padding-bottom` normal, sem os
+   116px que a barra exige) e o cabeçalho tem de levar "Entrar" e
+   "Criar conta", que são o que aqui se vem fazer.
+
+   Substitui o carrossel editorial anterior. Deixa de haver JavaScript
+   nesta página: era um componente de cliente com temporizador e estado,
+   e é a página mais visitada do site. */
+.pinterest-publico-pagina { min-height: 100dvh; background: #f5f6f8; }
+/* O rodapé legal vive fora do <main> e herdava o fundo do body. Aqui
+   assenta no mesmo cinzento e a linha de cima acompanha a paleta. */
+.pinterest-publico-pagina .rodape-legal { margin-top: 8px; border-top-color: #e4e7ea; }
+.pinterest-publico-pagina .rodape-legal :is(a,p) { color: #767c84; }
+.pinterest-publico { padding: max(14px, env(safe-area-inset-top, 0px)) 16px 8px; color: #17191c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif; }
+@media (min-width: 430px) {
+  .pinterest-publico { padding-inline: 24px; }
+}
+
+.pinterest-publico-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; margin-bottom: 26px; }
+/* A marca encolhe, as duas ligações não. A 360px a linha precisa de
+   357px e só tem 328, e sem `min-width: 0` um item de flex nunca desce
+   abaixo do seu conteúdo — o "Criar conta" saía do ecrã. Assim o nome
+   corta com reticências e o símbolo fica sempre inteiro. */
+.pinterest-publico-marca { display: inline-flex; min-width: 0; min-height: 44px; flex: 1 1 auto; align-items: center; gap: 9px; color: #17191c; text-decoration: none; }
+.pinterest-publico-marca svg { flex: none; width: 30px; height: 30px; }
+.pinterest-publico-marca small { overflow: hidden; font-size: 12px; color: #5f646b; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-publico-entrar { display: flex; flex: none; align-items: center; gap: 4px; }
+.pinterest-publico-entrar a { display: inline-flex; min-height: 44px; align-items: center; padding-inline: 13px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; }
+.pinterest-publico-entrar a:first-child { color: #3b4148; }
+.pinterest-publico-entrar a:last-child { border: 1px solid #dfe3e8; background: #fff; color: #1b4f7a; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+
+.pinterest-publico-intro { padding: 0 2px 26px; }
+.pinterest-publico-intro p { font-size: 12px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: #7d838b; }
+.pinterest-publico-intro h1 { margin-top: 9px; font-size: 33px; font-weight: 760; line-height: 1.06; letter-spacing: -.01em; }
+.pinterest-publico-intro > span { display: block; margin-top: 10px; max-width: 34ch; color: #6b7178; font-size: 15px; line-height: 1.45; }
+
+.pinterest-publico-seccao { margin-bottom: 28px; }
+.pinterest-publico-seccao > h2 { margin-bottom: 11px; padding-inline: 2px; font-size: 21px; font-weight: 740; line-height: 1.2; }
+
+/* Cada escola é um cartão inteiro, e não uma linha de lista: é o que se
+   vem escolher, e a ilustração faz parte do que distingue uma da outra.
+   A caixa tem 64px — mais do que os 46px das listas da área com sessão,
+   porque aqui isto é o conteúdo principal e não um adorno ao lado.
+
+   Três colunas e uma linha, com todo o texto dentro de um `span` em
+   coluna. A primeira versão punha strong, small e p como filhos diretos
+   da grelha e deixava a colocação automática resolver: o nome ia parar à
+   coluna de 20px da seta e partia letra a letra. É o mesmo padrão que
+   `.pinterest-alunos` já usava, e por esta razão. */
+.pinterest-publico-escolas { display: grid; gap: 11px; }
+.pinterest-publico-escola { display: grid; grid-template-columns: 64px minmax(0,1fr) 20px; gap: 14px; align-items: center; padding: 15px; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 5px 18px rgba(31,35,39,.06); transition: transform .18s ease; }
+.pinterest-publico-escola-imagem { display: grid; width: 64px; height: 64px; place-items: center; border-radius: 19px; }
+.pinterest-publico-escola-imagem img { width: 44px; height: 44px; object-fit: contain; }
+.pinterest-publico-escola:nth-child(1) .pinterest-publico-escola-imagem { background: #e2f1ef; }
+.pinterest-publico-escola:nth-child(2) .pinterest-publico-escola-imagem { background: #e8ebfa; }
+.pinterest-publico-escola:nth-child(3) .pinterest-publico-escola-imagem { background: #fff0d5; }
+.pinterest-publico-escola-texto { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+.pinterest-publico-escola strong { font-size: 18px; font-weight: 700; line-height: 1.15; }
+/* O separador "·" tem espaços à volta e é aí que a linha quebra; sem
+   isto partia entre o ponto e a palavra seguinte. */
+.pinterest-publico-escola small { color: #797e85; font-size: 12.5px; line-height: 1.35; }
+.pinterest-publico-escola p { color: #6b7178; font-size: 13.5px; line-height: 1.4; }
+.pinterest-publico-escola > svg { flex: none; color: #8a8f96; }
+
+/* Duas ligações de fim de página, na forma de lista agrupada — o mesmo
+   padrão de "Os teus alunos" na Hoje. */
+.pinterest-publico-lista { overflow: hidden; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-publico-lista a { display: grid; grid-template-columns: 42px minmax(0,1fr) 20px; gap: 12px; align-items: center; min-height: 72px; padding: 12px 14px; color: #17191c; text-decoration: none; }
+.pinterest-publico-lista a + a { border-top: 1px solid #eceef0; }
+.pinterest-publico-lista a > span:first-child { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 14px; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-publico-lista strong { font-size: 15.5px; font-weight: 650; }
+.pinterest-publico-lista small { display: block; margin-top: 2px; color: #797e85; font-size: 12.5px; }
+.pinterest-publico-lista svg:last-child { color: #8a8f96; }
+
+.pinterest-publico-assinatura { padding: 30px 2px 0; color: #7d838b; font-size: 13px; line-height: 1.5; text-align: center; }
+
+/* Entrada em cascata, com o `entrada-suave` que o projeto já usa: cada
+   cartão chega um pouco depois do anterior. Só sobre `prefers-reduced-
+   motion: no-preference` — quem pediu menos movimento vê a página feita. */
+@media (prefers-reduced-motion: no-preference) {
+  .pinterest-publico-intro,
+  .pinterest-publico-seccao,
+  .pinterest-publico-assinatura { animation: entrada-suave .34s var(--ease-suave) both; }
+  .pinterest-publico-intro { animation-delay: .02s; }
+  .pinterest-publico-seccao:nth-of-type(1) { animation-delay: .08s; }
+  .pinterest-publico-seccao:nth-of-type(2) { animation-delay: .14s; }
+  .pinterest-publico-assinatura { animation-delay: .2s; }
+  .pinterest-publico-escola:nth-child(1) { animation: entrada-suave .34s var(--ease-suave) .12s both; }
+  .pinterest-publico-escola:nth-child(2) { animation: entrada-suave .34s var(--ease-suave) .18s both; }
+  .pinterest-publico-escola:nth-child(3) { animation: entrada-suave .34s var(--ease-suave) .24s both; }
+}
+
+.pinterest-publico :is(a,button):active { transform: scale(.98); }
+.pinterest-publico :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .pinterest-publico :is(a,button) { transition: none; }
+  .pinterest-publico :is(a,button):active { transform: none; }
+}

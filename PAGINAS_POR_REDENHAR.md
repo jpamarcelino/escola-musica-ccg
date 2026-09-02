@@ -14,7 +14,7 @@ Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por 
 
 Estas rotas funcionam com o design herdado da `main`, mas todas precisam de redesign ou revisao completa antes de receberem `[x]`.
 
-- [ ] `/`
+- [x] `/` - publica - mobile - modo claro (verificada a 360, 390 e 430 px, sem sessao)
 - [ ] `/pedir-aula`
 - [ ] `/professor/[professorId]`
 - [ ] `/login`
