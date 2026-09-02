@@ -87,6 +87,7 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/dashboard/mensalidades` - variante familia - mobile - modo claro (`fc4402d`, estado vazio finalizado em `754460e`).
 - `/` - publica - mobile - modo claro.
 - `/pedir-aula` - publica - mobile - modo claro.
+- `/login`, `/registo` e `/esqueci-password` - publicas - mobile - modo claro.
 
 Inclui:
 
@@ -169,6 +170,44 @@ Tres armadilhas, todas so visiveis no browser:
 - um professor sem foto ficava com uma caixa cinzenta vazia, que se le
   como imagem que nao carregou. Cai para a inicial.
 
+### Nota sobre as paginas de autenticacao
+
+As quatro — entrar, criar conta, recuperar e redefinir password —
+partilham o involucro `.auth-pagina`, e sao as unicas que o usam. Por
+isso passaram de uma vez: metade num sistema e metade noutro seria pior
+do que qualquer um dos dois.
+
+O trabalho foi quase todo em CSS. As regras vestem os componentes
+partilhados (Cartao, Campo, BotaoPrimario) tendo o involucro por
+ancestral, sem lhes tocar — sao usados por meia aplicacao.
+
+Duas excepcoes, ambas assumidas:
+
+- o `BotaoPrimario` leva a cor num estilo inline (o preto do sistema
+  antigo) e um estilo inline so se vence com `!important`. A alternativa
+  era dar-lhe uma variante, e ele e usado em toda a parte;
+- o `Cartao` envolvia o formulario, que ja era o cartao: ficavam dois, um
+  dentro do outro. O de fora e apagado por `div:has(> form)`.
+
+Saiu a assinatura fixa no canto do ecra: numa pagina de formulario
+sobrepunha-se ao conteudo em ecras baixos, e o rodape legal ja
+identifica o Centro logo abaixo.
+
+Uma armadilha, a terceira desta familia: `input { min-height: 50px }`
+apanhou as caixas de seleccao das declaracoes do registo — que sao
+inputs — e fez delas botoes enormes desalinhados do texto. A regra passou
+a excluir `[type="checkbox"]`. E a mesma licao do `label` na grelha de
+horarios: uma regra de formulario apanha sempre mais do que se pensa.
+
+Havia tambem uma regra do sistema antigo, dentro de uma media query, a
+repor `background: transparent` no formulario em ecra estreito. Fazia
+sentido quando o cartao era uma folha translucida sobre papel; agora
+deixava o formulario a flutuar sobre o cinzento.
+
+O `/redefinir-password` nao recebeu `[x]`: exige uma sessao de
+recuperacao e nao foi possivel ve-lo. Esta implementado e alinhado, e o
+inventario di-lo.
+
 ## Ordem de trabalho recomendada
 
 1. Fechar o percurso familiar mobile claro: Agenda, Avisos, Conta, Gerir alunos, Mensalidades e paginas do aluno.
@@ -177,9 +216,9 @@ Tres armadilhas, todas so visiveis no browser:
 4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
-7. Redesenhar e validar as restantes paginas publicas no mesmo sistema visual. A `/` e a `/pedir-aula` ja estao; faltam oito.
+7. Redesenhar e validar as restantes paginas publicas. Feitas: `/`, `/pedir-aula`, `/login`, `/registo` e `/esqueci-password`. Faltam `/professor/[id]`, `/instalar`, as duas de `/legal` e validar `/redefinir-password`.
 
-Proxima pagina sugerida: `/registo` e `/login`, que sao o fim do percurso publico — quem escolhe horarios acaba num deles.
+Proxima pagina sugerida: `/professor/[professorId]`, que se alcanca do passo 4 do pedido e e a unica publica com conteudo de outra pessoa.
 
 ### Nota sobre `/dashboard/conta`
 

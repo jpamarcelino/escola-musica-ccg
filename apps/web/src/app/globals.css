@@ -3657,17 +3657,63 @@ body {
 .publico-rodape { display: flex; min-height: 110px; align-items: center; justify-content: space-between; border-top: 1px solid var(--color-linha); font-family: var(--font-fraunces), ui-serif, serif; font-style: italic; }
 .publico-rodape a { min-height: 44px; display: inline-flex; align-items: center; font-family: var(--font-inter), sans-serif; font-size: 12px; font-style: normal; font-weight: 700; }
 
-.auth-pagina { position: relative; overflow: hidden; background: var(--color-papel) !important; }
-/* O símbolo desta zona era um ::before decorativo, fixo no canto: via-se
-   mas não se clicava, e em CSS não há como o tornar uma ligação. Passou
-   para o <CabecalhoPublico>, que o mostra igual e leva à página inicial. */
-.auth-pagina::after { content: "Escolas Artísticas · Guarda"; position: fixed; right: clamp(18px, 5vw, 70px); bottom: 28px; font-size: 10px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; color: var(--color-tinta-suave); }
+/* As quatro páginas de autenticação — entrar, criar conta, recuperar e
+   redefinir a password — partilham este invólucro, e são as únicas que o
+   usam. Por isso passam ao sistema Pinterest de uma vez: metade num
+   sistema e metade noutro seria pior do que qualquer um dos dois.
+   
+   As regras aqui vestem os componentes partilhados (Cartao, Campo,
+   BotaoPrimario) sem lhes tocar — têm este invólucro por ancestral, e
+   nenhuma outra página o tem. */
+.auth-pagina { position: relative; min-height: 100dvh; padding: 8px 16px 28px; background: #f5f6f8 !important; color: #17191c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif; }
+@media (min-width: 430px) {
+  .auth-pagina { padding-inline: 24px; }
+}
+/* A assinatura fixa no canto do ecrã saiu: numa página de formulário
+   sobrepunha-se ao conteúdo em ecrãs baixos, e o rodapé legal já
+   identifica o Centro logo abaixo. */
 .auth-pagina > div { position: relative; z-index: 1; }
-.auth-pagina [class*="rounded-"] { border-radius: 4px; }
-.auth-pagina form { padding: 30px; border-block: 1px solid var(--color-linha); background: color-mix(in srgb, white 68%, transparent); }
-.auth-pagina form h1 { font-size: 32px !important; }
-.auth-pagina input { min-height: 46px; border-radius: 4px; background: transparent; }
-.auth-pagina form > button { min-height: 48px; border-radius: 4px; }
+
+/* O cartão branco, com o raio e a sombra do sistema. */
+.auth-pagina form { padding: 22px 18px; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.auth-pagina form h1 { margin-bottom: 4px; font-family: inherit !important; font-size: 26px !important; font-weight: 750 !important; line-height: 1.12; color: #17191c !important; }
+.auth-pagina label { color: #3d434a; font-size: 13.5px; font-weight: 620; }
+/* `:not([type="checkbox"])` pela mesma razão que a grelha de horários
+   precisou de `:not(.horario-bloco)`: as declarações do registo são
+   inputs, e 50px de altura com cantos de 15 fazia delas botões enormes
+   desalinhados do texto. Uma regra de formulário que não exclui as
+   caixas de seleção apanha-as sempre. */
+.auth-pagina input:not([type="checkbox"]) { min-height: 50px; border: 1px solid #e1e5e9; border-radius: 15px; background: #fbfcfd; font-size: 15px; }
+.auth-pagina input[type="checkbox"] { width: 22px; height: 22px; accent-color: #1b4f7a; }
+.auth-pagina input:focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+/* O `!important` não é preguiça: o BotaoPrimario leva a cor num estilo
+   inline (`var(--color-ink)`, o preto do sistema antigo) e um estilo
+   inline só se vence assim. A alternativa era dar-lhe uma variante, e
+   ele é usado por meia app — mais risco do que este ponto de exclamação
+   com alcance de quatro páginas. */
+.auth-pagina form > button { min-height: 50px; border-radius: 15px; background: #1b4f7a !important; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
+/* O Cartao envolve o formulário, e o formulário já é o cartão: ficavam
+   dois, um dentro do outro, que é das poucas coisas que o handoff proíbe
+   pelo nome. O de fora desaparece. */
+/* Descendente e não filho direto: entre o invólucro e o Cartao há mais
+   um div de largura máxima, e contar níveis parte assim que alguém
+   acrescenta um. */
+.auth-pagina div:has(> form) { padding: 0; border: 0; background: none; border-radius: 0; box-shadow: none; }
+.auth-pagina form > button:disabled { opacity: .55; }
+/* As ligações secundárias em pílula, com 44px de altura — eram texto
+   sublinhado solto, difícil de acertar com o polegar. */
+.auth-pagina form a { display: inline-flex; min-height: 44px; align-items: center; padding-inline: 12px; border-radius: 999px; color: #1b4f7a; font-size: 13.5px; font-weight: 600; text-decoration: none; }
+/* O /redefinir-password não envolve o formulário; usa o `.auth-cartao`.
+   Sem esta regra ficava um cartão translúcido do sistema antigo sobre o
+   cinzento do novo. Não foi possível vê-lo — a página exige uma sessão
+   de recuperação, e o inventário regista-o como por validar. */
+.auth-pagina .auth-cartao { padding: 22px 18px; border: 1px solid #e8eaed; border-block: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.auth-pagina .rodape-legal { margin-top: 20px; border-top-color: #e4e7ea; }
+.auth-pagina .rodape-legal :is(a,p) { color: #767c84; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .auth-pagina > div > * { animation: entrada-suave .3s var(--ease-suave) both; }
+}
 .auth-cartao { padding: 30px; border-block: 1px solid var(--color-linha); background: color-mix(in srgb, white 68%, transparent); }
 .auth-pagina :is(a, button, input):focus-visible,
 .publico-pagina a:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }
@@ -3684,8 +3730,15 @@ body {
   .publico-escolas strong { font-size: 20px; }
   .publico-escolas a p { white-space: normal; }
   .publico-rodape { align-items: flex-start; flex-direction: column; justify-content: center; gap: 8px; }
-  .auth-pagina::after { display: none; }
-  .auth-pagina form, .auth-cartao { padding: 24px 0; background: transparent; }
+  /* O `.auth-pagina::after` já não existe — a assinatura fixa no canto
+     saiu quando estas páginas passaram ao sistema Pinterest.
+     
+     A regra que tirava o fundo ao formulário em ecrã estreito era desse
+     mesmo sistema, em que o cartão era uma folha translúcida sobre
+     papel. Agora o cartão branco é o que dá forma à página, e apagá-lo
+     deixava o formulário a flutuar sobre o cinzento. Fica só para o
+     `.auth-cartao`, que continua no sistema antigo. */
+  .auth-cartao { padding: 24px 0; background: transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3860,7 +3913,7 @@ button[data-pending="true"] { cursor: progress; }
    é papel, /instalar é branco), leva-se a cor ao <body> quando a página
    que lá está é de papel. Assim a faixa continua sem cor própria e nunca
    desalinha de nada. */
-body:has(.auth-pagina) { background: var(--color-papel); }
+body:has(.auth-pagina) { background: #f5f6f8; }
 /* O mesmo, para as páginas já passadas ao sistema Pinterest: sem isto
    ficava uma faixa branca por cima do cinzento. */
 body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
