@@ -361,18 +361,19 @@ export default async function ContaPage({
             é o último sítio onde se toca por engano. */}
         <section className="pinterest-conta-seccao">
           <h2>Conta</h2>
-          <div className="pinterest-conta-lista">
+          {/* Os dois com o mesmo peso: são as duas saídas desta página, e
+              uma delas a parecer uma ligação e a outra um botão dizia que
+              uma era mais importante do que a outra. Não é. */}
+          <div className="pinterest-conta-botoes">
             <Link href="/dashboard/conta/avancado">
-              <span>Cancelamentos e transferências</span>
-              <span aria-hidden="true">
-                <ChevronRight size={18} strokeWidth={2} />
-              </span>
+              <ChevronRight size={18} strokeWidth={2} aria-hidden="true" />
+              Cancelamentos e transferências
             </Link>
             <form action={logout}>
-              <button type="submit">Sair da conta</button>
-              <span aria-hidden="true">
-                <LogOut size={17} strokeWidth={2} />
-              </span>
+              <button type="submit">
+                <LogOut size={17} strokeWidth={2} aria-hidden="true" />
+                Sair da conta
+              </button>
             </form>
           </div>
         </section>

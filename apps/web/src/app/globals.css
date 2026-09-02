@@ -4756,7 +4756,13 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-conta-lista > :is(a,form) { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; min-height: 56px; padding: 12px 16px; color: #17191c; font-size: 15px; text-decoration: none; }
 .pinterest-conta-lista > :is(a,form) + :is(a,form) { border-top: 1px solid #eceef0; }
 .pinterest-conta-lista span:last-child { color: #969ba1; }
-.pinterest-conta-lista form button { width: 100%; min-height: 32px; border: 0; background: none; color: #98535b; font-size: 15px; font-weight: 600; text-align: left; padding: 0; }
+/* As duas saidas da pagina, com o mesmo peso: cancelamentos e sair.
+   Antes uma era uma linha de lista e a outra um botao cheio, e isso
+   dizia que uma contava mais do que a outra. */
+.pinterest-conta-botoes { display: flex; flex-direction: column; gap: 10px; }
+.pinterest-conta-botoes form { margin: 0; }
+.pinterest-conta-botoes :is(a,button) { display: flex; width: 100%; min-height: 52px; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 0; border-radius: 16px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 700; font-family: inherit; text-align: center; text-decoration: none; box-shadow: 0 5px 16px rgba(27,79,122,.18); cursor: pointer; }
+.pinterest-conta-botoes svg { flex: none; }
 .pinterest-conta-lista li { list-style: none; }
 .pinterest-conta-disciplinas { display: flex; flex-direction: column; gap: 4px; }
 .pinterest-conta-disciplinas li { color: #17191c; font-size: 15px; }
