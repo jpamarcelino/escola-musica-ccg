@@ -5768,7 +5768,10 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-horarios-criar > div { display: grid; grid-template-columns: minmax(0,1fr) 26px minmax(0,1fr); gap: 6px 7px; align-items: center; }
 .pinterest-horarios-criar > div + div { margin-top: 6px; padding-top: 11px; border-top: 1px solid #f0f2f4; }
 .pinterest-horarios-criar span { grid-column: 1 / -1; }
-.pinterest-horarios-criar span { color: #4a5058; font-size: 12.5px; font-weight: 620; }
+/* '> div > span' e nao 'span': o SubmitButton envolve o rotulo dele
+   num <span>, e a regra do dia da semana apanhava-o — o botao ficava
+   com texto cinzento escuro sobre o azul. */
+.pinterest-horarios-criar > div > span { grid-column: 1 / -1; color: #4a5058; font-size: 12.5px; font-weight: 620; }
 .pinterest-horarios-criar i { color: #9aa0a7; font-size: 11.5px; font-style: normal; text-align: center; }
 .pinterest-horarios-criar input { width: 100%; min-height: 46px; padding: 0 9px; border: 1px solid #e0e4e8; border-radius: 13px; background: #fff; color: #17191c; font-family: inherit; font-size: 13.5px; }
 .pinterest-horarios-criar-botao { display: flex; min-height: 50px; margin-top: 6px; align-items: center; justify-content: center; border-radius: 16px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 680; }
@@ -6322,6 +6325,19 @@ input[type="month"] {
   appearance: none;
   min-width: 0;
   max-width: 100%;
+}
+
+/* O valor e o marcador de vazio destes campos vivem num shadow DOM
+   proprio, que nao herda a cor sozinho: no iOS ficavam brancos sobre
+   fundo branco, e o campo parecia vazio mesmo quando tinha horas. */
+::-webkit-datetime-edit,
+::-webkit-datetime-edit-text,
+::-webkit-datetime-edit-hour-field,
+::-webkit-datetime-edit-minute-field,
+::-webkit-datetime-edit-day-field,
+::-webkit-datetime-edit-month-field,
+::-webkit-datetime-edit-year-field {
+  color: inherit;
 }
 
 

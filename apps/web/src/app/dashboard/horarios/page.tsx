@@ -154,6 +154,116 @@ export default async function HorariosPage({
           </div>
         </div>
 
+        {/* As duas acções de gestão ficam junto do contador: é ali que
+            se decide o que fazer à semana. No fim da página só as
+            encontrava quem tivesse rolado por cima de catorze horas e da
+            lista de alunos toda. Continuam fechadas — são raras, não
+            secundárias. */}
+        {horarios.length > 0 && (
+        <details className="pinterest-horarios-painel">
+          <summary>
+            <span>
+              <strong>Editar vários de uma vez</strong>
+              <small>Bloquear, desbloquear ou apagar</small>
+            </span>
+            <ChevronDown size={18} aria-hidden="true" />
+          </summary>
+          <div className="pinterest-horarios-painel-corpo">
+            <div className="pinterest-horarios-selecionar">
+              <BotaoSelecionarTodos />
+            </div>
+            <div className="pinterest-horarios-edicao">
+              {DIAS_SEMANA.flatMap((dia) => horariosPorDia.get(dia) ?? []).map((h) => {
+                const alunos = confirmadosPorHorario.get(h.id)
+                return (
+                  <div key={h.id} className="pinterest-horarios-linha">
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="horarioIds"
+                        value={h.id}
+                        aria-label={`Selecionar ${h.dia_semana}, ${formatarHora(h.hora_inicio)}`}
+                      />
+                    </label>
+                    <span>
+                      <strong>
+                        {h.dia_semana} · {formatarHora(h.hora_inicio)}–
+                        {formatarHora(h.hora_fim)}
+                      </strong>
+                      <small>
+                        {h.estado === 'bloqueado'
+                          ? 'Bloqueado'
+                          : alunos?.length
+                            ? alunos.join(', ')
+                            : 'Disponível'}
+                      </small>
+                    </span>
+                    <Link
+                      href={`/professor/horarios/${h.id}`}
+                      aria-label={`Editar horário de ${h.dia_semana} às ${formatarHora(h.hora_inicio)}`}
+                    >
+                      <Pencil size={17} strokeWidth={1.8} aria-hidden="true" />
+                    </Link>
+                  </div>
+                )
+              })}
+            </div>
+            <HorariosToolbar>
+              <BotaoBloquearSelecionados />
+              <BotaoDesbloquearSelecionados />
+              <BotaoApagarHorariosSelecionados action={apagarHorarios} />
+            </HorariosToolbar>
+          </div>
+        </details>
+        )}
+
+        {/* Em Bebés a grelha é montada pela secretaria: são aulas de
+            grupo, decididas para a escola inteira e não professor a
+            professor. Mostrar-lhe um formulário que a acção recusa era
+            deixá-lo escrever meia hora de horários para levar com um
+            erro no fim. */}
+        {!criaOsSeus && (
+          <p className="pinterest-horarios-nota">
+            Os horários da tua escola são definidos pela secretaria. Fala com ela para abrir ou
+            mudar horas.
+          </p>
+        )}
+
+        {criaOsSeus && (
+          <details className="pinterest-horarios-painel">
+            <summary>
+              <span>
+                <strong>Criar horários</strong>
+                <small>Acrescentar disponibilidade à semana</small>
+              </span>
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
+            <div className="pinterest-horarios-painel-corpo">
+              <p className="pinterest-horarios-ajuda">
+                Os horários não são de uma disciplina — servem para qualquer uma das que ensinas.
+                Preenche só os dias em que dás aulas e deixa os outros em branco. Só entre as 10h e
+                as 22h.
+                {duracao
+                  ? ` Cada aula da tua escola dura ${duracao} minutos, e é assim que os blocos são criados.`
+                  : ''}
+              </p>
+              <form action={criarHorarios} className="pinterest-horarios-criar">
+                {DIAS_SEMANA.map((dia, i) => (
+                  <div key={dia}>
+                    <span>{dia}</span>
+                    <input name={`inicio_${i}`} type="time" min="10:00" max="22:00" aria-label={`Início de ${dia}`} />
+                    <i>até</i>
+                    <input name={`fim_${i}`} type="time" min="10:00" max="22:00" aria-label={`Fim de ${dia}`} />
+                  </div>
+                ))}
+                <SubmitButton textoAGuardar="A criar…" className="pinterest-horarios-criar-botao">
+                  Criar horários
+                </SubmitButton>
+              </form>
+            </div>
+          </details>
+        )}
+
         <form id="bloquear-horarios-form" action={bloquearHorarios} />
         <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
 
@@ -262,110 +372,9 @@ export default async function HorariosPage({
               </div>
             </section>
 
-            <details className="pinterest-horarios-painel">
-              <summary>
-                <span>
-                  <strong>Editar vários de uma vez</strong>
-                  <small>Bloquear, desbloquear ou apagar</small>
-                </span>
-                <ChevronDown size={18} aria-hidden="true" />
-              </summary>
-              <div className="pinterest-horarios-painel-corpo">
-                <div className="pinterest-horarios-selecionar">
-                  <BotaoSelecionarTodos />
-                </div>
-                <div className="pinterest-horarios-edicao">
-                  {DIAS_SEMANA.flatMap((dia) => horariosPorDia.get(dia) ?? []).map((h) => {
-                    const alunos = confirmadosPorHorario.get(h.id)
-                    return (
-                      <div key={h.id} className="pinterest-horarios-linha">
-                        <label>
-                          <input
-                            type="checkbox"
-                            name="horarioIds"
-                            value={h.id}
-                            aria-label={`Selecionar ${h.dia_semana}, ${formatarHora(h.hora_inicio)}`}
-                          />
-                        </label>
-                        <span>
-                          <strong>
-                            {h.dia_semana} · {formatarHora(h.hora_inicio)}–
-                            {formatarHora(h.hora_fim)}
-                          </strong>
-                          <small>
-                            {h.estado === 'bloqueado'
-                              ? 'Bloqueado'
-                              : alunos?.length
-                                ? alunos.join(', ')
-                                : 'Disponível'}
-                          </small>
-                        </span>
-                        <Link
-                          href={`/professor/horarios/${h.id}`}
-                          aria-label={`Editar horário de ${h.dia_semana} às ${formatarHora(h.hora_inicio)}`}
-                        >
-                          <Pencil size={17} strokeWidth={1.8} aria-hidden="true" />
-                        </Link>
-                      </div>
-                    )
-                  })}
-                </div>
-                <HorariosToolbar>
-                  <BotaoBloquearSelecionados />
-                  <BotaoDesbloquearSelecionados />
-                  <BotaoApagarHorariosSelecionados action={apagarHorarios} />
-                </HorariosToolbar>
-              </div>
-            </details>
           </>
         )}
 
-        {/* Em Bebés a grelha é montada pela secretaria: são aulas de
-            grupo, decididas para a escola inteira e não professor a
-            professor. Mostrar-lhe um formulário que a acção recusa era
-            deixá-lo escrever meia hora de horários para levar com um
-            erro no fim. */}
-        {!criaOsSeus && (
-          <p className="pinterest-horarios-nota">
-            Os horários da tua escola são definidos pela secretaria. Fala com ela para abrir ou
-            mudar horas.
-          </p>
-        )}
-
-        {criaOsSeus && (
-          <details className="pinterest-horarios-painel">
-            <summary>
-              <span>
-                <strong>Criar horários</strong>
-                <small>Acrescentar disponibilidade à semana</small>
-              </span>
-              <ChevronDown size={18} aria-hidden="true" />
-            </summary>
-            <div className="pinterest-horarios-painel-corpo">
-              <p className="pinterest-horarios-ajuda">
-                Os horários não são de uma disciplina — servem para qualquer uma das que ensinas.
-                Preenche só os dias em que dás aulas e deixa os outros em branco. Só entre as 10h e
-                as 22h.
-                {duracao
-                  ? ` Cada aula da tua escola dura ${duracao} minutos, e é assim que os blocos são criados.`
-                  : ''}
-              </p>
-              <form action={criarHorarios} className="pinterest-horarios-criar">
-                {DIAS_SEMANA.map((dia, i) => (
-                  <div key={dia}>
-                    <span>{dia}</span>
-                    <input name={`inicio_${i}`} type="time" min="10:00" max="22:00" aria-label={`Início de ${dia}`} />
-                    <i>até</i>
-                    <input name={`fim_${i}`} type="time" min="10:00" max="22:00" aria-label={`Fim de ${dia}`} />
-                  </div>
-                ))}
-                <SubmitButton textoAGuardar="A criar…" className="pinterest-horarios-criar-botao">
-                  Criar horários
-                </SubmitButton>
-              </form>
-            </div>
-          </details>
-        )}
 
         <section className="pinterest-horarios-seccao" aria-labelledby="alunos-titulo">
           <h2 id="alunos-titulo">
