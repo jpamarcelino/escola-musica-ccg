@@ -397,3 +397,28 @@ passa das 5400 linhas e uma colisao so aparece na pagina do outro.
 O CSS antigo `.detalhe-aula-*` em `globals.css` ficou orfao e pode ser
 removido numa limpeza; nao foi removido agora para nao alargar o conflito
 no ficheiro enquanto ha duas sessoes a escrever nele.
+
+## Grelha semanal
+
+`/dashboard/agenda/semana` e uma pagina nova. A grelha estava num
+`<details>` no fundo da agenda do professor, onde nunca chegou a ter
+desenho nenhum — e sao duas perguntas diferentes: a agenda responde a "o
+que tenho a seguir", a grelha a "como e a minha semana". A agenda passou
+a ter no fim um cartao branco que leva la.
+
+A grelha e nova e nao reaproveita `.horarios-grade` (essa continua a
+servir a secretaria e o pedido publico, e nao foi tocada). Decisoes:
+
+- so os dias com aulas ganham coluna — um professor de segunda a sexta
+  nao precisa de duas colunas vazias a roubar largura ao telemovel, e as
+  que ficam passam a 84 px;
+- a altura da hora e 56 px e nao os 64 do `HOUR_HEIGHT`, para a semana
+  caber num ecra sem scroll vertical; uma aula de 45 minutos ainda fica
+  com 42 px;
+- a regua das horas fica `sticky` a esquerda enquanto se arrasta a semana
+  na horizontal;
+- os blocos usam o azul suave `#e7f1fa` e levam para o detalhe da aula;
+- o dia de hoje tem a coluna com um azul de 6 % e a linha do "agora";
+- o resumo no topo tem tres contagens reais tiradas dos mesmos dados
+  (aulas por semana, alunos distintos, primeira hora) — nada calculado
+  para encher.

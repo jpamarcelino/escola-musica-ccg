@@ -432,24 +432,14 @@ body {
 .pinterest-agenda-professor .pinterest-agenda-dias .partitura-aula-conteudo strong { font-size: 15.5px; }
 .pinterest-agenda-mensagem { margin-bottom: 22px; padding: 13px 15px; border: 1px solid #e6e9ed; border-radius: 18px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
 .pinterest-agenda-mensagem > p + p { margin-top: 8px; }
-/* A grelha e uma segunda leitura do mesmo dado: fica fechada, e o cartao
-   que a abre parece-se com os outros atalhos em vez de uma linha de
-   texto sublinhada. */
-.pinterest-agenda-grelha.partitura-grelha { margin-top: 30px; padding: 0; border: 0; }
-.pinterest-agenda-grelha > summary { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 58px; padding: 0 15px; border: 1px solid #e6e9ed; border-radius: 20px; background: #fff; color: #17191c; font-size: 14.5px; font-weight: 680; box-shadow: 0 4px 15px rgba(31,35,39,.05); list-style: none; }
-.pinterest-agenda-grelha > summary::-webkit-details-marker { display: none; }
-.pinterest-agenda-grelha > summary > svg:first-child { color: #1b4f7a; }
-.pinterest-agenda-grelha > summary > svg:last-child { color: #969ba1; transition: transform .18s ease; }
-.pinterest-agenda-grelha[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-.pinterest-agenda-grelha[open] > summary > svg:last-child { transform: rotate(180deg); }
-.pinterest-agenda-grelha > p { margin: 0; padding: 13px 15px 4px; border-inline: 1px solid #e6e9ed; background: #fff; color: #7b8188; font-size: 12.5px; }
-.pinterest-agenda-grelha .horarios-grade { border-color: #e6e9ed; border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
-.pinterest-agenda-grelha .horarios-coluna-horas,
-.pinterest-agenda-grelha .horarios-coluna-dia { border-color: #eceef0; }
-.pinterest-agenda-grelha .horarios-coluna-dia-cabecalho { border-color: #eceef0; color: #8a9096; }
-.pinterest-agenda-grelha .horarios-coluna-horas-cabecalho { border-color: #eceef0; }
-.pinterest-agenda-grelha .horario-bloco { border-color: #dbe6f0; border-radius: 11px; background: #e7f1fa; color: #1b4f7a; font-weight: 620; }
-@media (prefers-reduced-motion: reduce) { .pinterest-agenda-grelha > summary > svg:last-child { transition: none; } }
+/* A ligacao para a grelha semanal fecha a lista: e a segunda leitura da
+   mesma semana, e quem chega a agenda vem pela primeira. */
+.pinterest-agenda-semana { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 70px; margin-top: 30px; padding: 12px 14px; border: 1px solid #e4e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-agenda-semana > svg:first-child { box-sizing: content-box; padding: 10px; border-radius: 13px; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-agenda-semana > span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-agenda-semana strong { font-size: 14px; }
+.pinterest-agenda-semana small { overflow: hidden; margin-top: 2px; color: #7b8188; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-agenda-semana > svg:last-child { color: #969ba1; }
 
 /* Design Pinterest - avisos da familia e respetivo detalhe. */
 .pinterest-avisos,
@@ -5505,6 +5495,57 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-detalhe :is(a,button):active { transform: scale(.98); }
 @media (min-width: 431px) { .pinterest-detalhe { padding-inline: 24px; } }
 @media (prefers-reduced-motion: reduce) { .pinterest-detalhe :is(a,button) { transition: none; } }
+
+/* Design Pinterest - grelha semanal do professor, mobile e modo claro.
+   Deixou de ser um <details> no fundo da agenda: e uma pagina, porque a
+   pergunta "como e a minha semana" nao e a mesma que "o que tenho a
+   seguir". A grelha antiga (.horarios-grade) continua a servir a
+   secretaria e o pedido publico e nao foi tocada. */
+.pinterest-semana { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-semana-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-semana-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-semana-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-semana-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-semana-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+/* Tres contagens reais, tiradas dos mesmos dados da grelha. Nao ha aqui
+   nenhuma metrica inventada: aulas, alunos distintos e a hora a que o dia
+   comeca. */
+/* O fade azul e do cartao inteiro e nao de cada celula: repetido tres
+   vezes lado a lado lia-se como uma banda desbotada em vez de um
+   destaque. As divisorias sao linhas e nao intervalos de fundo. */
+.pinterest-semana-resumo { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); margin-bottom: 18px; overflow: hidden; border: 1px solid #e4e8ec; border-radius: 21px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-semana-resumo > div { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 15px 8px; text-align: center; }
+.pinterest-semana-resumo > div + div { border-left: 1px solid rgba(31,35,39,.07); }
+.pinterest-semana-resumo strong { font-size: 22px; font-weight: 760; font-variant-numeric: tabular-nums; }
+.pinterest-semana-resumo span { color: #6d737a; font-size: 11px; line-height: 1.25; }
+.pinterest-semana-grelha { overflow-x: auto; border: 1px solid #e4e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.05); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.pinterest-semana-grelha::-webkit-scrollbar { display: none; }
+.pinterest-semana-interior { display: flex; min-width: max-content; }
+.pinterest-semana-regua { position: sticky; left: 0; z-index: 2; flex: 0 0 auto; width: 42px; background: #fff; }
+.pinterest-semana-regua-topo { height: 42px; border-bottom: 1px solid #eceef0; }
+.pinterest-semana-regua-corpo { display: flex; flex-direction: column; border-right: 1px solid #eceef0; }
+/* A hora alinha com a linha que a marca, e nao com o meio da faixa: e
+   por isso que o texto sobe 6 px em vez de ficar centrado na celula. */
+.pinterest-semana-regua-corpo span { padding: 5px 7px 0 0; color: #9aa0a7; font-size: 10.5px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.pinterest-semana-dia { flex: 0 0 auto; width: 84px; }
+.pinterest-semana-dia + .pinterest-semana-dia .pinterest-semana-dia-corpo,
+.pinterest-semana-dia + .pinterest-semana-dia .pinterest-semana-dia-topo { border-left: 1px solid #f0f2f4; }
+.pinterest-semana-dia-topo { display: grid; height: 42px; place-items: center; border-bottom: 1px solid #eceef0; color: #7b8188; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.pinterest-semana-dia-topo abbr { text-decoration: none; }
+.pinterest-semana-dia-hoje .pinterest-semana-dia-topo { color: #1b4f7a; }
+.pinterest-semana-dia-hoje .pinterest-semana-dia-corpo { background-color: rgba(120,174,222,.06); }
+.pinterest-semana-dia-corpo { position: relative; background-image: repeating-linear-gradient(to bottom, #f1f3f5 0, #f1f3f5 1px, transparent 1px, transparent var(--altura-hora)); }
+.pinterest-semana-bloco { position: absolute; left: 4px; right: 4px; display: flex; overflow: hidden; flex-direction: column; justify-content: center; gap: 1px; padding: 4px 7px; border: 1px solid #d7e5f2; border-radius: 12px; background: #e7f1fa; color: #1b4f7a; text-decoration: none; }
+.pinterest-semana-bloco time { font-size: 11.5px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.pinterest-semana-bloco small { overflow: hidden; color: #3d6f96; font-size: 10px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-semana-agora { position: absolute; left: 0; right: 0; z-index: 1; height: 1px; background: #c2503f; }
+.pinterest-semana-agora > span { position: absolute; top: -3px; left: 0; width: 7px; height: 7px; border-radius: 50%; background: #c2503f; }
+.pinterest-semana-nota { margin: 14px 4px 0; color: #868c93; font-size: 12px; line-height: 1.45; }
+.pinterest-semana .estado-vazio { border-radius: 21px; background: #fff; }
+.pinterest-semana :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+.pinterest-semana-bloco:active { transform: scale(.97); }
+@media (min-width: 431px) { .pinterest-semana { padding-inline: 24px; } }
+@media (prefers-reduced-motion: reduce) { .pinterest-semana :is(a,button) { transition: none; } }
 /* ── Home pública, no sistema Pinterest ─────────────────────────────
    A porta de entrada de quem ainda não tem conta. Segue a mesma
    linguagem da página Hoje — fundo cinzento claro, superfícies brancas,
