@@ -6216,6 +6216,49 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-mensalidades-professor :is(a,button):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
 @media (min-width:431px) { .pinterest-mensalidades-professor { padding-inline:24px; } .pinterest-mensalidades-professor-meses { margin-inline:-24px; padding-inline:24px; } }
 @media (prefers-reduced-motion:reduce) { .pinterest-mensalidades-professor * { transition:none!important; } }
+
+/* Design Pinterest - gestao de vagas de reposicao do professor. */
+.pinterest-reposicoes { min-height:100dvh; padding:max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background:#f5f6f8; color:#17191c; font-family:-apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-reposicoes-folha { width:100%; max-width:430px; margin-inline:auto; }
+.pinterest-reposicoes-cabecalho { display:grid; grid-template-columns:44px minmax(0,1fr); gap:12px; align-items:center; padding:6px 2px 18px; }
+.pinterest-reposicoes-voltar { display:grid; width:44px; height:44px; place-items:center; border:1px solid #e1e5e9; border-radius:15px; background:#fff; color:#20242a; box-shadow:0 3px 12px rgba(31,35,39,.05); }
+.pinterest-reposicoes-cabecalho h1 { font-size:28px; font-weight:760; line-height:1.1; letter-spacing:0; }
+.pinterest-reposicoes-cabecalho p { margin-top:4px; color:#767c84; font-size:12.5px; line-height:1.4; }
+.pinterest-reposicoes-folha > :is(.mensagem-erro,.mensagem-info) { margin-bottom:12px; border-radius:17px; }
+.pinterest-reposicoes-pedidos a { display:grid; grid-template-columns:42px minmax(0,1fr) auto; gap:11px; align-items:center; min-height:72px; padding:12px 14px; border:1px solid #dce6ee; border-radius:20px; background:#fff; color:#17191c; text-decoration:none; box-shadow:0 4px 15px rgba(31,35,39,.05); }
+.pinterest-reposicoes-pedidos a > span { display:grid; width:42px; height:42px; place-items:center; border-radius:13px; background:#e7f1fa; color:#1b4f7a; }
+.pinterest-reposicoes-pedidos a > div { display:flex; min-width:0; flex-direction:column; }
+.pinterest-reposicoes-pedidos strong { font-size:14.5px; font-weight:710; }
+.pinterest-reposicoes-pedidos small { margin-top:3px; color:#777e85; font-size:11.5px; }
+.pinterest-reposicoes-pedidos a > svg { color:#969ba1; }
+.pinterest-reposicoes-criar { margin-top:14px; padding:17px; border:1px solid #dce6ee; border-radius:22px; background:linear-gradient(145deg,rgba(120,174,222,.12),#fff 48%); box-shadow:0 5px 18px rgba(31,35,39,.055); }
+.pinterest-reposicoes-criar > header, .pinterest-reposicoes-lista > header { display:grid; grid-template-columns:42px minmax(0,1fr); gap:11px; align-items:center; margin-bottom:12px; }
+.pinterest-reposicoes-criar > header > span, .pinterest-reposicoes-lista > header > span { display:grid; width:42px; height:42px; place-items:center; border-radius:13px; background:#e7f1fa; color:#1b4f7a; }
+.pinterest-reposicoes-criar h2, .pinterest-reposicoes-lista h2 { font-size:18px; font-weight:730; line-height:1.2; }
+.pinterest-reposicoes-criar header p, .pinterest-reposicoes-lista header p { margin-top:3px; color:#858a91; font-size:11.5px; }
+.pinterest-reposicoes-criar > p { color:#6d737a; font-size:12.5px; line-height:1.5; }
+.pinterest-reposicoes-criar form { display:flex; flex-direction:column; gap:12px; margin-top:15px; }
+.pinterest-reposicoes-criar form > div { margin:0; }
+.pinterest-reposicoes-horas { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+.pinterest-reposicoes label { color:#5f656c!important; font-size:12.5px; font-weight:650; }
+.pinterest-reposicoes :is(input[type='date'],input[type='time']) { width:100%; min-width:0; height:52px; padding:0 12px; border:1px solid #dfe3e7; border-radius:13px; background:#fff; color:#252a2f; font-family:inherit; font-size:14px; line-height:50px; }
+.pinterest-reposicoes-abrir { display:flex; width:100%; min-height:50px; align-items:center; justify-content:center; border:0; border-radius:15px; background:#1b4f7a; color:#fff; font-size:14.5px; font-weight:700; box-shadow:0 5px 16px rgba(27,79,122,.18); }
+.pinterest-reposicoes-lista { margin-top:28px; }
+.pinterest-reposicoes-lista > header { margin-inline:2px; }
+.pinterest-reposicoes-cartoes { display:flex; flex-direction:column; gap:9px; }
+.pinterest-reposicoes-cartoes article { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:center; padding:14px; border:1px solid #e5e8ec; border-radius:19px; background:#fff; box-shadow:0 4px 15px rgba(31,35,39,.045); }
+.pinterest-reposicoes-cartoes .lista-item-titulo { color:#17191c; font-size:14.5px; font-weight:710; line-height:1.35; }
+.pinterest-reposicoes-cartoes .lista-item-sub { color:#777e85; font-size:11.5px; }
+.pinterest-reposicoes-cartoes article > button { grid-column:2; grid-row:1 / span 2; width:auto; min-width:94px; min-height:40px; border:0!important; border-radius:12px!important; background:#fcecef!important; font-size:11.5px!important; }
+.pinterest-reposicoes-ocupadas article { border-color:#dce9e3; background:#fbfdfc; }
+.pinterest-reposicoes-ocupadas article .lista-item-sub { color:#4f765e; }
+.pinterest-reposicoes .empty-editorial { padding:19px; border:1px solid #e5e8ec; border-radius:20px; background:#fff; box-shadow:0 4px 15px rgba(31,35,39,.05); }
+.pinterest-reposicoes .empty-editorial::before { display:none; }
+.pinterest-reposicoes .empty-editorial-titulo { color:#17191c; font-family:inherit; font-size:15.5px; font-weight:700; }
+.pinterest-reposicoes :is(a,button,input):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
+@media (min-width:431px) { .pinterest-reposicoes { padding-inline:24px; } }
+@media (max-width:350px) { .pinterest-reposicoes-horas { grid-template-columns:1fr; } }
+@media (prefers-reduced-motion:reduce) { .pinterest-reposicoes * { transition:none!important; } }
 /* O zoom do iOS ao entrar num campo.
    O Safari do iPhone aproxima a pagina sozinho quando o campo que recebe
    o foco tem letra abaixo de 16 px, e a aproximacao fica la depois de

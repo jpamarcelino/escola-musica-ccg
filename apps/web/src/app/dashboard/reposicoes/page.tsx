@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/empty-state'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { formatarDataEscolar, formatarHora, hojeISO } from '@ccg/core'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { CalendarCheck2, CalendarPlus, ChevronLeft, ChevronRight, Clock3, Inbox } from 'lucide-react'
 
 type Vaga = {
   id: number
@@ -68,13 +69,12 @@ export default async function ReposicoesPage({
   const ocupadas = vagas.filter((v) => v.estado === 'ocupado')
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/dashboard" className="partitura-voltar" rotulo="Voltar ao início">←</VoltarAtras>
+    <main id="conteudo-principal" className="pinterest-reposicoes">
+      <div className="pinterest-reposicoes-folha">
+        <header className="pinterest-reposicoes-cabecalho">
+          <VoltarAtras destino="/dashboard" className="pinterest-reposicoes-voltar" rotulo="Voltar ao início"><ChevronLeft size={24} aria-hidden="true" /></VoltarAtras>
           <div>
-            <p className="partitura-sobretitulo">Aulas de reposição</p>
-            <h1>Horários de reposição</h1>
+            <h1>Reposições</h1>
             <p>
               {disponiveis.length === 0
                 ? 'Ainda não abriste nenhuma vaga.'
@@ -88,23 +88,23 @@ export default async function ReposicoesPage({
         {erro && <MensagemErro>{erro}</MensagemErro>}
         {criada && <MensagemInfo>Vaga criada.</MensagemInfo>}
 
-        <nav className="pt-2">
+        <nav className="pinterest-reposicoes-pedidos">
           <Link
             href="/dashboard/reposicoes/pedidos"
-            className="inline-flex min-h-[44px] items-center text-[14px] font-medium underline [text-underline-offset:3px]"
-            style={{ color: 'var(--color-azul-fundo)' }}
           >
-            Pedidos e marcação manual
+            <span><Inbox size={19} aria-hidden="true" /></span>
+            <div><strong>Pedidos e marcação manual</strong><small>{(porRepor ?? 0) > 0 ? `${porRepor} ${porRepor === 1 ? 'aula por tratar' : 'aulas por tratar'}` : 'Sem pedidos pendentes'}</small></div>
+            <ChevronRight size={19} aria-hidden="true" />
           </Link>
         </nav>
 
-        <section className="space-y-4 pt-6">
-          <h2 className="font-semibold">Abrir uma vaga</h2>
+        <section className="pinterest-reposicoes-criar">
+          <header><span><CalendarPlus size={19} aria-hidden="true" /></span><div><h2>Abrir uma vaga</h2><p>Uma data, uma hora, uma vez só</p></div></header>
           <p className="text-sm text-foreground/60">
             Uma data e uma hora, uma vez só. Os alunos com aulas por repor passam a poder
             escolhê-la — a vaga só fica ocupada quando aceitares o pedido.
           </p>
-          <form action={criarHorarioReposicao} className="space-y-3">
+          <form action={criarHorarioReposicao}>
             <div className="space-y-[6px]">
               <Rotulo htmlFor="reposicao-data">Dia</Rotulo>
               <input
@@ -116,7 +116,7 @@ export default async function ReposicoesPage({
                 className={classesCampo}
               />
             </div>
-            <div className="flex gap-3">
+            <div className="pinterest-reposicoes-horas">
               <div className="flex-1 space-y-[6px]">
                 <Rotulo htmlFor="reposicao-inicio">Começa</Rotulo>
                 <input
@@ -140,21 +140,21 @@ export default async function ReposicoesPage({
             </div>
             <SubmitButton
               textoAGuardar="A abrir…"
-              className="flex h-[52px] w-full items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] text-[15px] font-semibold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-surface-raised)] disabled:opacity-50 motion-reduce:transition-none sm:w-auto sm:px-7"
+              className="pinterest-reposicoes-abrir"
             >
               Abrir vaga
             </SubmitButton>
           </form>
         </section>
 
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-          <h2 className="font-semibold">Vagas por preencher</h2>
+        <section className="pinterest-reposicoes-lista" aria-labelledby="vagas-titulo">
+          <header><span><Clock3 size={18} aria-hidden="true" /></span><div><h2 id="vagas-titulo">Vagas por preencher</h2><p>{disponiveis.length} {disponiveis.length === 1 ? 'disponível' : 'disponíveis'}</p></div></header>
           {disponiveis.length === 0 ? (
             <EmptyState titulo="Nenhuma vaga aberta" />
           ) : (
-            <div className="space-y-3">
+            <div className="pinterest-reposicoes-cartoes">
               {disponiveis.map((v) => (
-                <div key={v.id} className="lista-item space-y-2">
+                <article key={v.id}>
                   <p className="lista-item-titulo">
                     {formatarDataEscolar(v.data, { weekday: 'long', day: 'numeric', month: 'long' })}
                   </p>
@@ -163,14 +163,14 @@ export default async function ReposicoesPage({
                   </p>
                   <BotaoAcaoDestruir
                     label="Retirar vaga"
-                    variante="editorial"
+                    variante="bloco"
                     titulo="Retirar esta vaga?"
                     mensagem={`Deixa de estar disponível para os alunos escolherem.`}
                     action={apagarHorarioReposicao}
                   >
                     <input type="hidden" name="horarioId" value={v.id} />
                   </BotaoAcaoDestruir>
-                </div>
+                </article>
               ))}
             </div>
           )}
@@ -179,18 +179,18 @@ export default async function ReposicoesPage({
         {/* As ocupadas ficam à vista, e sem botão para as retirar: por trás
             de cada uma há uma reposição marcada e um aluno avisado. */}
         {ocupadas.length > 0 && (
-          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-            <h2 className="font-semibold">Já com aluno</h2>
-            <div className="space-y-3">
+          <section className="pinterest-reposicoes-lista pinterest-reposicoes-ocupadas">
+            <header><span><CalendarCheck2 size={18} aria-hidden="true" /></span><div><h2>Já com aluno</h2><p>{ocupadas.length} {ocupadas.length === 1 ? 'marcada' : 'marcadas'}</p></div></header>
+            <div className="pinterest-reposicoes-cartoes">
               {ocupadas.map((v) => (
-                <div key={v.id} className="lista-item">
+                <article key={v.id}>
                   <p className="lista-item-titulo">
                     {formatarDataEscolar(v.data, { weekday: 'long', day: 'numeric', month: 'long' })}
                   </p>
                   <p className="lista-item-sub">
                     {formatarHora(v.hora_inicio)}–{formatarHora(v.hora_fim)} · ocupada
                   </p>
-                </div>
+                </article>
               ))}
             </div>
           </section>
