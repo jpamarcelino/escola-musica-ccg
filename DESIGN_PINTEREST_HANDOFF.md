@@ -127,6 +127,8 @@ A lista de alunos do professor foi implementada e publicada em `c4891d5`. Mantem
 
 A ficha individual e o envio de materiais foram redesenhados e publicados em `d88398b`. A ficha organiza dados, contactos, proposta de novo horario, historico de materiais e desmatricula em superficies separadas; a confirmacao destrutiva usa o dialogo movel Pinterest. O envio de materiais ganhou seletor segmentado Video/Partitura, formulario, preview e selecao de destinatarios na mesma linguagem. O estado vazio de `/dashboard/enviar-material` foi validado autenticado em producao; os formularios preenchidos, a ficha e os dialogos aguardam alunos reais para a inspecao visual final.
 
+As Mensagens do professor foram redesenhadas e publicadas em `7bce7b4`. A composicao separa destinatarios, mensagem e pre-visualizacao, usa seletores segmentados e reserva o azul da marca para a acao final; o historico passa a uma lista de cartoes leves. O estado vazio foi validado autenticado em producao. A composicao e o historico preenchidos aguardam uma conta com alunos reais para a inspecao visual final.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
