@@ -457,3 +457,17 @@ Alem do `BotaoAcaoDestruir`, passaram para `.pinterest-dialogo`:
 Nesse ultimo a enfase nao mudou: "Enviar assim mesmo" continua a ser o
 botao cheio e "Escolher mais horarios" o secundario. Trocar a enfase seria
 uma decisao de produto e nao de desenho.
+
+## Setas de voltar
+
+Uma pagina que se alcanca de mais do que um sitio nao pode ter a seta
+apontada a um destino fixo: quem vem do outro caminho e despejado num
+ecra onde nunca esteve. O componente `VoltarAtras` recua no historico e
+so usa o `destino` quando nao ha para onde recuar (aba nova, PWA a
+arrancar ali, refresh na propria pagina).
+
+Ja o usam: os documentos legais, a ficha do aluno
+(`/dashboard/meus-alunos/[matriculaId]`, alcancavel da lista e da aula) e
+o detalhe da aula (`/dashboard/agenda/[horarioId]`, alcancavel da agenda,
+da grelha da semana e da Home). Antes de fixar um `href` numa seta,
+verificar quantas paginas ligam para aquela rota.

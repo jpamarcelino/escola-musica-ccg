@@ -6,6 +6,7 @@ import { desmatricularAluno, proporHorario } from '@/lib/actions/professor'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { SubmitButton } from '@/components/submit-button'
 import { classesCampo } from '@/components/campo-formulario'
+import { VoltarAtras } from '@/components/voltar-atras'
 import { MensagemErro, MensagemInfo, MensagemNota } from '@/components/mensagem'
 
 type Matricula = {
@@ -149,7 +150,16 @@ export default async function AlunoDaAulaPage({
     <main id="conteudo-principal" className="partitura-pagina detalhe-aluno-pagina">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/meus-alunos" className="partitura-voltar" aria-label="Voltar aos alunos">←</Link>
+          {/* A ficha do aluno abre-se de dois sítios: da lista de alunos
+              e da aula, na agenda. Uma ligação fixa mandava toda a gente
+              para a lista — quem vinha da aula ia parar a um sítio onde
+              nunca esteve, e para voltar à aula tinha de a procurar
+              outra vez na agenda. */}
+          <VoltarAtras
+            destino="/dashboard/meus-alunos"
+            className="partitura-voltar"
+            rotulo="Voltar"
+          />
           <div><p className="partitura-sobretitulo">{labelHorario}</p><h1>{matricula.alunos?.nome}</h1><p>{matricula.instrumentos?.nome}</p></div>
         </header>
 
