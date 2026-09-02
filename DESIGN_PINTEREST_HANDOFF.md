@@ -106,9 +106,11 @@ Mensalidades estabelece o padrao para resumo financeiro familiar: um resumo mens
 
 Cancelamentos e transferencias agrupa cada decisao rara numa superficie branca propria, com consequencias legiveis e perigo reservado para a eliminacao da conta. Marcar reposicao usa uma hierarquia operacional: pedidos primeiro e formulario manual em destaque azul subtil. Ambas foram validadas autenticadas a 360 px, 390 px e 430 px, sem overflow horizontal; na conta de professor foi validado o estado real sem pedidos e o formulario manual completo.
 
+A Home do professor foi implementada e publicada em `f82337d`. Mantem a linguagem da Home familiar, mas ordena o trabalho do professor: presencas urgentes, proxima aula, acessos frequentes e gestao. O estado real sem horarios, a navegacao completa e a responsividade foram validados a 360 px, 390 px e 430 px. Falta validar visualmente o cartao com aulas reais antes de marcar a variante como concluida.
+
 ### Ainda nao concluido nessa mesma rota
 
-- `/dashboard` - variante professor;
+- `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
 - `/dashboard` - desktop;
 - `/dashboard` - modo escuro;
 - estados de outros papeis que possam usar a rota.
@@ -169,6 +171,7 @@ Usar algo proximo deste texto com outro agente:
 - `5c12018`: lista e detalhe de Avisos da familia, mobile claro.
 - `0e1940f`: reforco de hierarquia na lista de Avisos depois de validar o estado com apenas um aviso lido.
 - `703dd56`: pedido de reposicao do aluno redesenhado; aguarda um caso real elegivel para validacao visual final.
+- `f82337d`: Home do professor mobile clara; publicada e validada sem horarios, aguarda dados de aulas reais para fechar.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais

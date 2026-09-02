@@ -29,7 +29,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Internas partilhadas
 
-- [ ] `/dashboard` - professor - mobile - modo claro
+- [ ] `/dashboard` - professor - mobile - modo claro - implementado e publicado (`f82337d`), estado vazio validado; falta validar com aulas reais
 - [ ] `/dashboard` - todas as variantes - desktop
 - [ ] `/dashboard` - todas as variantes - modo escuro
 - [ ] `/dashboard/agenda` - professor - mobile - modo claro
