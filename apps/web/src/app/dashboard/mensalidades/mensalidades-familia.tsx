@@ -3,6 +3,7 @@ import { EmptyState } from '@/components/empty-state'
 import { MensagemNota } from '@/components/mensagem'
 import { MESES_ANO_LETIVO, estadoMensalidade, euros, type EstadoMensalidade } from '@ccg/core'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { CheckCircle2, ChevronLeft, Clock3, ReceiptText } from 'lucide-react'
 
 // O que a família tem a pagar, mês a mês.
 //
@@ -72,24 +73,28 @@ export async function MensalidadesFamilia({
   const total = porPagar.reduce((soma, l) => soma + (l.valor ?? 0), 0)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina mensalidades-familia">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
+    <main id="conteudo-principal" className="pinterest-mensalidades">
+      <div className="pinterest-mensalidades-folha">
+        <header className="pinterest-mensalidades-cabecalho">
+          <Link href="/dashboard" className="pinterest-mensalidades-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={23} aria-hidden="true" />
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Conta da família</p>
             <h1>Mensalidades</h1>
-            <p>
-              {total > 0
-                ? `${euros(total)} por pagar em ${escolhido.label.toLowerCase()}.`
-                : `Nada por pagar em ${escolhido.label.toLowerCase()}.`}
-            </p>
+            <p>Pagamentos da família</p>
           </div>
         </header>
 
-        <nav className="filtro-alunos" aria-label="Escolher o mês">
+        <section className="pinterest-mensalidades-resumo" data-em-dia={total === 0} aria-label={`Resumo de ${escolhido.label}`}>
+          <span aria-hidden="true"><ReceiptText size={22} /></span>
+          <div>
+            <small>{total > 0 ? `Por pagar em ${escolhido.label.toLowerCase()}` : `${escolhido.label} está em dia`}</small>
+            <strong>{euros(total)}</strong>
+            <p>{total > 0 ? `${porPagar.length} ${porPagar.length === 1 ? 'mensalidade pendente' : 'mensalidades pendentes'}` : 'Não tens pagamentos pendentes neste mês'}</p>
+          </div>
+        </section>
+
+        <nav className="pinterest-mensalidades-meses" aria-label="Escolher o mês">
           {MESES_ANO_LETIVO.map((m) => (
             <Link
               key={`${m.ano}-${m.mes}`}
@@ -109,7 +114,12 @@ export async function MensalidadesFamilia({
             descricao="As mensalidades de cada mês são geradas no dia 1."
           />
         ) : (
-          <section className="mensalidade-lista" aria-label="Mensalidades do mês">
+          <section aria-labelledby="mensalidades-detalhe-titulo">
+            <header className="pinterest-mensalidades-seccao">
+              <h2 id="mensalidades-detalhe-titulo">Detalhe do mês</h2>
+              <span>{linhas.length}</span>
+            </header>
+            <div className="mensalidade-lista" aria-label="Mensalidades do mês">
             {linhas.map((l) => {
               const estado = estadoMensalidade(l)
               // As parcelas que não são a mensalidade em si. Só aparecem
@@ -161,14 +171,18 @@ export async function MensalidadesFamilia({
                     </div>
                   </dl>
 
-                  <p className="mensalidade-estado">{ESTADO[estado]}</p>
+                  <p className="mensalidade-estado">
+                    {estado === 'paga' || estado === 'nao_devida' ? <CheckCircle2 size={15} aria-hidden="true" /> : <Clock3 size={15} aria-hidden="true" />}
+                    {ESTADO[estado]}
+                  </p>
                 </article>
               )
             })}
+            </div>
           </section>
         )}
 
-        <div className="pt-6">
+        <div className="pinterest-mensalidades-nota">
           <MensagemNota>
             O prazo de pagamento é até ao dia 8 de cada mês. O pagamento faz-se na secretaria
             ou por transferência bancária — o estado aqui muda assim que a secretaria o
