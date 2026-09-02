@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { ChevronLeft, ChevronDown, Phone } from 'lucide-react'
 import { getAuthContext } from '@/lib/auth-context'
 import { confirmarHorario, proporHorarioNoPedido, recusarPedido } from '@/lib/actions/professor'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
@@ -116,95 +117,107 @@ export default async function PedidosPage({
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina pedidos-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
-          <div><p className="partitura-sobretitulo">Fila de decisão</p><h1>Pedidos</h1><p>{pedidos.length > 0 ? `${pedidos.length} ${pedidos.length === 1 ? 'pedido aguarda' : 'pedidos aguardam'} resposta.` : 'Está tudo em dia.'}</p></div>
+    <main id="conteudo-principal" className="pinterest-pedidos">
+      <div className="pinterest-pedidos-folha">
+        <header className="pinterest-pedidos-cabecalho">
+          <Link href="/dashboard" className="pinterest-pedidos-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={23} aria-hidden="true" />
+          </Link>
+          <div>
+            <h1>Pedidos</h1>
+            <p>
+              {pedidos.length > 0
+                ? `${pedidos.length} ${pedidos.length === 1 ? 'pedido à espera' : 'pedidos à espera'} de resposta`
+                : 'Está tudo em dia'}
+            </p>
+          </div>
         </header>
 
-        {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
-        {guardado && <MensagemInfo>{decodeURIComponent(guardado)}</MensagemInfo>}
+        {(erro || guardado) && (
+          <div className="pinterest-pedidos-mensagem">
+            {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
+            {guardado && <MensagemInfo>{decodeURIComponent(guardado)}</MensagemInfo>}
+          </div>
+        )}
 
-        <section className="pedidos-fila" aria-label="Pedidos pendentes">
-          {pedidos.length === 0 && (
-            <EmptyState
-              titulo="Não há pedidos pendentes"
-              descricao="Está tudo em dia — os novos pedidos de aula aparecem aqui."
-            />
-          )}
-          {pedidos.map((pedido, indice) => (
-            <article key={pedido.id} className="pedido-registo">
-              <header>
-                <span className="pedido-indice">{String(indice + 1).padStart(2, '0')}</span>
-                <div><h2>{pedido.alunos?.nome}</h2><p>{pedido.instrumentos?.nome}</p></div>
-                <time dateTime={pedido.criado_em}>{idadePedido(pedido.criado_em)}</time>
-              </header>
-              {pedido.alunos?.encarregado?.telefone && (
-                <p className="pedido-contacto">
-                  <a
-                    href={`tel:${pedido.alunos!.encarregado!.telefone}`}
-                    className="inline-flex min-h-[44px] items-center font-semibold underline underline-offset-4"
-                  >
-                    Ligar para{' '}
-                    {pedido.alunos!.encarregado!.telefone}
-                  </a>
-                </p>
-              )}
-              {pedido.mensagem && (
-                <blockquote>
-                  “{pedido.mensagem}”
-                </blockquote>
-              )}
-              {/* Sem horários indicados não há nada que confirmar, e o
-                  cabeçalho sozinho deixava o professor a olhar para um
-                  espaço em branco com um botão vermelho por baixo. O
-                  assistente permite pedir só com mensagem — quando o
-                  professor não tem vagas, é isso mesmo que a app sugere ao
-                  encarregado —, por isso este caso é normal e merece ser
-                  explicado em vez de parecer avaria. */}
-              {pedido.disponibilidades_selecionadas.length === 0 ? (
-                <div className="pedido-disponibilidade">
-                  <p>Sem horários indicados</p>
-                  <p className="pedido-disponibilidade-vazio">
-                    {pedido.mensagem
-                      ? 'O encarregado não escolheu horários e deixou a mensagem acima. Combina com ele e propõe a hora aqui em baixo.'
-                      : 'O encarregado não escolheu horários nem deixou mensagem. Vale a pena contactá-lo antes de decidir.'}
-                  </p>
-                </div>
-              ) : (
-              <div className="pedido-disponibilidade">
-                <p>Disponibilidade indicada</p>
-                <div>
-                {pedido.disponibilidades_selecionadas.map((d) => {
-                  const label = `${d.horarios?.dia_semana}, ${d.horarios?.hora_inicio.slice(0, 5)}–${d.horarios?.hora_fim.slice(0, 5)}`
-                  return (
-                    <form key={d.horario_id} action={confirmarHorario}>
-                      <input type="hidden" name="matriculaId" value={pedido.id} />
-                      <input type="hidden" name="horarioId" value={d.horario_id} />
-                      <SubmitButton
-                        textoAGuardar="A confirmar…"
-                        className="pedido-horario-botao"
-                      >
-                        Confirmar {label}
-                      </SubmitButton>
-                    </form>
-                  )
-                })}
-                </div>
-              </div>
-              )}
-              {/* Propor uma hora à escolha do professor. Vem depois das
-                  que o encarregado indicou, e não antes: quando uma
-                  delas serve, é essa a decisão mais rápida e não deve
-                  ficar atrás de um formulário. */}
-              {(() => {
-                const proposta = propostaPorMatricula.get(pedido.id)
-                if (proposta) {
-                  return (
-                    <div className="pedido-disponibilidade">
-                      <p>Horário proposto por ti</p>
-                      <p className="pedido-disponibilidade-vazio">
+        {pedidos.length === 0 ? (
+          <EmptyState
+            titulo="Não há pedidos pendentes"
+            descricao="Os novos pedidos de aula aparecem aqui."
+          />
+        ) : (
+          <section className="pinterest-pedidos-fila" aria-label="Pedidos pendentes">
+            {pedidos.map((pedido) => {
+              const proposta = propostaPorMatricula.get(pedido.id)
+              const nome = pedido.alunos?.nome ?? ''
+              const telefone = pedido.alunos?.encarregado?.telefone
+              return (
+                <article key={pedido.id} className="pinterest-pedido">
+                  {/* O cabeçalho responde a "quem, o quê, e há quanto
+                      tempo" — é o que decide a ordem por que se responde. */}
+                  <header className="pinterest-pedido-topo">
+                    <span className="pinterest-pedido-inicial" aria-hidden="true">
+                      {nome.trim().charAt(0).toUpperCase()}
+                    </span>
+                    <span>
+                      <strong>{nome}</strong>
+                      <small>{pedido.instrumentos?.nome}</small>
+                    </span>
+                    <time dateTime={pedido.criado_em}>{idadePedido(pedido.criado_em)}</time>
+                  </header>
+
+                  {telefone && (
+                    <a href={`tel:${telefone}`} className="pinterest-pedido-telefone">
+                      <Phone size={16} aria-hidden="true" />
+                      Ligar para {telefone}
+                    </a>
+                  )}
+
+                  {pedido.mensagem && (
+                    <blockquote className="pinterest-pedido-mensagem">{pedido.mensagem}</blockquote>
+                  )}
+
+                  {/* Sem horários indicados não há nada que confirmar, e o
+                      cabeçalho sozinho deixava o professor a olhar para um
+                      espaço em branco com um botão vermelho por baixo. O
+                      assistente permite pedir só com mensagem — quando o
+                      professor não tem vagas, é isso mesmo que a app sugere
+                      ao encarregado —, por isso este caso é normal e merece
+                      ser explicado em vez de parecer avaria. */}
+                  {pedido.disponibilidades_selecionadas.length === 0 ? (
+                    <div className="pinterest-pedido-bloco">
+                      <h3>Sem horários indicados</h3>
+                      <p>
+                        {pedido.mensagem
+                          ? 'O encarregado não escolheu horários e deixou a mensagem acima. Combina com ele e propõe a hora aqui em baixo.'
+                          : 'O encarregado não escolheu horários nem deixou mensagem. Vale a pena contactá-lo antes de decidir.'}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="pinterest-pedido-bloco">
+                      <h3>Horários que indicou</h3>
+                      <div className="pinterest-pedido-horarios">
+                        {pedido.disponibilidades_selecionadas.map((d) => (
+                          <form key={d.horario_id} action={confirmarHorario}>
+                            <input type="hidden" name="matriculaId" value={pedido.id} />
+                            <input type="hidden" name="horarioId" value={d.horario_id} />
+                            <SubmitButton textoAGuardar="A confirmar…">
+                              <b>
+                                {d.horarios?.dia_semana}, {d.horarios?.hora_inicio.slice(0, 5)}–
+                                {d.horarios?.hora_fim.slice(0, 5)}
+                              </b>
+                              <i>Confirmar</i>
+                            </SubmitButton>
+                          </form>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {proposta && (
+                    <div className="pinterest-pedido-bloco pinterest-pedido-proposta">
+                      <h3>Já propuseste uma hora</h3>
+                      <p>
                         <strong>
                           {proposta.novo?.dia_semana}, {proposta.novo?.hora_inicio.slice(0, 5)}–
                           {proposta.novo?.hora_fim.slice(0, 5)}
@@ -213,100 +226,109 @@ export default async function PedidosPage({
                         aceitar.
                       </p>
                     </div>
-                  )
-                }
-                return null
-              })()}
-
-              <details className="pedido-propor">
-                <summary>
-                  {propostaPorMatricula.has(pedido.id)
-                    ? 'Propor outra hora'
-                    : 'Propor outro horário'}
-                </summary>
-                <form action={proporHorarioNoPedido} className="pedido-propor-corpo">
-                  <input type="hidden" name="matriculaId" value={pedido.id} />
-
-                  <p className="pedido-propor-ajuda">
-                    Combinaste outra hora com o encarregado? Escolhe uma das tuas vagas livres, ou
-                    escreve a hora nova. Ele recebe um aviso e tem de aceitar antes de a aula ficar
-                    marcada.
-                  </p>
-
-                  {horariosLivres.length > 0 && (
-                    <fieldset className="pedido-propor-vagas">
-                      <legend>As tuas vagas livres</legend>
-                      {horariosLivres.map((h) => (
-                        <label key={h.id}>
-                          <input type="radio" name="horarioId" value={h.id} />
-                          <span>
-                            {h.dia_semana}, {h.hora_inicio.slice(0, 5)}–{h.hora_fim.slice(0, 5)}
-                          </span>
-                        </label>
-                      ))}
-                    </fieldset>
                   )}
 
-                  <fieldset className="pedido-propor-nova">
-                    <legend>
-                      {horariosLivres.length > 0 ? 'Ou uma hora nova' : 'Escreve a hora'}
-                    </legend>
-                    <div>
-                      <label>
-                        <span>Dia</span>
-                        <select name="diaSemana" defaultValue="">
-                          <option value="">—</option>
-                          {DIAS_SEMANA.map((d) => (
-                            <option key={d} value={d}>
-                              {d}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label>
-                        <span>Início</span>
-                        <input type="time" name="horaInicio" step={300} />
-                      </label>
-                      <label>
-                        <span>Fim</span>
-                        <input type="time" name="horaFim" step={300} />
-                      </label>
-                    </div>
-                    <p className="pedido-propor-ajuda">
-                      Se esta hora ainda não existir nos teus horários, fica criada como mais uma
-                      vaga tua.
-                    </p>
-                  </fieldset>
+                  {/* Propor uma hora à escolha do professor vem depois das
+                      que o encarregado indicou, e não antes: quando uma
+                      delas serve, é essa a decisão mais rápida e não deve
+                      ficar atrás de um formulário. */}
+                  <details className="pinterest-pedido-propor">
+                    <summary>
+                      <span>{proposta ? 'Propor outra hora' : 'Propor outro horário'}</span>
+                      <ChevronDown size={18} aria-hidden="true" />
+                    </summary>
+                    <form action={proporHorarioNoPedido} className="pinterest-pedido-propor-corpo">
+                      <input type="hidden" name="matriculaId" value={pedido.id} />
 
-                  <label className="pedido-propor-mensagem">
-                    <span>Mensagem (opcional)</span>
-                    <textarea
-                      name="mensagem"
-                      rows={2}
-                      maxLength={500}
-                      placeholder="Como combinámos ao telefone…"
-                    />
-                  </label>
+                      <p className="pinterest-pedido-ajuda">
+                        Combinaste outra hora com o encarregado? Escolhe uma das tuas vagas livres,
+                        ou escreve a hora nova. Ele recebe um aviso e tem de aceitar antes de a aula
+                        ficar marcada.
+                      </p>
 
-                  <SubmitButton textoAGuardar="A propor…" className="pedido-horario-botao">
-                    Propor este horário
-                  </SubmitButton>
-                </form>
-              </details>
+                      {horariosLivres.length > 0 && (
+                        <fieldset className="pinterest-pedido-vagas">
+                          <legend>As tuas vagas livres</legend>
+                          <div>
+                            {horariosLivres.map((h) => (
+                              <label key={h.id}>
+                                <input type="radio" name="horarioId" value={h.id} />
+                                <span>
+                                  {h.dia_semana}, {h.hora_inicio.slice(0, 5)}–
+                                  {h.hora_fim.slice(0, 5)}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </fieldset>
+                      )}
 
-              <footer>
-                <BotaoAcaoDestruir
-                  label="Recusar"
-                  variante="editorial"
-                  mensagem={`Recusar o pedido de ${pedido.alunos?.nome} (${pedido.instrumentos?.nome})? O pedido será apagado.`}
-                  action={recusarPedido}
-                >
-                  <input type="hidden" name="matriculaId" value={pedido.id} />
-                </BotaoAcaoDestruir>
-              </footer>
-            </article>
-          ))}
-        </section>
+                      <fieldset className="pinterest-pedido-nova">
+                        <legend>
+                          {horariosLivres.length > 0 ? 'Ou uma hora nova' : 'Escreve a hora'}
+                        </legend>
+                        <div>
+                          <label>
+                            <span>Dia</span>
+                            <select name="diaSemana" defaultValue="">
+                              <option value="">—</option>
+                              {DIAS_SEMANA.map((d) => (
+                                <option key={d} value={d}>
+                                  {d}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label>
+                            <span>Início</span>
+                            <input type="time" name="horaInicio" step={300} />
+                          </label>
+                          <label>
+                            <span>Fim</span>
+                            <input type="time" name="horaFim" step={300} />
+                          </label>
+                        </div>
+                        <p className="pinterest-pedido-ajuda">
+                          Se esta hora ainda não existir nos teus horários, fica criada como mais
+                          uma vaga tua.
+                        </p>
+                      </fieldset>
+
+                      <label className="pinterest-pedido-campo">
+                        <span>Mensagem (opcional)</span>
+                        <textarea
+                          name="mensagem"
+                          rows={2}
+                          maxLength={500}
+                          placeholder="Como combinámos ao telefone…"
+                        />
+                      </label>
+
+                      <SubmitButton
+                        textoAGuardar="A propor…"
+                        className="pinterest-pedido-propor-enviar"
+                      >
+                        Propor este horário
+                      </SubmitButton>
+                    </form>
+                  </details>
+
+                  <footer className="pinterest-pedido-recusar">
+                    <BotaoAcaoDestruir
+                      label="Recusar pedido"
+                      variante="editorial"
+                      titulo="Recusar este pedido?"
+                      mensagem={`Recusar o pedido de ${nome} (${pedido.instrumentos?.nome}). O pedido será apagado e não há como o recuperar.`}
+                      action={recusarPedido}
+                    >
+                      <input type="hidden" name="matriculaId" value={pedido.id} />
+                    </BotaoAcaoDestruir>
+                  </footer>
+                </article>
+              )
+            })}
+          </section>
+        )}
       </div>
     </main>
   )

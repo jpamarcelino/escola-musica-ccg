@@ -121,6 +121,10 @@ O fluxo seguinte de Presencas foi implementado e publicado em `890059f`. `/dashb
 
 Depois de feedback de falta de clareza, a chamada individual foi revista em `8d4c9ca`: o titulo passou a explicar a tarefa, o progresso ganhou barra visual e cada estado e agora uma linha larga com icone, nome e explicacao (`Presente / Veio a aula`, `Falta avisada / Avisou antes`, `Sem aviso / Nao avisou`). As tres cores so ganham peso depois da selecao.
 
+O Historico de Presencas e o detalhe por aluno foram implementados e publicados em `24cb560`. O indice usa um cartao por aluno com contagem discreta; o detalhe abre com percentagem de presencas e agrupa os registos por mes, usando verde, amarelo e vermelho apenas nos estados. O estado vazio do indice foi validado autenticado a 360 px, 390 px e 430 px. A conta de teste nao tem alunos, por isso as listas preenchidas e o detalhe individual aguardam dados reais.
+
+A lista de alunos do professor foi implementada e publicada em `c4891d5`. Mantem o cabecalho compacto da area do professor e apresenta cada aluno como um cartao acionavel, com inicial, disciplina, horario e idade quando existirem. O estado vazio real foi validado autenticado a 360 px, 390 px e 430 px, sem overflow. A lista preenchida aguarda uma conta com alunos reais para a inspecao visual final.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
@@ -324,6 +328,7 @@ Usar algo proximo deste texto com outro agente:
 - `60ca4c7`: entrada de Presencas mobile clara; publicada e validada sem pendencias, aguarda uma aula por confirmar para fechar.
 - `890059f`: lista por confirmar e chamada individual redesenhadas; estado vazio publicado e validado, estados com aulas aguardam dados reais.
 - `8d4c9ca`: segunda iteracao da chamada individual, com estados explicitos e progresso visual depois de feedback de falta de clareza.
+- `24cb560`: Historico de Presencas e detalhe individual mobile claro; estado vazio validado, estados preenchidos aguardam dados reais.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais
@@ -422,3 +427,33 @@ servir a secretaria e o pedido publico, e nao foi tocada). Decisoes:
 - o resumo no topo tem tres contagens reais tiradas dos mesmos dados
   (aulas por semana, alunos distintos, primeira hora) — nada calculado
   para encher.
+
+## Pedidos e Horarios do professor
+
+`/dashboard/pedidos` e uma fila de decisao, e o cartao esta ordenado por
+isso: quem/o que/ha quanto tempo no topo, o telefone do encarregado a
+seguir (e uma linha de accao, nao um dado), a mensagem dele, e so depois
+as horas que indicou — cada uma um botao de confirmar com a hora em
+destaque e o verbo pequeno a direita. Propor outra hora fica num
+`<details>` fechado, porque quando uma das horas indicadas serve essa e a
+decisao mais rapida. Recusar fica sozinho no fim, atras de confirmacao.
+
+`/dashboard/horarios` mantem as duas leituras da semana: lista por dia ate
+aos 720 px, grelha a partir dai. A grelha passou a usar as classes
+`.pinterest-semana-*` da pagina Semana, com dois estados novos
+(`-livre`, tracejado, e `-bloqueado`, recuado) — as duas grelhas da app
+leem-se agora a mesma escala, 56 px por hora. "Bloqueado" nao e vermelho:
+e uma hora que o professor fechou, nao um erro. Editar em lote e criar
+horarios ficaram em paineis fechados.
+
+## Dialogos ja convertidos
+
+Alem do `BotaoAcaoDestruir`, passaram para `.pinterest-dialogo`:
+
+- `horarios-apagar-selecionados.tsx` (apagar horarios em lote);
+- `confirmar-um-horario.tsx` (o aviso de "so uma opcao de horario", usado
+  em `/pedir-aula` e em `/aluno/[alunoId]/pedido`).
+
+Nesse ultimo a enfase nao mudou: "Enviar assim mesmo" continua a ser o
+botao cheio e "Escolher mais horarios" o secundario. Trocar a enfase seria
+uma decisao de produto e nao de desenho.

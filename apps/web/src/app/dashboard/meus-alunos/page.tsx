@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
 import { calcularIdade, formatarHora, type DiaSemana } from '@ccg/core'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Linha = {
   id: number
@@ -53,17 +54,16 @@ export default async function MeusAlunosPage() {
   const pessoas = new Set(linhas.map((l) => l.aluno_id)).size
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
+    <main id="conteudo-principal" className="pinterest-professor-alunos">
+      <div className="pinterest-professor-alunos-folha">
+        <header className="pinterest-professor-alunos-cabecalho">
+          <Link href="/dashboard" className="pinterest-professor-alunos-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" />
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Quem ensinas</p>
             <h1>Alunos</h1>
             <p>
-              {pessoas} {pessoas === 1 ? 'aluno' : 'alunos'}
+              {pessoas === 0 ? 'Quem ensinas aparece aqui.' : `${pessoas} ${pessoas === 1 ? 'aluno' : 'alunos'}`}
               {linhas.length !== pessoas &&
                 ` · ${linhas.length} ${linhas.length === 1 ? 'matrícula' : 'matrículas'}`}
             </p>
@@ -76,18 +76,19 @@ export default async function MeusAlunosPage() {
             descricao="Aparecem aqui assim que confirmares um pedido de aula."
           />
         ) : (
-          <div className="space-y-2 pt-2">
+          <div className="pinterest-professor-alunos-lista">
             {linhas.map((l) => {
               const idade = calcularIdade(l.alunos?.data_nascimento)
               return (
                 <Link
                   key={l.id}
                   href={`/dashboard/meus-alunos/${l.id}`}
-                  className="lista-item flex items-center gap-3"
+                  className="pinterest-professor-aluno"
                 >
-                  <span className="flex-1">
-                    <span className="lista-item-titulo block">{l.alunos?.nome}</span>
-                    <span className="lista-item-sub">
+                  <span className="pinterest-professor-aluno-avatar" aria-hidden="true">{l.alunos?.nome?.trim().slice(0, 1).toUpperCase() || 'A'}</span>
+                  <span>
+                    <strong>{l.alunos?.nome}</strong>
+                    <small>
                       {[
                         l.instrumentos?.nome,
                         l.horarios &&
@@ -96,9 +97,9 @@ export default async function MeusAlunosPage() {
                       ]
                         .filter(Boolean)
                         .join(' · ')}
-                    </span>
+                    </small>
                   </span>
-                  <span aria-hidden="true">→</span>
+                  <ChevronRight size={19} aria-hidden="true" />
                 </Link>
               )
             })}
