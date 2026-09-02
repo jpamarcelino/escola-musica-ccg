@@ -72,7 +72,7 @@ export default async function PresencasHorarioPage({
       <div className="pinterest-presencas-fluxo-folha">
         <header className="pinterest-presencas-fluxo-cabecalho">
           <Link href="/dashboard/presencas/confirmar" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar às aulas por confirmar"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
-          <div><h1>{horario.dia_semana}</h1><p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
+          <div><h1>Fazer chamada</h1><p>{horario.dia_semana} · {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</p></div>
         </header>
 
         <form method="get" className="presencas-data-form">
