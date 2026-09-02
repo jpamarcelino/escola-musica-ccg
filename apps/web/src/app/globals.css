@@ -282,6 +282,36 @@ body {
 .pinterest-professor-gestao strong { font-size: 14.5px; font-weight: 680; }
 .pinterest-professor-gestao a > svg { color: #969ba1; }
 
+/* Design Pinterest - entrada do livro de presencas. O estado e uma
+   resposta, nao uma estatistica: verde quando esta em dia, azul e
+   acionavel quando ainda ha trabalho. */
+.pinterest-presencas { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-presencas-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-presencas-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-presencas-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-presencas-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-presencas-cabecalho p { margin-top: 4px; color: #767c84; font-size: 13.5px; }
+.pinterest-presencas .presencas-estado { display: grid; grid-template-columns: 50px minmax(0,1fr) auto; gap: 13px; align-items: center; min-height: 138px; margin: 0; padding: 18px; border: 1px solid #dce9e3; border-radius: 23px; background: linear-gradient(145deg,rgba(127,169,140,.16),rgba(127,169,140,.03) 44%,#fff 78%); box-shadow: 0 6px 20px rgba(31,35,39,.06); }
+.pinterest-presencas .presencas-estado > span { display: grid; width: 50px; height: 50px; place-items: center; border: 0; border-radius: 16px; background: rgba(255,255,255,.82); color: #3d7658; }
+.pinterest-presencas .presencas-estado > div { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-presencas .presencas-estado strong { color: #173d2a; font-family: inherit; font-size: 23px; font-weight: 750; line-height: 1.1; }
+.pinterest-presencas .presencas-estado small { margin: 4px 0 0; color: #66776c; font-size: 12px; line-height: 1.4; }
+.pinterest-presencas .presencas-estado div > small:first-child { margin: 0 0 3px; color: #53705f; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.pinterest-presencas .presencas-estado-ligacao { border-color: #dce6ee; background: linear-gradient(145deg,rgba(120,174,222,.16),rgba(120,174,222,.04) 44%,#fff 78%); color: #17191c; text-decoration: none; }
+.pinterest-presencas .presencas-estado-ligacao > span { color: #1b4f7a; }
+.pinterest-presencas .presencas-estado-ligacao strong { color: #123a5b; }
+.pinterest-presencas .presencas-estado-ligacao > svg { color: #7890a4; }
+.pinterest-presencas .presencas-destinos { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; border: 0; }
+.pinterest-presencas .presencas-destinos a { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 12px; align-items: center; min-height: 76px; padding: 12px 14px; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-presencas .presencas-destinos a > span:first-child { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 14px; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-presencas .presencas-destinos a:nth-child(2) > span:first-child { background: #e8ebfa; color: #505a91; }
+.pinterest-presencas .presencas-destinos a > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; gap: 0; }
+.pinterest-presencas .presencas-destinos strong { font-family: inherit; font-size: 15px; font-weight: 700; }
+.pinterest-presencas .presencas-destinos small { margin-top: 3px; color: #7a8087; font-size: 11.5px; line-height: 1.35; }
+.pinterest-presencas .presencas-destinos a > svg { color: #969ba1; }
+.pinterest-presencas :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width:431px) { .pinterest-presencas { padding-inline:24px; } }
+
 /* Design Pinterest - agenda familiar, mobile e modo claro. */
 .pinterest-agenda { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
 .pinterest-agenda-folha { width: 100%; max-width: 430px; margin-inline: auto; }
