@@ -173,7 +173,8 @@ export default async function DashboardPage({
             </Link>
           )}
 
-          <section className="pinterest-home-seccao" aria-labelledby="titulo-proximas">
+          <div className="pinterest-home-dashboard-grid pinterest-home-dashboard-grid-professor">
+          <section className="pinterest-home-seccao pinterest-home-painel-principal" aria-labelledby="titulo-proximas">
             <div className="pinterest-home-seccao-topo"><h2 id="titulo-proximas">Próxima aula</h2><Link href="/dashboard/agenda">Ver agenda <ChevronRight size={17} aria-hidden="true" /></Link></div>
 
             {proximas.length === 0 ? (
@@ -198,7 +199,7 @@ export default async function DashboardPage({
             )}
           </section>
 
-          <section className="pinterest-home-seccao" aria-labelledby="professor-atalhos-titulo">
+          <section className="pinterest-home-seccao pinterest-home-painel-atalhos" aria-labelledby="professor-atalhos-titulo">
             <div className="pinterest-home-seccao-topo"><h2 id="professor-atalhos-titulo">Acesso rápido</h2></div>
             <nav className="pinterest-atalhos pinterest-professor-atalhos" aria-label="Ações frequentes">
               <Link href="/dashboard/presencas"><span><ClipboardCheck size={22} aria-hidden="true" /></span><strong>Presenças</strong><small>Registar aulas</small></Link>
@@ -208,7 +209,7 @@ export default async function DashboardPage({
             </nav>
           </section>
 
-          <section className="pinterest-home-seccao" aria-labelledby="titulo-gestao">
+          <section className="pinterest-home-seccao pinterest-home-painel-gestao" aria-labelledby="titulo-gestao">
             <div className="pinterest-home-seccao-topo"><h2 id="titulo-gestao">Gestão</h2></div>
             <nav className="pinterest-professor-gestao" aria-label="Ferramentas de gestão">
               <Link href="/dashboard/horarios"><span><Clock3 size={20} aria-hidden="true" /></span><strong>Horários</strong><ChevronRight size={18} aria-hidden="true" /></Link>
@@ -218,6 +219,7 @@ export default async function DashboardPage({
               {profile.programa === 'musica' && <Link href="/dashboard/reposicoes"><span><RefreshCw size={20} aria-hidden="true" /></span><strong>Reposições</strong><ChevronRight size={18} aria-hidden="true" /></Link>}
             </nav>
           </section>
+          </div>
         </div>
       </main>
     )
@@ -375,7 +377,8 @@ export default async function DashboardPage({
           )
         )}
 
-        <section className="pinterest-home-seccao" aria-labelledby="proxima-familia-titulo">
+        <div className="pinterest-home-dashboard-grid pinterest-home-dashboard-grid-familia">
+        <section className="pinterest-home-seccao pinterest-home-painel-principal" aria-labelledby="proxima-familia-titulo">
           <div className="pinterest-home-seccao-topo"><h2 id="proxima-familia-titulo">Próxima aula</h2><Link href="/dashboard/agenda">Ver agenda <ChevronRight size={17} aria-hidden="true" /></Link></div>
           {proximaGlobal ? (
             <Link href={`/aluno/${proximaGlobal.aluno_id}/horario`} className="pinterest-aula">
@@ -388,7 +391,7 @@ export default async function DashboardPage({
           ) : <div className="pinterest-aula pinterest-aula-vazia"><span className="pinterest-aula-icone"><Music2 size={24} aria-hidden="true" /></span><strong>Ainda não há aulas confirmadas</strong><Link href="/pedir-aula">Pedir uma aula</Link></div>}
         </section>
 
-        <section className="pinterest-home-seccao" aria-labelledby="familia-alunos-titulo">
+        <section className="pinterest-home-seccao pinterest-home-painel-alunos" aria-labelledby="familia-alunos-titulo">
           <div className="pinterest-home-seccao-topo"><h2 id="familia-alunos-titulo">{meusAlunos.length === 1 ? 'O teu aluno' : 'Os teus alunos'}</h2><Link href="/dashboard/alunos">Gerir <ChevronRight size={17} aria-hidden="true" /></Link></div>
           {meusAlunos.length === 0 ? (
             <EmptyState
@@ -410,7 +413,7 @@ export default async function DashboardPage({
           )}
         </section>
 
-        <section className="pinterest-home-seccao" aria-labelledby="atalhos-titulo">
+        <section className="pinterest-home-seccao pinterest-home-painel-atalhos" aria-labelledby="atalhos-titulo">
           <div className="pinterest-home-seccao-topo"><h2 id="atalhos-titulo">Acesso rápido</h2></div>
           <nav className="pinterest-atalhos" aria-label="Ações da conta">
             <Link href="/dashboard/alunos"><span><UserRoundCog size={22} aria-hidden="true" /></span><strong>Gerir alunos</strong><small>Perfis e dados</small></Link>
@@ -419,6 +422,7 @@ export default async function DashboardPage({
             <Link href="/dashboard/avisos"><span><Bell size={22} aria-hidden="true" /></span><strong>Avisos</strong><small>Novidades</small></Link>
           </nav>
         </section>
+        </div>
       </div>
     </main>
   )

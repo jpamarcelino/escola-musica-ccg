@@ -374,6 +374,105 @@ body {
 .pinterest-professor-gestao strong { font-size: 14.5px; font-weight: 680; }
 .pinterest-professor-gestao a > svg { color: #969ba1; }
 
+/* Home autenticada no computador. Nao e a folha mobile alargada: o
+   conteudo passa a uma grelha editorial de trabalho, com o que acontece
+   a seguir em primeiro plano e as tarefas frequentes numa coluna curta. */
+.pinterest-home-dashboard-grid { display: contents; }
+@media (min-width: 1024px) {
+  .pinterest-home {
+    padding: 36px clamp(30px,4vw,64px) 64px;
+  }
+
+  .pinterest-home-folha {
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .pinterest-home-cabecalho {
+    min-height: 94px;
+    padding: 4px 4px 28px;
+    border-bottom: 1px solid #e1e5e9;
+  }
+
+  .pinterest-home-cabecalho h1 { font-size: clamp(34px,3.2vw,46px); line-height: 1; }
+  .pinterest-home-cabecalho p { margin-top: 9px; font-size: 16px; }
+  .pinterest-home-avatar { width: 58px; height: 58px; border-radius: 18px; font-size: 22px; }
+
+  .pinterest-home-alerta {
+    max-width: 760px;
+    margin: 22px 0 0;
+    padding: 13px 16px;
+  }
+
+  .pinterest-home-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12,minmax(0,1fr));
+    gap: 24px;
+    align-items: start;
+    margin-top: 30px;
+  }
+
+  .pinterest-home-dashboard-grid .pinterest-home-seccao { min-width: 0; margin-top: 0; }
+  .pinterest-home-painel-principal { grid-column: span 7; grid-row: span 2; }
+  .pinterest-home-painel-alunos,
+  .pinterest-home-painel-atalhos,
+  .pinterest-home-painel-gestao { grid-column: span 5; }
+
+  .pinterest-home-seccao-topo { margin-bottom: 13px; }
+  .pinterest-home-seccao-topo h2 { font-size: 20px; }
+
+  .pinterest-home-painel-principal .pinterest-aula {
+    min-height: 286px;
+    grid-template-columns: 58px minmax(0,1fr);
+    align-content: center;
+    gap: 6px 18px;
+    padding: 38px 70px 40px 36px;
+    border-radius: 28px;
+    box-shadow: 0 14px 34px rgba(31,35,39,.08);
+  }
+
+  .pinterest-home-painel-principal .pinterest-aula-icone {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+  }
+
+  .pinterest-home-painel-principal .pinterest-aula-data { font-size: 14px; }
+  .pinterest-home-painel-principal .pinterest-aula > strong { font-size: clamp(30px,3vw,40px); }
+  .pinterest-home-painel-principal .pinterest-aula-aluno { font-size: 15px; }
+  .pinterest-home-painel-principal .pinterest-aula-seta { right: 30px; bottom: 30px; }
+
+  .pinterest-professor-seguintes {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    margin-top: 14px;
+    border-radius: 18px;
+  }
+
+  .pinterest-professor-seguintes a { min-height: 78px; }
+  .pinterest-professor-seguintes a + a { border-top: 0; border-left: 1px solid #eceef0; }
+
+  .pinterest-home-painel-alunos .pinterest-alunos,
+  .pinterest-home-painel-gestao .pinterest-professor-gestao { border-radius: 20px; }
+
+  .pinterest-home-painel-atalhos .pinterest-atalhos { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+  .pinterest-home-painel-atalhos .pinterest-atalhos a { min-height: 106px; padding: 15px; }
+
+  .pinterest-home :is(a,button) { transition: transform 160ms ease,box-shadow 180ms ease,border-color 180ms ease; }
+  .pinterest-home :is(.pinterest-aula,.pinterest-atalhos a,.pinterest-alunos > a,.pinterest-professor-gestao a):hover {
+    border-color: #d2dbe3;
+    box-shadow: 0 10px 26px rgba(31,35,39,.085);
+    transform: translateY(-2px);
+  }
+}
+
+@media (min-width: 1500px) {
+  .pinterest-home-painel-principal { grid-column: span 8; }
+  .pinterest-home-painel-alunos,
+  .pinterest-home-painel-atalhos,
+  .pinterest-home-painel-gestao { grid-column: span 4; }
+}
+
 /* Design Pinterest - entrada do livro de presencas. O estado e uma
    resposta, nao uma estatistica: verde quando esta em dia, azul e
    acionavel quando ainda ha trabalho. */
