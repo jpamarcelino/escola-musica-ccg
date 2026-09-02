@@ -74,7 +74,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/admin/conta`
 - [ ] `/admin/alunos` - administracao - mobile - modo claro - tratamento Pinterest so abaixo dos 720 px, a mesa do computador fica como estava; lista, folha do dossier e alvos de toque vistos em ensaio a 360 px; falta ver com conta de administrador real
 - [ ] `/admin/alunos/[alunoId]`
-- [ ] `/admin/professores`
+- [ ] `/admin/professores` - administracao - mobile - modo claro - redesenhado no Pinterest com os componentes partilhados vestidos por descendencia; visto em ensaio a 360 px com o CSS compilado da build; falta ver com conta de administrador real
 - [ ] `/admin/professores/[professorId]`
 - [ ] `/admin/professores/[professorId]/alunos`
 - [ ] `/admin/professores/[professorId]/conta`

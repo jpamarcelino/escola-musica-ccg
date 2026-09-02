@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { ChevronRight, ClipboardList } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { criarConviteProfessor } from '@/lib/actions/convites'
 import { ConvidarProfessorForm } from '@/components/convite-forms'
@@ -50,29 +51,65 @@ export default async function AdminProfessoresPage() {
   })) as Professor[]
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras><div><p className="partitura-sobretitulo">Diretório escolar</p><h1>Professores</h1><p>{professores.length} {professores.length === 1 ? 'registo' : 'registos'}</p></div></header>
+    <main id="conteudo-principal" className="pinterest-diretorio">
+      <div className="pinterest-diretorio-folha">
+        <header className="pinterest-diretorio-cabecalho">
+          <VoltarAtras
+            destino="/admin"
+            className="pinterest-diretorio-voltar"
+            rotulo="Voltar à visão geral"
+            tamanho={23}
+          />
+          <div>
+            <p className="pinterest-diretorio-sobretitulo">Diretório escolar</p>
+            <h1>Professores</h1>
+            <p>
+              {professores.length} {professores.length === 1 ? 'registo' : 'registos'}
+            </p>
+          </div>
+        </header>
 
         {/* Os pedidos vêm antes do convite: é a única coisa desta
             página que está à espera de alguém. */}
-        <nav className="pt-2">
-          <Link href="/admin/professores/disciplinas" className="agenda-ligacao-calendario">
-            Pedidos de disciplina
-            {(pedidosPorResponder ?? 0) > 0 ? ` (${pedidosPorResponder})` : ''}
+        <nav aria-label="Por responder">
+          <Link href="/admin/professores/disciplinas" className="pinterest-diretorio-pendente">
+            <span>
+              <ClipboardList size={20} aria-hidden="true" />
+            </span>
+            <span>
+              <strong>Pedidos de disciplina</strong>
+              <small>
+                {(pedidosPorResponder ?? 0) > 0
+                  ? `${pedidosPorResponder} por responder`
+                  : 'Nada por responder'}
+              </small>
+            </span>
+            <ChevronRight size={18} aria-hidden="true" />
           </Link>
         </nav>
 
-        <ConvidarProfessorForm action={criarConviteProfessor} />
+        <section className="pinterest-diretorio-seccao">
+          <h2>Convidar professor</h2>
+          <div className="pinterest-diretorio-convite">
+            <ConvidarProfessorForm action={criarConviteProfessor} />
+          </div>
+        </section>
 
-        {professores.length === 0 ? (
-          <EmptyState
-            titulo="Ainda não há professores registados"
-            descricao="Convida um professor no formulário acima — aparece aqui assim que aceitar o convite."
-          />
-        ) : (
-          <section className="admin-diretorio"><ListaComPesquisa itens={professores} hrefPrefix="/admin/professores/" placeholder="Pesquisar professor por nome…" /></section>
-        )}
+        <section className="pinterest-diretorio-seccao">
+          <h2>Na escola</h2>
+          {professores.length === 0 ? (
+            <EmptyState
+              titulo="Ainda não há professores registados"
+              descricao="Convida um professor no formulário acima — aparece aqui assim que aceitar o convite."
+            />
+          ) : (
+            <ListaComPesquisa
+              itens={professores}
+              hrefPrefix="/admin/professores/"
+              placeholder="Pesquisar professor por nome…"
+            />
+          )}
+        </section>
       </div>
     </main>
   )

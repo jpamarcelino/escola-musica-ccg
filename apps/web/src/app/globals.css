@@ -6370,3 +6370,57 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
   /* "Esc para fechar" e instrucao de teclado. Num telemovel nao ha Esc. */
   .pinterest-admin-alunos .admin-dossier > footer span { display: none; }
 }
+
+/* Design Pinterest — directorio da secretaria (/admin/professores).
+   Familia propria porque as outras paginas de directorio (pagamentos,
+   alunos de um professor) ainda usam o `admin-diretorio` do sistema
+   antigo e nao se lhes toca hoje.
+
+   Esta pagina monta-se com tres componentes partilhados por meia
+   aplicacao — VoltarAtras, ConvidarProfessorForm e ListaComPesquisa. Nao
+   se lhes mexe: veste-se cada um por descendencia, tendo o involucro por
+   ancestral. */
+.pinterest-diretorio {
+  min-height: 100dvh;
+  padding: max(20px, env(safe-area-inset-top, 0px)) 16px calc(116px + env(safe-area-inset-bottom, 0px));
+  background: #f5f6f8;
+  color: #17191c;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif;
+}
+.pinterest-diretorio-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-diretorio-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 20px; }
+.pinterest-diretorio-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-diretorio-sobretitulo { font-size: 12px; font-weight: 600; color: #757a82; }
+.pinterest-diretorio-cabecalho h1 { margin-top: 2px; font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-diretorio-cabecalho > div > p:last-child { margin-top: 3px; color: #767c84; font-size: 14px; font-variant-numeric: tabular-nums; }
+
+.pinterest-diretorio-pendente { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 68px; padding: 11px 14px; border: 1px solid #e8eaed; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+.pinterest-diretorio-pendente > span:first-child { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 13px; background: #fff0d5; color: #8a631b; }
+.pinterest-diretorio-pendente > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-diretorio-pendente strong { font-size: 14.5px; font-weight: 680; }
+.pinterest-diretorio-pendente small { margin-top: 3px; color: #797e85; font-size: 12px; }
+.pinterest-diretorio-pendente > svg { color: #969ba1; }
+
+.pinterest-diretorio-seccao { margin-top: 26px; }
+.pinterest-diretorio-seccao > h2 { margin: 0 2px 10px; font-size: 21px; font-weight: 740; line-height: 1.2; }
+
+/* Convite. O formulario e do sistema antigo (utilitarios Tailwind com
+   bordas a `foreground/20`), e um seletor descendente vence-os por
+   especificidade sem lhe tocar. */
+.pinterest-diretorio-convite { border: 1px solid #e8eaed; border-radius: 20px; background: #fff; padding: 16px 14px; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+.pinterest-diretorio-convite > form > div:first-child { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; align-items: stretch; }
+.pinterest-diretorio-convite label { font-size: 13px; font-weight: 600; color: #4c525a; }
+.pinterest-diretorio-convite select { width: 100%; min-height: 50px; border: 1px solid #dfe3e8; border-radius: 14px; background: #fbfcfd; padding-inline: 14px; font-size: 16px; }
+.pinterest-diretorio-convite button[type="submit"] { width: 100%; min-height: 50px; border: 0; border-radius: 14px; background: #1b4f7a; padding: 0; color: #fff; font-size: 15px; font-weight: 650; }
+.pinterest-diretorio-convite button[type="submit"]:disabled { opacity: .55; }
+
+/* A LinhaLista pinta o fundo num estilo inline com
+   `--color-surface-raised`, que vale #F5F6F8 — o mesmo cinzento do chao
+   desta pagina. Sem isto as linhas ficavam invisiveis: cinzento sobre
+   cinzento. Um estilo inline so se vence com `!important`, e a
+   alternativa era dar uma variante ao componente, que e usado por meia
+   aplicacao. E a mesma excepcao ja assumida para o BotaoPrimario. */
+.pinterest-diretorio .lista-pesquisa a[href^="/admin/professores/"] { background: #fff !important; border: 1px solid #e8eaed; border-radius: 20px; min-height: 62px; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+.pinterest-diretorio .lista-pesquisa input[type="search"] { min-height: 50px; border: 1px solid #e8eaed; border-radius: 16px; background: #fff; font-size: 16px; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+.pinterest-diretorio :is(a,button):active { transform: scale(.98); }
+.pinterest-diretorio :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
