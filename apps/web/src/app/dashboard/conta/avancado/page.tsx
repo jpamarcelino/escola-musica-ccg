@@ -114,8 +114,8 @@ export default async function ContaAvancadoPage({
   }[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
+    <main id="conteudo-principal" className="pinterest-conta-avancado">
+      <div className="pinterest-conta-avancado-folha">
         <PageHeader
           voltar="/dashboard/conta"
           titulo="Cancelamentos e transferências"
@@ -126,7 +126,7 @@ export default async function ContaAvancadoPage({
 
         {!ehProfessor && (
           <>
-            <section className="space-y-4">
+            <section className="pinterest-conta-avancado-seccao">
               <h2 className="font-semibold">Cancelar uma matrícula</h2>
               {/* Estava escondido na agenda do aluno, debaixo do horário
                   de cada aula — um sítio para consultar, não para desfazer
@@ -165,7 +165,7 @@ export default async function ContaAvancadoPage({
               )}
             </section>
 
-            <section className="space-y-4 border-t border-[var(--color-linha)] pt-6">
+            <section className="pinterest-conta-avancado-seccao">
               <h2 className="font-semibold">Passar um aluno para outra conta</h2>
               {/* O caso real: um aluno cresce e passa a querer gerir as
                   suas próprias aulas. O link entrega o perfil inteiro —
@@ -195,7 +195,7 @@ export default async function ContaAvancadoPage({
               )}
             </section>
 
-            <section className="space-y-4 border-t border-[var(--color-linha)] pt-6">
+            <section className="pinterest-conta-avancado-seccao">
               <h2 className="font-semibold">Eliminar um perfil de aluno</h2>
               {/* "Eliminar" é o que a pessoa pensa que está a fazer, e é
                   por isso que o botão diz isso. O que a app faz é
@@ -246,7 +246,7 @@ export default async function ContaAvancadoPage({
               )}
             </section>
 
-            <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+            <section className="pinterest-conta-avancado-seccao">
               <h2 className="font-semibold">Receber um perfil de aluno</h2>
               {/* O outro lado da mesma operação. Não é "resgatar" nada: é
                   aceitar um perfil que alguém decidiu passar-te. */}
@@ -259,7 +259,7 @@ export default async function ContaAvancadoPage({
           </>
         )}
 
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+        <section className="pinterest-conta-avancado-seccao pinterest-conta-avancado-perigo">
           <h2 className="font-semibold">Apagar a conta</h2>
           <p className="text-sm text-foreground/60">
             Perdes o acesso e os dados da conta são apagados.

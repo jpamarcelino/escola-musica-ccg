@@ -7,6 +7,7 @@ import { Rotulo, classesCampo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { formatarDataEscolar, formatarHora, hojeISO, plural } from '@ccg/core'
+import { ChevronLeft } from 'lucide-react'
 
 type Pedido = {
   id: number
@@ -138,15 +139,14 @@ export default async function PedidosReposicaoPage({
   const resolvidos = pedidos.filter((p) => p.estado !== 'pendente')
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/reposicoes" className="partitura-voltar" aria-label="Voltar aos horários de reposição">
-            ←
+    <main id="conteudo-principal" className="pinterest-reposicoes-pedidos">
+      <div className="pinterest-reposicoes-pedidos-folha">
+        <header className="pinterest-reposicoes-pedidos-cabecalho">
+          <Link href="/dashboard/reposicoes" className="pinterest-reposicoes-pedidos-voltar" aria-label="Voltar aos horários de reposição">
+            <ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" />
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Aulas de reposição</p>
-            <h1>Pedidos</h1>
+            <h1>Marcar reposição</h1>
             <p>
               {pendentes.length === 0
                 ? 'Nenhum pedido à espera de resposta.'
@@ -165,7 +165,7 @@ export default async function PedidosReposicaoPage({
           <MensagemInfo>Proposta enviada. A família tem de a aceitar.</MensagemInfo>
         )}
 
-        <section className="space-y-4 pt-6">
+        <section className="pinterest-reposicoes-pedidos-seccao">
           <h2 className="font-semibold">Por responder</h2>
           {pendentes.length === 0 ? (
             <EmptyState titulo="Nenhum pedido pendente" />
@@ -265,7 +265,7 @@ export default async function PedidosReposicaoPage({
         {/* As que o professor desmarcou. Nunca houve pedido do aluno — o
             enunciado é claro em que a reposição fica do lado dele. */}
         {porRepor.length > 0 && (
-          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+          <section className="pinterest-reposicoes-pedidos-seccao">
             <h2 className="font-semibold">Aulas que desmarcaste</h2>
             <p className="text-sm text-foreground/60">
               Estas esperam reposição tua. Marca-a em baixo.
@@ -286,7 +286,7 @@ export default async function PedidosReposicaoPage({
             formulário de marcar: antes de marcar outra, convém ver as
             que já estão à espera. */}
         {(propostasData ?? []).length > 0 && (
-          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+          <section className="pinterest-reposicoes-pedidos-seccao">
             <h2 className="font-semibold">À espera da resposta da família</h2>
             <div className="space-y-2">
               {(propostasData ?? []).map((r) => (
@@ -305,13 +305,13 @@ export default async function PedidosReposicaoPage({
           </section>
         )}
 
-        <section className="space-y-4 border-t border-[var(--color-linha)] pt-6">
+        <section className="pinterest-reposicoes-pedidos-seccao pinterest-reposicoes-pedidos-manual">
           <h2 className="font-semibold">Marcar uma reposição à mão</h2>
           <p className="text-sm text-foreground/60">
             Sem pedido, com o prazo passado, ou para uma aula que desmarcaste. Não precisa de vaga
             criada antes. A família recebe a proposta e tem de a aceitar — só depois fica marcada.
           </p>
-          <form action={marcarReposicaoManual} className="space-y-3">
+          <form action={marcarReposicaoManual} className="pinterest-reposicoes-pedidos-formulario">
             <div className="space-y-[6px]">
               <Rotulo htmlFor="reposicao-manual-aluno">Aluno</Rotulo>
               <select
@@ -397,7 +397,7 @@ export default async function PedidosReposicaoPage({
         </section>
 
         {resolvidos.length > 0 && (
-          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+          <section className="pinterest-reposicoes-pedidos-seccao">
             <h2 className="font-semibold">Já respondidos</h2>
             <div className="space-y-2">
               {resolvidos.map((p) => (
