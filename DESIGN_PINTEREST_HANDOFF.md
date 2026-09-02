@@ -229,6 +229,18 @@ O `/redefinir-password` nao recebeu `[x]`: exige uma sessao de
 recuperacao e nao foi possivel ve-lo. Esta implementado e alinhado, e o
 inventario di-lo.
 
+Do que ele faz, uma metade ja se pode ver: sem sessao de recuperacao a
+rota reencaminha para `/esqueci-password`, e isso foi verificado em
+producao a 360 px. O que continua por ver e o formulario da password
+nova, que so aparece com um link vindo de um email verdadeiro.
+
+Falta-lhes o rodape legal — a `/esqueci-password` e a
+`/redefinir-password`. Nao e regressao do desenho: nasceram assim em
+`80db4f7`, o commit que criou as paginas juridicas e as ligou a `/login`,
+`/registo` e `/instalar`. Fica anotado e nao corrigido: onde aparecem
+ligacoes juridicas e decisao de quem responde pelo site, nao de quem o
+desenha.
+
 ### Nota sobre `/professor/[professorId]`
 
 Cartao de identidade com retrato de 96px, disciplinas em pastilhas e a
@@ -457,3 +469,19 @@ Alem do `BotaoAcaoDestruir`, passaram para `.pinterest-dialogo`:
 Nesse ultimo a enfase nao mudou: "Enviar assim mesmo" continua a ser o
 botao cheio e "Escolher mais horarios" o secundario. Trocar a enfase seria
 uma decisao de produto e nao de desenho.
+
+## Verificacao em producao
+
+As oito publicas foram vistas no site publicado, a 360 px, depois do
+merge `ae19a61`. Nenhuma transborda na horizontal: o conteudo mede
+exactamente os 360 px da janela em todas.
+
+Os alvos de toque cumprem os 44 px. Duas leituras enganam e ficam aqui
+para nao voltarem a levantar duvida: o "Saltar para o conteudo" mede 1 px
+porque so cresce com o foco, e as caixas de seleccao do registo medem
+20 px mas estao dentro de `<label>` de 290x44 e 290x94 — a area que
+recebe o toque e a etiqueta.
+
+O `/pedir-aula` sem `?programa=` devolve a pessoa a inicial. E
+intencional, esta comentado na propria pagina, e nao e ecra em falta: a
+escola escolhe-se na inicial.

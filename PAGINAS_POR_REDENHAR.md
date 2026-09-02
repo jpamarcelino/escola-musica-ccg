@@ -22,7 +22,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [x] `/login` - publica - mobile - modo claro
 - [x] `/registo` - publica - mobile - modo claro
 - [x] `/esqueci-password` - publica - mobile - modo claro
-- [ ] `/redefinir-password` - publica - mobile - modo claro - implementado, falta validar: exige sessao de recuperacao
+- [ ] `/redefinir-password` - publica - mobile - modo claro - implementado; o reencaminhamento sem sessao de recuperacao esta validado em producao, falta o formulario da password nova (exige link de email real)
 - [x] `/instalar` - publica - mobile - modo claro (os dois separadores)
 - [x] `/legal` - publica - mobile - modo claro (validado visualmente a 360 px)
 - [x] `/legal/[documento]` - publica - mobile - modo claro (validado visualmente a 360 px)
