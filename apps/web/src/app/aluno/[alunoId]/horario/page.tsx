@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import {
   cancelarPedido,
@@ -125,15 +126,17 @@ export default async function ConsultarHorarioPage({
     )
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina aluno-agenda-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href={`/aluno/${alunoId}`} className="partitura-voltar" aria-label={`Voltar à área de ${aluno.nome}`}>←</Link>
+    <main id="conteudo-principal" className="pinterest-horario">
+      <div className="pinterest-horario-folha">
+        <header className="pinterest-horario-cabecalho">
+          <Link href={`/aluno/${alunoId}`} className="pinterest-horario-voltar" aria-label={`Voltar à área de ${aluno.nome}`}>
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
           {/* proximaOcorrenciaDeAula devolve ISO ("2026-08-17"), que é o
               formato certo para ordenar e comparar mas nunca para mostrar.
               Estava a chegar ao ecrã tal e qual — e este é o destino do
               separador "Agenda", não um canto escondido. */}
-          <div><p className="partitura-sobretitulo">Caderno de {aluno.nome}</p><h1>Agenda</h1><p>{confirmadas[0] ? `A próxima aula é ${formatarDataEscolar(confirmadas[0].proxima, { weekday: 'long', day: 'numeric', month: 'long' })}, às ${formatarHora(confirmadas[0].horarios!.hora_inicio)}.` : 'Ainda não há aulas confirmadas.'}</p></div>
+          <div><h1>Agenda de {aluno.nome.split(' ')[0]}</h1><p>{confirmadas[0] ? `A próxima aula é ${formatarDataEscolar(confirmadas[0].proxima, { weekday: 'long', day: 'numeric', month: 'long' })}, às ${formatarHora(confirmadas[0].horarios!.hora_inicio)}.` : 'Ainda não há aulas confirmadas.'}</p></div>
         </header>
 
         {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
@@ -150,7 +153,7 @@ export default async function ConsultarHorarioPage({
             resposta legítima, e a aula fica onde está. */}
         {pendentes.length > 0 && (
           <section className="aluno-pedidos-curso">
-            <header><p className="partitura-indice">01</p><h2>Pedidos em curso</h2><span>{pendentes.length}</span></header>
+            <header><h2>Pedidos em curso</h2><span>{pendentes.length}</span></header>
             <div>
               {pendentes.map((m) => (
                 <details key={m.id}>
@@ -173,7 +176,7 @@ export default async function ConsultarHorarioPage({
             pessoa não tinha como confirmar que o pedido tinha resultado. */}
         {desmarcadas.length > 0 && (
           <section className="aluno-proximas-aulas">
-            <header><p className="partitura-indice">02</p><h2>Aulas desmarcadas</h2></header>
+            <header><h2>Aulas desmarcadas</h2></header>
             <div className="partitura-linha-tempo">
               {desmarcadas.map((d) => (
                 <div key={d.id} className="aluno-aula-registo aluno-aula-desmarcada">
@@ -201,7 +204,7 @@ export default async function ConsultarHorarioPage({
         )}
 
         <section className="aluno-proximas-aulas">
-          <header><p className="partitura-indice">{desmarcadas.length > 0 ? '03' : '02'}</p><h2>Próximas aulas</h2></header>
+          <header><h2>Próximas aulas</h2></header>
           {confirmadas.length === 0 ? (
             <EmptyState
               titulo="Ainda não há aulas confirmadas"
@@ -247,7 +250,7 @@ export default async function ConsultarHorarioPage({
 
         {reposicoes.length > 0 && (
           <section className="aluno-proximas-aulas">
-            <header><p className="partitura-indice">{desmarcadas.length > 0 ? '04' : '03'}</p><h2>Reposições marcadas</h2></header>
+            <header><h2>Reposições marcadas</h2></header>
             <div className="partitura-linha-tempo">
               {reposicoes.map((r) => (
                 <div key={r.id} className="aluno-aula-registo aluno-aula-reposicao">

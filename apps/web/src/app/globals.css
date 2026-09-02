@@ -5027,3 +5027,103 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 
 .pinterest-materiais :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width: 431px) { .pinterest-materiais { padding-inline: 24px; } }
+
+/* Design Pinterest - hub do aluno e o horario dele.
+   Este ecra falava uma terceira lingua (aluno-vivo): eixo vertical,
+   serifa e acordeoes. Passa a dizer o mesmo que a Home, que e o ecra de
+   onde se chega aqui num toque. */
+.pinterest-aluno { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-aluno-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-aluno-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-aluno-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-aluno-cabecalho h1 { overflow-wrap: anywhere; font-size: 27px; font-weight: 760; line-height: 1.1; letter-spacing: 0; }
+.pinterest-aluno-cabecalho p { margin-top: 3px; color: #767c84; font-size: 13.5px; }
+.pinterest-aluno-cabecalho > a:last-child { display: inline-flex; min-height: 44px; align-items: center; color: #5f646b; font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+
+.pinterest-aluno-seccao { margin-top: 24px; }
+.pinterest-aluno-seccao > h2 { margin: 0 2px 10px; font-size: 21px; font-weight: 740; line-height: 1.2; }
+
+/* Aulas de hoje. A primeira e a que esta a decorrer levam o fade azul da
+   Home; as outras ficam brancas. Deixaram de ser acordeoes: abrir cada
+   aula para ver a sala escondia a informacao que se veio buscar. */
+.pinterest-aluno-aulas { display: flex; flex-direction: column; gap: 10px; }
+.pinterest-aluno-aula { display: grid; grid-template-columns: 58px minmax(0,1fr) auto; gap: 4px 12px; padding: 14px 15px; border: 1px solid #e3e9ef; border-radius: 21px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-aluno-aula[data-destaque="true"] { background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); }
+.pinterest-aluno-aula time { grid-row: 1 / span 3; align-self: center; color: #1b4f7a; font-size: 15px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.pinterest-aluno-aula small { color: #26716b; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.pinterest-aluno-aula strong { overflow: hidden; font-size: 16.5px; font-weight: 730; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-aluno-aula span:last-of-type { color: #757b82; font-size: 12.5px; line-height: 1.4; }
+.pinterest-aluno-aula > svg { grid-row: 1 / span 3; align-self: center; color: #999ea4; }
+
+.pinterest-aluno-vazio { padding: 22px 18px; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); text-align: center; }
+.pinterest-aluno-vazio strong { display: block; font-size: 16px; font-weight: 720; }
+.pinterest-aluno-vazio p { margin-top: 6px; color: #797e85; font-size: 13.5px; line-height: 1.5; }
+.pinterest-aluno-vazio a { display: inline-flex; min-height: 46px; align-items: center; margin-top: 14px; padding: 0 20px; border-radius: 14px; background: #1b4f7a; color: #fff; font-size: 14.5px; font-weight: 700; text-decoration: none; }
+
+/* Atalhos e alertas, na grelha 2x2 aprovada na Home. */
+.pinterest-aluno-atalhos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pinterest-aluno-atalhos a { display: grid; grid-template-columns: 38px minmax(0,1fr); gap: 2px 10px; min-height: 94px; align-content: center; padding: 13px; border: 1px solid #e8eaed; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+.pinterest-aluno-atalhos a > span:first-child { display: grid; grid-row: 1 / span 2; width: 38px; height: 38px; place-items: center; border-radius: 13px; background: #e2f1ef; color: #176b70; }
+.pinterest-aluno-atalhos a:nth-child(2) > span:first-child { background: #fff0d5; color: #8a631b; }
+.pinterest-aluno-atalhos a:nth-child(3) > span:first-child { background: #e8ebfa; color: #505a91; }
+.pinterest-aluno-atalhos a:nth-child(4) > span:first-child { background: #f8e5e7; color: #98535b; }
+.pinterest-aluno-atalhos strong { align-self: end; overflow-wrap: anywhere; font-size: 14px; font-weight: 700; line-height: 1.15; }
+.pinterest-aluno-atalhos small { align-self: start; color: #858a91; font-size: 11px; }
+
+.pinterest-aluno :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+.pinterest-aluno :is(a,button):active { transform: scale(.98); }
+@media (min-width: 431px) { .pinterest-aluno { padding-inline: 24px; } }
+@media (prefers-reduced-motion: reduce) { .pinterest-aluno :is(a,button) { transform: none; } }
+
+/* Design Pinterest - horario do aluno. A estrutura e a mesma (pedidos em
+   curso, proximas aulas, desmarcadas, reposicoes); muda a superficie.
+   Os indices numerados da partitura sairam: numerar quatro seccoes que
+   aparecem e desaparecem conforme os dados dava "01, 03" a quem nao
+   tivesse desmarcacoes. */
+.pinterest-horario { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-horario-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-horario-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-horario-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-horario-cabecalho h1 { overflow-wrap: anywhere; font-size: 27px; font-weight: 760; line-height: 1.1; letter-spacing: 0; }
+.pinterest-horario-cabecalho p { margin-top: 4px; color: #767c84; font-size: 13.5px; line-height: 1.45; }
+
+.pinterest-horario section { margin-top: 26px; }
+.pinterest-horario section > header { display: flex; align-items: baseline; gap: 10px; margin: 0 2px 10px; }
+.pinterest-horario section > header h2 { font-family: inherit; font-size: 21px; font-weight: 740; line-height: 1.2; letter-spacing: 0; color: #17191c; }
+.pinterest-horario section > header span { padding: 3px 9px; border-radius: 999px; background: #fff2cf; color: #80611d; font-size: 11px; font-weight: 700; }
+
+/* A linha do tempo da partitura vira cartao branco com linhas dentro. */
+.pinterest-horario .partitura-linha-tempo { overflow: hidden; border: 1px solid #e6e9ed; border-radius: 21px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-horario .partitura-linha-tempo::before,
+.pinterest-horario .partitura-marca { display: none; }
+.pinterest-horario .aluno-aula-registo { border-bottom: 1px solid #eceef0; }
+.pinterest-horario .aluno-aula-registo:last-child { border-bottom: 0; }
+.pinterest-horario .aluno-aula-registo > summary,
+.pinterest-horario .aluno-aula-registo > p:first-child { padding: 13px 15px; }
+.pinterest-horario .aluno-aula-registo summary { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; gap: 3px 11px; align-items: center; }
+.pinterest-horario .aluno-aula-registo summary time { grid-row: 1 / span 3; align-self: center; padding: 0; color: #1b4f7a; font-size: 15px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.pinterest-horario .aluno-aula-registo summary small { color: #757b82; font-size: 11px; letter-spacing: 0; }
+.pinterest-horario .aluno-aula-registo summary strong { overflow: hidden; color: #17191c; font-family: inherit; font-size: 16px; font-weight: 730; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-horario .aluno-aula-registo summary b { color: #757b82; font-size: 12px; font-weight: 400; }
+.pinterest-horario .aluno-aula-registo summary i { grid-row: 1 / span 3; align-self: center; color: #999ea4; font-style: normal; }
+.pinterest-horario .aluno-aula-registo > div { padding: 0 15px 15px; }
+.pinterest-horario .aluno-aula-registo > div p { color: #757b82; font-size: 12.5px; }
+.pinterest-horario .aluno-aula-desmarcada,
+.pinterest-horario .aluno-aula-reposicao { padding: 13px 15px; }
+.pinterest-horario .aluno-aula-desmarcada p,
+.pinterest-horario .aluno-aula-reposicao p { color: #757b82; font-size: 12.5px; line-height: 1.5; }
+.pinterest-horario .aluno-aula-desmarcada strong,
+.pinterest-horario .aluno-aula-reposicao strong { color: #17191c; font-family: inherit; font-size: 15.5px; font-weight: 730; }
+.pinterest-horario .aluno-etiqueta-desmarcada { padding: 3px 9px; border-radius: 999px; background: #f8e5e7; color: #98535b; font-size: 10.5px; font-weight: 700; }
+
+.pinterest-horario .aluno-pedir-mais { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; align-items: center; margin-top: 26px; padding: 15px 16px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-horario .aluno-pedir-mais strong { display: block; font-family: inherit; font-size: 15.5px; font-weight: 730; }
+.pinterest-horario .aluno-pedir-mais small { display: block; margin-top: 3px; color: #797e85; font-size: 12.5px; }
+.pinterest-horario .aluno-pedir-mais i { color: #969ba1; font-style: normal; }
+.pinterest-horario .estado-vazio,
+.pinterest-horario .empty-editorial { margin-top: 2px; padding: 20px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-horario .empty-editorial::before { display: none; }
+.pinterest-horario .empty-editorial-titulo { max-width: none; color: #17191c; font-family: inherit; font-size: 17px; font-weight: 740; line-height: 1.3; }
+.pinterest-horario .empty-editorial-descricao { max-width: none; margin-top: 5px; color: #777e85; font-size: 13px; line-height: 1.5; }
+.pinterest-horario :is(a,button,summary):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width: 431px) { .pinterest-horario { padding-inline: 24px; } }

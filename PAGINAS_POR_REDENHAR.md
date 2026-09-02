@@ -43,8 +43,8 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 - [ ] `/dashboard/alunos` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/materiais` - familia - mobile - modo claro - implementado, falta validar com conta real
-- [ ] `/aluno/[alunoId]`
-- [ ] `/aluno/[alunoId]/horario`
+- [ ] `/aluno/[alunoId]` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
+- [ ] `/aluno/[alunoId]/horario` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/aluno/[alunoId]/materiais` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/aluno/[alunoId]/pedido`
 - [ ] `/aluno/[alunoId]/reposicao/[aulaId]`
