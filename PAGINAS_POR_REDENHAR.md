@@ -8,6 +8,7 @@ Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por 
 - [x] `/dashboard/agenda` - familia/aluno - mobile - modo claro (`f9c973c`)
 - [x] `/dashboard/avisos` - familia/aluno - mobile - modo claro (`5c12018`, hierarquia afinada em `0e1940f`)
 - [x] `/dashboard/avisos/[avisoId]` - familia/aluno - mobile - modo claro (`5c12018`)
+- [x] `/dashboard/mensalidades` - familia - mobile - modo claro (`fc4402d`, estado vazio `754460e`)
 
 ## Publicas pendentes no Design Pinterest
 
@@ -42,7 +43,6 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 - [ ] `/dashboard/alunos` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/materiais`
-- [ ] `/dashboard/mensalidades` - variante familia
 - [ ] `/aluno/[alunoId]`
 - [ ] `/aluno/[alunoId]/horario`
 - [ ] `/aluno/[alunoId]/materiais`
@@ -105,9 +105,8 @@ Nao redesenhar estas rotas; apenas redirecionam:
 
 1. `/dashboard/conta`
 2. `/dashboard/alunos`
-3. `/dashboard/mensalidades` - familia
-4. paginas `/aluno/[alunoId]/*`
-5. `/dashboard/agenda` e detalhe - professor
+3. paginas `/aluno/[alunoId]/*`
+4. `/dashboard/agenda` e detalhe - professor
 
 ## Regra de atualizacao
 

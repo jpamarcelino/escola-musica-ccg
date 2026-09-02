@@ -84,6 +84,7 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/dashboard/agenda` - conta familia/aluno - mobile - modo claro (`f9c973c`).
 - `/dashboard/avisos` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/avisos/[avisoId]` - conta familia/aluno - mobile - modo claro (`5c12018`).
+- `/dashboard/mensalidades` - variante familia - mobile - modo claro (`fc4402d`, estado vazio finalizado em `754460e`).
 
 Inclui:
 
@@ -98,6 +99,8 @@ Inclui:
 A Agenda estabelece o padrao aprovado para listas cronologicas: cabecalho compacto, atalho branco com icone suave, data numa caixa azul clara e aulas em cartoes brancos. Foi validada a 360 px e 390 px com dados reais, sem overflow.
 
 Avisos estabelece o padrao de caixa de entrada: titulo de seccao e contagem, cartoes brancos individuais, icone contextual, titulo do tipo de aviso, barra azul discreta para nao lidos e resumo a 14 px. Mesmo os avisos lidos mantem contraste e presenca; nao reduzir toda a hierarquia apenas para os tornar secundarios. O detalhe vive numa superficie branca separada. Lista, detalhe e acao contextual foram validados a 360 px e 390 px com dados reais.
+
+Mensalidades estabelece o padrao para resumo financeiro familiar: um resumo mensal destacado mas leve, seletor horizontal de meses e estados de pagamento em superficies brancas. O estado real sem mensalidades foi tratado como parte integral da pagina, com mensagem e nota informativa separadas. Foi validada autenticada a 360 px e 390 px, sem overflow horizontal da pagina.
 
 ### Ainda nao concluido nessa mesma rota
 
@@ -118,7 +121,7 @@ Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam
 6. Criar modo escuro a partir dos componentes ja estabilizados.
 7. Redesenhar e validar as 10 paginas publicas no mesmo sistema visual; nenhuma esta atualmente concluida no Design Pinterest.
 
-Proxima pagina sugerida: `/dashboard/mensalidades` (variante familia).
+Proxima pagina sugerida: `/aluno/[alunoId]` (variante familia/aluno).
 
 ### Nota sobre `/dashboard/conta`
 
