@@ -18,6 +18,10 @@
 -- Sem "insert" nem "update" novos: apagar não é editar. E sem apagar em
 -- catadupa — cada linha é apagada pelo seu id, e a política é verificada
 -- linha a linha.
+-- Idempotente de proposito: esta migracao vai ser corrida a mao no
+-- editor de SQL, e correr duas vezes por engano nao deve rebentar.
+drop policy if exists "Utilizador apaga os seus avisos ja lidos" on notificacoes;
+
 create policy "Utilizador apaga os seus avisos ja lidos"
   on notificacoes for delete
   to authenticated
