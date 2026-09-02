@@ -82,6 +82,8 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 
 - `/dashboard` - conta familia/aluno - mobile - modo claro.
 - `/dashboard/agenda` - conta familia/aluno - mobile - modo claro (`f9c973c`).
+- `/dashboard/avisos` - conta familia/aluno - mobile - modo claro (`5c12018`).
+- `/dashboard/avisos/[avisoId]` - conta familia/aluno - mobile - modo claro (`5c12018`).
 
 Inclui:
 
@@ -94,6 +96,8 @@ Inclui:
 - alertas contextuais quando existem dados reais.
 
 A Agenda estabelece o padrao aprovado para listas cronologicas: cabecalho compacto, atalho branco com icone suave, data numa caixa azul clara e aulas em cartoes brancos. Foi validada a 360 px e 390 px com dados reais, sem overflow.
+
+Avisos estabelece o padrao de caixa de entrada: cartoes brancos individuais, barra azul discreta para nao lidos, resumo curto e detalhe de leitura numa superficie branca separada. Lista, detalhe e acao contextual foram validados a 360 px e 390 px com dados reais.
 
 ### Ainda nao concluido nessa mesma rota
 
@@ -114,7 +118,7 @@ Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam
 6. Criar modo escuro a partir dos componentes ja estabilizados.
 7. Redesenhar e validar as 10 paginas publicas no mesmo sistema visual; nenhuma esta atualmente concluida no Design Pinterest.
 
-Proxima pagina sugerida: `/dashboard/avisos`, seguida de `/dashboard/avisos/[avisoId]`.
+Proxima pagina sugerida: `/dashboard/conta`.
 
 ## Processo por pagina
 
@@ -139,3 +143,4 @@ Usar algo proximo deste texto com outro agente:
 - `61ad8c1`: experiencia rejeitada; cartao inteiro azul ficou demasiado pesado. Nao repetir.
 - `067da9d`: solucao aprovada; cartao branco com fade azul subtil.
 - `f9c973c`: Agenda familiar mobile clara, com o padrao de lista cronologica aprovado.
+- `5c12018`: lista e detalhe de Avisos da familia, mobile claro.
