@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { EnviarVideoForm } from './enviar-video-form'
 import { EnviarPartituraForm } from './enviar-partitura-form'
 import type { AlunoEscolhivel } from '@/components/seletor-alunos'
+import { FileText, Video } from 'lucide-react'
 
 // Os mesmos dois nomes que o aluno vê no caderno. Se aqui se chamasse
 // "Ficheiros" e lá "Partituras", o professor tinha de adivinhar onde é que
@@ -31,12 +32,8 @@ export function EscolhaMaterial({
             aria-selected={tipo === id}
             onClick={() => setTipo(id)}
             className="materiais-separador"
-            style={
-              tipo === id
-                ? { borderColor: 'var(--color-azul-fundo)', color: 'var(--color-azul-fundo)' }
-                : { borderColor: 'transparent', color: 'var(--color-tinta-suave)' }
-            }
           >
+            {id === 'video' ? <Video size={17} aria-hidden="true" /> : <FileText size={17} aria-hidden="true" />}
             {nome}
           </button>
         ))}
