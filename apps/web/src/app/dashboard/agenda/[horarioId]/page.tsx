@@ -1,12 +1,13 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { ChevronRight, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
 import { formatarHora, formatarSala, formatarDataEscolar, hojeISO, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { desmarcarAulaProfessor } from '@/lib/actions/professor'
+import { VoltarAtras } from '@/components/voltar-atras'
 
 type Aluno = {
   id: number
@@ -100,9 +101,10 @@ export default async function AgendaHorarioPage({
     <main id="conteudo-principal" className="pinterest-detalhe">
       <div className="pinterest-detalhe-folha">
         <header className="pinterest-detalhe-cabecalho">
-          <Link href="/dashboard/agenda" className="pinterest-detalhe-voltar" aria-label="Voltar à agenda">
-            <ChevronLeft size={23} aria-hidden="true" />
-          </Link>
+          {/* Chega-se aqui de três sítios — da agenda, da grelha da
+              semana e da Home — por isso a seta recua no histórico em vez
+              de mandar toda a gente para a agenda. */}
+          <VoltarAtras destino="/dashboard/agenda" className="pinterest-detalhe-voltar" />
           <div>
             <h1>{horario.dia_semana}</h1>
             <p>Aula semanal</p>

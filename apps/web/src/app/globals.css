@@ -5624,11 +5624,14 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-pedido-bloco > p { color: #5d646b; font-size: 13px; line-height: 1.5; }
 .pinterest-pedido-horarios { display: flex; flex-direction: column; gap: 8px; }
 /* A hora e o rotulo em colunas: o professor le a hora, nao o verbo. */
-.pinterest-pedido-horarios button { display: grid; width: 100%; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; min-height: 52px; padding: 0 14px; border: 1px solid #d7e5f2; border-radius: 16px; background: #fff; color: #17191c; text-align: left; transition: background-color .15s ease; }
+.pinterest-pedido-horarios button { display: grid; width: 100%; grid-template-columns: minmax(0,1fr) auto; gap: 14px; align-items: center; min-height: 56px; padding: 0 10px 0 14px; border: 1px solid #d7e5f2; border-radius: 16px; background: #fff; color: #17191c; text-align: left; transition: background-color .15s ease; }
 .pinterest-pedido-horarios button:hover { background: #f4f9fd; }
+.pinterest-pedido-horarios button:hover i { background: #16405f; }
 .pinterest-pedido-horarios button:disabled { opacity: .5; }
 .pinterest-pedido-horarios b { overflow: hidden; font-size: 14.5px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-.pinterest-pedido-horarios i { color: #1b4f7a; font-size: 12.5px; font-style: normal; font-weight: 700; }
+/* "Confirmar" desenhado como botao dentro da linha: encostado a hora
+   lia-se como parte dela, e nao como a accao que dispara. */
+.pinterest-pedido-horarios i { display: grid; min-height: 38px; place-items: center; padding: 0 15px; border-radius: 999px; background: #1b4f7a; color: #fff; font-size: 12.5px; font-style: normal; font-weight: 680; }
 .pinterest-pedido-proposta > p { padding: 12px 14px; border: 1px solid #e7ddb8; border-radius: 15px; background: #fff9e8; color: #635d4b; }
 .pinterest-pedido-propor { border-top: 1px solid rgba(31,35,39,.07); padding-top: 13px; }
 .pinterest-pedido-propor > summary { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; min-height: 44px; color: #1b4f7a; font-size: 14px; font-weight: 680; cursor: pointer; list-style: none; }
@@ -5643,7 +5646,11 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-pedido-vagas label { display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 10px; align-items: center; min-height: 46px; padding: 0 13px; border: 1px solid #e4e8ec; border-radius: 14px; background: #fff; font-size: 14px; cursor: pointer; }
 .pinterest-pedido-vagas input { width: 18px; height: 18px; accent-color: #1b4f7a; }
 .pinterest-pedido-vagas label:has(input:checked) { border-color: #78aede; background: #eff6fc; }
-.pinterest-pedido-nova > div { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr); gap: 8px; }
+/* Duas colunas e nao tres: um input[type=time] tem largura minima
+   propria e nao encolhe: a 375 px o inicio e o fim sobrepunham-se. O dia
+   ocupa a linha toda por cima. */
+.pinterest-pedido-nova > div { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px 9px; }
+.pinterest-pedido-nova > div > label:first-child { grid-column: 1 / -1; }
 .pinterest-pedido-nova label,
 .pinterest-pedido-campo { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
 .pinterest-pedido-nova label > span,
