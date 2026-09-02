@@ -110,6 +110,8 @@ A Home do professor foi implementada e publicada em `f82337d`. Mantem a linguage
 
 A entrada de Presencas do professor foi implementada e publicada em `60ca4c7`. O estado real sem pendencias usa um resumo verde suave e dois destinos brancos para rever confirmacoes e consultar historico. Foi validada autenticada a 360 px, 390 px e 430 px, sem overflow. Falta validar o resumo acionavel quando existirem aulas por confirmar antes de receber `[x]`.
 
+O fluxo seguinte de Presencas foi implementado e publicado em `890059f`. `/dashboard/presencas/confirmar` separa atrasos e aulas de hoje em cartoes acionaveis; o estado vazio real foi validado a 360 px, 390 px e 430 px. `/dashboard/presencas/[horarioId]` transforma a chamada numa lista de alunos com tres escolhas grandes e botao bloqueado ate estar completa. A conta de teste nao tem horarios, portanto a chamada individual e os cartoes com pendencias aguardam dados reais para a inspecao visual final.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
@@ -176,6 +178,7 @@ Usar algo proximo deste texto com outro agente:
 - `703dd56`: pedido de reposicao do aluno redesenhado; aguarda um caso real elegivel para validacao visual final.
 - `f82337d`: Home do professor mobile clara; publicada e validada sem horarios, aguarda dados de aulas reais para fechar.
 - `60ca4c7`: entrada de Presencas mobile clara; publicada e validada sem pendencias, aguarda uma aula por confirmar para fechar.
+- `890059f`: lista por confirmar e chamada individual redesenhadas; estado vazio publicado e validado, estados com aulas aguardam dados reais.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais
