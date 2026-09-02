@@ -6220,3 +6220,83 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-admin-destaque.pinterest-aula-vazia { min-height: 108px; padding-block: 16px; }
 .pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-aluno { grid-column: 2; align-self: center; color: #1b4f7a; font-size: 14px; }
 .pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-seta { bottom: auto; top: 50%; transform: translateY(-50%); }
+
+/* Design Pinterest — /admin/alunos no telemovel.
+   A mesa da secretaria e feita para o computador: quatro colunas, cabecalho
+   pegajoso, seleccao multipla e um painel ao lado. Isso funciona e nao se
+   toca — tudo aqui vive dentro de uma media query. O que muda e so a
+   apresentacao abaixo dos 720 px, onde uma tabela de quatro colunas nao
+   cabe: cada aluno passa a cartao, os grupos a pastilhas num carril, e o
+   dossier a folha que sobe de baixo.
+
+   A marcacao nao mudou. Os tres botoes por linha continuam la e continuam
+   a fazer o mesmo; so se arrumam de outra maneira. */
+@media (max-width: 720px) {
+  .pinterest-admin-alunos { padding: max(20px, env(safe-area-inset-top, 0px)) 16px calc(116px + env(safe-area-inset-bottom, 0px)); background: #f5f6f8; color: #17191c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif; }
+  .pinterest-admin-alunos .admin-mesa-titulo { display: block; max-width: 430px; margin: 0 auto 16px; padding-inline: 2px; }
+  .pinterest-admin-alunos .admin-mesa-titulo p { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: none; color: #757a82; }
+  .pinterest-admin-alunos .admin-mesa-titulo h1 { margin-top: 4px; font-family: inherit; font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+
+  .pinterest-admin-alunos .admin-mesa { display: block; max-width: 430px; min-height: 0; overflow: visible; border: 0; background: none; }
+  .pinterest-admin-alunos .admin-mesa[data-painel-aberto="true"] { grid-template-columns: none; }
+
+  .pinterest-admin-alunos .admin-mesa-barra { min-height: 50px; gap: 10px; border: 1px solid #e8eaed; border-radius: 16px; background: #fff; padding: 0 14px; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+  .pinterest-admin-alunos .admin-mesa-barra label { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; color: #757a82; }
+  .pinterest-admin-alunos .admin-mesa-barra input { font-size: 16px; }
+  .pinterest-admin-alunos .admin-mesa-barra > strong { font-size: 14px; }
+  .pinterest-admin-alunos .admin-mesa-barra button { min-height: 40px; border-radius: 999px; border-color: #d8dce1; font-size: 12.5px; }
+
+  /* Carril: com quatro grupos e as contagens, a fila nao cabe a 360 px.
+     Deslizar e melhor do que encolher o texto ate deixar de se ler. */
+  .pinterest-admin-alunos .admin-mesa-grupos { margin-top: 12px; padding: 0 2px 2px; border: 0; overflow-x: auto; scrollbar-width: none; }
+  .pinterest-admin-alunos .admin-mesa-grupos::-webkit-scrollbar { display: none; }
+  .pinterest-admin-alunos .admin-mesa-grupos button { min-height: 44px; flex: none; border: 1px solid #e2e5e9; border-radius: 999px; background: #fff; padding: 0 14px; font-size: 13px; color: #4c525a; white-space: nowrap; }
+  .pinterest-admin-alunos .admin-mesa-grupos button[aria-pressed="true"] { border-color: #1b4f7a; background: #1b4f7a; color: #fff; }
+
+  /* O cabecalho de colunas nao tem sentido quando ja nao ha colunas. */
+  .pinterest-admin-alunos .admin-mesa-colunas { display: none; }
+
+  .pinterest-admin-alunos .admin-mesa-lista { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .pinterest-admin-alunos .admin-mesa-linha { grid-template-columns: 34px minmax(0, 1fr); align-items: center; min-height: 76px; border: 1px solid #e8eaed; border-radius: 20px; background: #fff; padding: 10px 14px 12px; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+  .pinterest-admin-alunos .admin-mesa-linha[data-ativa="true"] { border-color: #78aede; background: #fff; }
+  /* A caixa alinha com o nome e nao com o meio do cartao: e o nome que
+     ela selecciona, e a meio ficava a flutuar entre duas linhas que nao
+     lhe pertencem. */
+  .pinterest-admin-alunos .admin-mesa-linha > label { grid-row: 1 / span 2; align-self: start; width: 34px; height: 44px; place-items: center start; }
+  .pinterest-admin-alunos .admin-mesa-linha > label input { width: 20px; height: 20px; }
+  /* Os dois botoes e a caixa tinham 13, 31 e 35 px de altura. Na mesa do
+     computador isso e um clique de rato dentro de uma celula larga; no
+     telemovel e um alvo que se falha. Todos passam aos 44 px, e a caixa
+     ganha area a volta sem crescer o quadrado desenhado. */
+  .pinterest-admin-alunos .admin-mesa-barra input { min-height: 44px; }
+  .pinterest-admin-alunos .admin-mesa-linha > button { min-height: 44px; padding: 0; }
+  .pinterest-admin-alunos .admin-mesa-linha > button strong { font-size: 16px; font-weight: 680; }
+  .pinterest-admin-alunos .admin-mesa-linha > button small { margin-top: 2px; font-size: 12px; color: #797e85; }
+  .pinterest-admin-alunos .admin-mesa-linha > button:nth-of-type(2) { margin-top: 6px; }
+  /* A situacao fica em tinta normal e nao a azul. Nesta pagina o azul e
+     ligacao; pintar "Sem matricula" ou "Antigo aluno" de azul fazia um
+     estado parecer uma coisa em que se carrega. */
+  .pinterest-admin-alunos .admin-mesa-linha > button:nth-of-type(2) > span { font-size: 13.5px; font-weight: 640; color: #17191c; }
+  .pinterest-admin-alunos .admin-mesa-sem-resultados { margin-top: 14px; border: 1px dashed #d7dbe0; border-radius: 20px; background: #fff; padding: 22px 18px; text-align: center; font-size: 14px; color: #6b7178; }
+
+  /* Folha que sobe de baixo. Um painel encostado a direita e gesto de
+     rato; no telemovel o polegar chega ao fundo do ecra, nao ao lado. */
+  .pinterest-admin-alunos .admin-dossier { position: fixed; z-index: 60; inset: auto 0 0 0; width: auto; max-height: 86dvh; overflow-y: auto; border: 0; border-radius: 24px 24px 0 0; background: #fff; padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -10px 40px rgba(23,25,28,.18); }
+  .pinterest-admin-alunos .admin-dossier > header { position: sticky; top: 0; z-index: 1; background: #fff; padding: 18px 20px 12px; }
+  .pinterest-admin-alunos .admin-dossier h2 { font-family: inherit; font-size: 22px; font-weight: 750; letter-spacing: 0; }
+  .pinterest-admin-alunos .admin-dossier h3 { font-size: 15px; font-weight: 700; letter-spacing: 0; text-transform: none; color: #17191c; }
+  .pinterest-admin-alunos .admin-dossier > header small { font-size: 12px; letter-spacing: 0; text-transform: none; color: #757a82; }
+  /* Escurecer o que fica por tras. Sem isto a folha aparece por cima de uma
+     lista que continua a parecer utilizavel, e nao esta: o painel prende o
+     Esc e o foco. Nao ha elemento para o veu, por isso vem do ::before da
+     propria mesa. */
+  .pinterest-admin-alunos .admin-mesa[data-painel-aberto="true"]::before { content: ""; position: fixed; z-index: 59; inset: 0; background: rgba(23,25,28,.34); }
+  .pinterest-admin-alunos .admin-dossier > header button { min-width: 44px; min-height: 44px; }
+  .pinterest-admin-alunos .admin-dossier > footer { padding: 16px 20px 20px; }
+  /* Era uma ligacao sublinhada de 19 px de altura, e e a accao principal da
+     folha: e por aqui que se sai da vista rapida para o dossier inteiro. */
+  .pinterest-admin-alunos .admin-dossier > footer { display: block; }
+  .pinterest-admin-alunos .admin-dossier > footer a { display: flex; min-height: 50px; align-items: center; justify-content: center; border-radius: 16px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 650; text-decoration: none; }
+  /* "Esc para fechar" e instrucao de teclado. Num telemovel nao ha Esc. */
+  .pinterest-admin-alunos .admin-dossier > footer span { display: none; }
+}

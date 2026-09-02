@@ -35,7 +35,7 @@ export default async function AdminAlunosPage() {
   const diretorio: AlunoDiretorio[] = alunos.map((aluno) => ({ id: aluno.id, nome: aluno.nome, dataNascimento: aluno.data_nascimento, arquivadoEm: aluno.arquivado_em, email: aluno.encarregado?.email ?? null, telefone: aluno.encarregado?.telefone ?? null, matriculas: aluno.matriculas.map((m) => ({ estado: m.estado, canceladaEm: m.cancelada_em, instrumento: m.instrumentos?.nome ?? null, professor: m.professor?.nome ?? null, horario: m.horarios ? `${m.horarios.dia_semana}, ${m.horarios.hora_inicio.slice(0, 5)}–${m.horarios.hora_fim.slice(0, 5)}` : null })) }))
 
   return (
-    <main id="conteudo-principal" className="admin-mesa-pagina">
+    <main id="conteudo-principal" className="admin-mesa-pagina pinterest-admin-alunos">
       <header className="admin-mesa-titulo"><div><p>Secretaria · Diretório</p><h1>Alunos</h1></div><span>Seleciona um nome para consultar sem perder a lista.</span></header>
         {alunos.length === 0 ? (
           <EmptyState
