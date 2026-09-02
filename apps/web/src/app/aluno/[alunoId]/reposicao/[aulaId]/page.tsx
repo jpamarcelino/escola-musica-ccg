@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { getAuthContext } from '@/lib/auth-context'
 import { pedirReposicao } from '@/lib/actions/aluno'
@@ -6,6 +7,7 @@ import { classesCampo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemNota } from '@/components/mensagem'
 import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { formatarDataEscolar, formatarHora, hojeISO } from '@ccg/core'
+import { CalendarClock, ChevronLeft } from 'lucide-react'
 
 type Vaga = {
   id: number
@@ -65,86 +67,89 @@ export default async function PedirReposicaoPage({
   const vagas = (vagasData ?? []) as Vaga[]
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-2xl space-y-6">
-        <header>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-foreground/50">
-            Aula desmarcada
-          </p>
-          <h1
-            className="mt-[6px] text-[24px] font-semibold leading-[1.2]"
-            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-          >
-            Queres pedir reposição?
-          </h1>
-          <p className="mt-[8px] text-sm text-foreground/60">
-            {aula.instrumento_nome} de{' '}
-            {formatarDataEscolar(aula.data, { weekday: 'long', day: 'numeric', month: 'long' })},{' '}
-            {formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}.
-          </p>
+    <main id="conteudo-principal" className="pinterest-pedir-reposicao">
+      <div className="pinterest-pedir-reposicao-folha">
+        <header className="pinterest-pedir-reposicao-cabecalho">
+          <Link href={`/aluno/${alunoId}/horario`} className="pinterest-pedir-reposicao-voltar" aria-label="Voltar ao horário">
+            <ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" />
+          </Link>
+          <div>
+            <h1>Marcar reposição</h1>
+            <p>Escolhe os horários que te dão jeito.</p>
+          </div>
         </header>
+
+        <section className="pinterest-pedir-reposicao-aula" aria-label="Aula desmarcada">
+          <span aria-hidden="true"><CalendarClock size={23} strokeWidth={1.9} /></span>
+          <div>
+            <small>Aula desmarcada</small>
+            <strong>{aula.instrumento_nome}</strong>
+            <p>
+              {formatarDataEscolar(aula.data, { weekday: 'long', day: 'numeric', month: 'long' })},{' '}
+              {formatarHora(aula.hora_inicio)}–{formatarHora(aula.hora_fim)}
+            </p>
+          </div>
+        </section>
 
         {erro && <MensagemErro>{erro}</MensagemErro>}
 
-        <MensagemNota>
-          A reposição está sujeita à disponibilidade do professor, não sendo garantida.
-        </MensagemNota>
+        <div className="pinterest-pedir-reposicao-nota">
+          <MensagemNota>
+            A reposição depende da disponibilidade do professor e só fica marcada quando ele aceitar.
+          </MensagemNota>
+        </div>
 
         {vagas.length === 0 ? (
-          <>
+          <div className="pinterest-pedir-reposicao-vazio">
             {/* Sem vagas não se cria pedido nenhum. Um pedido vazio ficava
                 na lista do professor a pedir uma coisa que ele não tem
                 como dar, e o aluno ficava à espera de resposta. */}
-            <p className="text-sm text-foreground/70">
-              De momento, o professor não tem horários de reposição disponíveis. Contacte
-              diretamente o professor para verificar outras possibilidades.
-            </p>
-            <LigacaoTerciaria href={`/aluno/${alunoId}/horario`}>Voltar à agenda</LigacaoTerciaria>
-          </>
+            <strong>Sem horários disponíveis</strong>
+            <p>De momento, o professor não tem vagas para reposição. Fala diretamente com ele para ver outras possibilidades.</p>
+            <LigacaoTerciaria href={`/aluno/${alunoId}/horario`}>Voltar ao horário</LigacaoTerciaria>
+          </div>
         ) : (
-          <form action={pedirReposicao} className="space-y-5">
+          <form action={pedirReposicao} className="pinterest-pedir-reposicao-formulario">
             <input type="hidden" name="aulaId" value={aula.id} />
             <input type="hidden" name="alunoId" value={alunoId} />
 
-            <fieldset className="space-y-3">
-              <legend className="text-sm font-semibold">
-                Horários que te dão jeito
-              </legend>
+            <fieldset>
+              <legend>Horários disponíveis</legend>
               {/* Vários, de propósito: quantas mais opções o professor
                   tiver, mais depressa consegue encaixar. Escolher não
                   reserva — a vaga só fica ocupada quando ele aceitar. */}
-              <p className="text-sm text-foreground/60">
-                Escolhe todos os que puderes. Escolher não reserva o horário.
+              <p>
+                Podes escolher vários. Nenhum fica reservado até o professor aceitar.
               </p>
-              <div className="space-y-2">
+              <div className="pinterest-pedir-reposicao-opcoes">
                 {vagas.map((v) => (
-                  <label key={v.id} className="lista-item flex items-center gap-[12px]">
+                  <label key={v.id}>
                     <input
                       type="checkbox"
                       name="horarios"
                       value={v.id}
-                      className="h-[20px] w-[20px] shrink-0 accent-[var(--color-azul-fundo)]"
+                      className="pinterest-pedir-reposicao-checkbox"
                     />
                     <span>
-                      <span className="lista-item-titulo block">
+                      <strong>
                         {formatarDataEscolar(v.data, {
                           weekday: 'long',
                           day: 'numeric',
                           month: 'long',
                         })}
-                      </span>
-                      <span className="lista-item-sub">
+                      </strong>
+                      <small>
                         {formatarHora(v.hora_inicio)}–{formatarHora(v.hora_fim)}
-                      </span>
+                      </small>
                     </span>
                   </label>
                 ))}
               </div>
             </fieldset>
 
-            <div className="space-y-1">
-              <label htmlFor="mensagem" className="block text-[13px] font-medium">
-                Mensagem para o professor <span className="text-foreground/50">(opcional)</span>
+            <div className="pinterest-pedir-reposicao-mensagem">
+              <label htmlFor="mensagem">
+                Mensagem para o professor <span>(opcional)</span>
               </label>
               <textarea
                 id="mensagem"
@@ -155,10 +160,10 @@ export default async function PedirReposicaoPage({
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="pinterest-pedir-reposicao-acoes">
               <SubmitButton
                 textoAGuardar="A enviar…"
-                className="flex h-[52px] items-center justify-center rounded-[var(--radius-pill)] border-[1.5px] border-[var(--color-ink)] px-7 text-[15px] font-semibold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-surface-raised)] disabled:opacity-50 motion-reduce:transition-none"
+                className="pinterest-pedir-reposicao-enviar"
               >
                 Pedir reposição
               </SubmitButton>

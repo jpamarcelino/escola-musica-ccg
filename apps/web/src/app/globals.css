@@ -5184,3 +5184,47 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-horario .empty-editorial-descricao { max-width: none; margin-top: 5px; color: #777e85; font-size: 13px; line-height: 1.5; }
 .pinterest-horario :is(a,button,summary):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width: 431px) { .pinterest-horario { padding-inline: 24px; } }
+
+/* Design Pinterest - pedido de reposicao do aluno. E um passo de decisao,
+   por isso a aula de origem fica visivel e cada vaga e um alvo de toque
+   completo, nao apenas uma checkbox pequena numa lista editorial. */
+.pinterest-pedir-reposicao { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-pedir-reposicao-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-pedir-reposicao-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 18px; }
+.pinterest-pedir-reposicao-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-pedir-reposicao-cabecalho h1 { font-size: 28px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-pedir-reposicao-cabecalho p { margin-top: 4px; color: #767c84; font-size: 13.5px; }
+.pinterest-pedir-reposicao-aula { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 12px; align-items: center; padding: 16px; border: 1px solid #dce6ee; border-radius: 22px; background: linear-gradient(145deg,rgba(120,174,222,.16),rgba(120,174,222,.04) 44%,#fff 78%); box-shadow: 0 5px 18px rgba(31,35,39,.055); }
+.pinterest-pedir-reposicao-aula > span { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 15px; background: rgba(255,255,255,.82); color: #1b4f7a; }
+.pinterest-pedir-reposicao-aula div { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-pedir-reposicao-aula small { color: #52718b; font-size: 10.5px; font-weight: 720; letter-spacing: .06em; text-transform: uppercase; }
+.pinterest-pedir-reposicao-aula strong { margin-top: 3px; overflow: hidden; font-size: 17px; font-weight: 740; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-pedir-reposicao-aula p { margin-top: 3px; color: #6f7880; font-size: 12.5px; line-height: 1.4; }
+.pinterest-pedir-reposicao-nota { margin-top: 12px; }
+.pinterest-pedir-reposicao-nota > * { border: 1px solid #e4e8ec; border-radius: 17px; background: #fff !important; color: #697078 !important; font-size: 12.5px; line-height: 1.5; }
+.pinterest-pedir-reposicao-formulario { margin-top: 24px; }
+.pinterest-pedir-reposicao-formulario fieldset { border: 0; }
+.pinterest-pedir-reposicao-formulario legend { font-size: 20px; font-weight: 740; line-height: 1.25; }
+.pinterest-pedir-reposicao-formulario fieldset > p { margin-top: 5px; color: #777e85; font-size: 13px; line-height: 1.45; }
+.pinterest-pedir-reposicao-opcoes { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
+.pinterest-pedir-reposicao-opcoes label { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 11px; align-items: center; min-height: 70px; padding: 12px 14px; border: 1px solid #e3e7eb; border-radius: 19px; background: #fff; box-shadow: 0 4px 14px rgba(31,35,39,.045); cursor: pointer; }
+.pinterest-pedir-reposicao-opcoes label:has(input:checked) { border-color: #78aede; background: #f1f7fc; box-shadow: 0 0 0 2px rgba(120,174,222,.16); }
+.pinterest-pedir-reposicao-checkbox { width: 22px; height: 22px; margin: 0; accent-color: #1b4f7a; }
+.pinterest-pedir-reposicao-opcoes label > span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-pedir-reposicao-opcoes strong { font-size: 14.5px; font-weight: 700; line-height: 1.35; }
+.pinterest-pedir-reposicao-opcoes small { margin-top: 3px; color: #777e85; font-size: 12px; }
+.pinterest-pedir-reposicao-mensagem { margin-top: 20px; }
+.pinterest-pedir-reposicao-mensagem label { display: block; margin: 0 2px 7px; color: #555c63; font-size: 12.5px; font-weight: 650; }
+.pinterest-pedir-reposicao-mensagem label span { color: #969ba1; font-weight: 500; }
+.pinterest-pedir-reposicao-mensagem textarea { width: 100%; min-height: 92px; border: 1px solid #dfe4e8; border-radius: 16px; background: #fff; color: #17191c; font-size: 16px; resize: vertical; }
+.pinterest-pedir-reposicao-mensagem textarea:focus { border-color: #78aede; box-shadow: 0 0 0 3px rgba(120,174,222,.28); outline: none; }
+.pinterest-pedir-reposicao-acoes { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.pinterest-pedir-reposicao-enviar { display: flex; width: 100%; min-height: 52px; align-items: center; justify-content: center; border: 0; border-radius: 15px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
+.pinterest-pedir-reposicao-acoes a { display: flex; min-height: 48px; align-items: center; justify-content: center; color: #666d74; font-size: 14px; font-weight: 650; text-decoration: none; }
+.pinterest-pedir-reposicao-vazio { margin-top: 20px; padding: 20px 18px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-pedir-reposicao-vazio strong { display: block; font-size: 17px; font-weight: 740; }
+.pinterest-pedir-reposicao-vazio p { margin-top: 5px; color: #777e85; font-size: 13.5px; line-height: 1.5; }
+.pinterest-pedir-reposicao-vazio a { display: inline-flex; min-height: 46px; align-items: center; margin-top: 14px; color: #1b4f7a; font-size: 14px; font-weight: 700; text-decoration: none; }
+.pinterest-pedir-reposicao :is(a,button,input,textarea):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width:431px) { .pinterest-pedir-reposicao { padding-inline:24px; } }
+@media (prefers-reduced-motion:reduce) { .pinterest-pedir-reposicao :is(a,button) { transition:none; transform:none; } }
