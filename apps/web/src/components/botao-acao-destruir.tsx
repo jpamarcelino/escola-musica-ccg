@@ -67,37 +67,21 @@ export function BotaoAcaoDestruir({
             AlertDialog do Radix renderiza Overlay e Content como irmãos),
             por isso a centragem flex do overlay não chega até aqui —
             repete-se com position fixed + transform. */}
-        <AlertDialog.Content
-          className="modal-caixa fixed left-1/2 top-1/2 z-50"
-        >
-
-          <AlertDialog.Title
-            className="text-[17px] font-semibold"
-            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-          >
-            {titulo}
-          </AlertDialog.Title>
+        <AlertDialog.Content className="modal-caixa pinterest-dialogo fixed left-1/2 top-1/2 z-50">
+          <AlertDialog.Title>{titulo}</AlertDialog.Title>
           {/* whitespace-pre-line: as confirmações que explicam
               consequências têm mais do que uma frase, e um bloco corrido
               de quatro linhas não se lê antes de carregar num botão
               vermelho. Quem não usa parágrafos não nota diferença. */}
-          <AlertDialog.Description
-            className="mt-[8px] whitespace-pre-line text-[14px] leading-[1.5]"
-            style={{ color: 'var(--color-tinta-suave)' }}
-          >
+          <AlertDialog.Description className="whitespace-pre-line">
             {mensagem}
           </AlertDialog.Description>
-          <form action={action} className="mt-[22px] flex justify-end gap-[10px]">
+          {/* Confirmar em cima e cancelar por baixo, os dois à largura
+              toda: no telemóvel, dois botões lado a lado num diálogo de
+              340 px partem o rótulo a meio, e "Desmarcar todas as aulas
+              deste dia" é justamente o texto que não pode partir. */}
+          <form action={action} className="pinterest-dialogo-acoes">
             {children}
-            <AlertDialog.Cancel asChild>
-              <button
-                type="button"
-                className={`rounded-[var(--radius-pill)] px-4 py-[10px] text-[14px] font-medium transition-colors hover:bg-[var(--color-papel-2)] ${CLASSES_FOCO}`}
-                style={{ color: 'var(--color-tinta-suave)' }}
-              >
-                Cancelar
-              </button>
-            </AlertDialog.Cancel>
             {/* Propositadamente NÃO é <AlertDialog.Action>: esse componente
                 fecha o diálogo (desmonta o <form>) no mesmo clique que
                 dispara a submissão, e a Server Action perde-se a meio —
@@ -105,11 +89,16 @@ export function BotaoAcaoDestruir({
                 (redirect ou a linha a desaparecer da lista) fechar isto. */}
             <SubmitButton
               textoAGuardar="A confirmar…"
-              className={`rounded-[var(--radius-pill)] px-4 py-[10px] text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 ${CLASSES_FOCO}`}
+              className="pinterest-dialogo-confirmar"
               style={{ backgroundColor: cor }}
             >
               {label}
             </SubmitButton>
+            <AlertDialog.Cancel asChild>
+              <button type="button" className="pinterest-dialogo-cancelar">
+                Cancelar
+              </button>
+            </AlertDialog.Cancel>
           </form>
         </AlertDialog.Content>
       </AlertDialog.Portal>

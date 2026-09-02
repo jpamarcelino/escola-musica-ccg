@@ -5378,3 +5378,60 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-horario-aula-fundo { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between; padding: 12px 16px 14px; border-top: 1px solid rgba(31,35,39,.07); background: rgba(255,255,255,.55); }
 .pinterest-horario-aula-fundo p { color: #757b82; font-size: 12.5px; }
 .pinterest-horario-aula-fundo button { min-height: 44px; padding: 0 16px; border-width: 1px; border-radius: 13px; font-size: 13px; font-weight: 650; }
+
+/* Design Pinterest - diálogo de confirmação.
+   Vive no globals e não numa página porque o diálogo é o mesmo em toda a
+   app: desmarcar um dia, recusar um pedido, apagar a conta. O tom
+   (vermelho de perigo, azul neutro) continua a vir do componente em
+   estilo inline — aqui trata-se só da forma. */
+.modal-caixa.pinterest-dialogo { max-width: 340px; padding: 22px 20px 20px; border: 0; border-radius: 26px; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; box-shadow: 0 18px 50px rgba(19,22,26,.28); }
+.pinterest-dialogo > h2 { color: #17191c; font-family: inherit; font-size: 18.5px; font-weight: 740; line-height: 1.25; letter-spacing: 0; }
+.pinterest-dialogo > p { margin-top: 9px; color: #6d737a; font-size: 14px; line-height: 1.5; }
+.pinterest-dialogo-acoes { display: flex; margin-top: 22px; flex-direction: column; gap: 9px; }
+.pinterest-dialogo-confirmar { display: flex; min-height: 50px; align-items: center; justify-content: center; border-radius: 16px; color: #fff; font-size: 15px; font-weight: 680; transition: opacity .15s ease; }
+.pinterest-dialogo-confirmar:hover { opacity: .9; }
+.pinterest-dialogo-confirmar:disabled { opacity: .5; }
+.pinterest-dialogo-cancelar { display: flex; min-height: 50px; align-items: center; justify-content: center; border-radius: 16px; background: #f0f2f4; color: #4a5058; font-size: 15px; font-weight: 640; transition: background-color .15s ease; }
+.pinterest-dialogo-cancelar:hover { background: #e7eaee; }
+.pinterest-dialogo :is(button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .pinterest-dialogo :is(button) { transition: none; } }
+
+/* Design Pinterest - detalhe de uma aula semanal do professor.
+   É a página que abre ao tocar numa linha da agenda: diz de que aula se
+   trata no cabeçalho e, em baixo, quem lá está. Cada aluno é um cartão
+   com o nome, a disciplina e a data exata que o desmarcar vai apanhar —
+   antes o dia só aparecia dentro da confirmação, depois do toque. */
+.pinterest-aula { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-aula-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-aula-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-aula-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-aula-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-aula-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+.pinterest-aula-mensagem { margin-bottom: 20px; padding: 13px 15px; border: 1px solid #e6e9ed; border-radius: 18px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+/* O cartão de contexto leva o fade azul aprovado: é o que responde a
+   "que aula é esta?" e não se confunde com a lista de alunos. */
+.pinterest-aula-contexto { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; margin-bottom: 28px; padding: 15px; border: 1px solid #e4e8ec; border-radius: 22px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-aula-contexto > svg { box-sizing: content-box; padding: 11px; border-radius: 14px; background: #fff; color: #1b4f7a; }
+.pinterest-aula-contexto div { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-aula-contexto strong { font-size: 16px; font-weight: 730; }
+.pinterest-aula-contexto span { margin-top: 3px; color: #6d737a; font-size: 12.5px; }
+.pinterest-aula-seccao h2 { margin: 0 2px 12px; font-size: 21px; font-weight: 740; letter-spacing: 0; }
+.pinterest-aula-seccao h2 b { margin-left: 7px; color: #7b8188; font-size: 15px; font-weight: 640; }
+.pinterest-aula-lista { display: flex; flex-direction: column; gap: 12px; }
+.pinterest-aula-aluno { overflow: hidden; border: 1px solid #e6e9ed; border-radius: 21px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-aula-aluno > a { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 12px; align-items: center; min-height: 76px; padding: 13px 15px; color: #17191c; text-decoration: none; }
+.pinterest-aula-inicial { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 15px; background: #e7f1fa; color: #1b4f7a; font-size: 17px; font-weight: 720; }
+.pinterest-aula-aluno > a > span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-aula-aluno strong { overflow: hidden; font-size: 16px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-aula-aluno small { overflow: hidden; margin-top: 3px; color: #757b82; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-aula-aluno > a > svg { color: #969ba1; }
+/* O desmarcar vive numa faixa própria no fundo do cartão, como no horário
+   do aluno: fica visível sem competir com o nome. */
+.pinterest-aula-desmarcar { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 11px 15px; border-top: 1px solid #eef0f2; background: #fbfcfd; }
+.pinterest-aula-desmarcar > p { min-width: 0; color: #6d737a; font-size: 12px; line-height: 1.35; }
+.pinterest-aula-desmarcar button { min-height: 38px; padding: 0 13px; border-radius: 999px; border-width: 1px; font-size: 12.5px; font-weight: 640; white-space: nowrap; }
+.pinterest-aula .estado-vazio { border-radius: 21px; background: #fff; }
+.pinterest-aula :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+.pinterest-aula :is(a,button):active { transform: scale(.98); }
+@media (min-width: 431px) { .pinterest-aula { padding-inline: 24px; } }
+@media (prefers-reduced-motion: reduce) { .pinterest-aula :is(a,button) { transition: none; } }

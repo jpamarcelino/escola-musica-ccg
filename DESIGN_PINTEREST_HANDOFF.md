@@ -113,7 +113,7 @@ A entrada de Presencas do professor foi implementada e publicada em `60ca4c7`. O
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
-- `/dashboard/agenda` - variante professor (implementada, por validar com uma conta de professor com aulas);
+- `/dashboard/agenda` e `/dashboard/agenda/[horarioId]` - variante professor (implementadas, por validar com uma conta de professor com aulas);
 - `/dashboard` - desktop;
 - `/dashboard` - modo escuro;
 - estados de outros papeis que possam usar a rota.
@@ -205,3 +205,41 @@ A grelha semanal deixou de ser um `<details>` de texto sublinhado: e um
 cartao branco com icone, que abre encostado a grelha (cantos de cima
 quadrados quando aberta) e nao um segundo cartao dentro do primeiro. Os
 blocos da grelha usam o azul suave `#e7f1fa` em vez do papel bege.
+
+## Cabecalho de data nas listas cronologicas
+
+O cabecalho de cada dia passou a ter so o rotulo: "Hoje", "Amanha" ou
+"Sexta-feira, 5 de setembro". A linha pequena por baixo ("sexta-feira ·
+setembro") saiu das duas agendas — em "Hoje" e "Amanha" acrescentava uma
+linha que ninguem precisa de ler, e nos outros dias repetia a letra o que
+o proprio rotulo ja diz. O numero do dia continua na caixa azul.
+
+## Dialogo de confirmacao
+
+`BotaoAcaoDestruir` e o unico dialogo de confirmacao da app (desmarcar um
+dia, recusar um pedido, cancelar matricula, apagar conta), por isso o
+restyle e global e nao por pagina: bloco `.pinterest-dialogo` em
+`globals.css`. Caixa de 340 px com raio 26, titulo em tipografia de
+sistema a 18.5 px (deixou de ser a serifa editorial), mensagem a 14 px e
+botoes empilhados a largura toda — confirmar em cima, cancelar por baixo.
+Lado a lado, rotulos como "Desmarcar todas as aulas deste dia" partiam a
+meio no telemovel.
+
+O tom continua a vir do componente em estilo inline: vermelho `#9A3B2E`
+para accoes destrutivas, azul da marca para as que so precisam de uma
+pausa. O gatilho nao mudou — cada pagina continua a dar-lhe a forma que
+precisa.
+
+## Detalhe da aula semanal
+
+`/dashboard/agenda/[horarioId]` abre ao tocar numa linha da agenda.
+Cabecalho com o dia da semana, cartao de contexto com o fade azul
+aprovado (hora e sala) e a lista de quem vem: um cartao branco por aluno,
+com inicial em caixa azul clara, nome, disciplina e ligacao para a ficha.
+A data da proxima aula subiu para uma faixa no fundo do cartao, ao lado
+do desmarcar — antes so aparecia dentro da confirmacao, o que obrigava a
+abrir o dialogo para saber de que dia se tratava.
+
+O CSS antigo `.detalhe-aula-*` em `globals.css` ficou orfao e pode ser
+removido numa limpeza; nao foi removido agora para nao alargar o conflito
+no ficheiro enquanto ha duas sessoes a escrever nele.

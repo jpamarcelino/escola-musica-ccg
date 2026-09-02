@@ -58,14 +58,13 @@ function rotuloData(data: string): string {
   return formatado.charAt(0).toUpperCase() + formatado.slice(1)
 }
 
-function partesData(data: string) {
-  const [ano, mes, dia] = data.split('-').map(Number)
-  const objeto = new Date(ano, mes - 1, dia)
-  return {
-    dia: String(dia).padStart(2, '0'),
-    semana: new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(objeto),
-    mes: new Intl.DateTimeFormat('pt-PT', { month: 'long' }).format(objeto),
-  }
+// Só o número do dia, para a caixa azul. O dia da semana e o mês saíram
+// do cabeçalho: em "Hoje" e "Amanhã" acrescentavam uma linha que ninguém
+// precisa de ler, e nos outros dias repetiam à letra o que o próprio
+// rótulo já diz ("Sexta-feira, 5 de setembro" sobre "sexta-feira ·
+// setembro").
+function diaDoMes(data: string): string {
+  return String(Number(data.split('-')[2])).padStart(2, '0')
 }
 
 export default async function AgendaPage({
@@ -346,7 +345,6 @@ export default async function AgendaPage({
           <>
             <div className="partitura-dias pinterest-agenda-dias">
               {[...porData.entries()].map(([data, aulas]) => {
-                const partes = partesData(data)
                 // Só as da grelha semanal contam para desmarcar o dia: a
                 // função percorre matrículas, e um dia só de reposições
                 // não tem nada para ela apanhar.
@@ -354,12 +352,9 @@ export default async function AgendaPage({
                 return (
                   <section key={data} className="partitura-dia">
                     <header>
-                      <span className="partitura-dia-numero">{partes.dia}</span>
+                      <span className="partitura-dia-numero">{diaDoMes(data)}</span>
                       <span>
                         <strong>{rotuloData(data)}</strong>
-                        <small>
-                          {partes.semana} · {partes.mes}
-                        </small>
                       </span>
                       {/* A confirmação diz a data por extenso e quantas
                           aulas caem — é a diferença entre desmarcar um dia
