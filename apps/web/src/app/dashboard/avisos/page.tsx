@@ -5,7 +5,7 @@ import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
 import { ehContaCCG } from '@/lib/navegacao'
 import { accaoDoAviso, avisoDoPapel, type PapelAviso, type TipoAviso } from '@/lib/avisos'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Bell, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Notificacao = {
   id: number
@@ -165,11 +165,18 @@ export default async function AvisosPage({
             }
           />
         ) : (
-          <section className="avisos-lista" aria-label="Arquivo de avisos">
+          <section aria-labelledby="avisos-recentes-titulo">
+            <header className="pinterest-avisos-seccao">
+              <h2 id="avisos-recentes-titulo">Recentes</h2>
+              <span>{avisos.length}</span>
+            </header>
+            <div className="avisos-lista" aria-label="Arquivo de avisos">
             {avisos.map((n) => {
               const nomeAluno = n.aluno_id ? nomePorAluno.get(n.aluno_id) : null
+              const tituloAviso = n.titulo ?? tipos.get(n.tipo)?.titulo
               return (
                 <article key={n.id} data-lida={n.lida}>
+                  <span className="avisos-icone" aria-hidden="true"><Bell size={18} /></span>
                   <time>{new Date(n.criado_em).toLocaleDateString('pt-PT')}</time>
                   {/* A linha inteira abre o aviso. A lista serve para
                       varrer — a mensagem vem cortada a três linhas, e
@@ -184,12 +191,7 @@ export default async function AvisosPage({
                     {/* Avisos antigos (e os gerais da conta) não têm aluno
                         associado e continuam a aparecer, sem etiqueta. */}
                     {nomeAluno && <span className="avisos-aluno">{nomeAluno}</span>}
-                    {/* Só as mensagens escritas à mão têm título: é a
-                        assinatura de quem as escreveu (migração 0042).
-                        Nos avisos automáticos, o título é sempre igual ao
-                        do tipo e repeti-lo por cima do texto não
-                        acrescentava nada. */}
-                    {n.titulo && <strong className="avisos-titulo">{n.titulo}</strong>}
+                    {tituloAviso && <strong className="avisos-titulo">{tituloAviso}</strong>}
                     <p className="avisos-resumo">{n.mensagem}</p>
                   </Link>
                   {/* O mesmo destino que a push usa, à parte da ligação
@@ -209,6 +211,7 @@ export default async function AvisosPage({
                 </article>
               )
             })}
+            </div>
           </section>
         )}
       </div>
