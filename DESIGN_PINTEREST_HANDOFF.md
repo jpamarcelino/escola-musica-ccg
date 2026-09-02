@@ -85,6 +85,8 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/dashboard/avisos` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/avisos/[avisoId]` - conta familia/aluno - mobile - modo claro (`5c12018`).
 - `/dashboard/mensalidades` - variante familia - mobile - modo claro (`fc4402d`, estado vazio finalizado em `754460e`).
+- `/dashboard/conta/avancado` - familia/aluno - mobile - modo claro (`f3131bf`).
+- `/dashboard/reposicoes/pedidos` - professor - mobile - modo claro (`f3131bf`).
 
 Inclui:
 
@@ -101,6 +103,8 @@ A Agenda estabelece o padrao aprovado para listas cronologicas: cabecalho compac
 Avisos estabelece o padrao de caixa de entrada: titulo de seccao e contagem, cartoes brancos individuais, icone contextual, titulo do tipo de aviso, barra azul discreta para nao lidos e resumo a 14 px. Mesmo os avisos lidos mantem contraste e presenca; nao reduzir toda a hierarquia apenas para os tornar secundarios. O detalhe vive numa superficie branca separada. Lista, detalhe e acao contextual foram validados a 360 px e 390 px com dados reais.
 
 Mensalidades estabelece o padrao para resumo financeiro familiar: um resumo mensal destacado mas leve, seletor horizontal de meses e estados de pagamento em superficies brancas. O estado real sem mensalidades foi tratado como parte integral da pagina, com mensagem e nota informativa separadas. Foi validada autenticada a 360 px e 390 px, sem overflow horizontal da pagina.
+
+Cancelamentos e transferencias agrupa cada decisao rara numa superficie branca propria, com consequencias legiveis e perigo reservado para a eliminacao da conta. Marcar reposicao usa uma hierarquia operacional: pedidos primeiro e formulario manual em destaque azul subtil. Ambas foram validadas autenticadas a 360 px, 390 px e 430 px, sem overflow horizontal; na conta de professor foi validado o estado real sem pedidos e o formulario manual completo.
 
 ### Ainda nao concluido nessa mesma rota
 
