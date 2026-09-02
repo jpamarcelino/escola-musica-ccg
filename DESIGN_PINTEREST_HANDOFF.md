@@ -560,3 +560,36 @@ Dois detalhes do componente, para nao se perderem:
 O `PageHeader` deixou de escolher entre `BackButton` e
 `BotaoVoltarHistorico` e usa sempre o mesmo componente. Os dois antigos
 ficaram sem uso e podem ser apagados numa limpeza.
+
+## Arrastar para apagar um aviso
+
+Componente `AvisoDeslizavel`, usado nas duas caixas de entrada
+(`/dashboard/avisos` e `/admin/avisos`), portanto em todos os papeis.
+
+So envolve avisos ja lidos. Um aviso por ler e a unica prova de que a app
+tentou dizer alguma coisa a alguem, e um gesto nao o pode destruir antes
+de ser visto. A regra esta escrita tres vezes de proposito, e nao por
+distraccao: a interface so oferece o gesto nos lidos, a accao repete o
+`lida = true` para quem a chame por outro caminho, e a politica de RLS da
+migracao 0057 trata de quem nem por ai passe.
+
+O gesto: `LIMITE` 96 px de curso, `LIMIAR` 56 px para valer. Abaixo do
+limiar so ha vermelho e largar nao faz nada — o arrependimento a meio tem
+de ser possivel num gesto que nao tem botao para cancelar. Passado o
+limiar aparece o caixote, e e ele que promete a pergunta que vem a
+seguir; ao largar abre a confirmacao.
+
+Tres detalhes que nao se veem mas sem os quais o gesto nao presta:
+
+- a direccao so se decide passados 8 px, e ate la o ponteiro nao e
+  capturado — decidir mais cedo roubava o scroll a quem so queria descer
+  a lista;
+- `touch-action: pan-y` devolve o vertical ao browser e deixa-nos so o
+  horizontal;
+- o clique que vem a seguir a um arrasto e engolido em captura, senao
+  arrastar para apagar abria o aviso pelo caminho.
+
+O botao vermelho por baixo e um `<button>` a serio e esta na ordem de
+tabulacao: ao receber foco, o cartao desliza sozinho para o revelar. Um
+gesto que so existe para quem tem dedos nao e uma funcionalidade, e um
+atalho.

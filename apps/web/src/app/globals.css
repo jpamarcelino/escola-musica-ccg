@@ -6172,6 +6172,50 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-mensagens :is(a,button,input,textarea):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
 @media (min-width:431px) { .pinterest-mensagens { padding-inline:24px; } }
 @media (prefers-reduced-motion:reduce) { .pinterest-mensagens * { transition:none!important; } }
+
+/* Design Pinterest - extrato de mensalidades do professor. */
+.pinterest-mensalidades-professor { min-height:100dvh; padding:max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background:#f5f6f8; color:#17191c; font-family:-apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-mensalidades-professor-folha { width:100%; max-width:430px; margin-inline:auto; }
+.pinterest-mensalidades-professor-cabecalho { display:grid; grid-template-columns:44px minmax(0,1fr); gap:12px; align-items:center; padding:6px 2px 20px; }
+.pinterest-mensalidades-professor-voltar { display:grid; width:44px; height:44px; place-items:center; border:1px solid #e1e5e9; border-radius:15px; background:#fff; color:#20242a; box-shadow:0 3px 12px rgba(31,35,39,.05); }
+.pinterest-mensalidades-professor-cabecalho h1 { font-size:28px; font-weight:760; line-height:1.1; letter-spacing:0; }
+.pinterest-mensalidades-professor-cabecalho p { margin-top:4px; color:#767c84; font-size:13px; line-height:1.4; }
+.pinterest-mensalidades-professor-meses { display:flex; gap:7px; margin:0 -16px 18px; padding:0 16px 5px; overflow-x:auto; scroll-snap-type:x proximity; scrollbar-width:none; }
+.pinterest-mensalidades-professor-meses::-webkit-scrollbar { display:none; }
+.pinterest-mensalidades-professor-meses a { min-width:58px; scroll-snap-align:start; padding:10px 11px; border:1px solid #e1e5e9; border-radius:13px; background:#fff; color:#747a81; font-size:12px; font-weight:650; text-align:center; text-decoration:none; }
+.pinterest-mensalidades-professor-meses a[aria-current='page'] { border-color:#1b4f7a; background:#1b4f7a; color:#fff; box-shadow:0 4px 12px rgba(27,79,122,.18); }
+.pinterest-mensalidades-professor .mensalidades-resumo { display:grid; grid-template-columns:46px minmax(0,1fr); gap:12px; padding:17px; border:1px solid #dce6ee; border-radius:23px; background:linear-gradient(145deg,rgba(120,174,222,.16),rgba(120,174,222,.03) 45%,#fff 78%); box-shadow:0 6px 20px rgba(31,35,39,.055); }
+.pinterest-mensalidades-professor .mensalidades-resumo > span { display:grid; width:46px; height:46px; place-items:center; border-radius:14px; background:rgba(255,255,255,.8); color:#1b4f7a; }
+.pinterest-mensalidades-professor .mensalidades-total p { color:#506779; font-size:11px; font-weight:700; letter-spacing:0; text-transform:none; }
+.pinterest-mensalidades-professor .mensalidades-total strong { margin-top:3px; color:#123a5b; font-size:34px; font-weight:780; line-height:1.05; letter-spacing:0; }
+.pinterest-mensalidades-professor .mensalidades-total small { margin-top:7px; color:#667580; font-size:11.5px; line-height:1.4; }
+.pinterest-mensalidades-professor .mensalidades-resumo dl { grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:3px; padding-top:13px; border-top:1px solid rgba(116,145,166,.2); }
+.pinterest-mensalidades-professor .mensalidades-resumo dl > div { display:flex; min-width:0; flex-direction:column; gap:3px; padding:0 8px; border:0; text-align:center; }
+.pinterest-mensalidades-professor .mensalidades-resumo dl > div + div { border-left:1px solid rgba(116,145,166,.18); }
+.pinterest-mensalidades-professor .mensalidades-resumo dt { overflow:hidden; color:#74828d; font-size:9.5px; text-overflow:ellipsis; white-space:nowrap; }
+.pinterest-mensalidades-professor .mensalidades-resumo dd { color:#25333e; font-size:17px; font-weight:750; }
+.pinterest-mensalidades-professor > *, .pinterest-mensalidades-professor-folha > .mensagem-info { border-radius:17px; }
+.pinterest-mensalidades-professor .mensalidades-extrato { margin-top:28px; }
+.pinterest-mensalidades-professor .mensalidades-extrato > header { display:grid; grid-template-columns:42px minmax(0,1fr); gap:11px; align-items:center; margin:0 2px 12px; }
+.pinterest-mensalidades-professor .mensalidades-extrato > header > span { display:grid; width:42px; height:42px; place-items:center; border-radius:13px; background:#e7f1fa; color:#1b4f7a; }
+.pinterest-mensalidades-professor .mensalidades-extrato h2 { color:#17191c; font-family:inherit; font-size:18px; font-weight:730; letter-spacing:0; }
+.pinterest-mensalidades-professor .mensalidades-extrato header p { margin-top:3px; color:#858a91; font-size:11.5px; }
+.pinterest-mensalidades-professor .mensalidades-extrato > div { display:flex; flex-direction:column; gap:9px; border:0; }
+.pinterest-mensalidades-professor .mensalidades-extrato article { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; min-height:78px; align-items:center; padding:13px 14px; border:1px solid #e5e8ec; border-radius:19px; background:#fff; box-shadow:0 4px 15px rgba(31,35,39,.045); }
+.pinterest-mensalidades-professor .mensalidades-extrato article::before { display:none; }
+.pinterest-mensalidades-professor .mensalidades-extrato strong { overflow:hidden; color:#17191c; font-family:inherit; font-size:15.5px; font-weight:710; text-overflow:ellipsis; white-space:nowrap; }
+.pinterest-mensalidades-professor .mensalidades-extrato small { margin-top:3px; color:#7a8087; font-size:11.5px; }
+.pinterest-mensalidades-professor .mensalidades-extrato b { color:#252b31; font-size:15px; font-weight:740; }
+.pinterest-mensalidades-professor .mensalidades-extrato em { grid-column:1 / -1; justify-self:start; padding:5px 8px; border-radius:9px; background:#f0f2f4; color:#697078; font-size:9.5px; font-weight:700; }
+.pinterest-mensalidades-professor .mensalidades-extrato article[data-estado='paga'] em, .pinterest-mensalidades-professor .mensalidades-extrato article[data-estado='nao_devida'] em { background:#eaf4ee; color:#3d7658; }
+.pinterest-mensalidades-professor .mensalidades-extrato article[data-estado='por_pagar'] em { background:#fff1e8; color:#8a4c2f; }
+.pinterest-mensalidades-professor .empty-editorial { margin-top:18px; padding:20px; border:1px solid #e5e8ec; border-radius:21px; background:#fff; box-shadow:0 4px 15px rgba(31,35,39,.05); }
+.pinterest-mensalidades-professor .empty-editorial::before { display:none; }
+.pinterest-mensalidades-professor .empty-editorial-titulo { color:#17191c; font-family:inherit; font-size:17px; font-weight:730; }
+.pinterest-mensalidades-professor-nota { margin-top:16px; padding:14px 15px; border:1px solid #e5e8ec; border-radius:17px; background:#fff; color:#737a81; font-size:12px; line-height:1.5; }
+.pinterest-mensalidades-professor :is(a,button):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
+@media (min-width:431px) { .pinterest-mensalidades-professor { padding-inline:24px; } .pinterest-mensalidades-professor-meses { margin-inline:-24px; padding-inline:24px; } }
+@media (prefers-reduced-motion:reduce) { .pinterest-mensalidades-professor * { transition:none!important; } }
 /* O zoom do iOS ao entrar num campo.
    O Safari do iPhone aproxima a pagina sozinho quando o campo que recebe
    o foco tem letra abaixo de 16 px, e a aproximacao fica la depois de
@@ -6220,6 +6264,32 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-admin-destaque.pinterest-aula-vazia { min-height: 108px; padding-block: 16px; }
 .pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-aluno { grid-column: 2; align-self: center; color: #1b4f7a; font-size: 14px; }
 .pinterest-admin-destaque.pinterest-aula-vazia .pinterest-aula-seta { bottom: auto; top: 50%; transform: translateY(-50%); }
+
+/* Arrastar um aviso lido para o apagar.
+   O gesto e o do iOS: a linha anda para a esquerda e por baixo dela
+   aparece o vermelho. Abaixo do limiar so ha cor e largar nao faz nada;
+   passado o limiar aparece o caixote, e e ele que promete a pergunta que
+   vem a seguir. */
+.aviso-deslizavel { position: relative; overflow: hidden; border-radius: 20px; background: #b4392c; }
+.aviso-deslizavel-apagar { position: absolute; top: 0; right: 0; bottom: 0; display: grid; width: 96px; place-items: center; border: 0; background: transparent; color: #fff; opacity: 0; transition: opacity .12s ease; }
+/* O caixote so aparece quando largar ja faz alguma coisa. Ate la o
+   vermelho sozinho diz "estas a comecar algo" sem prometer o fim. */
+.aviso-deslizavel:has(.aviso-deslizavel-carta[data-caixote]) .aviso-deslizavel-apagar,
+.aviso-deslizavel-apagar:focus-visible { opacity: 1; }
+.aviso-deslizavel-apagar:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+/* touch-action: pan-y devolve o scroll vertical ao browser e deixa-nos so
+   o horizontal — sem isto, arrastar na diagonal prendia a lista. */
+.aviso-deslizavel-carta { position: relative; touch-action: pan-y; will-change: transform; }
+/* A carta tem de tapar o vermelho enquanto esta parada, senao via-se a
+   faixa pelos cantos arredondados do cartao. */
+.aviso-deslizavel-carta > article { background: #fff; }
+/* Enquanto se arrasta, o texto nao se seleciona nem as imagens saltam. */
+.aviso-deslizavel[data-aberto] .aviso-deslizavel-carta { user-select: none; }
+.pinterest-avisos .aviso-deslizavel { box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-avisos .aviso-deslizavel .avisos-lista article,
+.pinterest-avisos .aviso-deslizavel > div > article { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .aviso-deslizavel-apagar { transition: none; }
 
 /* Design Pinterest — /admin/alunos no telemovel.
    A mesa da secretaria e feita para o computador: quatro colunas, cabecalho

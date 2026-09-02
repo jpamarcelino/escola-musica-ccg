@@ -5,6 +5,7 @@ import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
 import { accaoDoAviso, avisoDoPapel, type TipoAviso } from '@/lib/avisos'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { AvisoDeslizavel } from '@/components/aviso-deslizavel'
 
 type Notificacao = {
   id: number
@@ -112,8 +113,9 @@ export default async function AdminAvisosPage() {
           />
         ) : (
           <section className="avisos-lista" aria-label="Arquivo de avisos">
-            {avisos.map((n) => (
-              <article key={n.id} data-lida={n.lida}>
+            {avisos.map((n) => {
+              const linha = (
+              <article data-lida={n.lida}>
                 <time>{new Date(n.criado_em).toLocaleDateString('pt-PT')}</time>
                 {/* Abre o aviso. A mensagem vem cortada a três linhas: a
                     lista é para varrer, a página do aviso é para ler. */}
@@ -132,7 +134,17 @@ export default async function AdminAvisosPage() {
                   </Link>
                 )}
               </article>
-            ))}
+              )
+              // A mesma regra da outra caixa: só se arrasta o que já foi
+              // lido.
+              return n.lida ? (
+                <AvisoDeslizavel key={n.id} id={n.id} titulo={n.titulo ?? 'Este aviso'}>
+                  {linha}
+                </AvisoDeslizavel>
+              ) : (
+                <div key={n.id}>{linha}</div>
+              )
+            })}
           </section>
         )}
       </div>

@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/empty-state'
 import { ehContaCCG } from '@/lib/navegacao'
 import { accaoDoAviso, avisoDoPapel, type PapelAviso, type TipoAviso } from '@/lib/avisos'
 import { Bell, ChevronRight } from 'lucide-react'
+import { AvisoDeslizavel } from '@/components/aviso-deslizavel'
 import { VoltarAtras } from '@/components/voltar-atras'
 
 type Notificacao = {
@@ -176,8 +177,8 @@ export default async function AvisosPage({
             {avisos.map((n) => {
               const nomeAluno = n.aluno_id ? nomePorAluno.get(n.aluno_id) : null
               const tituloAviso = n.titulo ?? tipos.get(n.tipo)?.titulo
-              return (
-                <article key={n.id} data-lida={n.lida}>
+              const linha = (
+                <article data-lida={n.lida}>
                   <span className="avisos-icone" aria-hidden="true"><Bell size={18} /></span>
                   <time>{new Date(n.criado_em).toLocaleDateString('pt-PT')}</time>
                   {/* A linha inteira abre o aviso. A lista serve para
@@ -211,6 +212,16 @@ export default async function AvisosPage({
                     </Link>
                   )}
                 </article>
+              )
+              // Só os lidos se arrastam. Um aviso por ler é a única prova
+              // de que a app tentou dizer alguma coisa a alguém, e um
+              // gesto não o pode destruir antes de ser visto.
+              return n.lida ? (
+                <AvisoDeslizavel key={n.id} id={n.id} titulo={tituloAviso ?? 'Este aviso'}>
+                  {linha}
+                </AvisoDeslizavel>
+              ) : (
+                <div key={n.id}>{linha}</div>
               )
             })}
             </div>
