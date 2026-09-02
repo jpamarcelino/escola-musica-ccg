@@ -8,7 +8,10 @@ import { SimboloCCG } from '@/components/simbolo-ccg'
 // inferior, e um segundo cabeçalho por cima seria ruído. Uma lista de
 // exclusões (e não de inclusões) é deliberada — assim, uma página
 // pública nova nasce já com a marca sem ninguém se lembrar disso.
-const AREAS_COM_CHROME_PROPRIO = ['/dashboard', '/admin', '/aluno']
+// A informação legal também traz o seu cabeçalho, com seta de voltar
+// para o índice — e a marca por cima dela ficava a segunda marca do
+// mesmo ecrã, a empurrar o título para baixo da dobra.
+const AREAS_COM_CHROME_PROPRIO = ['/dashboard', '/admin', '/aluno', '/legal']
 
 // A home tem a sua própria barra, com a marca e ainda "Entrar" e "Criar
 // conta". Repetir aqui a marca dava-lhe duas.
