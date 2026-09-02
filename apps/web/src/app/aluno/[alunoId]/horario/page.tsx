@@ -211,20 +211,42 @@ export default async function ConsultarHorarioPage({
               descricao="Quando um professor confirmar o horário, a próxima aula aparece aqui."
             />
           ) : (
-            <div className="partitura-linha-tempo">
+            /* Deixou de ser um acordeão. Desmarcar era a única coisa
+               lá dentro, e escondê-la atrás de um toque não a tornava
+               menos usada — só a tornava menos encontrável. Agora está
+               por baixo da aula, à vista, e continua atrás da mesma
+               confirmação.
+
+               Cancelar a MATRÍCULA continua fora daqui: esta página é
+               para consultar quando é a próxima aula, e vive em
+               /dashboard/conta/avancado com as outras saídas. */
+            <div className="pinterest-horario-aulas">
               {confirmadas.map((m) => {
                 const horario = m.horarios!
                 return (
-                  <details key={m.id} className="aluno-aula-registo">
-                    <summary><time>{formatarHora(horario.hora_inicio)}</time><span className="partitura-marca" aria-hidden="true" /><span><small>{formatarDataEscolar(m.proxima, { weekday: 'long', day: 'numeric', month: 'long' })}</small><strong>{m.instrumentos?.nome}</strong><b>{m.profiles?.nome}{formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}</b></span></summary>
-                    {/* Cancelar a matrícula estava aqui, debaixo do horário de cada
-                          aula. Esta página é para consultar quando é a próxima
-                          aula — não é onde se desfaz uma inscrição, e a
-                          proximidade das duas coisas fazia com que abrir o
-                          horário mostrasse sempre um botão vermelho. Mudou-se
-                          para /dashboard/conta/avancado, com as outras saídas. */}
-                    <div>
-                      <p>{formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula semanal</p>
+                  <article key={m.id} className="pinterest-horario-aula">
+                    <div className="pinterest-horario-aula-topo">
+                      <time>{formatarHora(horario.hora_inicio)}</time>
+                      <div>
+                        <small>
+                          {formatarDataEscolar(m.proxima, {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                          })}
+                        </small>
+                        <strong>{m.instrumentos?.nome}</strong>
+                        <span>
+                          {m.profiles?.nome}
+                          {formatarSala(horario.salas) && ` · ${formatarSala(horario.salas)}`}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="pinterest-horario-aula-fundo">
+                      <p>
+                        {formatarHora(horario.hora_inicio)}–{formatarHora(horario.hora_fim)} · aula
+                        semanal
+                      </p>
                       {/* Desmarcar age sobre UMA ocorrência — a próxima —
                           e não sobre a matrícula. Daí a data ir no
                           formulário: sem ela, a base de dados não saberia
@@ -241,7 +263,7 @@ export default async function ConsultarHorarioPage({
                         <input type="hidden" name="alunoId" value={alunoId} />
                       </BotaoAcaoDestruir>
                     </div>
-                  </details>
+                  </article>
                 )
               })}
             </div>

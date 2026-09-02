@@ -5228,3 +5228,19 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-pedir-reposicao :is(a,button,input,textarea):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width:431px) { .pinterest-pedir-reposicao { padding-inline:24px; } }
 @media (prefers-reduced-motion:reduce) { .pinterest-pedir-reposicao :is(a,button) { transition:none; transform:none; } }
+
+/* Cartao de aula confirmada, no horario do aluno. Mesmo fade azul do
+   destaque da Home: sao as aulas a serio, o conteudo por que se abre
+   esta pagina. Desmarcar fica por baixo, a vista — escondia-se atras de
+   um toque e isso nao a tornava menos usada, so menos encontravel. */
+.pinterest-horario-aulas { display: flex; flex-direction: column; gap: 12px; }
+.pinterest-horario-aula { overflow: hidden; border: 1px solid #e3e9ef; border-radius: 22px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); box-shadow: 0 6px 20px rgba(31,35,39,.06); }
+.pinterest-horario-aula-topo { display: grid; grid-template-columns: 60px minmax(0,1fr); gap: 12px; align-items: center; padding: 16px 16px 14px; }
+.pinterest-horario-aula-topo time { color: #1b4f7a; font-size: 16px; font-weight: 780; font-variant-numeric: tabular-nums; }
+.pinterest-horario-aula-topo > div { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-horario-aula-topo small { color: #26716b; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.pinterest-horario-aula-topo strong { margin-top: 3px; overflow-wrap: anywhere; font-size: 19px; font-weight: 750; line-height: 1.15; }
+.pinterest-horario-aula-topo > div > span { margin-top: 3px; color: #757b82; font-size: 13px; line-height: 1.4; }
+.pinterest-horario-aula-fundo { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between; padding: 12px 16px 14px; border-top: 1px solid rgba(31,35,39,.07); background: rgba(255,255,255,.55); }
+.pinterest-horario-aula-fundo p { color: #757b82; font-size: 12.5px; }
+.pinterest-horario-aula-fundo button { min-height: 44px; padding: 0 16px; border-width: 1px; border-radius: 13px; font-size: 13px; font-weight: 650; }
