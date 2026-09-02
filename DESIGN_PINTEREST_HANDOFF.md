@@ -93,14 +93,15 @@ Padrao base:
 - este passo conclui apenas a moldura. Cada pagina continua pendente em desktop
   ate receber composicao propria e validacao a 1024, 1440 e largura ampla.
 
-A primeira composicao desktop concluida e a Home autenticada (`88cd205`).
-Usa uma grelha assimetrica de 12 colunas: a proxima aula ocupa 7/12 (8/12
-em ecras muito largos) e a operacao frequente ocupa a coluna restante.
-O cartao principal cresce em altura e escala tipografica; alunos, atalhos e
-gestao permanecem compactos. A variante de professor sem horarios foi
-inspecionada em producao a 1440 x 1000, sem overflow, e a regressao mobile
-foi verificada a 390 px. A familia usa a mesma composicao, mas ainda precisa
-de inspecao autenticada com alunos reais antes de receber conclusao total.
+A direcao desktop foi simplificada depois da primeira prova. Nao criar uma
+composicao diferente para cada rota: manter a ordem vertical e os componentes
+do mobile, com a navegacao lateral e uma coluna central comum de 720 px. A
+Home tambem segue esta regra; a grelha assimetrica experimental de `88cd205`
+foi retirada. O objetivo e consistencia e velocidade, semelhante a uma app
+social que abre no computador sem se transformar noutro produto.
+
+Enquanto o limite de deploys da Vercel estiver esgotado, trabalhar e validar
+em localhost. Nao publicar novamente sem indicacao do utilizador.
 
 ## Estado aprovado ate agora
 

@@ -70,7 +70,7 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
             <SimboloCCG />
           </span>
           <span>
-            <strong>Escola de Música</strong>
+            <strong>Escolas CCG</strong>
             <small>Centro Cultural da Guarda</small>
           </span>
         </div>

@@ -29,9 +29,9 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Internas partilhadas
 
-- [x] Fundacao desktop autenticada - navegacao lateral e area de trabalho responsiva; as paginas continuam a ser validadas individualmente
-- [x] `/dashboard` - professor - desktop - modo claro - grelha assimetrica publicada em `88cd205`; estado sem horarios validado a 1440 px
-- [ ] `/dashboard` - familia/aluno - desktop - modo claro - implementado em `88cd205`; falta validar autenticado com alunos reais
+- [x] Fundacao desktop autenticada - navegacao lateral e coluna Pinterest comum de 720 px
+- [ ] `/dashboard` - professor - desktop - modo claro - composicao vertical comum implementada em localhost; falta validacao final
+- [ ] `/dashboard` - familia/aluno - desktop - modo claro - composicao vertical comum implementada em localhost; falta validar com alunos reais
 
 - [ ] `/dashboard` - professor - mobile - modo claro - implementado e publicado (`f82337d`), estado vazio validado; falta validar com aulas reais
 - [ ] `/dashboard` - todas as variantes - desktop
