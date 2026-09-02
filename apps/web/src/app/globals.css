@@ -5324,3 +5324,37 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 }
 .ficha-professor a:active { transform: scale(.98); }
 .ficha-professor a:focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+
+/* ── Instalar a app ─────────────────────────────────────────────────
+   Explica como pôr a PWA no ecrã principal. Continua a usar o
+   `PageHeader` e o `FundoPapel`, partilhados com a área com sessão — as
+   regras aqui têm este invólucro por ancestral e não saem dele. */
+.pinterest-instalar { background: #f5f6f8 !important; color: #17191c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif; }
+.pinterest-instalar h1 { font-family: inherit !important; font-size: 26px !important; font-weight: 750 !important; color: #17191c !important; }
+/* A seta de voltar como quadrado branco, igual à do pedido e à da ficha
+   do professor. */
+.pinterest-instalar header > a, .pinterest-instalar header > button { display: grid !important; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9 !important; border-radius: 15px !important; background: #fff !important; color: #20242a !important; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+
+/* Os dois separadores num único carril cinzento, como o seletor de
+   alunos da Agenda — dois botões soltos lado a lado não diziam que são
+   as duas metades da mesma escolha. */
+.pinterest-instalar [role="tablist"] { padding: 4px; border-radius: 999px; background: #eceef1; gap: 4px !important; }
+.pinterest-instalar [role="tablist"] button { border: 0 !important; border-radius: 999px !important; background: transparent !important; color: #5f646b !important; font-weight: 600 !important; }
+.pinterest-instalar [role="tablist"] button[aria-selected="true"] { background: #fff !important; color: #17191c !important; box-shadow: 0 2px 8px rgba(31,35,39,.08); }
+
+/* O cartão dos passos, e os números em azul claro em vez de círculos
+   cheios de azul escuro — quatro discos escuros seguidos pesavam mais
+   do que o texto que numeram. */
+/* O Cartao envolve a lista, e a lista já é o cartão: ficavam dois, um
+   dentro do outro. O de fora desaparece — mesma correção das páginas de
+   autenticação, e pela mesma razão. */
+.pinterest-instalar [role="tabpanel"] > div { padding: 0; border: 0; background: none; border-radius: 0; box-shadow: none; }
+.pinterest-instalar ol { padding: 6px 16px; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-instalar ol > li { padding-block: 12px; }
+.pinterest-instalar ol > li + li { border-top: 1px solid #eceef0; }
+.pinterest-instalar ol > li > span:first-child { background: #e7f1fa !important; color: #1b4f7a !important; font-weight: 700; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pinterest-instalar > div > * { animation: entrada-suave .3s var(--ease-suave) both; }
+}
+.pinterest-instalar :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }

@@ -89,6 +89,9 @@ Mobile claro, desktop e modo escuro sao entregas diferentes. Concluir uma nao co
 - `/pedir-aula` - publica - mobile - modo claro.
 - `/login`, `/registo` e `/esqueci-password` - publicas - mobile - modo claro.
 - `/professor/[professorId]` - publica - mobile - modo claro.
+- `/instalar` - publica - mobile - modo claro.
+- `/legal` e `/legal/[documento]` - publicas - mobile - modo claro (ja
+  estavam implementadas; faltava a validacao visual, feita agora).
 
 Inclui:
 
@@ -228,6 +231,28 @@ Uma armadilha: `min-height: 100dvh` no `<main>` alem do involucro
 empurrava o rodape legal para fora do ecra numa pagina curta. So o
 involucro precisa da altura.
 
+### Nota sobre `/instalar`
+
+Continua a usar o `PageHeader` e o `FundoPapel`, partilhados com a area
+com sessao — as regras tem o involucro por ancestral e nao saem dele.
+
+Os dois separadores passaram a um carril unico com pastilha deslizante,
+como o seletor de alunos da Agenda: dois botoes soltos lado a lado nao
+diziam que sao as duas metades da mesma escolha.
+
+Os numeros dos passos ficaram em azul claro sobre branco. Quatro discos
+de azul escuro seguidos pesavam mais do que o texto que numeram.
+
+Terceira vez que apareceu um Cartao a envolver algo que ja era cartao —
+depois das paginas de autenticacao e do formulario de pedido. Quando
+houver mais uma, vale a pena um componente que saiba nao se repetir.
+
+### As publicas estao fechadas
+
+As dez estao no sistema, com uma ressalva: `/redefinir-password` esta
+implementado mas nao foi visto, porque exige uma sessao de recuperacao.
+Fica como o unico `[ ]` das publicas.
+
 ## Ordem de trabalho recomendada
 
 1. Fechar o percurso familiar mobile claro: Agenda, Avisos, Conta, Gerir alunos, Mensalidades e paginas do aluno.
@@ -236,9 +261,9 @@ involucro precisa da altura.
 4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
-7. Redesenhar e validar as restantes paginas publicas. Feitas: `/`, `/pedir-aula`, `/login`, `/registo` e `/esqueci-password`. Faltam `/instalar`, as duas de `/legal` (implementadas, por validar) e validar `/redefinir-password`.
+7. Publicas concluidas, excepto validar `/redefinir-password` (precisa de uma sessao de recuperacao).
 
-Proxima pagina sugerida: `/instalar` — a ultima publica por redesenhar. Depois, validar visualmente as duas de `/legal`.
+Proxima pagina sugerida: voltar ao percurso com sessao — `/aluno/[alunoId]`, que o handoff ja sugeria antes das publicas, ou a variante professor de `/dashboard`.
 
 ### Nota sobre `/dashboard/conta`
 

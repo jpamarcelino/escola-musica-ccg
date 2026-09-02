@@ -81,7 +81,7 @@ export default function InstalarPage() {
   }
 
   return (
-    <FundoPapel>
+    <FundoPapel className="pinterest-instalar">
       <div className="space-y-[22px]">
         <PageHeader voltar="/" titulo="Instalar a app" voltarPeloHistorico />
 

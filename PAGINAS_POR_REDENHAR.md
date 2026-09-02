@@ -21,9 +21,9 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [x] `/registo` - publica - mobile - modo claro
 - [x] `/esqueci-password` - publica - mobile - modo claro
 - [ ] `/redefinir-password` - publica - mobile - modo claro - implementado, falta validar: exige sessao de recuperacao
-- [ ] `/instalar`
-- [ ] `/legal` - publica - mobile - modo claro - implementado, falta validar visualmente
-- [ ] `/legal/[documento]` - publica - mobile - modo claro - implementado, falta validar visualmente
+- [x] `/instalar` - publica - mobile - modo claro (os dois separadores)
+- [x] `/legal` - publica - mobile - modo claro (validado visualmente a 360 px)
+- [x] `/legal/[documento]` - publica - mobile - modo claro (validado visualmente a 360 px)
 
 ## Internas partilhadas
 
