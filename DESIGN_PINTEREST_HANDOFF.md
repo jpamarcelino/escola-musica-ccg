@@ -97,7 +97,7 @@ Inclui:
 
 A Agenda estabelece o padrao aprovado para listas cronologicas: cabecalho compacto, atalho branco com icone suave, data numa caixa azul clara e aulas em cartoes brancos. Foi validada a 360 px e 390 px com dados reais, sem overflow.
 
-Avisos estabelece o padrao de caixa de entrada: cartoes brancos individuais, barra azul discreta para nao lidos, resumo curto e detalhe de leitura numa superficie branca separada. Lista, detalhe e acao contextual foram validados a 360 px e 390 px com dados reais.
+Avisos estabelece o padrao de caixa de entrada: titulo de seccao e contagem, cartoes brancos individuais, icone contextual, titulo do tipo de aviso, barra azul discreta para nao lidos e resumo a 14 px. Mesmo os avisos lidos mantem contraste e presenca; nao reduzir toda a hierarquia apenas para os tornar secundarios. O detalhe vive numa superficie branca separada. Lista, detalhe e acao contextual foram validados a 360 px e 390 px com dados reais.
 
 ### Ainda nao concluido nessa mesma rota
 
@@ -156,6 +156,7 @@ Usar algo proximo deste texto com outro agente:
 - `067da9d`: solucao aprovada; cartao branco com fade azul subtil.
 - `f9c973c`: Agenda familiar mobile clara, com o padrao de lista cronologica aprovado.
 - `5c12018`: lista e detalhe de Avisos da familia, mobile claro.
+- `0e1940f`: reforco de hierarquia na lista de Avisos depois de validar o estado com apenas um aviso lido.
 - Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
   alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
   alunos a dois toques de distancia. As setas de voltar das paginas legais

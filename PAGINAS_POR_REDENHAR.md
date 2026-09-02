@@ -6,7 +6,7 @@ Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por 
 
 - [x] `/dashboard` - familia/aluno - mobile - modo claro (`d9b22d2`, acabamento `067da9d`)
 - [x] `/dashboard/agenda` - familia/aluno - mobile - modo claro (`f9c973c`)
-- [x] `/dashboard/avisos` - familia/aluno - mobile - modo claro (`5c12018`)
+- [x] `/dashboard/avisos` - familia/aluno - mobile - modo claro (`5c12018`, hierarquia afinada em `0e1940f`)
 - [x] `/dashboard/avisos/[avisoId]` - familia/aluno - mobile - modo claro (`5c12018`)
 
 ## Publicas pendentes no Design Pinterest
