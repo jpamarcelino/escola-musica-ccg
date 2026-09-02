@@ -425,7 +425,11 @@ body {
 .pinterest-agenda-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
 .pinterest-agenda-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
 .pinterest-agenda-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+/* A agenda familiar tem um atalho so (o calendario); a do professor tem
+   dois, e sao um grupo — espacamento entre eles e nao a volta de cada
+   um, para se lerem como duas vistas da mesma coisa. */
 .pinterest-agenda-calendario { margin-bottom: 28px; }
+.pinterest-agenda-atalhos { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
 .pinterest-agenda .agenda-ligacao-calendario { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 70px; padding: 12px 14px; border: 1px solid #e4e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
 .pinterest-agenda .agenda-ligacao-calendario > svg:first-child { box-sizing: content-box; padding: 10px; border-radius: 13px; background: #e7f1fa; color: #1b4f7a; }
 .pinterest-agenda .agenda-ligacao-calendario span { display: flex; min-width: 0; flex-direction: column; }
@@ -482,7 +486,7 @@ body {
 .pinterest-agenda-mensagem > p + p { margin-top: 8px; }
 /* A ligacao para a grelha semanal fecha a lista: e a segunda leitura da
    mesma semana, e quem chega a agenda vem pela primeira. */
-.pinterest-agenda-semana { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 70px; margin-top: 30px; padding: 12px 14px; border: 1px solid #e4e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-agenda-semana { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 70px; padding: 12px 14px; border: 1px solid #e4e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
 .pinterest-agenda-semana > svg:first-child { box-sizing: content-box; padding: 10px; border-radius: 13px; background: #e7f1fa; color: #1b4f7a; }
 .pinterest-agenda-semana > span { display: flex; min-width: 0; flex-direction: column; }
 .pinterest-agenda-semana strong { font-size: 14px; }
@@ -6472,3 +6476,12 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-diretorio .lista-pesquisa input[type="search"] { min-height: 50px; border: 1px solid #e8eaed; border-radius: 16px; background: #fff; font-size: 16px; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
 .pinterest-diretorio :is(a,button):active { transform: scale(.98); }
 .pinterest-diretorio :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+
+/* Descarregar a grelha. Cartao branco como os outros atalhos, e nao um
+   botao azul: e uma saida da pagina e nao a accao principal dela. */
+.pinterest-semana-descarregar { display: grid; width: 100%; grid-template-columns: 42px minmax(0,1fr); gap: 11px; align-items: center; min-height: 70px; margin-top: 14px; padding: 12px 14px; border: 1px solid #e4e8ec; border-radius: 20px; background: #fff; color: #17191c; text-align: left; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-semana-descarregar > svg { box-sizing: content-box; padding: 11px; border-radius: 13px; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-semana-descarregar > span { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-semana-descarregar strong { font-size: 14px; }
+.pinterest-semana-descarregar small { margin-top: 2px; color: #7b8188; font-size: 11px; }
+.pinterest-semana-descarregar:active { transform: scale(.99); }

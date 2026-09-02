@@ -597,3 +597,25 @@ O botao vermelho por baixo e um `<button>` a serio e esta na ordem de
 tabulacao: ao receber foco, o cartao desliza sozinho para o revelar. Um
 gesto que so existe para quem tem dedos nao e uma funcionalidade, e um
 atalho.
+
+## Descarregar a grelha semanal
+
+`DescarregarGrelha` desenha a grelha de raiz num `<canvas>` e nao fotografa
+o DOM. Uma fotografia do ecra (html2canvas e afins) traz o que o telemovel
+mostra: as colunas que couberam, cortadas onde a lista rolava, a largura do
+aparelho de quem carregou no botao. Num horario que vai ser impresso e
+afixado, isso e a distorcao que nao pode acontecer.
+
+Desenhada de raiz, a folha tem sempre a semana toda, colunas da mesma
+largura, e o mesmo aspeto venha de um iPhone SE ou de um portatil.
+
+PNG e nao PDF nem Excel: nao traz biblioteca nenhuma para o bundle, abre
+em qualquer lado, envia-se no WhatsApp e imprime-se bem aos 2x a que e
+gerada. Um Excel perdia a grelha, que e o que faz o horario legivel.
+
+Numeros que importam: `LINHA_HORA` e 84 px e nao 76 porque aos 76 uma
+aula de 45 minutos so tinha espaco para duas linhas, e num horario de
+professor o nome do aluno nao e o detalhe dispensavel. O fundo e branco e
+nao transparente — um PNG transparente enviado por WhatsApp aparece com
+texto preto sobre fundo preto no modo escuro. Os nomes compridos sao
+cortados com reticencias medidas no proprio canvas.

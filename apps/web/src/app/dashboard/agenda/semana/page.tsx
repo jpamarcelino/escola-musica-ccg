@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState } from '@/components/empty-state'
+import { DescarregarGrelha, type AulaGrelha } from '@/components/descarregar-grelha'
 import {
   DIAS_SEMANA,
   paraMinutos,
@@ -55,11 +56,10 @@ export default async function SemanaPage() {
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('perfis_escola')
-    .select('tipo, programa')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: perfil }] = await Promise.all([
+    supabase.from('perfis_escola').select('tipo, programa').eq('id', user.id).single(),
+    supabase.from('profiles').select('nome').eq('id', user.id).maybeSingle(),
+  ])
 
   if (profile?.tipo !== 'professor') {
     redirect('/dashboard')
@@ -134,6 +134,21 @@ export default async function SemanaPage() {
   const mostrarAgora =
     dias.includes(diaHoje) && minutosAgora >= primeiraHora * 60 && minutosAgora <= ultimaHora * 60
   const topoAgora = ((minutosAgora - primeiraHora * 60) / 60) * ALTURA_HORA
+
+  const aulasParaFolha: AulaGrelha[] = blocos
+    .filter((b) => dias.includes(b.dia_semana))
+    .map((b) => ({
+      dia: b.dia_semana,
+      horaInicio: formatarHora(b.hora_inicio),
+      horaFim: formatarHora(b.hora_fim),
+      titulo: b.disciplinas.length ? b.disciplinas.join(' · ') : b.alunos.join(', '),
+      detalhe: b.alunos.join(', '),
+    }))
+
+  // O ano letivo do CCG vai de outubro a junho: até junho ainda se está no
+  // que começou no ano anterior.
+  const inicioAno = agora.getMonth() >= 8 ? agora.getFullYear() : agora.getFullYear() - 1
+  const anoLetivo = `${inicioAno}/${inicioAno + 1}`
 
   const totalAlunos = new Set(
     confirmados.filter((c) => c.alunos?.nome).map((c) => c.alunos!.nome)
@@ -237,6 +252,18 @@ export default async function SemanaPage() {
             ))}
           </div>
         </div>
+
+        {/* A folha descarregada é desenhada de raiz e não fotografada do
+            ecrã — leva sempre a semana toda, não o pedaço que coube no
+            telemóvel de quem carregou no botão. */}
+        <DescarregarGrelha
+          dias={[...dias]}
+          aulas={aulasParaFolha}
+          primeiraHora={primeiraHora}
+          ultimaHora={ultimaHora}
+          nome={perfil?.nome ?? 'Horário'}
+          anoLetivo={anoLetivo}
+        />
 
         <p className="pinterest-semana-nota">
           Toca numa aula para ver quem vem. Arrasta para o lado se a semana não couber no ecrã.

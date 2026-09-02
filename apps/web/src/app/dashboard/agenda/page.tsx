@@ -263,14 +263,25 @@ export default async function AgendaPage({
           </div>
         </header>
 
-        {/* A agenda responde a "o que tenho esta semana"; o calendário
-            responde a "há aulas no dia 8?". */}
-        <nav className="pinterest-agenda-calendario" aria-label="Calendário escolar">
+        {/* Os dois atalhos que respondem a perguntas que a lista não
+            responde: o calendário a "há aulas no dia 8?" e a grelha a
+            "como é a minha semana?". Ficam no topo e não no fim — no
+            fundo da página só os encontrava quem já tivesse rolado a
+            agenda toda, que é justamente quem não precisa deles. */}
+        <nav className="pinterest-agenda-atalhos" aria-label="Outras vistas">
           <Link href="/dashboard/calendario" className="agenda-ligacao-calendario">
             <CalendarDays size={20} aria-hidden="true" />
             <span>
               <strong>Calendário escolar</strong>
               <small>Férias, feriados e interrupções</small>
+            </span>
+            <ChevronRight size={19} aria-hidden="true" />
+          </Link>
+          <Link href="/dashboard/agenda/semana" className="pinterest-agenda-semana">
+            <LayoutGrid size={20} aria-hidden="true" />
+            <span>
+              <strong>Ver a semana em grelha</strong>
+              <small>Todos os horários lado a lado</small>
             </span>
             <ChevronRight size={19} aria-hidden="true" />
           </Link>
@@ -389,19 +400,6 @@ export default async function AgendaPage({
                 )
               })}
             </div>
-
-            {/* A grelha vive numa página própria. Dentro de um
-                acordeão no fundo da agenda, era uma segunda leitura da
-                semana que ninguém abria e que nunca chegou a ter
-                desenho. */}
-            <Link href="/dashboard/agenda/semana" className="pinterest-agenda-semana">
-              <LayoutGrid size={20} aria-hidden="true" />
-              <span>
-                <strong>Ver a semana em grelha</strong>
-                <small>Todos os horários lado a lado</small>
-              </span>
-              <ChevronRight size={19} aria-hidden="true" />
-            </Link>
           </>
         )}
       </div>
