@@ -111,6 +111,7 @@ A Home do professor foi implementada e publicada em `f82337d`. Mantem a linguage
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
+- `/dashboard/agenda` - variante professor (implementada, por validar com uma conta de professor com aulas);
 - `/dashboard` - desktop;
 - `/dashboard` - modo escuro;
 - estados de outros papeis que possam usar a rota.
@@ -178,3 +179,26 @@ Usar algo proximo deste texto com outro agente:
   passaram a recuar no historico (`components/voltar-atras.tsx`), porque
   ligacoes fixas mandavam quem vinha da Conta para o indice legal e dai
   para a Home.
+
+## Agenda do professor
+
+A rota `/dashboard/agenda` serve duas paginas diferentes: a familiar
+(`agenda-familia.tsx`) e a do professor (`page.tsx`). A do professor herda
+o mesmo esqueleto `.pinterest-agenda` e a mesma lista cronologica
+`.pinterest-agenda-dias`, com tres diferencas proprias, no bloco
+`.pinterest-agenda-professor`:
+
+- a linha diz primeiro a disciplina e so depois os alunos, a hora e a
+  sala — quem ensina duas disciplinas ao mesmo aluno precisa de as
+  distinguir onde prepara o dia;
+- a contagem de alunos passou a ser um numero num quadrado cinzento e so
+  aparece em aula de grupo: com um aluno repetia o nome da linha de cima;
+- "Desmarcar o dia" e uma pilula pequena de contorno no cabecalho de cada
+  data, e nao um botao editorial — repete-se por cada dia, e so existe em
+  musica (as unicas aulas com reposicao) e em dias com aulas da grelha
+  semanal.
+
+A grelha semanal deixou de ser um `<details>` de texto sublinhado: e um
+cartao branco com icone, que abre encostado a grelha (cantos de cima
+quadrados quando aberta) e nao um segundo cartao dentro do primeiro. Os
+blocos da grelha usam o azul suave `#e7f1fa` em vez do papel bege.

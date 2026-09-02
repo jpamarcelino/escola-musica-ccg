@@ -328,6 +328,41 @@ body {
 @media (min-width: 431px) { .pinterest-agenda { padding-inline: 24px; } }
 @media (prefers-reduced-motion: reduce) { .pinterest-agenda :is(a,button) { transition: none; } }
 
+/* Design Pinterest - agenda do professor, mobile e modo claro.
+   Herda a lista cronologica da agenda familiar: o que muda e o que a
+   linha diz (disciplina primeiro, alunos por baixo), o desmarcar do dia
+   no cabecalho de cada data e a grelha semanal fechada no fim. */
+.pinterest-agenda-professor .pinterest-agenda-dias .partitura-dia > header { grid-template-columns: 45px minmax(0,1fr) auto; }
+/* O desmarcar do dia repete-se por cada data, por isso e discreto: pilula
+   pequena de contorno, sem preenchimento, com o vermelho que a propria
+   accao ja traz em estilo inline. */
+.pinterest-agenda-professor .partitura-dia > header button { min-height: 34px; padding: 0 12px; border-radius: 999px; border-width: 1px; font-size: 12px; font-weight: 640; white-space: nowrap; }
+.pinterest-agenda-professor .pinterest-agenda-dias .partitura-aula { grid-template-columns: 52px minmax(0,1fr) auto auto; }
+/* A contagem so aparece em aula de grupo, e e um numero e nao uma frase:
+   ao lado do nome dos alunos, "3 alunos" dizia duas vezes o mesmo. */
+.pinterest-agenda-professor .partitura-alunos { display: grid; min-width: 24px; height: 24px; place-items: center; align-self: center; padding: 0 7px; border-radius: 8px; background: #eef0f3; color: #5d646b; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pinterest-agenda-professor .pinterest-agenda-dias .partitura-aula-conteudo strong { font-size: 15.5px; }
+.pinterest-agenda-mensagem { margin-bottom: 22px; padding: 13px 15px; border: 1px solid #e6e9ed; border-radius: 18px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-agenda-mensagem > p + p { margin-top: 8px; }
+/* A grelha e uma segunda leitura do mesmo dado: fica fechada, e o cartao
+   que a abre parece-se com os outros atalhos em vez de uma linha de
+   texto sublinhada. */
+.pinterest-agenda-grelha.partitura-grelha { margin-top: 30px; padding: 0; border: 0; }
+.pinterest-agenda-grelha > summary { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 58px; padding: 0 15px; border: 1px solid #e6e9ed; border-radius: 20px; background: #fff; color: #17191c; font-size: 14.5px; font-weight: 680; box-shadow: 0 4px 15px rgba(31,35,39,.05); list-style: none; }
+.pinterest-agenda-grelha > summary::-webkit-details-marker { display: none; }
+.pinterest-agenda-grelha > summary > svg:first-child { color: #1b4f7a; }
+.pinterest-agenda-grelha > summary > svg:last-child { color: #969ba1; transition: transform .18s ease; }
+.pinterest-agenda-grelha[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.pinterest-agenda-grelha[open] > summary > svg:last-child { transform: rotate(180deg); }
+.pinterest-agenda-grelha > p { margin: 0; padding: 13px 15px 4px; border-inline: 1px solid #e6e9ed; background: #fff; color: #7b8188; font-size: 12.5px; }
+.pinterest-agenda-grelha .horarios-grade { border-color: #e6e9ed; border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+.pinterest-agenda-grelha .horarios-coluna-horas,
+.pinterest-agenda-grelha .horarios-coluna-dia { border-color: #eceef0; }
+.pinterest-agenda-grelha .horarios-coluna-dia-cabecalho { border-color: #eceef0; color: #8a9096; }
+.pinterest-agenda-grelha .horarios-coluna-horas-cabecalho { border-color: #eceef0; }
+.pinterest-agenda-grelha .horario-bloco { border-color: #dbe6f0; border-radius: 11px; background: #e7f1fa; color: #1b4f7a; font-weight: 620; }
+@media (prefers-reduced-motion: reduce) { .pinterest-agenda-grelha > summary > svg:last-child { transition: none; } }
+
 /* Design Pinterest - avisos da familia e respetivo detalhe. */
 .pinterest-avisos,
 .pinterest-aviso { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
