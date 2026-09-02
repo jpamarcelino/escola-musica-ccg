@@ -283,3 +283,33 @@ servir a secretaria e o pedido publico, e nao foi tocada). Decisoes:
 - o resumo no topo tem tres contagens reais tiradas dos mesmos dados
   (aulas por semana, alunos distintos, primeira hora) — nada calculado
   para encher.
+
+## Pedidos e Horarios do professor
+
+`/dashboard/pedidos` e uma fila de decisao, e o cartao esta ordenado por
+isso: quem/o que/ha quanto tempo no topo, o telefone do encarregado a
+seguir (e uma linha de accao, nao um dado), a mensagem dele, e so depois
+as horas que indicou — cada uma um botao de confirmar com a hora em
+destaque e o verbo pequeno a direita. Propor outra hora fica num
+`<details>` fechado, porque quando uma das horas indicadas serve essa e a
+decisao mais rapida. Recusar fica sozinho no fim, atras de confirmacao.
+
+`/dashboard/horarios` mantem as duas leituras da semana: lista por dia ate
+aos 720 px, grelha a partir dai. A grelha passou a usar as classes
+`.pinterest-semana-*` da pagina Semana, com dois estados novos
+(`-livre`, tracejado, e `-bloqueado`, recuado) — as duas grelhas da app
+leem-se agora a mesma escala, 56 px por hora. "Bloqueado" nao e vermelho:
+e uma hora que o professor fechou, nao um erro. Editar em lote e criar
+horarios ficaram em paineis fechados.
+
+## Dialogos ja convertidos
+
+Alem do `BotaoAcaoDestruir`, passaram para `.pinterest-dialogo`:
+
+- `horarios-apagar-selecionados.tsx` (apagar horarios em lote);
+- `confirmar-um-horario.tsx` (o aviso de "so uma opcao de horario", usado
+  em `/pedir-aula` e em `/aluno/[alunoId]/pedido`).
+
+Nesse ultimo a enfase nao mudou: "Enviar assim mesmo" continua a ser o
+botao cheio e "Escolher mais horarios" o secundario. Trocar a enfase seria
+uma decisao de produto e nao de desenho.

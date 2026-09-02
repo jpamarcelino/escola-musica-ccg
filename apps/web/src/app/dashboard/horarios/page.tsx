@@ -8,13 +8,13 @@ import {
   bloquearHorarios,
   desbloquearHorarios,
 } from '@/lib/actions/professor'
-import { DIAS_SEMANA, duracaoDaAula, professorCriaHorarios, HOUR_HEIGHT, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
+import { DIAS_SEMANA, duracaoDaAula, professorCriaHorarios, paraMinutos, formatarHora, type DiaSemana } from '@ccg/core'
 import { BotaoSelecionarTodos } from '@/components/horarios-selecionar-todos'
 import { BotaoBloquearSelecionados } from '@/components/horarios-bloquear-selecionados'
 import { BotaoDesbloquearSelecionados } from '@/components/horarios-desbloquear-selecionados'
 import { BotaoApagarHorariosSelecionados } from '@/components/horarios-apagar-selecionados'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
-import { Pencil } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
 import Link from 'next/link'
 import { EmptyState } from '@/components/empty-state'
 import { MensagemErro } from '@/components/mensagem'
@@ -92,82 +92,92 @@ export default async function HorariosPage({
   }
 
   // Grelha de horários do professor — só mostra as horas entre o horário
-  // mais cedo e o mais tarde deste professor, não um intervalo fixo do dia.
+  // mais cedo e o mais tarde deste professor, não um intervalo fixo do
+  // dia. A altura da hora é a mesma da página Semana, para as duas
+  // grelhas da app se lerem à mesma escala.
+  const ALTURA_HORA = 56
   const horariosPorDia = new Map<string, HorarioProfessor[]>()
-  const indicePorHorario = new Map<number, number>()
-  let horaInicioGrade = 0
+  let primeiraHora = 0
   let horasGrade: number[] = []
-  let alturaGrade = 0
+  let alturaCorpo = 0
 
   if (horarios.length > 0) {
-    horaInicioGrade = Math.floor(
-      Math.min(...horarios.map((h) => paraMinutos(h.hora_inicio))) / 60
-    )
-    const horaFimGrade = Math.ceil(
-      Math.max(...horarios.map((h) => paraMinutos(h.hora_fim))) / 60
-    )
-    horasGrade = Array.from(
-      { length: horaFimGrade - horaInicioGrade },
-      (_, i) => horaInicioGrade + i
-    )
-    alturaGrade = horasGrade.length * HOUR_HEIGHT
+    primeiraHora = Math.floor(Math.min(...horarios.map((h) => paraMinutos(h.hora_inicio))) / 60)
+    const ultimaHora = Math.ceil(Math.max(...horarios.map((h) => paraMinutos(h.hora_fim))) / 60)
+    horasGrade = Array.from({ length: ultimaHora - primeiraHora }, (_, i) => primeiraHora + i)
+    alturaCorpo = horasGrade.length * ALTURA_HORA
 
     for (const dia of DIAS_SEMANA) horariosPorDia.set(dia, [])
     for (const h of horarios) horariosPorDia.get(h.dia_semana)?.push(h)
     for (const dia of DIAS_SEMANA) {
       horariosPorDia.get(dia)?.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
     }
-
-    let indiceAtual = 0
-    for (const dia of DIAS_SEMANA) {
-      for (const h of horariosPorDia.get(dia) ?? []) {
-        indicePorHorario.set(h.id, indiceAtual)
-        indiceAtual += 1
-      }
-    }
   }
 
+  const diasComHorarios = DIAS_SEMANA.filter((dia) => (horariosPorDia.get(dia)?.length ?? 0) > 0)
+  const livres = horarios.filter(
+    (h) => h.estado !== 'bloqueado' && !confirmadosPorHorario.has(h.id)
+  ).length
+
   return (
-    <main id="conteudo-principal" className="partitura-pagina horarios-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">←</Link>
+    <main id="conteudo-principal" className="pinterest-horarios">
+      <div className="pinterest-horarios-folha">
+        <header className="pinterest-horarios-cabecalho">
+          <Link href="/dashboard" className="pinterest-horarios-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={23} aria-hidden="true" />
+          </Link>
           <div>
-            <p className="partitura-sobretitulo">A tua semana</p>
             <h1>Horários</h1>
-            <p>{horarios.length} {horarios.length === 1 ? 'horário definido' : 'horários definidos'} · {confirmados.length} {confirmados.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}</p>
+            <p>As horas em que dás aulas</p>
           </div>
         </header>
 
         {erroHorarios && (
-          <MensagemErro>{erroHorarios}</MensagemErro>
+          <div className="pinterest-horarios-mensagem">
+            <MensagemErro>{erroHorarios}</MensagemErro>
+          </div>
         )}
 
-        <section className="partitura-seccao" aria-labelledby="semana-titulo">
-          <div className="partitura-seccao-cabecalho">
-            {/* "A semana" e não "Grelha semanal": ao telemóvel esta secção
-                é uma lista por dia, e um título a prometer grelha ficava
-                a descrever o que lá não está. */}
-            <div><p className="partitura-indice">01</p><h2 id="semana-titulo">A semana</h2></div>
+        {/* Três contagens reais dos mesmos dados da lista. "Livres" é o
+            número que decide se vale a pena aceitar mais um pedido. */}
+        <div className="pinterest-horarios-resumo">
+          <div>
+            <strong>{horarios.length}</strong>
+            <span>{horarios.length === 1 ? 'horário' : 'horários'}</span>
           </div>
-          <form id="bloquear-horarios-form" action={bloquearHorarios} />
-          <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
-          {horarios.length === 0 ? (
-            <EmptyState
-              titulo="Ainda não tens horários definidos"
-              descricao="Cria os teus horários disponíveis mais abaixo, em “Criar horários”."
-            />
-          ) : (
-            <>
-              {/* Duas leituras da mesma semana, uma por largura de ecrã.
-                  A grelha continua a ser a boa em ecrã largo: vê-se a
-                  semana inteira e os buracos entre aulas, que é o que
-                  interessa a quem gere disponibilidade. A 375px, porém,
-                  só cabem três dias e meio e nove décimos das células
-                  estão vazias — percorre-se muito para encontrar pouco.
-                  A lista mostra só os dias que têm aulas. */}
-              <ol className="horarios-agenda" aria-label="Horários da semana, por dia">
-                {DIAS_SEMANA.filter((dia) => (horariosPorDia.get(dia)?.length ?? 0) > 0).map((dia) => (
+          <div>
+            <strong>{livres}</strong>
+            <span>{livres === 1 ? 'vaga livre' : 'vagas livres'}</span>
+          </div>
+          <div>
+            <strong>{confirmados.length}</strong>
+            <span>{confirmados.length === 1 ? 'aluno' : 'alunos'}</span>
+          </div>
+        </div>
+
+        <form id="bloquear-horarios-form" action={bloquearHorarios} />
+        <form id="desbloquear-horarios-form" action={desbloquearHorarios} />
+
+        {horarios.length === 0 ? (
+          <EmptyState
+            titulo="Ainda não tens horários definidos"
+            descricao={
+              criaOsSeus
+                ? 'Cria as tuas horas disponíveis mais abaixo, em “Criar horários”.'
+                : 'Os horários da tua escola são definidos pela secretaria.'
+            }
+          />
+        ) : (
+          <>
+            <section className="pinterest-horarios-seccao" aria-labelledby="semana-titulo">
+              <h2 id="semana-titulo">A semana</h2>
+              {/* Duas leituras da mesma semana, uma por largura de ecrã. A
+                  grelha continua a ser a boa em ecrã largo: vê-se a semana
+                  inteira e os buracos entre aulas, que é o que interessa a
+                  quem gere disponibilidade. A 375 px só cabem três dias e
+                  meio, e nove décimos das células estão vazias. */}
+              <ol className="pinterest-horarios-dias" aria-label="Horários da semana, por dia">
+                {diasComHorarios.map((dia) => (
                   <li key={dia}>
                     <h3>{dia}</h3>
                     <ul>
@@ -182,7 +192,9 @@ export default async function HorariosPage({
                             >
                               <time>{formatarHora(h.hora_inicio)}</time>
                               <span>
-                                <strong>{formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}</strong>
+                                <strong>
+                                  {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}
+                                </strong>
                                 <small>
                                   {bloqueado
                                     ? 'Bloqueado'
@@ -191,7 +203,7 @@ export default async function HorariosPage({
                                       : 'Disponível'}
                                 </small>
                               </span>
-                              <i aria-hidden="true">→</i>
+                              <ChevronRight size={19} aria-hidden="true" />
                             </Link>
                           </li>
                         )
@@ -201,70 +213,113 @@ export default async function HorariosPage({
                 ))}
               </ol>
 
-              <div className="horarios-grade partitura-grade" aria-label="Grelha semanal dos horários">
-                <div className="horarios-coluna-horas">
-                  <div className="horarios-coluna-horas-cabecalho" />
-                  {horasGrade.map((hora) => <div key={hora} className="horarios-hora-label" style={{ height: HOUR_HEIGHT }}>{hora}h</div>)}
-                </div>
-                {DIAS_SEMANA.map((dia) => (
-                  <div key={dia} className="horarios-coluna-dia">
-                    <div className="horarios-coluna-dia-cabecalho">{dia.slice(0, 3)}</div>
-                    <div className="horarios-coluna-dia-corpo" style={{ height: alturaGrade, backgroundImage: `repeating-linear-gradient(to bottom, rgba(27,79,122,.11) 0, rgba(27,79,122,.11) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)` }}>
-                      {horariosPorDia.get(dia)?.map((h) => {
-                        const inicioMin = paraMinutos(h.hora_inicio)
-                        const fimMin = paraMinutos(h.hora_fim)
-                        const bloqueado = h.estado === 'bloqueado'
-                        const alunos = confirmadosPorHorario.get(h.id)?.join(', ')
-                        const estilo = { top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT, height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT, '--card-index': indicePorHorario.get(h.id) ?? 0 } as CSSProperties
-                        return <Link key={h.id} href={`/professor/horarios/${h.id}`} className={`horario-bloco entrada-esquerda${bloqueado ? ' bloqueado-selecionavel' : ''}`} style={estilo} title={alunos || (bloqueado ? 'Bloqueado' : 'Disponível')}><span>{formatarHora(h.hora_inicio)}</span>{alunos && <span className="horario-bloco-alunos">{alunos}</span>}</Link>
-                      })}
+              <div className="pinterest-horarios-grelha">
+                <div
+                  className="pinterest-semana-interior"
+                  style={{ '--altura-hora': `${ALTURA_HORA}px` } as CSSProperties}
+                >
+                  <div className="pinterest-semana-regua">
+                    <div className="pinterest-semana-regua-topo" />
+                    <div className="pinterest-semana-regua-corpo" style={{ height: alturaCorpo }}>
+                      {horasGrade.map((hora) => (
+                        <span key={hora} style={{ height: ALTURA_HORA }}>
+                          {hora}h
+                        </span>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-
-              <details className="horarios-edicao">
-                <summary>Editar horários individualmente</summary>
-                <p>Seleciona os horários que queres alterar ou abre um deles para editar a hora.</p>
-              <div className="horarios-selecionar-todos"><BotaoSelecionarTodos /></div>
-              <div className="horarios-lista-edicao">
-                {DIAS_SEMANA.flatMap((dia) => horariosPorDia.get(dia) ?? []).map((h) => {
-                  const alunos = confirmadosPorHorario.get(h.id)
-                  return (
-                    <div key={h.id} className="horarios-linha-edicao">
-                      <label className="horarios-checkbox">
-                        <input
-                          type="checkbox"
-                          name="horarioIds"
-                          value={h.id}
-                          aria-label={`Selecionar ${h.dia_semana}, ${formatarHora(h.hora_inicio)}`}
-                          className="h-[22px] w-[22px] accent-[var(--color-azul-fundo)]"
-                        />
-                      </label>
-                      <span className="horarios-linha-texto">
-                        <strong>{h.dia_semana} · {formatarHora(h.hora_inicio)}–{formatarHora(h.hora_fim)}</strong>
-                        <small>{h.estado === 'bloqueado' ? 'Bloqueado' : alunos?.length ? alunos.join(', ') : 'Disponível'}</small>
-                      </span>
-                      <Link
-                        href={`/professor/horarios/${h.id}`}
-                        aria-label={`Editar horário de ${h.dia_semana} às ${formatarHora(h.hora_inicio)}`}
-                        className="horarios-editar-link"
-                      >
-                        <Pencil size={18} strokeWidth={1.5} aria-hidden="true" />
-                      </Link>
+                  {diasComHorarios.map((dia) => (
+                    <div key={dia} className="pinterest-semana-dia">
+                      <div className="pinterest-semana-dia-topo">
+                        <abbr title={dia}>{dia.slice(0, 3)}</abbr>
+                      </div>
+                      <div className="pinterest-semana-dia-corpo" style={{ height: alturaCorpo }}>
+                        {horariosPorDia.get(dia)?.map((h) => {
+                          const bloqueado = h.estado === 'bloqueado'
+                          const alunos = confirmadosPorHorario.get(h.id)?.join(', ')
+                          const estilo = {
+                            top: ((paraMinutos(h.hora_inicio) - primeiraHora * 60) / 60) * ALTURA_HORA,
+                            height:
+                              ((paraMinutos(h.hora_fim) - paraMinutos(h.hora_inicio)) / 60) *
+                              ALTURA_HORA,
+                          } as CSSProperties
+                          return (
+                            <Link
+                              key={h.id}
+                              href={`/professor/horarios/${h.id}`}
+                              className={`pinterest-semana-bloco ${bloqueado ? 'pinterest-semana-bloco-bloqueado' : alunos ? '' : 'pinterest-semana-bloco-livre'}`}
+                              style={estilo}
+                              title={alunos || (bloqueado ? 'Bloqueado' : 'Disponível')}
+                            >
+                              <time>{formatarHora(h.hora_inicio)}</time>
+                              <small>{bloqueado ? 'Bloqueado' : alunos || 'Livre'}</small>
+                            </Link>
+                          )
+                        })}
+                      </div>
                     </div>
-                  )
-                })}
+                  ))}
+                </div>
               </div>
-              <HorariosToolbar>
-                <BotaoBloquearSelecionados />
-                <BotaoDesbloquearSelecionados />
-                <BotaoApagarHorariosSelecionados action={apagarHorarios} />
-              </HorariosToolbar>
-              </details>
-            </>
-          )}
-        </section>
+            </section>
+
+            <details className="pinterest-horarios-painel">
+              <summary>
+                <span>
+                  <strong>Editar vários de uma vez</strong>
+                  <small>Bloquear, desbloquear ou apagar</small>
+                </span>
+                <ChevronDown size={18} aria-hidden="true" />
+              </summary>
+              <div className="pinterest-horarios-painel-corpo">
+                <div className="pinterest-horarios-selecionar">
+                  <BotaoSelecionarTodos />
+                </div>
+                <div className="pinterest-horarios-edicao">
+                  {DIAS_SEMANA.flatMap((dia) => horariosPorDia.get(dia) ?? []).map((h) => {
+                    const alunos = confirmadosPorHorario.get(h.id)
+                    return (
+                      <div key={h.id} className="pinterest-horarios-linha">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="horarioIds"
+                            value={h.id}
+                            aria-label={`Selecionar ${h.dia_semana}, ${formatarHora(h.hora_inicio)}`}
+                          />
+                        </label>
+                        <span>
+                          <strong>
+                            {h.dia_semana} · {formatarHora(h.hora_inicio)}–
+                            {formatarHora(h.hora_fim)}
+                          </strong>
+                          <small>
+                            {h.estado === 'bloqueado'
+                              ? 'Bloqueado'
+                              : alunos?.length
+                                ? alunos.join(', ')
+                                : 'Disponível'}
+                          </small>
+                        </span>
+                        <Link
+                          href={`/professor/horarios/${h.id}`}
+                          aria-label={`Editar horário de ${h.dia_semana} às ${formatarHora(h.hora_inicio)}`}
+                        >
+                          <Pencil size={17} strokeWidth={1.8} aria-hidden="true" />
+                        </Link>
+                      </div>
+                    )
+                  })}
+                </div>
+                <HorariosToolbar>
+                  <BotaoBloquearSelecionados />
+                  <BotaoDesbloquearSelecionados />
+                  <BotaoApagarHorariosSelecionados action={apagarHorarios} />
+                </HorariosToolbar>
+              </div>
+            </details>
+          </>
+        )}
 
         {/* Em Bebés a grelha é montada pela secretaria: são aulas de
             grupo, decididas para a escola inteira e não professor a
@@ -272,92 +327,81 @@ export default async function HorariosPage({
             deixá-lo escrever meia hora de horários para levar com um
             erro no fim. */}
         {!criaOsSeus && (
-          <section className="partitura-seccao">
-            <div className="partitura-seccao-cabecalho">
-              <div>
-                <p className="partitura-indice">02</p>
-                <h2>Criar horários</h2>
-              </div>
-            </div>
-            <p className="text-sm text-foreground/70">
-              Os horários da tua escola são definidos pela secretaria. Fala com ela para abrir ou
-              mudar horas.
-            </p>
-          </section>
+          <p className="pinterest-horarios-nota">
+            Os horários da tua escola são definidos pela secretaria. Fala com ela para abrir ou
+            mudar horas.
+          </p>
         )}
 
         {criaOsSeus && (
-        <details className="horarios-criar">
-          <summary><span><b>02</b><strong>Criar horários</strong></span><small>Adicionar disponibilidade à semana</small></summary>
-          <section className="horarios-criar-corpo">
-          <p className="text-xs text-foreground/50">
-            Os horários não são específicos de uma disciplina — servem para
-            qualquer uma das que ensinas. Preenche só os dias em que dás
-            aulas; deixa os outros em branco. Só entre as 10h e as 22h.
-            {duracao
-              ? ` Cada aula da tua escola dura ${duracao} minutos, e é assim que os blocos são criados.`
-              : ''}
-          </p>
-          <form
-            action={criarHorarios}
-            className="space-y-3"
-          >
-            <div className="space-y-2">
-              {DIAS_SEMANA.map((dia, i) => (
-                <div key={dia} className="grid grid-cols-[64px_1fr_24px_1fr] items-center gap-2">
-                  <span className="w-16 shrink-0 text-sm">{dia}</span>
-                  <input
-                    name={`inicio_${i}`}
-                    type="time"
-                    min="10:00"
-                    max="22:00"
-                    className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-2 text-sm"
-                  />
-                  <span className="text-sm text-foreground/50">até</span>
-                  <input
-                    name={`fim_${i}`}
-                    type="time"
-                    min="10:00"
-                    max="22:00"
-                    className="min-h-[48px] w-full rounded-[12px] border border-foreground/20 bg-background px-2 text-sm"
-                  />
-                </div>
-              ))}
+          <details className="pinterest-horarios-painel">
+            <summary>
+              <span>
+                <strong>Criar horários</strong>
+                <small>Acrescentar disponibilidade à semana</small>
+              </span>
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
+            <div className="pinterest-horarios-painel-corpo">
+              <p className="pinterest-horarios-ajuda">
+                Os horários não são de uma disciplina — servem para qualquer uma das que ensinas.
+                Preenche só os dias em que dás aulas e deixa os outros em branco. Só entre as 10h e
+                as 22h.
+                {duracao
+                  ? ` Cada aula da tua escola dura ${duracao} minutos, e é assim que os blocos são criados.`
+                  : ''}
+              </p>
+              <form action={criarHorarios} className="pinterest-horarios-criar">
+                {DIAS_SEMANA.map((dia, i) => (
+                  <div key={dia}>
+                    <span>{dia}</span>
+                    <input name={`inicio_${i}`} type="time" min="10:00" max="22:00" aria-label={`Início de ${dia}`} />
+                    <i>até</i>
+                    <input name={`fim_${i}`} type="time" min="10:00" max="22:00" aria-label={`Fim de ${dia}`} />
+                  </div>
+                ))}
+                <SubmitButton textoAGuardar="A criar…" className="pinterest-horarios-criar-botao">
+                  Criar horários
+                </SubmitButton>
+              </form>
             </div>
-
-            <SubmitButton
-              textoAGuardar="A criar…"
-              className="horarios-criar-botao"
-            >
-              Criar horários
-            </SubmitButton>
-          </form>
-          </section>
-        </details>
+          </details>
         )}
 
-        <section className="partitura-seccao" aria-labelledby="alunos-titulo">
-          <div className="partitura-seccao-cabecalho"><div><p className="partitura-indice">03</p><h2 id="alunos-titulo">Alunos confirmados <span className="horarios-contagem">{confirmados.length}</span></h2></div></div>
-          {confirmados.length === 0 && (
-            <EmptyState titulo="Ainda não tens alunos confirmados" />
-          )}
-          <div className="horarios-alunos">
-            {confirmados.map((c) => (
-              <div key={c.id} className="horarios-aluno">
-                <span><strong>{c.alunos?.nome}</strong><small>{c.instrumentos?.nome} · {c.horarios ? `${c.horarios.dia_semana}, ${formatarHora(c.horarios.hora_inicio)}–${formatarHora(c.horarios.hora_fim)}` : 'Sem horário associado'}</small></span>
-                <span>
+        <section className="pinterest-horarios-seccao" aria-labelledby="alunos-titulo">
+          <h2 id="alunos-titulo">
+            Alunos confirmados<b>{confirmados.length}</b>
+          </h2>
+          {confirmados.length === 0 ? (
+            <EmptyState
+              titulo="Ainda não tens alunos confirmados"
+              descricao="Aparecem aqui assim que confirmares um pedido."
+            />
+          ) : (
+            <div className="pinterest-horarios-alunos">
+              {confirmados.map((c) => (
+                <article key={c.id} className="pinterest-horarios-aluno">
+                  <span>
+                    <strong>{c.alunos?.nome}</strong>
+                    <small>
+                      {c.instrumentos?.nome} ·{' '}
+                      {c.horarios
+                        ? `${c.horarios.dia_semana}, ${formatarHora(c.horarios.hora_inicio)}–${formatarHora(c.horarios.hora_fim)}`
+                        : 'Sem horário associado'}
+                    </small>
+                  </span>
                   <BotaoAcaoDestruir
                     label="Cancelar"
-                    titulo="Cancelar matrícula?"
-                    mensagem={`Esta ação remove ${c.alunos?.nome ?? 'o aluno'} deste horário.`}
+                    titulo="Cancelar esta matrícula?"
+                    mensagem={`${c.alunos?.nome ?? 'O aluno'} deixa de ter esta aula e a vaga volta a ficar livre.\n\nAs mensalidades já emitidas mantêm-se.`}
                     action={cancelarMatricula}
                   >
                     <input type="hidden" name="matriculaId" value={c.id} />
                   </BotaoAcaoDestruir>
-                </span>
-              </div>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </main>

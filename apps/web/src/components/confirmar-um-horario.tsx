@@ -33,40 +33,31 @@ export function ModalUmHorario({
         <AlertDialog.Overlay className="modal-fundo" />
         {/* Como nos restantes diálogos: o Radix rende Overlay e Content
             como irmãos, por isso a centragem repete-se aqui. */}
-        <AlertDialog.Content className="modal-caixa fixed left-1/2 top-1/2 z-50">
-          <AlertDialog.Title
-            className="text-[17px] font-semibold"
-            style={{ fontFamily: 'var(--font-fraunces)', color: 'var(--color-azul-fundo)' }}
-          >
-            Só uma opção de horário?
-          </AlertDialog.Title>
-          <AlertDialog.Description
-            className="mt-[8px] text-[14px] leading-[1.5]"
-            style={{ color: 'var(--color-tinta-suave)' }}
-          >
+        <AlertDialog.Content className="modal-caixa pinterest-dialogo fixed left-1/2 top-1/2 z-50">
+          <AlertDialog.Title>Só uma opção de horário?</AlertDialog.Title>
+          <AlertDialog.Description>
             Escolheste um único horário. Se marcares mais opções, há mais
             hipóteses de haver uma que dê para os dois — e o professor consegue
             responder sem ter de combinar tudo outra vez contigo.
           </AlertDialog.Description>
-          <div className="mt-[22px] flex flex-col gap-[10px] sm:flex-row sm:justify-end">
-            <AlertDialog.Cancel asChild>
-              <button
-                type="button"
-                onClick={onEscolherMais}
-                className={`rounded-[var(--radius-pill)] px-4 py-[10px] text-[14px] font-medium transition-colors hover:bg-[var(--color-papel-2)] ${CLASSES_FOCO}`}
-                style={{ color: 'var(--color-tinta-suave)' }}
-              >
-                Escolher mais horários
-              </button>
-            </AlertDialog.Cancel>
+          <div className="pinterest-dialogo-acoes">
             <button
               type="button"
               onClick={onEnviarAssim}
-              className={`rounded-[var(--radius-pill)] px-4 py-[10px] text-[14px] font-semibold text-white transition-opacity hover:opacity-90 ${CLASSES_FOCO}`}
+              className={`pinterest-dialogo-confirmar ${CLASSES_FOCO}`}
               style={{ backgroundColor: 'var(--color-azul-fundo)' }}
             >
               Enviar assim mesmo
             </button>
+            <AlertDialog.Cancel asChild>
+              <button
+                type="button"
+                onClick={onEscolherMais}
+                className={`pinterest-dialogo-cancelar ${CLASSES_FOCO}`}
+              >
+                Escolher mais horários
+              </button>
+            </AlertDialog.Cancel>
           </div>
         </AlertDialog.Content>
       </AlertDialog.Portal>

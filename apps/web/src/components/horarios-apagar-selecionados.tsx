@@ -42,26 +42,27 @@ export function BotaoApagarHorariosSelecionados({
       <AlertDialog.Root open={aberto} onOpenChange={setAberto}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay className="modal-fundo" />
-          <AlertDialog.Content className="modal-caixa fixed left-1/2 top-1/2 z-50">
-            <AlertDialog.Title className="text-[17px] font-semibold text-[var(--color-azul-fundo)]">
+          <AlertDialog.Content className="modal-caixa pinterest-dialogo fixed left-1/2 top-1/2 z-50">
+            <AlertDialog.Title>
               Apagar {ids.length === 1 ? 'este horário' : `${ids.length} horários`}?
             </AlertDialog.Title>
-            <AlertDialog.Description className="mt-[8px] text-[14px] leading-[1.5] text-[var(--color-tinta-suave)]">
+            <AlertDialog.Description>
               Esta ação remove os horários selecionados e não pode ser anulada.
             </AlertDialog.Description>
-            <form action={action} className="mt-[22px] flex justify-end gap-[10px]">
+            <form action={action} className="pinterest-dialogo-acoes">
               {ids.map((id) => <input key={id} type="hidden" name="horarioIds" value={id} />)}
-              <AlertDialog.Cancel asChild>
-                <button type="button" className="min-h-[44px] rounded-[var(--radius-pill)] px-4 text-[14px] font-medium">
-                  Cancelar
-                </button>
-              </AlertDialog.Cancel>
               <SubmitButton
                 textoAGuardar="A apagar…"
-                className="min-h-[44px] rounded-[var(--radius-pill)] bg-[#9A3B2E] px-4 text-[14px] font-semibold text-white disabled:opacity-50"
+                className="pinterest-dialogo-confirmar"
+                style={{ backgroundColor: '#9A3B2E' }}
               >
                 Apagar
               </SubmitButton>
+              <AlertDialog.Cancel asChild>
+                <button type="button" className="pinterest-dialogo-cancelar">
+                  Cancelar
+                </button>
+              </AlertDialog.Cancel>
             </form>
           </AlertDialog.Content>
         </AlertDialog.Portal>
