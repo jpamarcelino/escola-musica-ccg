@@ -129,6 +129,8 @@ A ficha individual e o envio de materiais foram redesenhados e publicados em `d8
 
 As Mensagens do professor foram redesenhadas e publicadas em `7bce7b4`. A composicao separa destinatarios, mensagem e pre-visualizacao, usa seletores segmentados e reserva o azul da marca para a acao final; o historico passa a uma lista de cartoes leves. O estado vazio foi validado autenticado em producao. A composicao e o historico preenchidos aguardam uma conta com alunos reais para a inspecao visual final.
 
+As Mensalidades do professor foram redesenhadas e publicadas em `7d84fb0`. O extrato abre com meses em scroll horizontal, valor por receber, total previsto e contadores; os movimentos usam um cartao por aluno e cor apenas no estado financeiro. O resumo, a navegacao mensal, a nota do Programa de Recomendacao e o estado vazio foram validados autenticados em producao. Os movimentos preenchidos aguardam matriculas reais para a inspecao visual final.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
