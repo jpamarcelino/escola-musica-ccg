@@ -1,12 +1,11 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { InstalarCallout } from '@/components/instalar-callout'
 import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { agoraNaEscola, estadoTemporalAula, proximaAulaPorAcontecer, hojeISO, formatarHora, formatarSala, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
-import { Bell, CalendarDays, ChevronRight, Music2, UserRoundCog, WalletCards } from 'lucide-react'
+import { Bell, CalendarDays, ChevronRight, ClipboardCheck, Clock3, Inbox, MessageSquare, Music2, RefreshCw, Send, UserRoundCog, UsersRound, WalletCards } from 'lucide-react'
 
 type AulaConfirmada = {
   id: number
@@ -30,16 +29,6 @@ function rotuloDoDia(dataISO: string, diaSemana: string): string {
   const amanhaISO = `${amanha.getFullYear()}-${String(amanha.getMonth() + 1).padStart(2, '0')}-${String(amanha.getDate()).padStart(2, '0')}`
   if (dataISO === amanhaISO) return 'Amanhã'
   return diaSemana
-}
-
-function dataEditorial(dataISO: string) {
-  const [ano, mes, dia] = dataISO.split('-').map(Number)
-  const data = new Date(ano, mes - 1, dia)
-  return {
-    dia: String(dia).padStart(2, '0'),
-    semana: new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(data),
-    mes: new Intl.DateTimeFormat('pt-PT', { month: 'short' }).format(data).replace('.', ''),
-  }
 }
 
 export default async function DashboardPage({
@@ -163,110 +152,72 @@ export default async function DashboardPage({
       (id) => !presencasMarcadasHoje.has(id)
     ).length
 
-    const hojeEditorial = dataEditorial(hojeISO())
-
     return (
-      <main id="conteudo-principal" className="partitura-pagina">
-        <div className="partitura-folha">
-          <header className="partitura-cabecalho">
-            <div className="partitura-data" aria-label={`${hojeEditorial.dia} de ${hojeEditorial.mes}`}>
-              <span>{hojeEditorial.dia}</span>
-              <span>{hojeEditorial.mes}</span>
-            </div>
+      <main id="conteudo-principal" className="pinterest-home pinterest-professor-home">
+        <div className="pinterest-home-folha">
+          <header className="pinterest-home-cabecalho">
             <div>
-              <p className="partitura-sobretitulo">{hojeEditorial.semana} · o teu dia</p>
-              <h1>Olá, {primeiroNome}.</h1>
-              <p className="partitura-contexto">
-                {profile.programa
-                  ? `Escola de ${profile.programa === 'musica' ? 'Música' : 'Dança'}`
-                  : 'Centro Cultural da Guarda'}
-              </p>
+              <h1>Olá, {primeiroNome}</h1>
+              <p>O teu dia na escola.</p>
             </div>
+            <span className="pinterest-home-avatar" aria-hidden="true">{primeiroNome.slice(0, 1).toUpperCase()}</span>
           </header>
 
+          {erro && <MensagemErro>{erro}</MensagemErro>}
+
           {presencasPorConfirmar > 0 && (
-            <Link href="/dashboard/presencas/confirmar" className="partitura-alerta">
-              <span className="partitura-alerta-numero">{presencasPorConfirmar}</span>
-              <span><strong>Presenças por confirmar</strong><small>de aulas que já terminaram hoje</small></span>
-              <span aria-hidden="true">→</span>
+            <Link href="/dashboard/presencas/confirmar" className="pinterest-home-alerta">
+              <ClipboardCheck size={19} strokeWidth={1.8} aria-hidden="true" />
+              <span><strong>{presencasPorConfirmar === 1 ? '1 presença por confirmar' : `${presencasPorConfirmar} presenças por confirmar`}</strong><small>De aulas que já terminaram hoje.</small></span>
+              <ChevronRight size={18} aria-hidden="true" />
             </Link>
           )}
 
-          <section className="partitura-seccao" aria-labelledby="titulo-proximas">
-            <div className="partitura-seccao-cabecalho">
-              <div>
-                <p className="partitura-indice">01</p>
-                <h2 id="titulo-proximas">Próximas aulas</h2>
-              </div>
-              <Link href="/dashboard/agenda">Agenda completa</Link>
-            </div>
+          <section className="pinterest-home-seccao" aria-labelledby="titulo-proximas">
+            <div className="pinterest-home-seccao-topo"><h2 id="titulo-proximas">Próxima aula</h2><Link href="/dashboard/agenda">Ver agenda <ChevronRight size={17} aria-hidden="true" /></Link></div>
 
             {proximas.length === 0 ? (
-              <p className="partitura-vazio">
-                {ocupacao === null
-                  ? 'Ainda não tens horários definidos.'
-                  : 'Hoje não tens mais aulas marcadas.'}
-              </p>
+              <div className="pinterest-aula pinterest-aula-vazia"><span className="pinterest-aula-icone"><Music2 size={24} aria-hidden="true" /></span><strong>{ocupacao === null ? 'Ainda não tens horários definidos' : 'Hoje não tens mais aulas marcadas'}</strong><Link href="/dashboard/horarios">Ver horários</Link></div>
             ) : (
-              <div className="partitura-linha-tempo">
-                {proximas.map((aula, indice) => {
+              <>
+                {proximas.slice(0, 1).map((aula) => {
                   const sala = formatarSala(aula.horarios!.salas)
-                  const estadoTemporal = indice === 0
-                    ? estadoTemporalAula(
-                        aula.data,
-                        aula.horarios!.hora_inicio,
-                        aula.horarios!.hora_fim,
-                        agora
-                      )
-                    : 'futura'
+                  const estadoTemporal = estadoTemporalAula(aula.data, aula.horarios!.hora_inicio, aula.horarios!.hora_fim, agora)
                   return (
-                    <Link
-                      key={aula.id}
-                      href={`/dashboard/agenda/${aula.horario_final_id}`}
-                      className={`partitura-aula ${estadoTemporal === 'agora' ? 'partitura-aula-agora' : indice === 0 ? 'partitura-aula-atual' : ''}`}
-                    >
-                      <time>{formatarHora(aula.horarios!.hora_inicio)}</time>
-                      <span className="partitura-marca" aria-hidden="true" />
-                      <span className="partitura-aula-conteudo">
-                        {indice === 0 && <small className="partitura-estado-temporal">{estadoTemporal === 'agora' ? 'Agora' : 'A seguir'}</small>}
-                        <strong>{aula.instrumentos?.nome}</strong>
-                        <span>{aula.alunos?.nome}</span>
-                        <span>{rotuloDoDia(aula.data, aula.horarios!.dia_semana)} · {formatarHora(aula.horarios!.hora_inicio)}–{formatarHora(aula.horarios!.hora_fim)}{sala ? ` · ${sala}` : ''}</span>
-                      </span>
-                      <span className="partitura-seta" aria-hidden="true">→</span>
+                    <Link key={aula.id} href={`/dashboard/agenda/${aula.horario_final_id}`} className="pinterest-aula pinterest-professor-proxima">
+                      <span className="pinterest-aula-icone"><Music2 size={24} strokeWidth={1.8} aria-hidden="true" /></span>
+                      <span className="pinterest-aula-data">{estadoTemporal === 'agora' ? 'Agora' : rotuloDoDia(aula.data, aula.horarios!.dia_semana)} · {formatarHora(aula.horarios!.hora_inicio)}–{formatarHora(aula.horarios!.hora_fim)}</span>
+                      <strong>{aula.alunos?.nome}</strong>
+                      <span className="pinterest-aula-aluno">{aula.instrumentos?.nome}{sala ? ` · ${sala}` : ''}</span>
+                      <ChevronRight className="pinterest-aula-seta" size={22} aria-hidden="true" />
                     </Link>
                   )
                 })}
-              </div>
+                {proximas.length > 1 && <div className="pinterest-professor-seguintes">{proximas.slice(1).map((aula) => <Link key={aula.id} href={`/dashboard/agenda/${aula.horario_final_id}`}><time>{formatarHora(aula.horarios!.hora_inicio)}</time><span><strong>{aula.alunos?.nome}</strong><small>{rotuloDoDia(aula.data, aula.horarios!.dia_semana)} · {aula.instrumentos?.nome}</small></span><ChevronRight size={18} aria-hidden="true" /></Link>)}</div>}
+              </>
             )}
           </section>
 
-          <section className="partitura-seccao" aria-labelledby="titulo-gestao">
-            <div className="partitura-seccao-cabecalho">
-              <div><p className="partitura-indice">02</p><h2 id="titulo-gestao">Gestão</h2></div>
-            </div>
-            <nav className="partitura-links" aria-label="Ferramentas de gestão">
-              {/* Primeiro da lista, e sempre presente: desde que "Pedidos"
-                  saiu da barra de baixo, este link é a única entrada para
-                  a fila. Escondê-lo quando está vazia deixava a página
-                  inalcançável — e o professor sem forma de perceber que
-                  não tem nada por responder. */}
-              <Link href="/dashboard/pedidos"><span>Pedidos</span><small>{(pedidosPendentes ?? 0) > 0 ? `${pedidosPendentes} por responder` : 'Pedidos de aula, nada por responder'}</small><b aria-hidden="true">→</b></Link>
-              <Link href="/dashboard/meus-alunos"><span>Alunos</span><small>Quem ensinas, e os seus dados</small><b aria-hidden="true">→</b></Link>
-              <Link href="/dashboard/presencas"><span>Presenças</span><small>Registar e consultar</small><b aria-hidden="true">→</b></Link>
-              <Link href="/dashboard/horarios"><span>Horários</span><small>Disponibilidade semanal</small><b aria-hidden="true">→</b></Link>
-              <Link href="/dashboard/mensagens"><span>Mensagens</span><small>Escrever aos teus alunos</small><b aria-hidden="true">→</b></Link>
-              <Link href="/dashboard/enviar-material"><span>Enviar material</span><small>Vídeos para o caderno do aluno</small><b aria-hidden="true">→</b></Link>
-              <Link href="/dashboard/mensalidades"><span>Mensalidades</span><small>Estado dos pagamentos</small><b aria-hidden="true">→</b></Link>
-              {/* Só música tem reposições — em dança o separador levava a
-                  um formulário que não serve para nada. */}
-              {profile.programa === 'musica' && (
-                <Link href="/dashboard/reposicoes"><span>Reposições</span><small>Vagas para repor aulas</small><b aria-hidden="true">→</b></Link>
-              )}
+          <section className="pinterest-home-seccao" aria-labelledby="professor-atalhos-titulo">
+            <div className="pinterest-home-seccao-topo"><h2 id="professor-atalhos-titulo">Acesso rápido</h2></div>
+            <nav className="pinterest-atalhos pinterest-professor-atalhos" aria-label="Ações frequentes">
+              <Link href="/dashboard/presencas"><span><ClipboardCheck size={22} aria-hidden="true" /></span><strong>Presenças</strong><small>Registar aulas</small></Link>
+              <Link href="/dashboard/pedidos"><span><Inbox size={22} aria-hidden="true" /></span><strong>Pedidos</strong><small>{(pedidosPendentes ?? 0) > 0 ? `${pedidosPendentes} por responder` : 'Nada pendente'}</small></Link>
+              <Link href="/dashboard/meus-alunos"><span><UsersRound size={22} aria-hidden="true" /></span><strong>Alunos</strong><small>Perfis e dados</small></Link>
+              <Link href="/dashboard/agenda"><span><CalendarDays size={22} aria-hidden="true" /></span><strong>Agenda</strong><small>Próximas aulas</small></Link>
             </nav>
           </section>
 
-          <div className="partitura-instalacao"><InstalarCallout /></div>
+          <section className="pinterest-home-seccao" aria-labelledby="titulo-gestao">
+            <div className="pinterest-home-seccao-topo"><h2 id="titulo-gestao">Gestão</h2></div>
+            <nav className="pinterest-professor-gestao" aria-label="Ferramentas de gestão">
+              <Link href="/dashboard/horarios"><span><Clock3 size={20} aria-hidden="true" /></span><strong>Horários</strong><ChevronRight size={18} aria-hidden="true" /></Link>
+              <Link href="/dashboard/mensagens"><span><MessageSquare size={20} aria-hidden="true" /></span><strong>Mensagens</strong><ChevronRight size={18} aria-hidden="true" /></Link>
+              <Link href="/dashboard/enviar-material"><span><Send size={20} aria-hidden="true" /></span><strong>Enviar material</strong><ChevronRight size={18} aria-hidden="true" /></Link>
+              <Link href="/dashboard/mensalidades"><span><WalletCards size={20} aria-hidden="true" /></span><strong>Mensalidades</strong><ChevronRight size={18} aria-hidden="true" /></Link>
+              {profile.programa === 'musica' && <Link href="/dashboard/reposicoes"><span><RefreshCw size={20} aria-hidden="true" /></span><strong>Reposições</strong><ChevronRight size={18} aria-hidden="true" /></Link>}
+            </nav>
+          </section>
         </div>
       </main>
     )
