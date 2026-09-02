@@ -5698,8 +5698,7 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-horarios-resumo > div + div { border-left: 1px solid rgba(31,35,39,.07); }
 .pinterest-horarios-resumo strong { font-size: 22px; font-weight: 760; font-variant-numeric: tabular-nums; }
 .pinterest-horarios-resumo span { color: #6d737a; font-size: 11px; line-height: 1.25; }
-.pinterest-horarios-seccao + .pinterest-horarios-seccao,
-.pinterest-horarios-painel + .pinterest-horarios-seccao { margin-top: 30px; }
+.pinterest-horarios-seccao { margin-top: 32px; }
 .pinterest-horarios-seccao > h2 { margin: 0 2px 13px; font-size: 21px; font-weight: 740; letter-spacing: 0; }
 .pinterest-horarios-seccao > h2 b { margin-left: 7px; color: #7b8188; font-size: 15px; font-weight: 640; }
 /* A lista por dia e a leitura de telemovel; a grelha aparece a partir dos
