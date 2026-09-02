@@ -5749,7 +5749,12 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-horarios-painel .horarios-acao,
 .pinterest-horarios-selecionar .horarios-acao { min-height: 40px; padding: 0 14px; border-radius: 999px; font-size: 12.5px; }
 .pinterest-horarios-criar { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
-.pinterest-horarios-criar > div { display: grid; grid-template-columns: 62px minmax(0,1fr) 26px minmax(0,1fr); gap: 7px; align-items: center; }
+/* O dia por cima e as duas horas por baixo. Com os campos a 16 px (ver
+   a regra do zoom do iOS no fim do ficheiro) as quatro colunas numa
+   linha nao cabiam a 360 px. */
+.pinterest-horarios-criar > div { display: grid; grid-template-columns: minmax(0,1fr) 26px minmax(0,1fr); gap: 6px 7px; align-items: center; }
+.pinterest-horarios-criar > div + div { margin-top: 6px; padding-top: 11px; border-top: 1px solid #f0f2f4; }
+.pinterest-horarios-criar span { grid-column: 1 / -1; }
 .pinterest-horarios-criar span { color: #4a5058; font-size: 12.5px; font-weight: 620; }
 .pinterest-horarios-criar i { color: #9aa0a7; font-size: 11.5px; font-style: normal; text-align: center; }
 .pinterest-horarios-criar input { width: 100%; min-height: 46px; padding: 0 9px; border: 1px solid #e0e4e8; border-radius: 13px; background: #fff; color: #17191c; font-family: inherit; font-size: 13.5px; }
@@ -6115,3 +6120,19 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-enviar-material :is(a,button,input,textarea):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
 @media (min-width:431px) { .pinterest-professor-aluno-detalhe,.pinterest-enviar-material { padding-inline:24px; } }
 @media (prefers-reduced-motion:reduce) { .pinterest-professor-aluno-detalhe *, .pinterest-enviar-material * { transition:none!important; } }
+/* O zoom do iOS ao entrar num campo.
+   O Safari do iPhone aproxima a pagina sozinho quando o campo que recebe
+   o foco tem letra abaixo de 16 px, e a aproximacao fica la depois de
+   sair do campo — era por isso que o ecra aparecia "um nadinho maior"
+   depois do login e so voltava ao normal com dois dedos.
+   A correccao e a letra e nao a meta viewport: pos "maximum-scale=1"
+   tirava a quem precisa a possibilidade de aproximar a pagina, e nas
+   versoes recentes do iOS nem sequer trava este comportamento.
+   So em ponteiro grosseiro, para os campos compactos continuarem
+   compactos no rato. As caixas de marcar nao contam — nao recebem
+   texto e nao disparam o zoom. */
+@media (pointer: coarse) {
+  :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+    font-size: 16px;
+  }
+}

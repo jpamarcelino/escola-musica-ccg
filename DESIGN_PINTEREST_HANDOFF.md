@@ -501,3 +501,19 @@ recebe o toque e a etiqueta.
 O `/pedir-aula` sem `?programa=` devolve a pessoa a inicial. E
 intencional, esta comentado na propria pagina, e nao e ecra em falta: a
 escola escolhe-se na inicial.
+## Campos e o zoom do iOS
+
+Regra global no fim do `globals.css`: em ponteiro grosseiro, qualquer
+`input`, `select` ou `textarea` que receba texto tem letra de 16 px. O
+Safari do iPhone aproxima a pagina sozinho quando o campo focado tem letra
+mais pequena, e a aproximacao fica la depois de sair do campo — era o que
+deixava o ecra "um pouco aumentado" depois do login.
+
+Nao resolver com `maximum-scale=1` na meta viewport: isso tira a quem
+precisa a possibilidade de aproximar a pagina, e o iOS recente ja nem o
+respeita para este efeito.
+
+Consequencia pratica: ao desenhar um formulario compacto, contar com
+16 px no telemovel e nao com o tamanho que se escreveu. Foi por isso que
+o "Criar horarios" passou a ter o dia por cima e as duas horas por baixo,
+e que o "Ou uma hora nova" nos Pedidos passou a duas colunas.
