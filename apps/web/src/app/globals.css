@@ -6958,3 +6958,106 @@ html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-alunos-voltar,.pinterest-aluno-voltar,.pinterest-horario-voltar,
   .pinterest-materiais-voltar,.pinterest-mensalidades-voltar,.pinterest-conta-voltar
 ) { color: #a9d5f7; }
+
+/* Agenda: azul eletrico para tempo e calendario. */
+html[data-tema='escuro'] .pinterest-agenda-dias .partitura-dia-numero {
+  background: linear-gradient(145deg,#24577b,#1d3b53);
+  color: #d7eeff;
+  box-shadow: 0 7px 18px rgba(49,137,199,.22);
+}
+html[data-tema='escuro'] .pinterest-agenda-dias .partitura-linha-tempo {
+  border-color: #33424f;
+  background: linear-gradient(145deg,rgba(61,127,184,.1),var(--dark-surface) 34%);
+}
+html[data-tema='escuro'] .pinterest-agenda-dias .partitura-aula { border-bottom-color: var(--dark-border); }
+html[data-tema='escuro'] .pinterest-agenda-dias .partitura-aula time { color: #8fc8f5; }
+html[data-tema='escuro'] .pinterest-agenda-dias .partitura-aula-conteudo small { color: #66d0c8; }
+html[data-tema='escuro'] .pinterest-agenda :is(.agenda-ligacao-calendario,.pinterest-agenda-semana) > svg:first-child {
+  background: #293052;
+  color: #adb9ff;
+  box-shadow: 0 6px 16px rgba(93,108,205,.2);
+}
+
+/* Avisos: nao lidos luminosos; lidos continuam legiveis mas recuam. */
+html[data-tema='escuro'] .pinterest-avisos .avisos-lista article {
+  border-color: #343d45;
+  background: linear-gradient(145deg,rgba(112,97,210,.1),var(--dark-surface) 38%);
+}
+html[data-tema='escuro'] .pinterest-avisos .avisos-lista article::before {
+  background: #75bdf4;
+  box-shadow: 0 0 14px rgba(117,189,244,.7);
+}
+html[data-tema='escuro'] .pinterest-avisos .avisos-icone {
+  background: #302b57;
+  color: #bbb2ff;
+  box-shadow: 0 6px 16px rgba(110,90,214,.2);
+}
+html[data-tema='escuro'] .pinterest-avisos .avisos-lista article[data-lida='true'] { background: var(--dark-surface); }
+html[data-tema='escuro'] .pinterest-avisos .avisos-lista article[data-lida='true']::before { background: #56616b; box-shadow: none; }
+html[data-tema='escuro'] .pinterest-avisos .avisos-lista article[data-lida='true'] .avisos-icone { background: #292f34; color: #89939c; box-shadow: none; }
+html[data-tema='escuro'] .pinterest-avisos :is(.avisos-titulo,.avisos-resumo) { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-avisos .avisos-lista article[data-lida='true'] .avisos-resumo { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-avisos-seccao span { background: #263d52; color: #9dd0f6; }
+
+/* Mensalidades: dinheiro e pendencias usam ambar; em dia usa verde. */
+html[data-tema='escuro'] .pinterest-mensalidades-resumo > span {
+  background: #3f351e;
+  color: #f0c96d;
+  box-shadow: 0 7px 18px rgba(202,153,50,.18);
+}
+html[data-tema='escuro'] .pinterest-mensalidades-resumo[data-em-dia='true'] {
+  border-color: #36584a;
+  background: radial-gradient(circle at 12% 0%,rgba(82,176,129,.2),transparent 42%),linear-gradient(145deg,#20382e,var(--dark-surface) 70%);
+}
+html[data-tema='escuro'] .pinterest-mensalidades-resumo[data-em-dia='true'] > span { background: #214333; color: #80d7a8; }
+html[data-tema='escuro'] .pinterest-mensalidades-resumo :is(strong,small,p) { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-mensalidades-resumo p { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-mensalidades-meses a[aria-current='page'] {
+  border-color: #5ca6dd;
+  background: #315f83;
+  box-shadow: 0 0 18px rgba(82,158,213,.23);
+}
+html[data-tema='escuro'] .pinterest-mensalidades .mensalidade-lista article[data-estado='por_pagar'] .mensalidade-estado { background: #49301f; color: #f0ae78; }
+html[data-tema='escuro'] .pinterest-mensalidades .mensalidade-lista article[data-estado='paga'] .mensalidade-estado,
+html[data-tema='escuro'] .pinterest-mensalidades .mensalidade-lista article[data-estado='nao_devida'] .mensalidade-estado { background: #204032; color: #79d3a2; }
+
+/* Alunos e conta: verde-agua para pessoas e identidade. */
+html[data-tema='escuro'] :is(.pinterest-aluno-avatar,.pinterest-conta-identidade > span:first-child) {
+  background: linear-gradient(145deg,#20504d,#193937);
+  color: #7be0d8;
+  box-shadow: 0 7px 18px rgba(46,179,168,.17);
+}
+html[data-tema='escuro'] .pinterest-aluno-aula[data-destaque='true'],
+html[data-tema='escuro'] .pinterest-horario-aula {
+  border-color: #3b5870;
+  background: linear-gradient(145deg,rgba(61,127,184,.24),rgba(43,76,103,.13) 42%,var(--dark-surface) 78%);
+}
+html[data-tema='escuro'] .pinterest-aluno-aula time,
+html[data-tema='escuro'] .pinterest-horario .aluno-aula-registo summary time { color: #91caf5; }
+html[data-tema='escuro'] .pinterest-aluno-aula small { color: #67d0c8; }
+
+/* Materiais: video coral, partitura azul. */
+html[data-tema='escuro'] .pinterest-materiais .material-video-imagem {
+  border: 1px solid #563840;
+  box-shadow: 0 6px 18px rgba(190,73,91,.16);
+}
+html[data-tema='escuro'] .pinterest-materiais .material-pdf-icone {
+  background: #263e53;
+  color: #9cd0f7;
+  box-shadow: 0 6px 16px rgba(70,146,204,.18);
+}
+html[data-tema='escuro'] .pinterest-materiais :is(.material-video-texto strong,.material-video-texto > span) { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-materiais .material-video-texto small { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-materiais .material-pdf-abrir { color: #9cd0f7; }
+
+/* Reposicoes e pedidos: selecao azul bem visivel e confirmacoes verdes. */
+html[data-tema='escuro'] .pinterest-pedir-reposicao-opcoes label:has(input:checked) {
+  border-color: #69afe2;
+  background: linear-gradient(145deg,#294963,#202b35);
+  box-shadow: 0 0 0 2px rgba(105,175,226,.16),0 8px 22px rgba(36,105,155,.18);
+}
+html[data-tema='escuro'] .pinterest-pedir-reposicao-checkbox { accent-color: #78aede; }
+html[data-tema='escuro'] :is(.pinterest-pedir-reposicao-enviar,.pinterest-materiais-vazio a,.pinterest-aluno-vazio a) {
+  background: linear-gradient(135deg,#397dae,#245b82);
+  box-shadow: 0 8px 22px rgba(38,112,164,.24);
+}

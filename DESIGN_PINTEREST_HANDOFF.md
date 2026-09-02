@@ -113,6 +113,11 @@ superficie `#1D2227`, superficie elevada `#252B31`, linha `#343C44`, texto
 `#F7F8FA`, secundario `#B3BAC2`. O azul CCG aparece em foco, icones e fades
 subtis nos cartoes prioritarios, nao em todas as superficies.
 
+A direcao de cor foi aprovada na Home e expandida: agenda usa azul/ciano,
+avisos violeta/azul, mensalidades ambar/verde, pessoas verde-agua, materiais
+coral/azul e reposicoes azul de selecao. Os acentos vivem sobretudo em
+icones, estados e fades; fundos e cartoes continuam na rampa de carvao.
+
 A camada cobre Home, agenda, avisos, mensalidades, conta, gestao e ficha de
 alunos, horarios, materiais, pedidos/reposicoes, formularios, estados vazios,
 zonas de perigo e dialogos. A build passa numa pasta separada para nao
