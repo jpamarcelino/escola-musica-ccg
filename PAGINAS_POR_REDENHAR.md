@@ -34,7 +34,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/agenda/[horarioId]`
 - [ ] `/dashboard/avisos` e detalhe - professor - mobile - modo claro
 - [ ] `/dashboard/avisos` e detalhe - todas as variantes - desktop e modo escuro
-- [ ] `/dashboard/calendario`
+- [ ] `/dashboard/calendario` - familia/aluno e professor - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/conta` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real (ver nota no handoff)
 - [ ] `/dashboard/conta/avancado`
 

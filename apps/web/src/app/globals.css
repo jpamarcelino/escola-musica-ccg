@@ -4883,3 +4883,45 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 @media (prefers-reduced-motion: reduce) { .pinterest-adicionar summary > svg:last-child { transition: none; } .pinterest-alunos-pagina :is(a,button) { transform: none; } }
 .pinterest-adicionar-campo { display: flex; flex-direction: column; gap: 6px; }
 .pinterest-adicionar-campo > span { color: #5f646b; font-size: 12.5px; font-weight: 600; }
+
+/* Design Pinterest - calendario do ano letivo.
+   O calendario e o mesmo: doze meses, dias de aulas destacados, tudo o
+   resto apagado. Muda a superficie — cada mes num cartao branco, e a
+   legenda num cartao proprio em vez de linha solta. */
+.pinterest-calendario { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-calendario-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-calendario-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-calendario-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-calendario-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-calendario-cabecalho p { margin-top: 4px; color: #767c84; font-size: 13.5px; line-height: 1.45; }
+
+.pinterest-calendario .calendario-legenda { display: flex; flex-wrap: wrap; gap: 9px 14px; margin: 0 0 20px; padding: 14px 15px; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; color: #5f646b; font-size: 12.5px; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-calendario .calendario-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.pinterest-calendario .calendario-amostra { width: 13px; height: 13px; border-radius: 5px; }
+.pinterest-calendario .calendario-ponto { border-radius: 50%; }
+
+.pinterest-calendario .calendario-meses { display: flex; flex-direction: column; gap: 14px; }
+.pinterest-calendario .calendario-mes { padding: 16px 13px 14px; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-calendario .calendario-mes h2 { margin: 0 0 10px 3px; color: #17191c; font-family: inherit; font-size: 19px; font-weight: 740; letter-spacing: 0; }
+.pinterest-calendario .calendario-mes h2 span { color: #969ba1; font-size: 14px; font-weight: 600; }
+.pinterest-calendario .calendario-mes th { padding-bottom: 7px; color: #969ba1; font-size: 11px; font-weight: 700; }
+.pinterest-calendario .calendario-mes td { padding: 2px; }
+
+.pinterest-calendario .calendario-dia { min-height: 46px; border-radius: 12px; }
+.pinterest-calendario .calendario-dia-numero { color: inherit; font-size: 13px; font-weight: 650; }
+/* Dia de aulas: o azul do logotipo em fundo suave, nao em bloco cheio —
+   doze meses de blocos saturados cansam a vista e escondem o "hoje". */
+.pinterest-calendario .calendario-dia-aula { background: #e7f1fa; color: #1b4f7a; }
+.pinterest-calendario .calendario-dia-aula .calendario-dia-numero { font-weight: 750; }
+.pinterest-calendario .calendario-dia-fechado { background: transparent; color: #b0b5bb; }
+.pinterest-calendario .calendario-dia-hoje { outline: 2px solid #1b4f7a; outline-offset: 1px; }
+.pinterest-calendario .calendario-evento-rotulo { color: #43617c; font-weight: 650; }
+.pinterest-calendario .calendario-dia-fechado .calendario-evento-rotulo { color: #a8adb4; }
+.pinterest-calendario .calendario-dia-aula .calendario-evento-rotulo[data-tipo='reposicao'] { color: #176b70; }
+.pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='0'] { color: #8a631b; }
+.pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='1'] { color: #176b70; }
+.pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='2'] { color: #98535b; }
+.pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='3'] { color: #505a91; }
+
+.pinterest-calendario :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+@media (min-width: 431px) { .pinterest-calendario { padding-inline: 24px; } .pinterest-calendario-folha { max-width: 700px; } .pinterest-calendario .calendario-meses { display: grid; grid-template-columns: 1fr 1fr; } }

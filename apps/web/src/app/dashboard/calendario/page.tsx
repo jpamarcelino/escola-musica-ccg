@@ -1,6 +1,7 @@
+import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
-import { PageHeader } from '@/components/page-header'
 import { CalendarioAnoLetivo } from '@/components/calendario-ano-letivo'
 import { calendarioDaFamilia, calendarioDoProfessor } from '@/lib/calendario'
 import { ehContaCCG } from '@/lib/navegacao'
@@ -27,17 +28,23 @@ export default async function CalendarioPage() {
     : await calendarioDaFamilia(supabase, user.id)
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-3 pb-[104px] sm:p-6 sm:pb-[104px]">
-      <div className="w-full max-w-4xl space-y-6">
-        {/* "Calendário" e não "Calendário do ano letivo": o título do
-            PageHeader corta-se numa linha, e num telemóvel o nome longo
-            chegava truncado. O ano letivo passa a estar no subtítulo,
-            onde cabe inteiro e traz também as datas. */}
-        <PageHeader
-          voltar="/dashboard/agenda"
-          titulo="Calendário"
-          subtitulo={`Ano letivo 2026/27 · de ${formatarDataEscolar(ANO_LETIVO_INICIO, { day: 'numeric', month: 'long' })} a ${formatarDataEscolar(ANO_LETIVO_FIM, { day: 'numeric', month: 'long' })}`}
-        />
+    <main id="conteudo-principal" className="pinterest-calendario">
+      <div className="pinterest-calendario-folha">
+        <header className="pinterest-calendario-cabecalho">
+          <Link href="/dashboard/agenda" className="pinterest-calendario-voltar" aria-label="Voltar à agenda">
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+          <div>
+            {/* "Calendário" e não "Calendário do ano letivo": num
+                telemóvel o nome longo parte-se em duas linhas e empurra
+                tudo. O ano letivo fica no subtítulo, onde cabe inteiro e
+                traz também as datas. */}
+            <h1>Calendário</h1>
+            <p>
+              {`Ano letivo 2026/27 · de ${formatarDataEscolar(ANO_LETIVO_INICIO, { day: 'numeric', month: 'long' })} a ${formatarDataEscolar(ANO_LETIVO_FIM, { day: 'numeric', month: 'long' })}`}
+            </p>
+          </div>
+        </header>
         <CalendarioAnoLetivo porData={porData} grupos={grupos} />
       </div>
     </main>
