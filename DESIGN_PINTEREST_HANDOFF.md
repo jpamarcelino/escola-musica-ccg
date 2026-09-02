@@ -517,3 +517,20 @@ Consequencia pratica: ao desenhar um formulario compacto, contar com
 16 px no telemovel e nao com o tamanho que se escreveu. Foi por isso que
 o "Criar horarios" passou a ter o dia por cima e as duas horas por baixo,
 e que o "Ou uma hora nova" nos Pedidos passou a duas colunas.
+
+## Avisos do professor
+
+Nao ha desenho novo: a caixa de entrada e a mesma para os dois papeis, e
+o que muda e o que la cai, nao a forma de o ler. A pagina tinha um
+`familia ? ... : ...` em cada `className` do cabecalho, com o professor a
+ficar com a folha editorial antiga — caiu tudo, e a rota usa agora
+`.pinterest-avisos` para toda a gente. O detalhe (`[avisoId]`) ja pedia
+`variante="pinterest"` desde o inicio.
+
+A ponte para `/admin/avisos`, que so aparece a quem e professor e esta na
+direccao, ja tinha o seu proprio tratamento Pinterest
+(`.pinterest-avisos .avisos-outra-caixa`).
+
+As classes base `.avisos-lista`, `.avisos-outra-caixa` e `.avisos-pagina`
+continuam a servir `/admin/avisos`, que ainda nao foi redesenhada. Nao as
+apagar.

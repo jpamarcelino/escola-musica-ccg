@@ -36,7 +36,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/agenda` - todas as variantes - desktop e modo escuro
 - [ ] `/dashboard/agenda/semana` - professor - mobile - modo claro - pagina nova (a grelha semanal saiu do acordeao da agenda), falta validar com conta de professor real
 - [ ] `/dashboard/agenda/[horarioId]` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
-- [ ] `/dashboard/avisos` e detalhe - professor - mobile - modo claro
+- [ ] `/dashboard/avisos` e detalhe - professor - mobile - modo claro - implementado (partilha a folha da variante familiar), falta validar com conta de professor real
 - [ ] `/dashboard/avisos` e detalhe - todas as variantes - desktop e modo escuro
 - [ ] `/dashboard/calendario` - familia/aluno e professor - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/conta` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real (ver nota no handoff)
