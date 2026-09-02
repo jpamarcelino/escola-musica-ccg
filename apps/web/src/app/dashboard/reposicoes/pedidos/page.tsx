@@ -362,8 +362,8 @@ export default async function PedidosReposicaoPage({
                 className={classesCampo}
               />
             </div>
-            <div className="flex gap-3">
-              <div className="flex-1 space-y-[6px]">
+            <div className="pinterest-reposicoes-pedidos-horas">
+              <div className="space-y-[6px]">
                 <Rotulo htmlFor="reposicao-manual-inicio">Começa</Rotulo>
                 <input
                   id="reposicao-manual-inicio"
@@ -373,7 +373,7 @@ export default async function PedidosReposicaoPage({
                   className={classesCampo}
                 />
               </div>
-              <div className="flex-1 space-y-[6px]">
+              <div className="space-y-[6px]">
                 <Rotulo htmlFor="reposicao-manual-fim">Acaba</Rotulo>
                 <input
                   id="reposicao-manual-fim"

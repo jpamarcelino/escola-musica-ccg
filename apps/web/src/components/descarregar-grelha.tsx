@@ -5,8 +5,14 @@ import { Download } from 'lucide-react'
 
 export type AulaGrelha = {
   dia: string
-  horaInicio: string
-  horaFim: string
+  // Horas em cru, como vêm da base de dados ("10:00:00"), porque é delas
+  // que sai a posição do bloco. A etiqueta vem à parte, já escrita pelo
+  // servidor: o formato do CCG é "10h" e "10h45", e um "10h" dado a
+  // parser de posições devolve NaN — foi assim que a primeira folha saiu
+  // com a grelha desenhada e nenhuma aula lá dentro.
+  inicio: string
+  fim: string
+  etiqueta: string
   titulo: string
   detalhe: string
 }
@@ -40,9 +46,13 @@ const AZUL = '#1b4f7a'
 const AZUL_FUNDO = '#e7f1fa'
 const AZUL_RISCO = '#d7e5f2'
 
+// Aceita "10:00", "10:00:00", "10h" e "10h45". Não é indecisão sobre o
+// formato: é a garantia de que uma folha nunca mais sai vazia se alguém
+// mudar o que lhe é passado.
 function minutos(hora: string): number {
-  const [h, m] = hora.split(':').map(Number)
-  return h * 60 + m
+  const m = hora.match(/^(\d{1,2})\s*[:h]\s*(\d{1,2})?/)
+  if (!m) return Number.NaN
+  return Number(m[1]) * 60 + Number(m[2] ?? 0)
 }
 
 function cantoRedondo(
@@ -169,8 +179,12 @@ export function DescarregarGrelha({
       for (const aula of aulas) {
         const coluna = dias.indexOf(aula.dia)
         if (coluna < 0) continue
-        const inicio = minutos(aula.horaInicio)
-        const fim = minutos(aula.horaFim)
+        const inicio = minutos(aula.inicio)
+        const fim = minutos(aula.fim)
+        // Sem isto, uma hora que não se consiga ler dava NaN, e o canvas
+        // desenha um bloco NaN sem se queixar — a folha saía com a grelha
+        // toda e nenhuma aula.
+        if (!Number.isFinite(inicio) || !Number.isFinite(fim)) continue
         const x = esquerda + coluna * COLUNA + 6
         const y = topo + ((inicio - primeiraHora * 60) / 60) * LINHA_HORA + 3
         const w = COLUNA - 12
@@ -184,7 +198,7 @@ export function DescarregarGrelha({
 
         ctx.fillStyle = AZUL
         ctx.font = `700 13px ${sans}`
-        ctx.fillText(`${aula.horaInicio}–${aula.horaFim}`, x + 9, y + 7)
+        ctx.fillText(aula.etiqueta, x + 9, y + 7)
         ctx.font = `600 12px ${sans}`
         ctx.fillText(cortar(ctx, aula.titulo, w - 18), x + 9, y + 24)
         if (h > 52 && aula.detalhe) {

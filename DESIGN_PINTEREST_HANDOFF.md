@@ -613,6 +613,18 @@ PNG e nao PDF nem Excel: nao traz biblioteca nenhuma para o bundle, abre
 em qualquer lado, envia-se no WhatsApp e imprime-se bem aos 2x a que e
 gerada. Um Excel perdia a grelha, que e o que faz o horario legivel.
 
+Cuidado com as horas: `formatarHora` do `@ccg/core` devolve o formato do
+CCG — "10h" e "10h45", nao "10:00". Dar isso a um parser de posicoes da
+NaN, e o canvas desenha um bloco NaN sem se queixar: a folha sai com a
+grelha toda e nenhuma aula dentro. Foi assim que a primeira versao saiu.
+O componente recebe agora as horas em cru (`inicio`/`fim`, como vem da
+base de dados) para a posicao, e a `etiqueta` ja escrita para o texto.
+
+Licao do mesmo erro: a folha tinha sido verificada com dados inventados
+a mao no formato errado. Testar o desenho nao e testar o contrato dos
+dados — quando o que se verifica e um componente, os valores de exemplo
+tem de vir da mesma forma que os reais.
+
 Numeros que importam: `LINHA_HORA` e 84 px e nao 76 porque aos 76 uma
 aula de 45 minutos so tinha espaco para duas linhas, e num horario de
 professor o nome do aluno nao e o detalhe dispensavel. O fundo e branco e
