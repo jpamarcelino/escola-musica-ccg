@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getSchoolProfileContext } from '@/lib/auth-context'
 import { carregarAlunosAlvo } from '@/lib/alvos-mensagem'
 import { EscolhaMaterial } from './escolha-material'
+import { ChevronLeft } from 'lucide-react'
 
 // Onde o professor deixa material de estudo.
 //
@@ -32,16 +33,15 @@ export default async function EnviarMaterialPage({
   const alunos = await carregarAlunosAlvo(supabase, user.id)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina mensagem-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
+    <main id="conteudo-principal" className="pinterest-enviar-material">
+      <div className="pinterest-enviar-material-folha">
+        <header className="pinterest-enviar-material-cabecalho">
+          <Link href="/dashboard" className="pinterest-enviar-material-voltar" aria-label="Voltar ao início">
+            <ChevronLeft size={24} aria-hidden="true" />
           </Link>
           <div>
-            <p className="partitura-sobretitulo">Caderno dos teus alunos</p>
             <h1>Enviar material</h1>
-            <p>Um vídeo do YouTube ou uma partitura em PDF, para um aluno ou para vários.</p>
+            <p>Partilha um vídeo ou uma partitura com os teus alunos.</p>
           </div>
         </header>
 

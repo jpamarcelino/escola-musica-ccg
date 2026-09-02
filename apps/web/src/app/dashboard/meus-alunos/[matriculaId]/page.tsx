@@ -8,6 +8,7 @@ import { SubmitButton } from '@/components/submit-button'
 import { classesCampo } from '@/components/campo-formulario'
 import { VoltarAtras } from '@/components/voltar-atras'
 import { MensagemErro, MensagemInfo, MensagemNota } from '@/components/mensagem'
+import { ChevronDown, FileUp, Mail, Music2, Phone, UserRound } from 'lucide-react'
 
 type Matricula = {
   id: number
@@ -147,9 +148,9 @@ export default async function AlunoDaAulaPage({
   } | null
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina detalhe-aluno-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
+    <main id="conteudo-principal" className="pinterest-professor-aluno-detalhe">
+      <div className="pinterest-professor-aluno-detalhe-folha">
+        <header className="pinterest-professor-aluno-detalhe-cabecalho">
           {/* A ficha do aluno abre-se de dois sítios: da lista de alunos
               e da aula, na agenda. Uma ligação fixa mandava toda a gente
               para a lista — quem vinha da aula ia parar a um sítio onde
@@ -157,24 +158,24 @@ export default async function AlunoDaAulaPage({
               outra vez na agenda. */}
           <VoltarAtras
             destino="/dashboard/meus-alunos"
-            className="partitura-voltar"
+            className="pinterest-professor-aluno-detalhe-voltar"
             rotulo="Voltar"
           />
-          <div><p className="partitura-sobretitulo">{labelHorario}</p><h1>{matricula.alunos?.nome}</h1><p>{matricula.instrumentos?.nome}</p></div>
+          <div><h1>{matricula.alunos?.nome}</h1><p>{matricula.instrumentos?.nome} · {labelHorario}</p></div>
         </header>
 
         <section className="detalhe-aluno-ficha" aria-labelledby="ficha-titulo">
-          <header><p className="partitura-indice">01</p><h2 id="ficha-titulo">Ficha do aluno</h2></header>
+          <header><span><UserRound size={18} aria-hidden="true" /></span><div><h2 id="ficha-titulo">Ficha do aluno</h2><p>Dados essenciais e contactos</p></div></header>
           <dl>
-          <div><dt>Disciplina</dt><dd>{matricula.instrumentos?.nome}</dd></div>
+          <div><dt>Disciplina</dt><dd><Music2 size={16} aria-hidden="true" />{matricula.instrumentos?.nome}</dd></div>
           {idade !== null && (
             <div><dt>Idade</dt><dd>{idade} anos</dd></div>
           )}
           {matricula.alunos?.encarregado?.email && (
-            <div><dt>Email do encarregado</dt><dd><a href={`mailto:${matricula.alunos.encarregado.email}`}>{matricula.alunos.encarregado.email}</a></dd></div>
+            <div><dt>Email do encarregado</dt><dd><a href={`mailto:${matricula.alunos.encarregado.email}`}><Mail size={16} aria-hidden="true" />{matricula.alunos.encarregado.email}</a></dd></div>
           )}
           {matricula.alunos?.encarregado?.telefone && (
-            <div><dt>Telemóvel do encarregado</dt><dd><a href={`tel:${matricula.alunos.encarregado.telefone}`}>{matricula.alunos.encarregado.telefone}</a></dd></div>
+            <div><dt>Telemóvel do encarregado</dt><dd><a href={`tel:${matricula.alunos.encarregado.telefone}`}><Phone size={16} aria-hidden="true" />{matricula.alunos.encarregado.telefone}</a></dd></div>
           )}
           </dl>
         </section>
@@ -185,7 +186,7 @@ export default async function AlunoDaAulaPage({
         )}
 
         <section className="detalhe-aluno-ficha" aria-labelledby="horario-titulo">
-          <header><p className="partitura-indice">02</p><h2 id="horario-titulo">Mudar de horário</h2></header>
+          <header><span><ChevronDown size={18} aria-hidden="true" /></span><div><h2 id="horario-titulo">Mudar de horário</h2><p>A família confirma a alteração</p></div></header>
 
           {pendente ? (
             /* Uma proposta por responder de cada vez. Enviar outra por
@@ -269,7 +270,7 @@ export default async function AlunoDaAulaPage({
         </section>
 
         <section className="detalhe-aluno-ficha" aria-labelledby="materiais-titulo">
-          <header><p className="partitura-indice">03</p><h2 id="materiais-titulo">Materiais enviados</h2></header>
+          <header><span><FileUp size={18} aria-hidden="true" /></span><div><h2 id="materiais-titulo">Materiais enviados</h2><p>Histórico deste aluno</p></div></header>
 
           {materiais.length === 0 ? (
             <p className="detalhe-materiais-vazio">
@@ -312,7 +313,7 @@ export default async function AlunoDaAulaPage({
           <div><strong>Remover desta aula</strong><small>A matrícula deixa de estar associada ao professor e horário.</small></div>
           <BotaoAcaoDestruir
             label="Desmatricular aluno"
-            variante="editorial"
+            variante="bloco"
             // Ao professor interessa a consequência que é dele: o
             // horário não volta a abrir sozinho.
             mensagem={`Terminam as aulas de ${matricula.alunos?.nome} em ${matricula.instrumentos?.nome}.\n\nO horário fica bloqueado até o desbloqueares.`}

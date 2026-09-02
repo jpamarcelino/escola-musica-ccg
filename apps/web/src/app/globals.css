@@ -6052,3 +6052,66 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
   .pinterest-instalar > div > * { animation: entrada-suave .3s var(--ease-suave) both; }
 }
 .pinterest-instalar :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+
+/* Design Pinterest - ficha do aluno do professor. */
+.pinterest-professor-aluno-detalhe { min-height:100dvh; padding:max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background:#f5f6f8; color:#17191c; font-family:-apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-professor-aluno-detalhe-folha { width:100%; max-width:430px; margin-inline:auto; }
+.pinterest-professor-aluno-detalhe-cabecalho { display:grid; grid-template-columns:44px minmax(0,1fr); gap:12px; align-items:center; padding:6px 2px 20px; }
+.pinterest-professor-aluno-detalhe-voltar { display:grid; width:44px; height:44px; place-items:center; border:1px solid #e1e5e9; border-radius:15px; background:#fff; color:#20242a; box-shadow:0 3px 12px rgba(31,35,39,.05); }
+.pinterest-professor-aluno-detalhe-cabecalho h1 { overflow:hidden; font-size:27px; font-weight:760; line-height:1.1; letter-spacing:0; text-overflow:ellipsis; white-space:nowrap; }
+.pinterest-professor-aluno-detalhe-cabecalho p { overflow:hidden; margin-top:4px; color:#767c84; font-size:13px; text-overflow:ellipsis; white-space:nowrap; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha { margin-top:12px; padding:17px; border:1px solid #e5e8ec; border-radius:22px; background:#fff; box-shadow:0 5px 18px rgba(31,35,39,.055); }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha > header { display:grid; grid-template-columns:42px minmax(0,1fr); gap:11px; align-items:center; margin:0 0 15px; padding:0; border:0; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha > header > span { display:grid; width:42px; height:42px; place-items:center; border-radius:13px; background:#e7f1fa; color:#1b4f7a; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha h2 { color:#17191c; font-family:inherit; font-size:17px; font-weight:730; line-height:1.2; letter-spacing:0; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha header p { margin-top:3px; color:#858a91; font-size:11.5px; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dl { overflow:hidden; border:1px solid #eceef0; border-radius:15px; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dl > div { display:grid; grid-template-columns:112px minmax(0,1fr); gap:10px; align-items:center; min-height:52px; padding:10px 12px; border:0; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dl > div + div { border-top:1px solid #eceef0; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dt { color:#858a91; font-size:11.5px; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dd { min-width:0; color:#25282c; font-size:13px; font-weight:650; overflow-wrap:anywhere; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dd :is(a), .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dd:has(>svg) { display:flex; align-items:center; gap:7px; color:#1b4f7a; text-decoration:none; }
+.pinterest-professor-aluno-detalhe :is(.mensagem-erro,.mensagem-info,.mensagem-nota) { margin-top:12px; border-radius:16px; }
+.pinterest-professor-aluno-detalhe .detalhe-aluno-ficha > p { color:#6d737a; font-size:13px; line-height:1.5; }
+.pinterest-professor-aluno-detalhe .escolher-horario { margin-top:13px; overflow:hidden; border:1px solid #e6e9ed; border-radius:16px; }
+.pinterest-professor-aluno-detalhe .escolher-horario summary { min-height:54px; padding:0 42px 0 14px; border:0; font-size:13.5px; font-weight:680; }
+.pinterest-professor-aluno-detalhe .escolher-horario-conta { border:0; border-radius:10px; background:#e7f1fa; color:#1b4f7a; font-size:10.5px; }
+.pinterest-professor-aluno-detalhe .escolher-horario fieldset { padding:12px; border-top:1px solid #eceef0; }
+.pinterest-professor-aluno-detalhe .escolher-horario .lista-item { min-height:58px; padding:10px 11px; border:1px solid #eceef0; border-radius:14px; background:#fafbfc; }
+.pinterest-professor-aluno-detalhe .escolher-horario textarea { width:100%; border-color:#e0e4e8; border-radius:13px; background:#fff; }
+.pinterest-professor-aluno-detalhe .escolher-horario button[type='submit'] { width:100%; border:0; border-radius:15px; background:#1b4f7a; color:#fff; box-shadow:0 5px 16px rgba(27,79,122,.18); }
+.pinterest-professor-aluno-detalhe .detalhe-materiais { overflow:hidden; border:1px solid #eceef0; border-radius:16px; }
+.pinterest-professor-aluno-detalhe .detalhe-materiais li { min-height:66px; padding:11px 12px; border:0; }
+.pinterest-professor-aluno-detalhe .detalhe-materiais li + li { border-top:1px solid #eceef0; }
+.pinterest-professor-aluno-detalhe .detalhe-material-tipo { color:#1b4f7a; font-size:9.5px; }
+.pinterest-professor-aluno-detalhe .detalhe-material-enviar { display:flex; min-height:50px; align-items:center; justify-content:center; margin-top:13px; border:0; border-radius:15px; background:#e7f1fa; color:#1b4f7a; font-size:14px; font-weight:700; }
+.pinterest-professor-aluno-detalhe .detalhe-zona-perigo { display:block; margin-top:28px; padding:17px; border:1px solid #efdfe1; border-radius:20px; background:#fff; }
+.pinterest-professor-aluno-detalhe .detalhe-zona-perigo small { display:block; margin:4px 0 13px; color:#858a91; line-height:1.4; }
+.pinterest-professor-aluno-detalhe .detalhe-zona-perigo button { border-radius:14px; background:#fcecef; }
+.pinterest-professor-aluno-detalhe :is(a,button,input,textarea,summary):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
+
+/* Design Pinterest - enviar video ou partitura. */
+.pinterest-enviar-material { min-height:100dvh; padding:max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background:#f5f6f8; color:#17191c; font-family:-apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-enviar-material-folha { width:100%; max-width:430px; margin-inline:auto; }
+.pinterest-enviar-material-cabecalho { display:grid; grid-template-columns:44px minmax(0,1fr); gap:12px; align-items:center; padding:6px 2px 22px; }
+.pinterest-enviar-material-voltar { display:grid; width:44px; height:44px; place-items:center; border:1px solid #e1e5e9; border-radius:15px; background:#fff; color:#20242a; box-shadow:0 3px 12px rgba(31,35,39,.05); }
+.pinterest-enviar-material-cabecalho h1 { font-size:27px; font-weight:760; line-height:1.1; letter-spacing:0; }
+.pinterest-enviar-material-cabecalho p { margin-top:4px; color:#767c84; font-size:13px; line-height:1.4; }
+.pinterest-enviar-material .materiais-conteudo { margin-top:0; }
+.pinterest-enviar-material .materiais-separadores { display:flex; gap:6px; margin:0 0 14px; padding:4px; border:0; border-radius:15px; background:#e9ecef; }
+.pinterest-enviar-material .materiais-separador { display:flex; min-height:42px; flex:1; align-items:center; justify-content:center; gap:7px; padding:0 12px; border:0; border-radius:11px; color:#6d737a; font-size:13px; font-weight:650; }
+.pinterest-enviar-material .materiais-separador[aria-selected='true'] { background:#fff; color:#1b4f7a; box-shadow:0 2px 8px rgba(31,35,39,.08); }
+.pinterest-enviar-material .materiais-conteudo > div:last-child { margin-top:0; padding:18px; border:1px solid #e5e8ec; border-radius:22px; background:#fff; box-shadow:0 5px 18px rgba(31,35,39,.055); }
+.pinterest-enviar-material :is(input[type='text'],input[type='url'],input[type='file'],textarea) { width:100%; border:1px solid #e0e4e8; border-radius:13px; background:#fafbfc; font-family:inherit; }
+.pinterest-enviar-material .material-link-linha { display:grid; grid-template-columns:1fr; gap:8px; }
+.pinterest-enviar-material .material-procurar, .pinterest-enviar-material .recomendacao-submeter { min-height:50px; border:0; border-radius:15px; background:#1b4f7a; color:#fff; font-size:14.5px; font-weight:700; box-shadow:0 5px 16px rgba(27,79,122,.16); }
+.pinterest-enviar-material .material-ajuda { color:#777d84; font-size:11.5px; line-height:1.5; }
+.pinterest-enviar-material .material-previsao { overflow:hidden; padding:10px; border:1px solid #e5e8ec; border-radius:16px; background:#fafbfc; }
+.pinterest-enviar-material .material-previsao img { border-radius:11px; }
+.pinterest-enviar-material .material-previsao strong { color:#20242a; font-family:inherit; font-size:14px; }
+.pinterest-enviar-material .seletor-alunos-campo { border-color:#e0e4e8; border-radius:13px; background:#fafbfc; }
+.pinterest-enviar-material .seletor-alunos-resultados { border-color:#e0e4e8; border-radius:14px; box-shadow:0 12px 30px rgba(31,35,39,.13); }
+.pinterest-enviar-material .seletor-aluno-etiqueta { border:0; border-radius:11px; background:#e7f1fa; color:#1b4f7a; }
+.pinterest-enviar-material :is(a,button,input,textarea):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
+@media (min-width:431px) { .pinterest-professor-aluno-detalhe,.pinterest-enviar-material { padding-inline:24px; } }
+@media (prefers-reduced-motion:reduce) { .pinterest-professor-aluno-detalhe *, .pinterest-enviar-material * { transition:none!important; } }
