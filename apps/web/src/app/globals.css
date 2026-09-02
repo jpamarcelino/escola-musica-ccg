@@ -305,6 +305,50 @@ body {
 .pinterest-agenda :is(a,button):active { transform: scale(.98); }
 @media (min-width: 431px) { .pinterest-agenda { padding-inline: 24px; } }
 @media (prefers-reduced-motion: reduce) { .pinterest-agenda :is(a,button) { transition: none; } }
+
+/* Design Pinterest - avisos da familia e respetivo detalhe. */
+.pinterest-avisos,
+.pinterest-aviso { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-avisos-folha,
+.pinterest-aviso-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-avisos-cabecalho,
+.pinterest-aviso-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-avisos-voltar,
+.pinterest-aviso-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-avisos-cabecalho h1,
+.pinterest-aviso-cabecalho h1 { overflow-wrap: anywhere; font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-avisos-cabecalho p,
+.pinterest-aviso-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+.pinterest-avisos .filtro-alunos { display: flex; flex-wrap: nowrap; gap: 7px; margin: 0 0 20px; padding: 4px; overflow-x: auto; border-radius: 15px; background: #e9ecef; scrollbar-width: none; }
+.pinterest-avisos .filtro-alunos::-webkit-scrollbar { display: none; }
+.pinterest-avisos .filtro-alunos a { min-width: max-content; min-height: 0; flex: 1; justify-content: center; padding: 9px 14px; border: 0; border-radius: 11px; color: #686e75; }
+.pinterest-avisos .filtro-alunos a[aria-current="page"] { background: #fff; color: #17191c; box-shadow: 0 2px 8px rgba(31,35,39,.08); }
+.pinterest-avisos .avisos-marcar-todos { display: block; min-height: 44px; margin: -5px 2px 12px auto; padding: 0 4px; border: 0; color: #33689a; font-size: 12px; }
+.pinterest-avisos .avisos-lista { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; border: 0; }
+.pinterest-avisos .avisos-lista article { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 5px 10px; min-height: 0; padding: 15px 14px 15px 18px; overflow: hidden; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-avisos .avisos-lista article::before { top: 18px; left: 0; width: 4px; height: 26px; border-radius: 0 5px 5px 0; background: #78aede; }
+.pinterest-avisos .avisos-lista article[data-lida="true"]::before { background: #dfe3e7; }
+.pinterest-avisos .avisos-lista time { grid-column: 1; padding: 0; color: #888e95; font-size: 10px; }
+.pinterest-avisos .avisos-corpo { grid-column: 1; gap: 3px; }
+.pinterest-avisos .avisos-aluno { color: #33689a; font-size: 9px; letter-spacing: 0; }
+.pinterest-avisos .avisos-titulo { color: #17191c; font-size: 15px; font-weight: 720; }
+.pinterest-avisos .avisos-resumo { color: #50565d; font-size: 13px; line-height: 1.45; -webkit-line-clamp: 2; line-clamp: 2; }
+.pinterest-avisos .avisos-lista article[data-lida="true"] .avisos-resumo { color: #858a90; }
+.pinterest-avisos .avisos-destino { display: inline-flex; grid-column: 2; grid-row: 1 / span 2; align-self: center; align-items: center; gap: 1px; min-height: 44px; padding-left: 8px; color: #6f757c; font-size: 11px; font-weight: 650; text-decoration: none; }
+.pinterest-avisos .avisos-outra-caixa { margin: 0 0 16px; padding: 13px 14px; border: 1px solid #e5e8ec; border-radius: 17px; background: #fff; color: #17191c; text-decoration: none; }
+.pinterest-aviso-cabecalho { align-items: start; }
+.pinterest-aviso-cabecalho > div { padding-top: 2px; }
+.pinterest-aviso-cabecalho > div > p:first-child { margin: 0 0 5px; color: #33689a; font-size: 11px; font-weight: 700; }
+.pinterest-aviso-cabecalho h1 { font-size: 25px; }
+.pinterest-aviso-cabecalho time { color: #858a91; font-size: 11px; }
+.pinterest-aviso .aviso-corpo { margin-top: 4px; padding: 20px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; color: #30353a; font-size: 15px; line-height: 1.65; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-aviso .aviso-accao { display: flex; width: 100%; min-height: 56px; justify-content: space-between; margin-top: 14px; padding: 0 16px; border: 1px solid #dfe5ea; border-radius: 17px; background: #fff; color: #1b4f7a; box-shadow: 0 3px 12px rgba(31,35,39,.04); }
+.pinterest-avisos :is(a,button):focus-visible,
+.pinterest-aviso :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+.pinterest-avisos :is(a,button):active,
+.pinterest-aviso :is(a,button):active { transform: scale(.98); }
+@media (min-width: 431px) { .pinterest-avisos,.pinterest-aviso { padding-inline: 24px; } }
+@media (prefers-reduced-motion: reduce) { .pinterest-avisos :is(a,button),.pinterest-aviso :is(a,button) { transition: none; } }
 @media (min-width: 768px) {
   .pinterest-home { padding-inline: 24px; }
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { MarcarAvisoLido } from '@/components/marcar-aviso-lido'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 // Um aviso, sozinho na sua página.
 //
@@ -23,6 +24,7 @@ export function AvisoDetalhe({
   lida,
   accao,
   voltarPara,
+  variante = 'partitura',
 }: {
   id: number
   sobretitulo: string
@@ -32,15 +34,17 @@ export function AvisoDetalhe({
   lida: boolean
   accao: { href: string; texto: string } | null
   voltarPara: string
+  variante?: 'partitura' | 'pinterest'
 }) {
   const data = new Date(criadoEm)
+  const pinterest = variante === 'pinterest'
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina aviso-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href={voltarPara} className="partitura-voltar" aria-label="Voltar aos avisos">
-            ←
+    <main id="conteudo-principal" className={pinterest ? 'pinterest-aviso' : 'partitura-pagina aviso-pagina'}>
+      <div className={pinterest ? 'pinterest-aviso-folha' : 'partitura-folha'}>
+        <header className={pinterest ? 'pinterest-aviso-cabecalho' : 'partitura-agenda-cabecalho'}>
+          <Link href={voltarPara} className={pinterest ? 'pinterest-aviso-voltar' : 'partitura-voltar'} aria-label="Voltar aos avisos">
+            {pinterest ? <ChevronLeft size={23} aria-hidden="true" /> : '←'}
           </Link>
           <div>
             <p className="partitura-sobretitulo">{sobretitulo}</p>
@@ -66,7 +70,7 @@ export function AvisoDetalhe({
 
         {accao && (
           <Link href={accao.href} className="aviso-accao">
-            {accao.texto}
+            <span>{accao.texto}</span>{pinterest && <ChevronRight size={19} aria-hidden="true" />}
           </Link>
         )}
 

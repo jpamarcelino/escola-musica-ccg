@@ -5,6 +5,7 @@ import { marcarTodasNotificacoesLidas } from '@/lib/actions/notificacoes'
 import { EmptyState } from '@/components/empty-state'
 import { ehContaCCG } from '@/lib/navegacao'
 import { accaoDoAviso, avisoDoPapel, type PapelAviso, type TipoAviso } from '@/lib/avisos'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Notificacao = {
   id: number
@@ -95,14 +96,14 @@ export default async function AvisosPage({
   const naSecretaria = profile?.admin ? await getAvisosPorLer('secretaria') : 0
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina avisos-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard" className="partitura-voltar" aria-label="Voltar ao início">
-            ←
+    <main id="conteudo-principal" className={familia ? 'pinterest-avisos' : 'partitura-pagina avisos-pagina'}>
+      <div className={familia ? 'pinterest-avisos-folha' : 'partitura-folha'}>
+        <header className={familia ? 'pinterest-avisos-cabecalho' : 'partitura-agenda-cabecalho'}>
+          <Link href="/dashboard" className={familia ? 'pinterest-avisos-voltar' : 'partitura-voltar'} aria-label="Voltar ao início">
+            {familia ? <ChevronLeft size={23} aria-hidden="true" /> : '←'}
           </Link>
           <div>
-            <p className="partitura-sobretitulo">{familia ? 'Arquivo familiar' : 'O que aconteceu'}</p>
+            {!familia && <p className="partitura-sobretitulo">O que aconteceu</p>}
             <h1>Avisos</h1>
             <p>
               {porLer > 0
@@ -202,7 +203,7 @@ export default async function AvisosPage({
                       href={accaoDoAviso(tipos.get(n.tipo)?.destino)!.href}
                       className="avisos-destino"
                     >
-                      Ver
+                      <span>Ver</span><ChevronRight size={18} aria-hidden="true" />
                     </Link>
                   )}
                 </article>

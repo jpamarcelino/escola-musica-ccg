@@ -59,6 +59,7 @@ export default async function AvisoPage({
       lida={aviso.lida}
       accao={accaoDoAviso(tipo?.destino)}
       voltarPara="/dashboard/avisos"
+      variante="pinterest"
     />
   )
 }
