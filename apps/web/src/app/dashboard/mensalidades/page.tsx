@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/empty-state'
 import { MensagemInfo } from '@/components/mensagem'
 import { MESES_ANO_LETIVO, euros, eurosOuTexto, parteDoProfessor } from '@ccg/core'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ChevronLeft, ReceiptText, WalletCards } from 'lucide-react'
 
 type MatriculaDoProfessor = {
   id: number
@@ -177,16 +178,16 @@ export default async function MensalidadesProfessorPage({
     .reduce((total, linha) => total + (linha.valor ?? 0), 0)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina mensalidades-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/dashboard" className="partitura-voltar" rotulo="Voltar ao início">←</VoltarAtras>
-          <div><p className="partitura-sobretitulo">Extrato mensal</p><h1>Mensalidades</h1><p>{escolhido.label} de {escolhido.ano}{foraDoAnoLetivo() ? ` — o ano letivo ${MESES_ANO_LETIVO[0].ano}/${String((MESES_ANO_LETIVO[0].ano + 1) % 100).padStart(2, '0')} começa em ${MESES_ANO_LETIVO[0].label.toLowerCase()}` : ''}</p></div>
+    <main id="conteudo-principal" className="pinterest-mensalidades-professor">
+      <div className="pinterest-mensalidades-professor-folha">
+        <header className="pinterest-mensalidades-professor-cabecalho">
+          <VoltarAtras destino="/dashboard" className="pinterest-mensalidades-professor-voltar" rotulo="Voltar ao início"><ChevronLeft size={24} aria-hidden="true" /></VoltarAtras>
+          <div><h1>Mensalidades</h1><p>{escolhido.label} de {escolhido.ano}{foraDoAnoLetivo() ? ` · ano letivo começa em ${MESES_ANO_LETIVO[0].label.toLowerCase()}` : ''}</p></div>
         </header>
 
         <nav
           aria-label="Escolher mês"
-          className="mensalidades-meses"
+          className="pinterest-mensalidades-professor-meses"
         >
           {MESES_ANO_LETIVO.map((m) => (
             <Link
@@ -201,6 +202,7 @@ export default async function MensalidadesProfessorPage({
         </nav>
 
         <section className="mensalidades-resumo" aria-label="Resumo do mês">
+          <span aria-hidden="true"><WalletCards size={21} /></span>
           <div className="mensalidades-total">
             <p>Por receber</p>
             <strong>{euros(totalPorReceber)}</strong>
@@ -233,7 +235,7 @@ export default async function MensalidadesProfessorPage({
           <EmptyState titulo="Não tens alunos com matrícula confirmada" />
         ) : (
           <section className="mensalidades-extrato" aria-labelledby="extrato-titulo">
-            <header><p className="partitura-indice">01</p><h2 id="extrato-titulo">Movimentos do mês</h2></header>
+            <header><span><ReceiptText size={18} aria-hidden="true" /></span><div><h2 id="extrato-titulo">Movimentos do mês</h2><p>{linhas.length} {linhas.length === 1 ? 'mensalidade' : 'mensalidades'}</p></div></header>
             <div>
             {linhas.map((l) => (
               <article key={l.chave} data-estado={l.estado}>
@@ -247,7 +249,7 @@ export default async function MensalidadesProfessorPage({
         )}
 
         {!perfilAtual.adere_recomendacao && (
-          <p className="text-sm text-foreground/60">
+          <p className="pinterest-mensalidades-professor-nota">
             Não aderiste ao Programa de Recomendação, por isso nenhuma das tuas mensalidades
             será abrangida. A adesão faz-se junto da secretaria.
           </p>
