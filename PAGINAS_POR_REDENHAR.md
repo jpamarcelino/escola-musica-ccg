@@ -5,6 +5,7 @@ Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por 
 ## Concluido no Design Pinterest
 
 - [x] `/dashboard` - familia/aluno - mobile - modo claro (`d9b22d2`, acabamento `067da9d`)
+- [x] `/dashboard/agenda` - familia/aluno - mobile - modo claro (`f9c973c`)
 
 ## Publicas pendentes no Design Pinterest
 
@@ -26,7 +27,8 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard` - professor - mobile - modo claro
 - [ ] `/dashboard` - todas as variantes - desktop
 - [ ] `/dashboard` - todas as variantes - modo escuro
-- [ ] `/dashboard/agenda`
+- [ ] `/dashboard/agenda` - professor - mobile - modo claro
+- [ ] `/dashboard/agenda` - todas as variantes - desktop e modo escuro
 - [ ] `/dashboard/agenda/[horarioId]`
 - [ ] `/dashboard/avisos`
 - [ ] `/dashboard/avisos/[avisoId]`
@@ -99,14 +101,13 @@ Nao redesenhar estas rotas; apenas redirecionam:
 
 ## Ordem recomendada imediata
 
-1. `/dashboard/agenda`
-2. `/dashboard/agenda/[horarioId]`
-3. `/dashboard/avisos`
-4. `/dashboard/avisos/[avisoId]`
-5. `/dashboard/conta`
-6. `/dashboard/alunos`
-7. `/dashboard/mensalidades` - familia
-8. paginas `/aluno/[alunoId]/*`
+1. `/dashboard/avisos`
+2. `/dashboard/avisos/[avisoId]`
+3. `/dashboard/conta`
+4. `/dashboard/alunos`
+5. `/dashboard/mensalidades` - familia
+6. paginas `/aluno/[alunoId]/*`
+7. `/dashboard/agenda` e detalhe - professor
 
 ## Regra de atualizacao
 
