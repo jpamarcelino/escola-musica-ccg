@@ -619,3 +619,41 @@ professor o nome do aluno nao e o detalhe dispensavel. O fundo e branco e
 nao transparente — um PNG transparente enviado por WhatsApp aparece com
 texto preto sobre fundo preto no modo escuro. Os nomes compridos sao
 cortados com reticencias medidas no proprio canvas.
+
+## Colisao de nomes no `.pinterest-pedido`
+
+Dois trabalhos em paralelo escolheram a mesma classe: o cartao de cada
+pedido em `/dashboard/pedidos` e o involucro da pagina do assistente. As
+duas regras aplicavam-se aos dois sitios, e nenhuma das duas paginas
+estava como o seu autor a tinha desenhado — o assistente publico apanhava
+a borda, o raio de 23 px e o fade azul do cartao, e os cartoes de pedido
+apanhavam o padding de pagina, a fonte e o `button[type=submit]` de
+largura inteira do assistente.
+
+O involucro do assistente passou a `.pinterest-pedir`. O cartao ficou com
+o nome, que e o coerente com a familia dele (`.pinterest-pedidos` para a
+pagina, `.pinterest-pedido` para o cartao).
+
+Licao para quem vier a seguir: antes de criar uma classe nova, procura-la
+no globals.css. Duas pessoas a redesenhar a mesma aplicacao ao mesmo tempo
+escolhem os mesmos nomes, porque os nomes bons sao poucos.
+
+## O assistente de pedido com sessao
+
+`/aluno/[alunoId]/pedido` passou a partilhar a moldura com o publico. A
+prop `publico` do Wizard voltou ao que era — decide o rodape legal e o
+subtitulo, nao a moldura.
+
+O interior nao foi reescrito. O percurso publico tem classes proprias; o
+autenticado monta-se com o `CartaoLink`, partilhado por outras quatro
+paginas, e por isso a lista de escolhas e vestida por descendencia sob
+`.pinterest-pedir-privado`. Duas heranças precisaram de `!important`: o
+`background: transparent` que as linhas levam dentro do wizard (sobre o
+cinzento ficavam invisiveis) e o risco por cima da lista.
+
+Uma armadilha nova, da familia das outras: a regra do sobretitulo era
+`.pinterest-pedido-cabecalho > div > p` e apanhava os dois paragrafos. No
+percurso publico so ha um, por isso nunca se viu; no autenticado ha o
+subtitulo "Segue os passos para encontrar a opcao certa.", que saia todo
+em maiusculas espacadas. Passou a `:first-of-type`.
+

@@ -5885,9 +5885,9 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
    O percurso autenticado (/aluno/[alunoId]/pedido) partilha o mesmo
    componente Wizard mas continua com o aspeto antigo — está pendente no
    inventário, e redesenhá-lo sem o conseguir ver seria adivinhar. */
-.pinterest-pedido { padding: max(14px, env(safe-area-inset-top, 0px)) 16px 8px; color: #17191c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif; }
+.pinterest-pedir { padding: max(14px, env(safe-area-inset-top, 0px)) 16px 8px; color: #17191c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), sans-serif; }
 @media (min-width: 430px) {
-  .pinterest-pedido { padding-inline: 24px; }
+  .pinterest-pedir { padding-inline: 24px; }
 }
 
 .pinterest-pedido-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: start; padding: 6px 2px 18px; }
@@ -5895,7 +5895,12 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 /* O sobretítulo alinha com o título e não com o topo do botão: a linha
    "Pedir uma aula · Passo 3 de 5" é a etiqueta do que vem a seguir. */
 .pinterest-pedido-cabecalho > div { padding-top: 1px; }
-.pinterest-pedido-cabecalho > div > p { font-size: 12px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: #7d838b; }
+/* Só o sobretítulo vai a maiúsculas. O percurso com sessão tem um
+   segundo <p> por baixo do título — "Segue os passos…" — e sem o
+   `:first-of-type` a frase inteira saía em maiúsculas espaçadas. No
+   público esse <p> não existe, por isso nunca se tinha visto. */
+.pinterest-pedido-cabecalho > div > p:first-of-type { font-size: 12px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: #7d838b; }
+.pinterest-pedido-cabecalho > div > p + p { margin-top: 7px; font-size: 14.5px; line-height: 1.45; color: #6d737a; }
 .pinterest-pedido-cabecalho h1 { margin-top: 6px; font-size: 26px; font-weight: 750; line-height: 1.12; letter-spacing: -.005em; }
 .pinterest-pedido-cabecalho .wizard-passo { text-transform: none; letter-spacing: 0; }
 
@@ -5954,35 +5959,35 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
   .pinterest-pedido-conteudo { animation: entrada-suave .3s var(--ease-suave) both; }
   .pinterest-pedido-conteudo { animation-delay: .06s; }
 }
-.pinterest-pedido :is(a,button):active { transform: scale(.98); }
-.pinterest-pedido :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
+.pinterest-pedir :is(a,button):active { transform: scale(.98); }
+.pinterest-pedir :is(a,button):focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
-  .pinterest-pedido :is(a,button) { transition: none; }
-  .pinterest-pedido :is(a,button):active { transform: none; }
+  .pinterest-pedir :is(a,button) { transition: none; }
+  .pinterest-pedir :is(a,button):active { transform: none; }
 }
 
 /* O passo 5 é um formulário de cliente partilhado com o percurso
    autenticado. Em vez de lhe mexer, as regras aqui têm o
-   `.pinterest-pedido` por ancestral — a página com sessão não muda. */
-.pinterest-pedido textarea { width: 100%; min-height: 108px; padding: 13px 15px; border: 1px solid #e1e5e9; border-radius: 16px; background: #fff; color: #17191c; font-family: inherit; font-size: 15px; line-height: 1.5; resize: vertical; box-shadow: 0 3px 12px rgba(31,35,39,.04); }
-.pinterest-pedido textarea::placeholder { color: #9aa0a7; }
-.pinterest-pedido textarea:focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; border-color: #cdd3d9; }
+   `.pinterest-pedir` por ancestral — a página com sessão não muda. */
+.pinterest-pedir textarea { width: 100%; min-height: 108px; padding: 13px 15px; border: 1px solid #e1e5e9; border-radius: 16px; background: #fff; color: #17191c; font-family: inherit; font-size: 15px; line-height: 1.5; resize: vertical; box-shadow: 0 3px 12px rgba(31,35,39,.04); }
+.pinterest-pedir textarea::placeholder { color: #9aa0a7; }
+.pinterest-pedir textarea:focus-visible { outline: 3px solid #73b9be; outline-offset: 2px; border-color: #cdd3d9; }
 /* `:not(.horario-bloco)` não é cautela a mais: os blocos da grelha de
    horários SÃO labels (envolvem o checkbox), e um `display: block` aqui
    desfazia-lhes o flex em coluna — as duas horas colavam-se numa só,
    "10h10h50". */
-.pinterest-pedido label:not(.horario-bloco) { display: block; margin-bottom: 7px; color: #3d434a; font-size: 13.5px; font-weight: 620; }
+.pinterest-pedir label:not(.horario-bloco) { display: block; margin-bottom: 7px; color: #3d434a; font-size: 13.5px; font-weight: 620; }
 /* O botão principal do sistema: azul escuro, raio 15, 50 de altura — o
    mesmo de `.pinterest-adicionar`. O preto do formulário antigo era do
    outro sistema. */
-.pinterest-pedido button[type="submit"] { width: 100%; min-height: 50px; border: 0; border-radius: 15px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
-.pinterest-pedido button[type="submit"]:disabled { opacity: .55; }
-.pinterest-pedido .horarios-grade { border: 1px solid #e8eaed; border-radius: 20px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-pedir button[type="submit"] { width: 100%; min-height: 50px; border: 0; border-radius: 15px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
+.pinterest-pedir button[type="submit"]:disabled { opacity: .55; }
+.pinterest-pedir .horarios-grade { border: 1px solid #e8eaed; border-radius: 20px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
 /* Os blocos passam do creme do sistema antigo para o azul claro que a
    página Hoje usa nas caixas de ícone; o escolhido enche-se do azul
    escuro, como as faixas escolhidas do resto do percurso. */
-.pinterest-pedido .horario-bloco { border-color: #d3e3f1; background: #e7f1fa; color: #1b4f7a; }
-.pinterest-pedido .horario-bloco:has(input:checked) { border-color: #1b4f7a; background: #1b4f7a; color: #fff; }
+.pinterest-pedir .horario-bloco { border-color: #d3e3f1; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-pedir .horario-bloco:has(input:checked) { border-color: #1b4f7a; background: #1b4f7a; color: #fff; }
 
 /* ── Ficha pública de um professor ──────────────────────────────────
    Alcança-se do passo 4 do pedido, pelo botão "conhecer". É a única
@@ -6485,3 +6490,24 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-semana-descarregar strong { font-size: 14px; }
 .pinterest-semana-descarregar small { margin-top: 2px; color: #7b8188; font-size: 11px; }
 .pinterest-semana-descarregar:active { transform: scale(.99); }
+
+/* Design Pinterest — assistente de pedido com sessao
+   (/aluno/[alunoId]/pedido). Partilha a moldura `.pinterest-pedir` com o
+   percurso publico; so o interior e que difere.
+
+   O publico foi reescrito com classes proprias. Este continua a montar-se
+   com o `CartaoLink`, que serve mais quatro paginas e nao se toca: veste-se
+   por descendencia.
+
+   Duas heranças do sistema antigo tem de ser desfeitas aqui, e as duas com
+   `!important` porque vem de estilos inline ou de regras que ganhavam por
+   ordem: o fundo transparente das linhas dentro do wizard (que sobre o
+   cinzento as tornava invisiveis) e o risco por cima da lista. */
+.pinterest-pedir-privado { min-height: 100dvh; padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px)); background: #f5f6f8; }
+.pinterest-pedir-privado .wizard-escolhas { display: flex; flex-direction: column; gap: 10px; border-top: 0; }
+.pinterest-pedir-privado .wizard-escolhas > .entrada-esquerda { min-height: 76px; border: 1px solid #e8eaed !important; border-radius: 20px; background: #fff !important; padding: 14px !important; box-shadow: 0 4px 14px rgba(31,35,39,.05); }
+.pinterest-pedir-privado .wizard-escolhas > .entrada-esquerda > span:first-child { width: 46px; height: 46px; border-radius: 15px; }
+.pinterest-pedir-privado .wizard-escolhas span[class*="text-[17px]"] { font-size: 16px; font-weight: 680; }
+/* Uma disciplina fora da faixa etaria continua visivel e continua fora de
+   alcance — o estado nao muda, so a maneira de o mostrar. */
+.pinterest-pedir-privado .wizard-escolhas > .cartao-bloqueado { background: #f3f4f6 !important; border-color: #e6e8eb !important; box-shadow: none; opacity: .72; }

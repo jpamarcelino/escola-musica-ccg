@@ -48,7 +48,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/aluno/[alunoId]` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/aluno/[alunoId]/horario` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/aluno/[alunoId]/materiais` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
-- [ ] `/aluno/[alunoId]/pedido`
+- [ ] `/aluno/[alunoId]/pedido` - familia/aluno - mobile - modo claro - passou ao Pinterest com a mesma moldura do percurso publico; a lista de escolhas e vestida por descendencia porque o CartaoLink e partilhado; visto em ensaio a 360 px com o CSS compilado; falta ver com conta real
 - [ ] `/aluno/[alunoId]/reposicao/[aulaId]` - familia/aluno - mobile - modo claro - implementado e publicado (`703dd56`), falta validar com uma aula desmarcada elegivel
 
 ## Professor

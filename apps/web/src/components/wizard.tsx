@@ -6,11 +6,14 @@ import { RodapeLegal } from '@/components/rodape-legal'
 // autenticado (/aluno/[alunoId]/pedido). Os passos são os mesmos nos
 // dois, por isso a estrutura também é.
 //
-// O aspeto já não. O percurso público passou ao sistema Pinterest e o
-// autenticado ainda não — está pendente no inventário. A prop `publico`,
-// que já existia para decidir o rodapé legal, passa a decidir também a
-// moldura: assim a página com sessão fica exatamente como estava, sem eu
-// redesenhar às cegas um ecrã que não consigo ver.
+// O aspeto também: os dois estão agora no sistema Pinterest. A prop
+// `publico` voltou ao que era — decide só o rodapé legal e o subtítulo,
+// porque quem já entrou não precisa que lhe expliquem que há passos.
+//
+// O interior difere: o percurso público foi reescrito com as classes
+// `.pinterest-pedir-*`, e o autenticado continua a montar-se com o
+// `CartaoLink`, partilhado por outras quatro páginas. Por isso a lista de
+// escolhas é vestida por descendência, sem tocar no componente.
 
 export type EscolhaFeita = {
   // O que a pessoa escolheu, pelas palavras dela: "Música", "10 anos".
@@ -47,20 +50,20 @@ export function Wizard({
   children: React.ReactNode
 }) {
   const cabecalho = (voltar || title) && (
-    <header className={publico ? 'pinterest-pedido-cabecalho' : 'partitura-agenda-cabecalho'}>
+    <header className="pinterest-pedido-cabecalho">
       {voltar ? (
         <Link
           href={voltar}
-          className={publico ? 'pinterest-pedido-voltar' : 'partitura-voltar'}
+          className="pinterest-pedido-voltar"
           aria-label="Voltar"
         >
-          {publico ? <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" /> : '←'}
+          <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
         </Link>
       ) : (
         <span />
       )}
       <div>
-        <p className={publico ? undefined : 'partitura-sobretitulo'}>
+        <p>
           Pedir uma aula
           {passo && (
             <span className="wizard-passo"> · Passo {passo} de {totalPassos}</span>
@@ -74,7 +77,7 @@ export function Wizard({
 
   const progresso = passo && (
     <ol
-      className={publico ? 'pinterest-pedido-progresso' : 'wizard-progresso'}
+      className="pinterest-pedido-progresso"
       aria-label={`Passo ${passo} de ${totalPassos}`}
     >
       {Array.from({ length: totalPassos }, (_, i) => (
@@ -89,7 +92,7 @@ export function Wizard({
 
   const feitas = escolhas && escolhas.length > 0 && (
     <ul
-      className={publico ? 'pinterest-pedido-feitas' : 'wizard-escolhas-feitas'}
+      className="pinterest-pedido-feitas"
       aria-label="Escolhas até agora"
     >
       {escolhas.map((e) =>
@@ -113,7 +116,7 @@ export function Wizard({
   if (publico) {
     return (
       <div className="pinterest-publico-pagina">
-        <main id="conteudo-principal" className="pinterest-pedido">
+        <main id="conteudo-principal" className="pinterest-pedir">
           {cabecalho}
           {progresso}
           {feitas}
@@ -127,14 +130,15 @@ export function Wizard({
     )
   }
 
+  // Com sessão: a mesma moldura, sem o rodapé legal (essas ligações vivem
+  // em Conta) e com espaço em baixo para a barra de navegação, que a
+  // página pública não tem.
   return (
-    <main id="conteudo-principal" className="partitura-pagina wizard-partitura">
-      <div className="partitura-folha">
-        {cabecalho}
-        {progresso}
-        {feitas}
-        <div className="wizard-partitura-conteudo">{children}</div>
-      </div>
+    <main id="conteudo-principal" className="pinterest-pedir pinterest-pedir-privado">
+      {cabecalho}
+      {progresso}
+      {feitas}
+      <div className="pinterest-pedido-conteudo">{children}</div>
     </main>
   )
 }
