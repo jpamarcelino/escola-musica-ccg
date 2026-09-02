@@ -5454,8 +5454,12 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 /* Tres contagens reais, tiradas dos mesmos dados da grelha. Nao ha aqui
    nenhuma metrica inventada: aulas, alunos distintos e a hora a que o dia
    comeca. */
-.pinterest-semana-resumo { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; margin-bottom: 18px; overflow: hidden; border: 1px solid #e4e8ec; border-radius: 21px; background: #eceef1; box-shadow: 0 5px 18px rgba(31,35,39,.05); }
-.pinterest-semana-resumo > div { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 15px 8px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); text-align: center; }
+/* O fade azul e do cartao inteiro e nao de cada celula: repetido tres
+   vezes lado a lado lia-se como uma banda desbotada em vez de um
+   destaque. As divisorias sao linhas e nao intervalos de fundo. */
+.pinterest-semana-resumo { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); margin-bottom: 18px; overflow: hidden; border: 1px solid #e4e8ec; border-radius: 21px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); box-shadow: 0 5px 18px rgba(31,35,39,.05); }
+.pinterest-semana-resumo > div { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 15px 8px; text-align: center; }
+.pinterest-semana-resumo > div + div { border-left: 1px solid rgba(31,35,39,.07); }
 .pinterest-semana-resumo strong { font-size: 22px; font-weight: 760; font-variant-numeric: tabular-nums; }
 .pinterest-semana-resumo span { color: #6d737a; font-size: 11px; line-height: 1.25; }
 .pinterest-semana-grelha { overflow-x: auto; border: 1px solid #e4e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.05); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
