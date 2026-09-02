@@ -765,8 +765,15 @@ body {
 }
 
 .ecra-carregamento {
+  background: #ffffff;
   animation: ecra-carregar-entrar 0.35s var(--ease-suave) 0.4s backwards;
 }
+
+.ecra-carregamento-marca { color: var(--marca-ciano); }
+.ecra-carregamento-mensagem { color: var(--color-text-primary); }
+.ecra-carregamento-contexto { color: var(--color-text-secondary); }
+.ecra-carregamento-trilho { background: var(--color-surface-raised); }
+.ecra-carregamento-barra { background: var(--marca-ciano); }
 
 /* Easing próprio, e não o --ease-suave da app: aquele é quase todo
    movimento no primeiro terço, o que faz a pincelada saltar para o ecrã
@@ -7104,3 +7111,22 @@ html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-
 html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='1'] { color: #70d2c9; }
 html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='2'] { color: #ec9ba6; }
 html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='3'] { color: #b4bdff; }
+
+/* Carregamento: preserva a pincelada e o reflexo, mas elimina o clarão
+   branco entre páginas no tema escuro. */
+html[data-tema='escuro'] .ecra-carregamento {
+  background:
+    radial-gradient(ellipse 72% 42% at 50% 30%,rgba(48,141,204,.16),transparent 68%),
+    #131619;
+}
+html[data-tema='escuro'] .ecra-carregamento-marca {
+  color: #42cbea;
+  filter: drop-shadow(0 0 18px rgba(66,203,234,.18));
+}
+html[data-tema='escuro'] .ecra-carregamento-mensagem { color: #f7f8fa; }
+html[data-tema='escuro'] .ecra-carregamento-contexto { color: #aab3bc; }
+html[data-tema='escuro'] .ecra-carregamento-trilho { background: #2c343b; }
+html[data-tema='escuro'] .ecra-carregamento-barra {
+  background: linear-gradient(90deg,#3a94d1,#51d4e9);
+  box-shadow: 0 0 10px rgba(81,212,233,.42);
+}

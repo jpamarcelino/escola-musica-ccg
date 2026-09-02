@@ -58,7 +58,6 @@ export function EcraCarregamento({
           ? `fixed inset-0 ${manterNavegacao ? 'z-30 pb-[104px]' : 'z-50'}`
           : 'min-h-[60vh] w-full flex-1')
       }
-      style={{ backgroundColor: '#ffffff' }}
       role="status"
       aria-live="polite"
     >
@@ -67,9 +66,8 @@ export function EcraCarregamento({
           cuidados de contraste da UI: é uma forma grande sobre branco,
           não texto a ler. */}
       <div
-        className="flex flex-col items-center"
+        className="ecra-carregamento-marca flex flex-col items-center"
         aria-hidden="true"
-        style={{ color: 'var(--marca-ciano)' }}
       >
         <div className="ecra-carregamento-simbolo">
           <SimboloCCG className="ecra-carregamento-simbolo-vivo h-[88px] w-auto" />
@@ -79,15 +77,13 @@ export function EcraCarregamento({
 
       <div className="flex flex-col items-center gap-[14px]">
         <p
-          className="text-center text-[15px] font-medium leading-[1.4]"
-          style={{ color: 'var(--color-text-primary)' }}
+          className="ecra-carregamento-mensagem text-center text-[15px] font-medium leading-[1.4]"
         >
           {mensagem}
         </p>
         {contexto && (
           <p
-            className="max-w-[300px] text-center text-[13.5px] leading-[1.45]"
-            style={{ color: 'var(--color-text-secondary)' }}
+            className="ecra-carregamento-contexto max-w-[300px] text-center text-[13.5px] leading-[1.45]"
           >
             {contexto}
           </p>
@@ -98,12 +94,10 @@ export function EcraCarregamento({
             um logótipo animado. */}
         <div
           aria-hidden="true"
-          className="h-[3px] w-[104px] overflow-hidden rounded-[var(--radius-pill)]"
-          style={{ backgroundColor: 'var(--color-surface-raised)' }}
+          className="ecra-carregamento-trilho h-[3px] w-[104px] overflow-hidden rounded-[var(--radius-pill)]"
         >
           <div
             className="ecra-carregamento-barra h-full w-[34%] rounded-[var(--radius-pill)]"
-            style={{ backgroundColor: 'var(--marca-ciano)' }}
           />
         </div>
       </div>
