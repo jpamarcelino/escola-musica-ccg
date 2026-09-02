@@ -7061,3 +7061,46 @@ html[data-tema='escuro'] :is(.pinterest-pedir-reposicao-enviar,.pinterest-materi
   background: linear-gradient(135deg,#397dae,#245b82);
   box-shadow: 0 8px 22px rgba(38,112,164,.24);
 }
+
+/* Calendario: meses legiveis em carvao, sem transformar cada dia num
+   foco luminoso. A cor fica reservada para aulas, eventos e para hoje. */
+html[data-tema='escuro'] .pinterest-calendario-voltar {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: #a9d5f7;
+  box-shadow: none;
+}
+html[data-tema='escuro'] .pinterest-calendario .calendario-legenda {
+  border-color: #343d45;
+  background: #1a1f23;
+  color: var(--dark-muted);
+  box-shadow: none;
+}
+html[data-tema='escuro'] .pinterest-calendario .calendario-mes {
+  border-color: #343c44;
+  background: linear-gradient(155deg,rgba(61,127,184,.07),transparent 32%),var(--dark-surface);
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+html[data-tema='escuro'] .pinterest-calendario .calendario-mes h2 { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-calendario .calendario-mes h2 span,
+html[data-tema='escuro'] .pinterest-calendario .calendario-mes th { color: #89939d; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia { color: #d9dde1; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula {
+  background: #263d51;
+  color: #b9ddf8;
+}
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-fechado {
+  background: transparent;
+  color: #586169;
+}
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-hoje {
+  outline-color: #72bdf3;
+  box-shadow: 0 0 0 3px rgba(114,189,243,.08),0 0 16px rgba(114,189,243,.16);
+}
+html[data-tema='escuro'] .pinterest-calendario .calendario-evento-rotulo { color: #9bcbed; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-fechado .calendario-evento-rotulo { color: #626b73; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-rotulo[data-tipo='reposicao'] { color: #70d2c9; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='0'] { color: #e4bd68; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='1'] { color: #70d2c9; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='2'] { color: #ec9ba6; }
+html[data-tema='escuro'] .pinterest-calendario .calendario-dia-aula .calendario-evento-nome[data-cor='3'] { color: #b4bdff; }
