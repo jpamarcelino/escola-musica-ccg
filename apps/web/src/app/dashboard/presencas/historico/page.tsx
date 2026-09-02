@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getAuthContext } from '@/lib/auth-context'
 import { EmptyState } from '@/components/empty-state'
+import { ChevronLeft, ChevronRight, UserRound } from 'lucide-react'
 
 type MatriculaAluno = {
   id: number
@@ -67,11 +68,11 @@ export default async function HistoricoPresencasPage() {
   const alunos = [...porAluno.values()].sort((a, b) => a.nome.localeCompare(b.nome))
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/presencas" className="partitura-voltar" aria-label="Voltar a presenças">←</Link>
-          <div><p className="partitura-sobretitulo">Arquivo por aluno</p><h1>Histórico</h1>{alunos.length > 0 && <p>{alunos.length} {alunos.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}</p>}</div>
+    <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-presencas-historico-lista">
+      <div className="pinterest-presencas-fluxo-folha">
+        <header className="pinterest-presencas-fluxo-cabecalho">
+          <Link href="/dashboard/presencas" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar a presenças"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <div><h1>Histórico</h1><p>{alunos.length > 0 ? `${alunos.length} ${alunos.length === 1 ? 'aluno confirmado' : 'alunos confirmados'}` : 'Presenças por aluno.'}</p></div>
         </header>
 
         {alunos.length === 0 ? (
@@ -82,7 +83,7 @@ export default async function HistoricoPresencasPage() {
               <Link
                 key={a.alunoId}
                 href={`/dashboard/presencas/historico/${a.alunoId}`}
-              ><strong>{a.nome}</strong><span>{a.registos === 0 ? 'Ainda sem registos' : `${a.registos} ${a.registos === 1 ? 'registo' : 'registos'}`}</span><i aria-hidden="true">→</i></Link>
+              ><span aria-hidden="true"><UserRound size={20} /></span><span><strong>{a.nome}</strong><small>{a.registos === 0 ? 'Ainda sem registos' : `${a.registos} ${a.registos === 1 ? 'registo' : 'registos'}`}</small></span><ChevronRight size={19} aria-hidden="true" /></Link>
             ))}
           </div>
         )}

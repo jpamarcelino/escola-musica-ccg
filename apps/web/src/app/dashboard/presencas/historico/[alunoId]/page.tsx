@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatarDataEscolar } from '@ccg/core'
 import { EmptyState } from '@/components/empty-state'
 import type { PresencaEstado } from '@ccg/types'
+import { ChevronLeft } from 'lucide-react'
 
 type Matricula = {
   id: number
@@ -88,12 +89,14 @@ export default async function HistoricoAlunoPage({
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina presencas-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <Link href="/dashboard/presencas/historico" className="partitura-voltar" aria-label="Voltar ao histórico">←</Link>
-          <div><p className="partitura-sobretitulo">Histórico individual</p><h1>{alunoData.nome}</h1>{percentagemPresencas !== null && <p>{percentagemPresencas}% de presenças · {presencas.length} {presencas.length === 1 ? 'aula registada' : 'aulas registadas'}</p>}</div>
+    <main id="conteudo-principal" className="pinterest-presencas-fluxo pinterest-presencas-historico-aluno">
+      <div className="pinterest-presencas-fluxo-folha">
+        <header className="pinterest-presencas-fluxo-cabecalho">
+          <Link href="/dashboard/presencas/historico" className="pinterest-presencas-fluxo-voltar" aria-label="Voltar ao histórico"><ChevronLeft size={24} strokeWidth={2.1} aria-hidden="true" /></Link>
+          <div><h1>{alunoData.nome}</h1><p>Histórico individual</p></div>
         </header>
+
+        {percentagemPresencas !== null && <section className="pinterest-presencas-resumo" aria-label="Resumo de presenças"><div><small>Presenças</small><strong>{percentagemPresencas}%</strong></div><p>{presencas.length} {presencas.length === 1 ? 'aula registada' : 'aulas registadas'}</p></section>}
 
         {presencas.length === 0 ? (
           <EmptyState titulo="Ainda não há presenças registadas para este aluno" />

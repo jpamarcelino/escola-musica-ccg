@@ -370,6 +370,33 @@ body {
 .pinterest-presencas-fluxo :is(a,button,input,label):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width:431px) { .pinterest-presencas-fluxo { padding-inline:24px; } }
 
+/* Historico de presencas: diretorio de alunos e arquivo mensal. */
+.pinterest-presencas-historico-lista .presencas-alunos { display: flex; flex-direction: column; gap: 9px; margin-top: 0; border: 0; }
+.pinterest-presencas-historico-lista .presencas-alunos a { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 11px; align-items: center; min-height: 74px; padding: 12px 14px; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; color: #17191c; text-decoration: none; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-presencas-historico-lista .presencas-alunos a > span:first-child { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 14px; background: #e7f1fa; color: #1b4f7a; }
+.pinterest-presencas-historico-lista .presencas-alunos a > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-presencas-historico-lista .presencas-alunos strong { overflow: hidden; color: #17191c; font-family: inherit; font-size: 15.5px; font-weight: 710; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-presencas-historico-lista .presencas-alunos small { margin-top: 3px; color: #7a8087; font-size: 11.5px; }
+.pinterest-presencas-historico-lista .presencas-alunos a > svg { color: #969ba1; }
+.pinterest-presencas-resumo { display: flex; min-height: 122px; align-items: center; justify-content: space-between; gap: 16px; padding: 18px; border: 1px solid #dce9e3; border-radius: 22px; background: linear-gradient(145deg,rgba(127,169,140,.15),rgba(127,169,140,.03) 45%,#fff 80%); box-shadow: 0 5px 18px rgba(31,35,39,.055); }
+.pinterest-presencas-resumo div { display: flex; flex-direction: column; }
+.pinterest-presencas-resumo small { color: #53705f; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.pinterest-presencas-resumo strong { margin-top: 3px; color: #173d2a; font-size: 34px; font-weight: 780; line-height: 1; }
+.pinterest-presencas-resumo p { color: #66776c; font-size: 12.5px; text-align: right; }
+.pinterest-presencas-historico-aluno .presencas-historico { margin-top: 24px; }
+.pinterest-presencas-historico-aluno .presencas-historico section + section { margin-top: 24px; }
+.pinterest-presencas-historico-aluno .presencas-historico section > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 2px 9px; padding: 0; }
+.pinterest-presencas-historico-aluno .presencas-historico h2 { color: #17191c; font-family: inherit; font-size: 20px; font-weight: 740; }
+.pinterest-presencas-historico-aluno .presencas-historico header span { display: grid; min-width: 27px; height: 27px; place-items: center; border-radius: 10px; background: #e7f1fa; color: #1b4f7a; font-size: 11px; font-weight: 750; }
+.pinterest-presencas-historico-aluno .presencas-historico section > div { overflow: hidden; border: 1px solid #e5e8ec; border-radius: 20px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-presencas-historico-aluno .presencas-historico article { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 3px 12px; min-height: 66px; align-items: center; padding: 11px 14px; border: 0; }
+.pinterest-presencas-historico-aluno .presencas-historico article + article { border-top: 1px solid #eceef0; }
+.pinterest-presencas-historico-aluno .presencas-historico time { overflow: hidden; font-size: 13px; font-weight: 680; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-presencas-historico-aluno .presencas-historico article > span { grid-column: 1; color: #7a8087; font-size: 11.5px; }
+.pinterest-presencas-historico-aluno .presencas-historico article > strong { grid-column: 2; grid-row: 1 / span 2; padding: 6px 9px; border: 0; border-radius: 10px; background: #eaf4ee; color: #3d7658; font-size: 10.5px; white-space: nowrap; }
+.pinterest-presencas-historico-aluno .presencas-historico article > strong[data-estado='falta_aviso'] { background: #fff7df; color: #80611d; }
+.pinterest-presencas-historico-aluno .presencas-historico article > strong[data-estado='falta_sem_aviso'] { background: #fcecef; color: #8f3b47; }
+
 /* Design Pinterest - agenda familiar, mobile e modo claro. */
 .pinterest-agenda { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
 .pinterest-agenda-folha { width: 100%; max-width: 430px; margin-inline: auto; }
