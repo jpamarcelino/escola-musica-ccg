@@ -123,7 +123,7 @@ export default async function AlunosPage({
                   <span aria-hidden="true">
                     <UserRound size={20} strokeWidth={2} />
                   </span>
-                  <span>Sou eu que vou às aulas</span>
+                  <span>Criar perfil de aluno para mim</span>
                   <ChevronRight size={18} strokeWidth={2} aria-hidden="true" />
                 </summary>
                 <form action={criarAluno}>
