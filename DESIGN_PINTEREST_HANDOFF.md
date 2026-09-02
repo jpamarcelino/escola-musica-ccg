@@ -131,6 +131,8 @@ As Mensagens do professor foram redesenhadas e publicadas em `7bce7b4`. A compos
 
 As Mensalidades do professor foram redesenhadas e publicadas em `7d84fb0`. O extrato abre com meses em scroll horizontal, valor por receber, total previsto e contadores; os movimentos usam um cartao por aluno e cor apenas no estado financeiro. O resumo, a navegacao mensal, a nota do Programa de Recomendacao e o estado vazio foram validados autenticados em producao. Os movimentos preenchidos aguardam matriculas reais para a inspecao visual final.
 
+A gestao de Reposicoes do professor foi redesenhada e publicada em `7d3c980`. A pagina prioriza pedidos, depois a abertura de uma vaga e so depois as listas de vagas disponiveis e ocupadas. O formulario, a ligacao aos pedidos e o estado vazio foram validados autenticados em producao; vagas reais e o dialogo de remocao aguardam dados para a inspecao visual final.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);

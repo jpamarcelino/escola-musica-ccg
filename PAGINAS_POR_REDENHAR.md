@@ -63,7 +63,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/presencas/confirmar` - professor - mobile - modo claro - implementado e publicado (`890059f`), estado vazio validado; falta validar com aulas pendentes
 - [ ] `/dashboard/presencas/historico` - professor - mobile - modo claro - implementado e publicado (`24cb560`), estado vazio validado; falta validar com alunos
 - [ ] `/dashboard/presencas/historico/[alunoId]` - professor - mobile - modo claro - implementado e publicado (`24cb560`), falta validar com registos reais
-- [ ] `/dashboard/reposicoes`
+- [ ] `/dashboard/reposicoes` - professor - mobile - modo claro - implementado e publicado (`7d3c980`), formulario e estado vazio validados; falta testar vagas reais e popup de remocao
 - [ ] `/dashboard/mensagens` - professor - mobile - modo claro - implementado e publicado (`7bce7b4`), estado vazio validado; falta testar composicao e historico com alunos reais
 - [ ] `/dashboard/enviar-material` - professor - mobile - modo claro - implementado e publicado (`d88398b`), estado vazio validado; falta testar video, PDF e selecao com alunos reais
 - [ ] `/dashboard/mensalidades` - professor - mobile - modo claro - implementado e publicado (`7d84fb0`), resumo e estado vazio validados; falta testar movimentos reais
