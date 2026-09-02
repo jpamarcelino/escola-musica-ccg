@@ -14,9 +14,9 @@ import { SimboloCCG } from '@/components/simbolo-ccg'
 // isso tinha um defeito que só apareceu a testar: um componente de
 // cliente devolve null durante o render do servidor, por isso o ecrã
 // nunca chegava a entrar no HTML transmitido em streaming — que é
-// justamente o caso para que foi feito (arranque da app). O atraso
-// passou para CSS (animation-delay em .ecra-carregamento), onde funciona
-// no servidor e no cliente por igual e não custa um único byte de JS.
+// justamente o caso para que foi feito (arranque da app). A entrada
+// passou para CSS, onde funciona no servidor e no cliente por igual e
+// não custa um único byte de JS.
 //
 // Quando usar: é a resposta de espera de toda a app. Cada área dá-lhe
 // uma mensagem que diz o que está a abrir — "A abrir a secretaria…",

@@ -746,19 +746,9 @@ body {
   100% { transform: translateX(300%); }
 }
 
-/* O ecrã só se mostra se a espera se arrastar.
-
-   Um splash que pisca durante 120ms deixa o produto pior, não melhor: o
-   utilizador vê um clarão sem o conseguir ler e fica com a sensação de
-   que a app estremeceu. Daí os 400ms de atraso, com `backwards` a
-   segurar a opacidade a zero antes disso — se a página chegar primeiro,
-   o ecrã é desmontado sem nunca ter sido visto.
-
-   Isto esteve em JS (useState + setTimeout) e estava errado: um
-   componente de cliente devolve null no render do servidor, por isso o
-   ecrã nunca entrava no HTML transmitido em streaming — que é
-   precisamente o caso do arranque da app. Em CSS funciona nos dois
-   lados, e o componente deixou de precisar de JavaScript nenhum. */
+/* Entrada curta, sem atraso. O atraso anterior era aplicado ao contentor
+   inteiro durante 400ms: em modo escuro isso deixava apenas o fundo da
+   pagina visivel e parecia um ecra preto avariado. */
 @keyframes ecra-carregar-entrar {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -766,7 +756,7 @@ body {
 
 .ecra-carregamento {
   background: #ffffff;
-  animation: ecra-carregar-entrar 0.35s var(--ease-suave) 0.4s backwards;
+  animation: ecra-carregar-entrar 0.18s var(--ease-suave) both;
 }
 
 .ecra-carregamento-marca { color: var(--marca-ciano); }
@@ -819,10 +809,8 @@ body {
 /* Sem movimento: fica a pincelada, o reflexo parado e o texto. Continua
    a ler-se como um ecrã de espera — só não se mexe.
 
-   .ecra-carregamento fica de fora desta lista de propósito: a sua
-   animação é só opacidade, e é ela que segura os 400ms de atraso. Tirá-la
-   traria de volta o clarão nas esperas curtas, precisamente a quem pediu
-   menos movimento. */
+   A entrada curta do contentor fica ativa: evita uma aparicao seca sem
+   esconder o símbolo ou as mensagens. */
 @media (prefers-reduced-motion: reduce) {
   .ecra-carregamento-simbolo {
     animation: none;
