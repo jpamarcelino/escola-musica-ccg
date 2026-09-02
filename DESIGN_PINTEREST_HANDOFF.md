@@ -125,6 +125,8 @@ O Historico de Presencas e o detalhe por aluno foram implementados e publicados 
 
 A lista de alunos do professor foi implementada e publicada em `c4891d5`. Mantem o cabecalho compacto da area do professor e apresenta cada aluno como um cartao acionavel, com inicial, disciplina, horario e idade quando existirem. O estado vazio real foi validado autenticado a 360 px, 390 px e 430 px, sem overflow. A lista preenchida aguarda uma conta com alunos reais para a inspecao visual final.
 
+A ficha individual e o envio de materiais foram redesenhados e publicados em `d88398b`. A ficha organiza dados, contactos, proposta de novo horario, historico de materiais e desmatricula em superficies separadas; a confirmacao destrutiva usa o dialogo movel Pinterest. O envio de materiais ganhou seletor segmentado Video/Partitura, formulario, preview e selecao de destinatarios na mesma linguagem. O estado vazio de `/dashboard/enviar-material` foi validado autenticado em producao; os formularios preenchidos, a ficha e os dialogos aguardam alunos reais para a inspecao visual final.
+
 ### Ainda nao concluido nessa mesma rota
 
 - `/dashboard` - variante professor com aulas reais (a implementacao e o estado vazio ja estao validados);
