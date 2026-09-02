@@ -392,7 +392,11 @@ body {
 .pinterest-mensalidades .mensalidade-lista article[data-estado="paga"] .mensalidade-estado,
 .pinterest-mensalidades .mensalidade-lista article[data-estado="nao_devida"] .mensalidade-estado { background: #eaf4ee; color: #3d7658; }
 .pinterest-mensalidades-nota { margin-top: 16px; }
-.pinterest-mensalidades-nota > * { border-radius: 18px; font-size: 12px; line-height: 1.5; }
+.pinterest-mensalidades-nota > * { border: 1px solid #e1e7ec; border-radius: 18px; background: #fff !important; color: #687078 !important; font-size: 12px; line-height: 1.5; }
+.pinterest-mensalidades .empty-editorial { margin-top: 2px; padding: 20px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-mensalidades .empty-editorial::before { display: none; }
+.pinterest-mensalidades .empty-editorial-titulo { color: #17191c; font-family: inherit; font-size: 17px; font-weight: 740; line-height: 1.3; }
+.pinterest-mensalidades .empty-editorial-descricao { margin-top: 5px; color: #777e85; font-size: 13px; line-height: 1.5; }
 .pinterest-mensalidades :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 .pinterest-mensalidades :is(a,button):active { transform: scale(.98); }
 @media (min-width:431px) { .pinterest-mensalidades { padding-inline:24px; } .pinterest-mensalidades-meses { margin-inline:-24px; padding-inline:24px; } }
