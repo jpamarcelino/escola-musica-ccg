@@ -135,3 +135,77 @@ export async function recusarPedidoBebes(formData: FormData) {
   revalidatePath(destino)
   redirect(`${destino}?guardado=${encodeURIComponent('Pedido recusado. A família foi avisada.')}`)
 }
+
+// Pedir inscrição numa turma de Bebés.
+//
+// Não passa pelo assistente normal — e não é um atalho, é outra coisa. Nas
+// outras escolas escolhe-se o professor e as horas que dão jeito, e é o
+// professor que responde. Aqui a turma é uma só, com hora fixa, e quem
+// decide é a secretaria: não há nada para escolher a não ser dizer que se
+// quer entrar.
+//
+// O `professor_id` da matrícula é um dos professores da turma, escolhido
+// aqui só porque a coluna não aceita vazio. Quem fica mesmo com o aluno é
+// decidido ao aceitar, na secretaria — e é lá que a coluna é reescrita.
+export async function pedirInscricaoBebes(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  const alunoId = String(formData.get('alunoId') ?? '')
+  const instrumentoId = Number(formData.get('instrumentoId') ?? 0)
+  const mensagem = String(formData.get('mensagem') ?? '').trim()
+
+  const base = `/aluno/${alunoId}/pedido?programa=bebes&instrumento=${instrumentoId}`
+  const erro = (m: string): never => redirect(`${base}&erro=${encodeURIComponent(m)}`)
+
+  if (!alunoId || !instrumentoId) erro('Faltam dados do pedido.')
+
+  const { data: turma } = await supabase
+    .from('turmas_bebes')
+    .select('id, capacidade')
+    .eq('instrumento_id', instrumentoId)
+    .maybeSingle()
+
+  if (!turma) erro('Essa turma não existe.')
+
+  const { data: profs } = await supabase
+    .from('turmas_bebes_professores')
+    .select('professor_id')
+    .eq('turma_id', turma!.id)
+
+  if (!profs || profs.length === 0) {
+    erro('Esta turma ainda não tem professor. Fala com a secretaria.')
+  }
+
+  // A lotação é dita aqui para não se pedir um lugar que não existe. Quem
+  // a garante é a base de dados, ao aceitar.
+  const { data: ocupacao } = await supabase.rpc('ocupacao_turma_bebes', {
+    p_turma_id: turma!.id,
+  })
+  if (Number(ocupacao ?? 0) >= turma!.capacidade) {
+    erro('Esta turma está cheia. Fala com a secretaria para entrares em lista de espera.')
+  }
+
+  const { error } = await supabase.from('matriculas').insert({
+    aluno_id: alunoId,
+    professor_id: profs![0].professor_id,
+    instrumento_id: instrumentoId,
+    mensagem: mensagem || null,
+  })
+
+  if (error) {
+    erro(
+      error.code === '23505'
+        ? 'Já existe um pedido ou uma inscrição nesta turma.'
+        : 'Não foi possível criar o pedido. Tenta novamente.'
+    )
+  }
+
+  revalidatePath('/admin/bebes/pedidos')
+  revalidatePath(`/aluno/${alunoId}`)
+  redirect(`/aluno/${alunoId}?pedido=bebes`)
+}

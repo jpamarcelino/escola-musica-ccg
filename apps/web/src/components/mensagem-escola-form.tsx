@@ -17,6 +17,10 @@ export type AlunoAlvo = Pessoa & {
   // apanhar por qualquer uma delas.
   professores: string[]
   programas: string[]
+  // O nome de cada disciplina, para a selecção rápida por turma. Nos
+  // Bebés cada turma é uma disciplina, e é assim que se separam as duas
+  // sem inventar um conceito novo no formulário.
+  disciplinas: string[]
 }
 
 const ESCOLAS = [
@@ -113,6 +117,24 @@ export function MensagemEscolaForm({
     }
     return alunos.filter((a) => a.professores.some((p) => profsEscolhidos.includes(p))).length
   }, [publico, filtro, alunos, professores, alunosEscolhidos, profsEscolhidos, programa])
+
+  // As turmas de Bebés que existem NESTA lista de alunos. Um professor só
+  // vê as suas; a secretaria vê as duas. Sai da lista que já veio do
+  // servidor, e não de uma consulta nova, porque é a mesma informação.
+  const turmasBebes = useMemo(() => {
+    const porTurma = new Map<string, string[]>()
+    for (const a of alunos) {
+      if (!a.programas.includes('bebes')) continue
+      for (const disciplina of a.disciplinas) {
+        const ids = porTurma.get(disciplina) ?? []
+        ids.push(a.id)
+        porTurma.set(disciplina, ids)
+      }
+    }
+    return [...porTurma.entries()]
+      .map(([nome, ids]) => ({ nome, ids }))
+      .sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+  }, [alunos])
 
   const alvo = publico === 'professores' ? 'professor' : 'aluno'
 
@@ -213,6 +235,34 @@ export function MensagemEscolaForm({
                 className="mensagem-opcao"
               >
                 {e.nome}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
+
+      {/* Atalho para as turmas de Bebés.
+          Não é um filtro novo: preenche a escolha aluno a aluno que já
+          existe. Assim quem escreve vê exactamente quem vai receber e
+          pode tirar alguém — o que um filtro fechado não deixava. Só
+          aparece a quem tenha alunos nessas turmas, e por isso não
+          estorva quem não dá Bebés. */}
+      {publico === 'alunos' && turmasBebes.length > 0 && (
+        <fieldset className="space-y-[10px]">
+          <legend className="mensagem-legenda">Música para Bebés</legend>
+          <div className="mensagem-opcoes">
+            {turmasBebes.map((turma) => (
+              <button
+                key={turma.nome}
+                type="button"
+                onClick={() => {
+                  setFiltro('selecionados')
+                  setTermo('')
+                  setAlunosEscolhidos(turma.ids)
+                }}
+                className="mensagem-opcao"
+              >
+                {turma.nome} ({turma.ids.length})
               </button>
             ))}
           </div>

@@ -796,3 +796,30 @@ da Bebes via-as na fila dele e podia aceita-las por cima de quem decide.
 `desmarcarAulaProfessor` e `desmarcarDiaProfessor` passaram a aceitar um
 `voltarPara`: a mesma accao serve a agenda e os Bebes, e cada uma volta
 para si propria.
+
+## Bebés: pedido, mensagens e o que ja funcionava
+
+**Pedido de inscricao.** Nos Bebes o assistente acaba na disciplina: nao ha
+professor para escolher nem horas para marcar, porque a turma e uma so com
+hora da escola. O passo do professor aparecia vazio de qualquer maneira —
+um professor de Bebes e atribuido a TURMA e nao a disciplina, por isso a
+consulta a `professor_instrumentos` nunca o encontrava.
+
+O ecra diz a hora da turma, quantos lugares restam, e manda o pedido para a
+secretaria. O `professor_id` da matricula e um dos professores da turma,
+escrito so porque a coluna nao aceita vazio; quem fica mesmo com o aluno e
+decidido ao aceitar.
+
+**Mensagens.** A seleccao rapida por turma nao e um filtro novo: preenche a
+escolha aluno a aluno que ja existia. Assim quem escreve ve exactamente
+quem recebe e pode tirar alguem, o que um filtro fechado nao deixava. Sai
+da lista que ja vinha do servidor — um professor ve as turmas dele, a
+secretaria ve as duas — e nao aparece a quem nao tenha alunos de Bebes.
+
+**Presencas e mensalidades ja funcionavam.** Verificado a ler as consultas:
+nenhuma das duas filtra por `estado` do horario, por isso um horario
+bloqueado com matriculas confirmadas aparece na chamada e gera mensalidade
+como qualquer outro. Era esse o objectivo do espelho.
+
+**Nota sobre o `AGENTS.md`:** manda ler `node_modules/next/dist/docs/`
+antes de escrever codigo, mas essa pasta nao existe nesta instalacao.
