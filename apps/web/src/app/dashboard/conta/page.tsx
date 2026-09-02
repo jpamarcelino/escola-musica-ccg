@@ -21,7 +21,7 @@ import {
 import { ehContaCCG } from '@/lib/navegacao'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
-import { DOCUMENTOS, CCG } from '@/lib/legal'
+import { CCG } from '@/lib/legal'
 
 export default async function ContaPage({
   searchParams,
@@ -335,17 +335,20 @@ export default async function ContaPage({
             entrou não passa pelo rodapé das páginas de entrada, e tem de
             continuar a chegar aos documentos — e ao contacto para
             exercer direitos — sem sair da app. */}
+        {/* Uma porta e não quatro. As quatro ligações punham aqui uma
+            lista tão longa como a das definições da conta, e davam o
+            mesmo peso a ler os Termos e a mudar a password. O índice
+            legal já existe e é onde vivem também as reclamações e a
+            identificação do operador. */}
         <section className="pinterest-conta-seccao">
           <h2>Privacidade e informação legal</h2>
           <div className="pinterest-conta-lista">
-            {DOCUMENTOS.map((d) => (
-              <Link key={d.tipo} href={d.caminho}>
-                <span>{d.titulo}</span>
-                <span aria-hidden="true">
-                  <ChevronRight size={18} strokeWidth={2} />
-                </span>
-              </Link>
-            ))}
+            <Link href="/legal">
+              <span>Ver os documentos legais</span>
+              <span aria-hidden="true">
+                <ChevronRight size={18} strokeWidth={2} />
+              </span>
+            </Link>
           </div>
           <p className="pinterest-conta-nota">
             Para exercer direitos sobre os teus dados — acesso, retificação, apagamento,

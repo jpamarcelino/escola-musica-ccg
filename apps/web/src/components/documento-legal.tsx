@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 import { formatarDataEscolar } from '@ccg/core'
 import type { DocumentoLegal } from '@/lib/legal'
 import { LIVRO_RECLAMACOES_URL } from '@/lib/legal'
@@ -22,9 +22,9 @@ export function DocumentoLegalPagina({ documento }: { documento: DocumentoLegal 
     <main id="conteudo-principal" className="pinterest-legal">
       <div className="pinterest-legal-folha">
         <header className="pinterest-legal-cabecalho">
-          <Link href="/legal" className="pinterest-legal-voltar" aria-label="Voltar à informação legal">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </Link>
+          {/* Volta a quem abriu o documento — a Conta, o registo, o
+              índice — em vez de mandar toda a gente para o índice. */}
+          <VoltarAtras destino="/legal" className="pinterest-legal-voltar" />
           <div>
             <h1>{documento.titulo}</h1>
             <p>

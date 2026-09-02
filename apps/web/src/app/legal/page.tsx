@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
+import { VoltarAtras } from '@/components/voltar-atras'
 import { DOCUMENTOS, CCG, CNIACC, LIVRO_RECLAMACOES_URL } from '@/lib/legal'
 
 export const metadata: Metadata = {
@@ -16,9 +17,7 @@ export default function LegalIndexPage() {
     <main id="conteudo-principal" className="pinterest-legal">
       <div className="pinterest-legal-folha">
         <header className="pinterest-legal-cabecalho">
-          <Link href="/" className="pinterest-legal-voltar" aria-label="Voltar ao início">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </Link>
+          <VoltarAtras destino="/" className="pinterest-legal-voltar" />
           <div>
             <h1>Informação legal</h1>
             <p>Podes ler, guardar e imprimir qualquer um destes documentos, com ou sem conta.</p>
