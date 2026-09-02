@@ -40,7 +40,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Familia e aluno
 
-- [ ] `/dashboard/alunos`
+- [ ] `/dashboard/alunos` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
 - [ ] `/dashboard/materiais`
 - [ ] `/dashboard/mensalidades` - variante familia
 - [ ] `/aluno/[alunoId]`

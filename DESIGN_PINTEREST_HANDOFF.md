@@ -118,7 +118,7 @@ Todas as restantes paginas visiveis, incluindo as 10 paginas publicas, continuam
 6. Criar modo escuro a partir dos componentes ja estabilizados.
 7. Redesenhar e validar as 10 paginas publicas no mesmo sistema visual; nenhuma esta atualmente concluida no Design Pinterest.
 
-Proxima pagina sugerida: `/dashboard/alunos`.
+Proxima pagina sugerida: `/dashboard/mensalidades` (variante familia).
 
 ### Nota sobre `/dashboard/conta`
 
@@ -156,3 +156,9 @@ Usar algo proximo deste texto com outro agente:
 - `067da9d`: solucao aprovada; cartao branco com fade azul subtil.
 - `f9c973c`: Agenda familiar mobile clara, com o padrao de lista cronologica aprovado.
 - `5c12018`: lista e detalhe de Avisos da familia, mobile claro.
+- Conta, informacao legal e gerir alunos reescritos no sistema. A lista de
+  alunos reutiliza `.pinterest-alunos` da Home de proposito: sao os mesmos
+  alunos a dois toques de distancia. As setas de voltar das paginas legais
+  passaram a recuar no historico (`components/voltar-atras.tsx`), porque
+  ligacoes fixas mandavam quem vinha da Conta para o indice legal e dai
+  para a Home.

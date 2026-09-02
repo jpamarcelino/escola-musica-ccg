@@ -4826,3 +4826,54 @@ body:has(.auth-pagina) { background: var(--color-papel); }
 .pinterest-legal :is(a,button):active { transform: scale(.99); }
 @media (min-width: 431px) { .pinterest-legal { padding-inline: 24px; } }
 @media (prefers-reduced-motion: reduce) { .pinterest-legal :is(a,button) { transition: none; transform: none; } }
+
+/* Design Pinterest - gerir alunos da Conta CCG.
+   A lista reutiliza o padrao ja aprovado na Home (.pinterest-alunos):
+   sao os mesmos alunos, e ve-los de duas maneiras diferentes em dois
+   ecras a dois toques um do outro nao ajudava ninguem. */
+.pinterest-alunos-pagina { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.pinterest-alunos-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-alunos-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
+.pinterest-alunos-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
+.pinterest-alunos-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
+.pinterest-alunos-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
+.pinterest-alunos-seccao { margin-top: 26px; }
+.pinterest-alunos-seccao > h2 { margin: 0 2px 10px; font-size: 21px; font-weight: 740; line-height: 1.2; }
+.pinterest-alunos-erro { margin-bottom: 18px; padding: 13px 15px; border: 1px solid #efd2d2; border-radius: 18px; background: #fdf3f3; color: #8f3b3b; font-size: 13.5px; line-height: 1.5; }
+.pinterest-alunos-vazio { padding: 22px 18px; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); text-align: center; }
+.pinterest-alunos-vazio strong { display: block; font-size: 16px; font-weight: 720; }
+.pinterest-alunos-vazio p { margin-top: 6px; color: #797e85; font-size: 13.5px; line-height: 1.5; }
+
+/* As duas portas para acrescentar alguem. Fechadas parecem linhas de
+   lista; abertas mostram o formulario dentro do mesmo cartao branco. */
+.pinterest-adicionar { display: flex; flex-direction: column; gap: 10px; }
+.pinterest-adicionar details { overflow: hidden; border: 1px solid #e5e8ec; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.pinterest-adicionar summary { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 12px; align-items: center; min-height: 68px; padding: 12px 15px; cursor: pointer; list-style: none; font-size: 15.5px; font-weight: 650; }
+.pinterest-adicionar summary::-webkit-details-marker { display: none; }
+.pinterest-adicionar summary > span:first-child { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 14px; background: #e2f1ef; color: #176b70; }
+.pinterest-adicionar details:nth-child(2) summary > span:first-child { background: #e7f1fa; color: #1b4f7a; }
+.pinterest-adicionar summary > svg:last-child { color: #969ba1; transition: transform .18s ease; }
+.pinterest-adicionar details[open] summary > svg:last-child { transform: rotate(90deg); }
+.pinterest-adicionar form { padding: 4px 15px 18px; }
+.pinterest-adicionar form > * + * { margin-top: 14px; }
+.pinterest-adicionar :is(input,select) { width: 100%; min-height: 48px; border: 1px solid #e1e5e9; border-radius: 14px; background: #fff; color: #17191c; font-size: 16px; }
+.pinterest-adicionar :is(input,select):focus { border-color: #78aede; box-shadow: 0 0 0 3px rgba(120,174,222,.28); outline: none; }
+.pinterest-adicionar button[type="submit"] { width: 100%; min-height: 50px; border: 0; border-radius: 15px; background: #1b4f7a; color: #fff; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
+.pinterest-adicionar button[type="submit"]:disabled { opacity: .55; }
+
+/* O nome do titular, mostrado em vez de perguntado. */
+.pinterest-adicionar-identidade { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: 14px; background: #f5f6f8; }
+.pinterest-adicionar-identidade span { color: #767c84; font-size: 12px; font-weight: 600; }
+.pinterest-adicionar-identidade strong { font-size: 15.5px; font-weight: 700; }
+
+/* Declaracao de legitimidade, so no ramo do dependente. */
+.pinterest-adicionar-declaracao { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 11px; align-items: start; padding: 0; border: 0; cursor: pointer; }
+.pinterest-adicionar-declaracao input { width: 24px; min-height: 24px; height: 24px; margin: 1px 0 0; accent-color: #1b4f7a; }
+.pinterest-adicionar-declaracao span { color: #3d434a; font-size: 13.5px; line-height: 1.5; }
+
+.pinterest-alunos-pagina :is(a,button,summary):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+.pinterest-alunos-pagina :is(a,button):active { transform: scale(.99); }
+@media (min-width: 431px) { .pinterest-alunos-pagina { padding-inline: 24px; } }
+@media (prefers-reduced-motion: reduce) { .pinterest-adicionar summary > svg:last-child { transition: none; } .pinterest-alunos-pagina :is(a,button) { transform: none; } }
+.pinterest-adicionar-campo { display: flex; flex-direction: column; gap: 6px; }
+.pinterest-adicionar-campo > span { color: #5f646b; font-size: 12.5px; font-weight: 600; }
