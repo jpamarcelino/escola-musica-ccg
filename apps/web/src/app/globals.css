@@ -9237,3 +9237,114 @@ html[data-tema='escuro'] .superadmin-pessoa + .superadmin-pessoa { border-color:
 @media (max-width:520px) { .superadmin-pesquisa { grid-template-columns:1fr; } .superadmin-pesquisa button { width:100%; } .superadmin-resultado { align-items:flex-start; flex-direction:column; } .superadmin-promover,.superadmin-promover > button { width:100%; } }
 @media (min-width:900px) { .superadmin-pagina { padding:36px 32px 80px; } .superadmin-folha { max-width:900px; } .superadmin-detalhe-grelha { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:start; } .superadmin-detalhe-grelha .superadmin-painel { margin-bottom:0; } }
 @media (prefers-reduced-motion:reduce) { .superadmin-pagina :is(a,button) { transition:none; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   Mensalidades da secretaria, no tema escuro.
+   ═══════════════════════════════════════════════════════════════
+   Cobre as cinco paginas de `.admin-financeiro`: a escolha, os dois
+   directorios (confirmar e historico), a ficha de cobranca de um
+   professor e a tabela do ano letivo.
+
+   Nao ha nada a herdar. A folha clara pinta cada superficie com um hex
+   proprio — #fff, #f3f6f8, #f7f8fa — e nenhum deles passa por variavel,
+   por isso cada um tem de ser dito outra vez. Onde a regra clara usa
+   `!important` (a lista do directorio, o titulo), a escura tem de usar
+   tambem: nao e enfase, e empate de especificidade. */
+html[data-tema='escuro'] .admin-financeiro { background: var(--dark-bg); color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro-cabecalho h1 { color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro-cabecalho p { color: var(--dark-muted); }
+html[data-tema='escuro'] .admin-financeiro-voltar { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 3px 12px rgba(0,0,0,.22); }
+html[data-tema='escuro'] .admin-financeiro-marca { background: #173d59; color: #8ed2ff; }
+
+/* A escolha: confirmar ou historico. */
+html[data-tema='escuro'] .admin-financeiro .admin-escolha a,
+html[data-tema='escuro'] .admin-financeiro .admin-escolha a + a {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+}
+html[data-tema='escuro'] .admin-financeiro .admin-escolha a:hover { background: var(--dark-raised); }
+html[data-tema='escuro'] .admin-financeiro .admin-escolha-icone { background: #173d59; color: #8ed2ff; }
+html[data-tema='escuro'] .admin-financeiro .admin-escolha a:nth-child(2) .admin-escolha-icone { background: #2e2a4d; color: #bdb4f0; }
+html[data-tema='escuro'] .admin-financeiro .admin-escolha strong { color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro .admin-escolha small { color: #9aa3ab; }
+html[data-tema='escuro'] .admin-financeiro .admin-escolha p { color: var(--dark-muted); }
+html[data-tema='escuro'] .admin-financeiro .admin-escolha a > svg { color: #808891; }
+
+/* Os dois directorios de professores. O cartao que os envolve e a
+   propria lista sao duas superficies diferentes na folha clara, e
+   continuam a se-lo aqui. */
+html[data-tema='escuro'] .admin-financeiro-diretorio .admin-diretorio h2 { color: var(--dark-text) !important; }
+html[data-tema='escuro'] .admin-financeiro-diretorio .admin-diretorio > div.flex.flex-col {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+}
+html[data-tema='escuro'] .admin-financeiro-diretorio .admin-diretorio a { background: var(--dark-surface) !important; }
+html[data-tema='escuro'] .admin-financeiro-diretorio .admin-diretorio a:hover { background: var(--dark-raised) !important; }
+html[data-tema='escuro'] .admin-financeiro-diretorio .admin-diretorio a + a { border-top-color: rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-financeiro-diretorio .admin-diretorio a span { color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro-diretorio .admin-diretorio a .lista-item-sub,
+html[data-tema='escuro'] .admin-financeiro .lista-item-sub { color: var(--dark-muted); }
+html[data-tema='escuro'] .admin-financeiro .lista-pesquisa input[type='search'] {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+}
+html[data-tema='escuro'] .admin-financeiro .lista-pesquisa input[type='search']::placeholder { color: #808891; }
+
+html[data-tema='escuro'] .admin-financeiro .admin-alerta { border-color: #6b3a38; background: #2c1e1d; color: #f0a9a1; }
+html[data-tema='escuro'] .admin-financeiro .empty-editorial { border-color: #3d454e; background: var(--dark-surface); }
+html[data-tema='escuro'] .admin-financeiro .empty-editorial-titulo { color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro .empty-editorial-descricao { color: var(--dark-muted); }
+
+/* A ficha de cobranca de um professor. */
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+}
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > div { border-bottom-color: rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca .lista-item-titulo { color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form label,
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form > span { color: #a8b1ba; }
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form input:not([type='hidden']) {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+}
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form input::placeholder { color: #7b848d; }
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form button { border-color: #3f5b73; background: var(--dark-raised); color: #8ed2ff; }
+/* A accao principal mantem o azul cheio: e a unica coisa neste ecra que
+   fecha uma mensalidade, e no escuro perdia-se se ficasse contornada. */
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form.admin-cobranca-pago { border-top-color: rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form.admin-cobranca-pago button { background: #2f7fbd; color: #fff; }
+html[data-tema='escuro'] .admin-financeiro .admin-cobranca > form.admin-cobranca-pago p { color: var(--dark-muted); }
+/* A mesma ficha vista pela direccao: texto, sem nada em que tocar. */
+html[data-tema='escuro'] .admin-financeiro .admin-so-leitura dt { color: var(--dark-muted); }
+html[data-tema='escuro'] .admin-financeiro .admin-so-leitura dd { color: var(--dark-text); }
+
+/* A tabela do ano letivo. A coluna dos nomes fica fixa a esquerda e
+   passa por cima das outras — precisa de fundo proprio, ou ve-se o que
+   passa por baixo. */
+html[data-tema='escuro'] .admin-financeiro .tabela-historico-wrap {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  scrollbar-color: #4a545e transparent;
+}
+html[data-tema='escuro'] .admin-financeiro .tabela-historico th { background: #232930; color: #9aa3ab; }
+html[data-tema='escuro'] .admin-financeiro .tabela-historico td { background: var(--dark-surface); }
+html[data-tema='escuro'] .admin-financeiro .tabela-historico :is(th,td) { border-color: rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-financeiro .tabela-historico .th-aluno,
+html[data-tema='escuro'] .admin-financeiro .tabela-historico .td-aluno { background: #1a1f24; box-shadow: 1px 0 rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-financeiro .tabela-historico .td-aluno { color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro .tabela-historico .td-aluno-disciplina { color: #99a1a9; }
+html[data-tema='escuro'] .admin-financeiro .tabela-historico input { background: var(--dark-raised); color: var(--dark-text); }
+html[data-tema='escuro'] .admin-financeiro .tabela-historico input::placeholder { color: #79828b; }
+/* Desistencia: vermelho legivel sobre escuro, e nao o #b91c1c da folha
+   clara, que aqui fica quase preto. */
+html[data-tema='escuro'] .admin-financeiro .tabela-historico input.celula-desistencia { background: transparent; color: #f08a80; }
+html[data-tema='escuro'] .admin-financeiro .admin-guardar { background: #2f7fbd; color: #fff; }
+html[data-tema='escuro'] .admin-financeiro :is(a,button,input):focus-visible { outline-color: #8ed2ff; }
