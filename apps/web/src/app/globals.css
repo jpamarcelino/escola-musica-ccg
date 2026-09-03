@@ -7592,3 +7592,47 @@ html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-desmarcar { borde
 
 html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button { border-color:#3d596d; background:#263946; color:var(--dark-text); }
 html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button:hover { background:#2b4558; }
+
+/* Correcções finas de contraste: texto nunca recebe a superfície do ícone. */
+html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos :is(.agenda-ligacao-calendario,.pinterest-agenda-semana) > span {
+  width:auto;
+  height:auto;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--dark-text);
+  box-shadow:none;
+}
+html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos .agenda-ligacao-calendario > svg:first-child {
+  background:#292d55;
+  color:#aeb7ff;
+}
+html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos .agenda-ligacao-calendario :is(strong,small) { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos .agenda-ligacao-calendario small { color:var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos .pinterest-agenda-semana :is(strong,small) { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos .pinterest-agenda-semana small { color:var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-agenda .empty-editorial {
+  min-height:0;
+  padding:20px;
+  border:1px solid var(--dark-border);
+  border-radius:20px;
+  background:var(--dark-surface);
+  box-shadow:none;
+}
+html[data-tema='escuro'] .pinterest-agenda .empty-editorial::before { display:none; }
+html[data-tema='escuro'] .pinterest-agenda .empty-editorial-titulo { color:var(--dark-text); font-family:inherit; font-size:17px; line-height:1.25; }
+
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-alunos {
+  border-color:#5b4b2d;
+  background:#2b2519;
+}
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-alunos > svg { background:#45381f; color:#f0c96c; }
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-alunos strong { color:#f5e7be; }
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-alunos span { color:#cabd98; }
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-perigo button { color:#ff8e9c; }
+
+html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-propor > summary { color:#7bc4f5; }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dd :is(a),
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dd:has(>svg),
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .escolher-horario summary { color:#83c8f6; }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .escolher-horario-conta { background:#30475a; color:#d4ecfd; }
