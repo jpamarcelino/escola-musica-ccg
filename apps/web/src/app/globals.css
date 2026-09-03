@@ -9518,3 +9518,103 @@ html[data-tema='escuro'] .admin-financeiro .tabela-historico input::placeholder 
 html[data-tema='escuro'] .admin-financeiro .tabela-historico input.celula-desistencia { background: transparent; color: #f08a80; }
 html[data-tema='escuro'] .admin-financeiro .admin-guardar { background: #2f7fbd; color: #fff; }
 html[data-tema='escuro'] .admin-financeiro :is(a,button,input):focus-visible { outline-color: #8ed2ff; }
+
+/* A hora da turma vista por quem nao a pode mudar. Nasceu com o corte
+   secretaria/direccao e ficou sem estilo nenhum: um <p> solto onde a
+   secretaria ve um formulario. */
+.horarios-turma-hora { margin:0; padding:17px; border-bottom:1px solid #ecefed; color:#4c5551; font-size:14px; font-weight:650; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Musica para Bebes, na secretaria, no tema escuro.
+   ═══════════════════════════════════════════════════════════════
+   Tres paginas: a entrada, as turmas e as inscricoes.
+
+   Esta area tem cor propria — o verde — e nao ha aqui uma troca por
+   cinzento. Os verdes claros (#e2f1eb, #eaf5f0) sao fundo com pouca
+   tinta; no escuro invertem-se, e passa a ser a TINTA a levar o verde
+   (#8ed9bd) sobre uma superficie escura esverdeada. Trocar tudo por
+   cinzento fazia a escola perder a marca justamente onde ela existe. */
+html[data-tema='escuro'] .admin-bebes { background:var(--dark-bg); color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-cabecalho h1 { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-cabecalho p { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-voltar { border-color:var(--dark-border); background:var(--dark-surface); color:var(--dark-text); box-shadow:0 3px 12px rgba(0,0,0,.22); }
+html[data-tema='escuro'] .admin-bebes-marca { background:#1e3a31; color:#8ed9bd; }
+
+/* A entrada: o resumo e as duas portas. */
+html[data-tema='escuro'] .admin-bebes-resumo {
+  border-color:#33544a;
+  background:linear-gradient(145deg,#22423a 0%,#1f272c 55%,var(--dark-surface) 100%);
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+}
+html[data-tema='escuro'] .admin-bebes-resumo > span { background:#1a2f29; color:#8ed9bd; box-shadow:0 3px 12px rgba(0,0,0,.24); }
+html[data-tema='escuro'] :is(.admin-bebes-resumo,.admin-bebes-opcoes,.admin-bebes-turma-cabecalho) small { color:#8fada2; }
+html[data-tema='escuro'] .admin-bebes-resumo strong { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-resumo p { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-resumo > b { border-top-color:rgba(255,255,255,.1); color:#9fe0c5; }
+html[data-tema='escuro'] .admin-bebes-resumo > b small { color:#8fada2; }
+html[data-tema='escuro'] .admin-bebes-opcoes a {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  color:var(--dark-text);
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+html[data-tema='escuro'] .admin-bebes-opcoes a:hover { background:var(--dark-raised); }
+html[data-tema='escuro'] .admin-bebes-opcao-icone { background:#1e3a31; color:#8ed9bd; }
+html[data-tema='escuro'] .admin-bebes-opcoes a:nth-child(2) .admin-bebes-opcao-icone { background:#173d59; color:#8ed2ff; }
+html[data-tema='escuro'] .admin-bebes-opcoes strong { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-opcoes p { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-opcoes a > svg { color:#808891; }
+
+/* As turmas. */
+html[data-tema='escuro'] .admin-bebes-turma { border-color:var(--dark-border); background:var(--dark-surface); box-shadow:0 8px 24px rgba(0,0,0,.2); }
+html[data-tema='escuro'] .admin-bebes-turma-cabecalho { border-bottom-color:rgba(255,255,255,.08); background:linear-gradient(145deg,#22423a,var(--dark-surface) 72%); }
+html[data-tema='escuro'] .admin-bebes-turma-cabecalho > span { background:#1a2f29; color:#8ed9bd; box-shadow:0 3px 12px rgba(0,0,0,.24); }
+html[data-tema='escuro'] .admin-bebes-turma-cabecalho h2 { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-turma-cabecalho p { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-turma-cabecalho > b { background:#1e3a31; color:#9fe0c5; }
+html[data-tema='escuro'] :is(.admin-bebes-turma-cabecalho > b.esta-cheia,.admin-bebes-estado-turma b.esta-cheia) { background:#3d2724; color:#eeafa4; }
+html[data-tema='escuro'] .admin-bebes-turma > form { border-bottom-color:rgba(255,255,255,.07); }
+html[data-tema='escuro'] .horarios-turma-hora { border-bottom-color:rgba(255,255,255,.07); color:var(--dark-muted); }
+html[data-tema='escuro'] :is(.admin-bebes-turma label span,.admin-bebes-atribuir > label,.admin-bebes-aceitar label) { color:#a3aeaa !important; }
+html[data-tema='escuro'] :is(.admin-bebes-turma,.admin-bebes-aceitar) :is(input,select) {
+  border-color:var(--dark-border) !important;
+  background:var(--dark-raised);
+  color:var(--dark-text);
+}
+/* Verde cheio nas accoes que fecham alguma coisa — mudar a hora, aceitar
+   uma inscricao. Sao as unicas desta area que mexem na vida de dez
+   familias. */
+html[data-tema='escuro'] :is(.admin-bebes-turma .horarios-criar-botao,.admin-bebes-aceitar .pedido-horario-botao) { background:#2f8a6a; color:#fff; }
+html[data-tema='escuro'] .admin-bebes-turma .horarios-criar-botao:disabled { background:#2a3230; color:#79837f; }
+html[data-tema='escuro'] .admin-bebes-equipa h3 { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-equipa h3 svg { color:#8ed9bd; }
+html[data-tema='escuro'] .admin-bebes-professor { border-top-color:rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-bebes-professor strong { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-professor small { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-vazio { background:#20272d; color:var(--dark-muted); }
+
+/* As inscricoes. */
+html[data-tema='escuro'] .admin-bebes-estado-turmas { border-color:var(--dark-border); background:var(--dark-surface); box-shadow:0 8px 24px rgba(0,0,0,.18); }
+html[data-tema='escuro'] .admin-bebes-estado-turmas > header { background:#22423a; color:#8ed9bd; }
+html[data-tema='escuro'] .admin-bebes-estado-turmas > header > svg { background:#1a2f29; }
+html[data-tema='escuro'] .admin-bebes-estado-turmas h2 { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-estado-turmas header p { color:#a3bab2; }
+html[data-tema='escuro'] .admin-bebes-estado-turma { border-top-color:rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-bebes-estado-turma strong { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-estado-turma small { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-estado-turma b { background:#1e3a31; color:#9fe0c5; }
+html[data-tema='escuro'] .admin-bebes-pedido { border-color:var(--dark-border); background:var(--dark-surface); box-shadow:0 8px 24px rgba(0,0,0,.2); }
+html[data-tema='escuro'] .admin-bebes-pedido-inicial { background:#1e3a31; color:#8ed9bd; }
+html[data-tema='escuro'] .admin-bebes-pedido h2 { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes-pedido header p { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-contacto a { color:#8ed9bd; }
+html[data-tema='escuro'] .admin-bebes-pedido blockquote { border-left-color:#3f7d68; background:#20272d; color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes-aceitar { background:#20272d; }
+html[data-tema='escuro'] .admin-bebes-indisponivel { border-color:#4d4429; background:#2b2718; }
+html[data-tema='escuro'] .admin-bebes-indisponivel p:first-child { color:#e8cf95; }
+html[data-tema='escuro'] .admin-bebes-indisponivel p + p { color:#c6b88f; }
+html[data-tema='escuro'] .admin-bebes-pedido > footer { border-top-color:rgba(255,255,255,.07); background:#1a1f24; }
+html[data-tema='escuro'] .admin-bebes .empty-editorial { border-color:#3d4a46; background:var(--dark-surface); }
+html[data-tema='escuro'] .admin-bebes .empty-editorial-titulo { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-bebes .empty-editorial-descricao { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-bebes :is(a,button,input,select):focus-visible { outline-color:#8ed9bd; }
