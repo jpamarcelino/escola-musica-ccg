@@ -9618,3 +9618,96 @@ html[data-tema='escuro'] .admin-bebes .empty-editorial { border-color:#3d4a46; b
 html[data-tema='escuro'] .admin-bebes .empty-editorial-titulo { color:var(--dark-text); }
 html[data-tema='escuro'] .admin-bebes .empty-editorial-descricao { color:var(--dark-muted); }
 html[data-tema='escuro'] .admin-bebes :is(a,button,input,select):focus-visible { outline-color:#8ed9bd; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Alunos, na secretaria, no tema escuro.
+   ═══════════════════════════════════════════════════════════════
+   Duas paginas com formas muito diferentes: a mesa larga com o painel
+   lateral (/admin/alunos) e a ficha de um aluno (/admin/alunos/[id]).
+
+   As pastilhas de estado ficam FORA do bloco das duas paginas, no fim:
+   `.estado-pill` e um componente global — a mesma pastilha aparece nas
+   presencas e nas recomendacoes — e a versao clara tambem esta definida
+   globalmente. Escreve-la aqui presa a uma pagina obrigava a repeti-la
+   na seguinte. */
+html[data-tema='escuro'] .pinterest-admin-alunos { background:var(--dark-bg); color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-titulo h1 { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-titulo p,
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-titulo > span { color:var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  box-shadow:0 10px 30px rgba(0,0,0,.24);
+}
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra { border-color:rgba(255,255,255,.08); background:var(--dark-surface); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra label { color:#9aa3ab; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra input { border-color:var(--dark-border); background:var(--dark-raised); color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra input::placeholder { color:#7b848d; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra kbd { border-color:var(--dark-border); background:var(--dark-raised); color:#9aa3ab; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra button { border-color:#3f5b73; background:var(--dark-raised); color:#8ed2ff; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra > span,
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-barra > strong { color:var(--dark-text); }
+/* A barra dos grupos e um degrau acima da mesa na folha clara (#fbfcfc
+   sobre #fff). No escuro o degrau tem de ir para BAIXO, senao lê-se
+   como se estivesse selecionada. */
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-grupos { border-color:rgba(255,255,255,.08); background:#1a1f24; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-grupos button { border-color:var(--dark-border); background:var(--dark-raised); color:#aab3bb; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-grupos button[aria-pressed="true"] { border-color:#2f7fbd; background:#2f7fbd; color:#fff; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-colunas { border-color:rgba(255,255,255,.08); background:#232930; color:#9aa3ab; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-linha { border-color:rgba(255,255,255,.07); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-linha:hover,
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-linha[data-ativa="true"] { background:#22303b; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-linha > button strong { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-linha > button span { color:#d3d9de; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-linha > button small { color:#98a1a9; }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-mesa-sem-resultados { color:var(--dark-muted); }
+/* O painel lateral. Na folha clara e um creme mais quente do que a
+   mesa; aqui e um degrau mais escuro, que e o equivalente — afastar-se
+   da superficie principal sem mudar de familia. */
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-dossier { border-color:var(--dark-border); background:#181d22; color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-dossier > header,
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-dossier > footer { border-color:rgba(255,255,255,.08); background:var(--dark-surface); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-dossier h2 { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-dossier h3,
+html[data-tema='escuro'] .admin-dossier > header small,
+html[data-tema='escuro'] .admin-dossier > footer span { color:#9aa3ab; }
+html[data-tema='escuro'] .admin-dossier > header button { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-dossier > section { border-color:rgba(255,255,255,.08); }
+html[data-tema='escuro'] .pinterest-admin-alunos :is(.admin-dossier-registo,.admin-dossier dl > div) { border-color:rgba(255,255,255,.08); }
+html[data-tema='escuro'] .admin-dossier-registo strong { color:var(--dark-text); }
+html[data-tema='escuro'] :is(.admin-dossier-registo span,.admin-dossier-registo small,.admin-dossier dt) { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-dossier dd { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-alunos .admin-dossier > footer a { background:#2f7fbd; color:#fff; }
+html[data-tema='escuro'] .pinterest-admin-alunos :is(button,input,a):focus-visible { outline-color:#8ed2ff; }
+
+/* A ficha de um aluno. */
+html[data-tema='escuro'] .admin-aluno-ficha { background:var(--dark-bg); color:var(--dark-text); }
+html[data-tema='escuro'] .admin-aluno-cabecalho h1 { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-aluno-cabecalho :is(small,p) { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-aluno-voltar { border-color:var(--dark-border); background:var(--dark-surface); color:var(--dark-text); box-shadow:0 3px 12px rgba(0,0,0,.22); }
+html[data-tema='escuro'] .admin-aluno-avatar { background:#1e3a31; color:#8ed9bd; }
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao:last-child { border-bottom-color:var(--dark-border); }
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao > h2,
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao > div:first-child { border-bottom-color:rgba(255,255,255,.07); }
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao > h2,
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao > div:first-child h2 { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao > div:first-child > a { background:#2f7fbd; color:#fff !important; }
+html[data-tema='escuro'] .admin-aluno-ficha .admin-ficha-seccao .lista-item { border-bottom-color:rgba(255,255,255,.07); background:transparent; }
+html[data-tema='escuro'] .admin-aluno-ficha .lista-item-titulo { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-aluno-ficha .lista-item-sub { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-aluno-ficha .empty-editorial { background:var(--dark-surface); }
+html[data-tema='escuro'] .admin-aluno-ficha .empty-editorial-titulo { color:var(--dark-text); }
+html[data-tema='escuro'] .admin-aluno-ficha .empty-editorial-descricao { color:var(--dark-muted); }
+html[data-tema='escuro'] .admin-aluno-ficha :is(a,button):focus-visible { outline-color:#8ed2ff; }
+
+/* As pastilhas de estado, em toda a aplicacao. Os pares claros
+   (#dff3e6/#1a7a41 e afins) sao fundo claro com tinta escura; no escuro
+   invertem-se — fundo escuro da mesma familia, tinta clara. */
+html[data-tema='escuro'] .estado-pill.estado-presente { background:#22392a; color:#a8dab8; }
+html[data-tema='escuro'] .estado-pill.estado-falta_aviso { background:#3d3520; color:#e8cf95; }
+html[data-tema='escuro'] .estado-pill.estado-falta_sem_aviso { background:#3d2724; color:#eeafa4; }
