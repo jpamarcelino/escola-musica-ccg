@@ -6,7 +6,8 @@ import { EmptyState } from '@/components/empty-state'
 import { formatarHora, formatarSala, formatarDataEscolar, hojeISO, proximaAulaPorAcontecer, type DiaSemana } from '@ccg/core'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
-import { desmarcarAulaProfessor } from '@/lib/actions/professor'
+import { definirNomeDoHorario, desmarcarAulaProfessor } from '@/lib/actions/professor'
+import { SubmitButton } from '@/components/submit-button'
 import { VoltarAtras } from '@/components/voltar-atras'
 
 type Aluno = {
@@ -20,10 +21,10 @@ export default async function AgendaHorarioPage({
   searchParams,
 }: {
   params: Promise<{ horarioId: string }>
-  searchParams: Promise<{ erro?: string; desmarcada?: string }>
+  searchParams: Promise<{ erro?: string; desmarcada?: string; guardado?: string }>
 }) {
   const { horarioId } = await params
-  const { erro, desmarcada } = await searchParams
+  const { erro, desmarcada, guardado } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -46,11 +47,12 @@ export default async function AgendaHorarioPage({
 
   const { data: horarioData } = await supabase
     .from('horarios')
-    .select('dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero)')
+    .select('nome, dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero)')
     .eq('id', Number(horarioId))
     .eq('professor_id', user.id)
     .maybeSingle()
   const horario = horarioData as unknown as {
+    nome: string | null
     dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
@@ -106,8 +108,8 @@ export default async function AgendaHorarioPage({
               de mandar toda a gente para a agenda. */}
           <VoltarAtras destino="/dashboard/agenda" className="pinterest-detalhe-voltar" />
           <div>
-            <h1>{horario.dia_semana}</h1>
-            <p>Aula semanal</p>
+            <h1>{horario.nome ?? horario.dia_semana}</h1>
+            <p>{horario.nome ? `${horario.dia_semana} · aula semanal` : 'Aula semanal'}</p>
           </div>
         </header>
 
@@ -124,10 +126,11 @@ export default async function AgendaHorarioPage({
           </div>
         </div>
 
-        {(erro || desmarcada) && (
+        {(erro || desmarcada || guardado) && (
           <div className="pinterest-detalhe-mensagem">
             {erro && <MensagemErro>{erro}</MensagemErro>}
             {desmarcada && <MensagemInfo>Aula desmarcada. O aluno foi avisado.</MensagemInfo>}
+            {guardado && <MensagemInfo>Nome guardado.</MensagemInfo>}
           </div>
         )}
 
@@ -183,6 +186,35 @@ export default async function AgendaHorarioPage({
                 )
               })}
             </div>
+          </section>
+        )}
+
+        {/* Só onde faz falta: uma aula com um aluno já se identifica pelo
+            nome dele. Aparece também quando já há nome, mesmo que a
+            turma tenha encolhido para um — senão o nome ficava lá preso,
+            sem forma de o tirar. */}
+        {(alunos.length > 1 || horario.nome) && (
+          <section className="pinterest-detalhe-nome" aria-labelledby="nome-turma-titulo">
+            <h2 id="nome-turma-titulo">Nome da turma</h2>
+            <p>
+              Aparece na agenda e na grelha da semana, no lugar da lista de nomes. Deixa em
+              branco para voltar a ver os alunos.
+            </p>
+            <form action={definirNomeDoHorario}>
+              <input type="hidden" name="horarioId" value={horarioId} />
+              <label className="sr-only" htmlFor="nome-turma">
+                Nome da turma
+              </label>
+              <input
+                id="nome-turma"
+                name="nome"
+                type="text"
+                maxLength={60}
+                defaultValue={horario.nome ?? ''}
+                placeholder="ex: Iniciação B"
+              />
+              <SubmitButton textoAGuardar="A guardar…">Guardar</SubmitButton>
+            </form>
           </section>
         )}
       </div>

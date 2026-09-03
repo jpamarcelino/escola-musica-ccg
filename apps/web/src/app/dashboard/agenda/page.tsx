@@ -18,6 +18,7 @@ type Confirmado = {
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
   horarios: {
+    nome: string | null
     dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
@@ -27,6 +28,10 @@ type Confirmado = {
 
 type BlocoAgenda = {
   horarioId: number
+  // O nome da turma, quando o professor lhe deu um. Numa aula de grupo
+  // é o que ele procura no cartão; dez nomes seguidos não cabem nem se
+  // leem.
+  nome: string | null
   dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
@@ -98,7 +103,7 @@ export default async function AgendaPage({
   const { data: confirmadosData } = await supabase
     .from('matriculas')
     .select(
-      'id, aluno_id, horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
+      'id, aluno_id, horario_final_id, alunos(nome), instrumentos(nome), horarios(nome, dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -125,6 +130,7 @@ export default async function AgendaPage({
     if (!c.horario_final_id || !c.horarios) continue
     const bloco = blocosPorHorario.get(c.horario_final_id) ?? {
       horarioId: c.horario_final_id,
+      nome: c.horarios.nome,
       dia_semana: c.horarios.dia_semana,
       hora_inicio: c.horarios.hora_inicio,
       hora_fim: c.horarios.hora_fim,
@@ -191,6 +197,7 @@ export default async function AgendaPage({
   type EntradaDia = {
     chave: string
     horarioId: number | null
+    nome: string | null
     hora_inicio: string
     hora_fim: string
     sala: string | null
@@ -217,6 +224,7 @@ export default async function AgendaPage({
     ...agendaTemporal.map((b) => ({
       chave: `h${b.horarioId}`,
       horarioId: b.horarioId,
+      nome: b.nome,
       hora_inicio: b.hora_inicio,
       hora_fim: b.hora_fim,
       sala: b.sala,
@@ -228,6 +236,8 @@ export default async function AgendaPage({
     ...(reposicoesData ?? []).map((r) => ({
       chave: `r${r.id}`,
       horarioId: null,
+      // Uma reposição é sempre de um aluno só: não há turma a nomear.
+      nome: null,
       hora_inicio: r.hora_inicio,
       hora_fim: r.hora_fim,
       sala: null,
@@ -380,13 +390,29 @@ export default async function AgendaPage({
                               )}
                               {/* A disciplina em destaque e o aluno por
                                   baixo, como no painel inicial. */}
+                              {/* Com nome de turma, o nome é o título e
+                                  a segunda linha conta quantos vêm. Sem
+                                  ele fica a disciplina em cima e os
+                                  nomes por baixo, como sempre esteve —
+                                  numa aula individual é isso que se quer
+                                  ler. */}
                               <strong>
-                                {aula.disciplinas.length
-                                  ? aula.disciplinas.join(' · ')
-                                  : aula.alunos.join(', ')}
+                                {aula.nome
+                                  ? aula.nome
+                                  : aula.disciplinas.length
+                                    ? aula.disciplinas.join(' · ')
+                                    : aula.alunos.join(', ')}
                               </strong>
                               <span>
-                                {aula.alunos.join(', ')} · {formatarHora(aula.hora_inicio)}–
+                                {aula.nome
+                                  ? [
+                                      aula.disciplinas.join(' · '),
+                                      `${aula.alunos.length} ${aula.alunos.length === 1 ? 'aluno' : 'alunos'}`,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(' · ')
+                                  : aula.alunos.join(', ')}{' '}
+                                · {formatarHora(aula.hora_inicio)}–
                                 {formatarHora(aula.hora_fim)}
                                 {aula.sala ? ` · ${aula.sala}` : ''}
                               </span>

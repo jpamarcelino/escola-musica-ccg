@@ -946,3 +946,52 @@ export async function proporHorarioNoPedido(formData: FormData) {
     )}`
   )
 }
+
+// Dar nome a uma turma.
+//
+// Só o professor daquela hora — a policy "Professor gere os seus
+// próprios horários" já fecha a porta, e o `.eq('professor_id')` aqui
+// serve para o erro chegar como "não é teu" e não como um update que
+// não afetou linha nenhuma.
+//
+// Campo vazio apaga o nome. É a única forma de voltar atrás, e sem isto
+// quem se enganasse a escrever ficava com o engano para sempre.
+export async function definirNomeDoHorario(formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const horarioId = Number(formData.get('horarioId') ?? 0)
+  const bruto = String(formData.get('nome') ?? '').trim()
+  const destino = `/dashboard/agenda/${horarioId}`
+
+  if (!horarioId) {
+    redirect('/dashboard/agenda')
+  }
+
+  if (bruto.length > 60) {
+    redirect(`${destino}?erro=${encodeURIComponent('O nome não pode ter mais de 60 caracteres.')}`)
+  }
+
+  const { error } = await supabase
+    .from('horarios')
+    .update({ nome: bruto === '' ? null : bruto })
+    .eq('id', horarioId)
+    .eq('professor_id', user.id)
+
+  if (error) {
+    redirect(`${destino}?erro=${encodeURIComponent(error.message)}`)
+  }
+
+  // A agenda, a grelha da semana e a Home mostram todas este nome.
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/agenda')
+  revalidatePath('/dashboard/agenda/semana')
+  revalidatePath(destino)
+  redirect(`${destino}?guardado=1`)
+}

@@ -14,6 +14,7 @@ type AulaConfirmada = {
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
   horarios: {
+    nome: string | null
     dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
@@ -67,7 +68,7 @@ export default async function DashboardPage({
         supabase
           .from('matriculas')
           .select(
-            'id, horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
+            'id, horario_final_id, alunos(nome), instrumentos(nome), horarios(nome, dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
           )
           .eq('professor_id', user.id)
           .eq('estado', 'confirmado')
@@ -192,7 +193,11 @@ export default async function DashboardPage({
                     <Link key={aula.id} href={`/dashboard/agenda/${aula.horario_final_id}`} className="pinterest-aula pinterest-professor-proxima">
                       <span className="pinterest-aula-icone"><Music2 size={24} strokeWidth={1.8} aria-hidden="true" /></span>
                       <span className="pinterest-aula-data">{estadoTemporal === 'agora' ? 'Agora' : rotuloDoDia(aula.data, aula.horarios!.dia_semana)} · {formatarHora(aula.horarios!.hora_inicio)}–{formatarHora(aula.horarios!.hora_fim)}</span>
-                      <strong>{aula.alunos?.nome}</strong>
+                      {/* Numa turma com nome, este cartão mostrava um
+                          aluno qualquer dos dez — o primeiro que a
+                          consulta devolvesse. O nome da turma é o que
+                          identifica a aula. */}
+                      <strong>{aula.horarios!.nome ?? aula.alunos?.nome}</strong>
                       <span className="pinterest-aula-aluno">{aula.instrumentos?.nome}{sala ? ` · ${sala}` : ''}</span>
                       <ChevronRight className="pinterest-aula-seta" size={22} aria-hidden="true" />
                     </Link>

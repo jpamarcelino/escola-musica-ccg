@@ -25,6 +25,7 @@ type Confirmado = {
   alunos: { nome: string } | null
   instrumentos: { nome: string } | null
   horarios: {
+    nome: string | null
     dia_semana: DiaSemana
     hora_inicio: string
     hora_fim: string
@@ -34,6 +35,7 @@ type Confirmado = {
 
 type Bloco = {
   horarioId: number
+  nome: string | null
   dia_semana: DiaSemana
   hora_inicio: string
   hora_fim: string
@@ -68,7 +70,7 @@ export default async function SemanaPage() {
   const { data: confirmadosData } = await supabase
     .from('matriculas')
     .select(
-      'horario_final_id, alunos(nome), instrumentos(nome), horarios(dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
+      'horario_final_id, alunos(nome), instrumentos(nome), horarios(nome, dia_semana, hora_inicio, hora_fim, salas(nome, piso, numero))'
     )
     .eq('professor_id', user.id)
     .eq('estado', 'confirmado')
@@ -83,6 +85,7 @@ export default async function SemanaPage() {
     if (!c.horario_final_id || !c.horarios) continue
     const bloco = porHorario.get(c.horario_final_id) ?? {
       horarioId: c.horario_final_id,
+      nome: c.horarios.nome,
       dia_semana: c.horarios.dia_semana,
       hora_inicio: c.horarios.hora_inicio,
       hora_fim: c.horarios.hora_fim,
@@ -143,8 +146,12 @@ export default async function SemanaPage() {
       inicio: b.hora_inicio,
       fim: b.hora_fim,
       etiqueta: `${formatarHora(b.hora_inicio)}–${formatarHora(b.hora_fim)}`,
-      titulo: b.disciplinas.length ? b.disciplinas.join(' · ') : b.alunos.join(', '),
-      detalhe: b.alunos.join(', '),
+      titulo: b.nome ?? (b.disciplinas.length ? b.disciplinas.join(' · ') : b.alunos.join(', ')),
+      // Na folha impressa há largura para os dois: o nome em cima e quem
+      // vem por baixo. É onde a lista de nomes ainda serve.
+      detalhe: b.nome
+        ? [b.disciplinas.join(' · '), b.alunos.join(', ')].filter(Boolean).join(' · ')
+        : b.alunos.join(', '),
     }))
 
   // O ano letivo do CCG vai de outubro a junho: até junho ainda se está no
@@ -233,16 +240,21 @@ export default async function SemanaPage() {
                         top: ((inicio - primeiraHora * 60) / 60) * ALTURA_HORA,
                         height: ((fim - inicio) / 60) * ALTURA_HORA,
                       } as CSSProperties
-                      const legenda = b.disciplinas.length
-                        ? b.disciplinas.join(' · ')
-                        : b.alunos.join(', ')
+                      // Numa coluna de 84 px cabe pouco: com nome de
+                      // turma é ele que fica, que é o que distingue esta
+                      // hora das outras.
+                      const legenda = b.nome
+                        ? b.nome
+                        : b.disciplinas.length
+                          ? b.disciplinas.join(' · ')
+                          : b.alunos.join(', ')
                       return (
                         <Link
                           key={b.horarioId}
                           href={`/dashboard/agenda/${b.horarioId}`}
                           className="pinterest-semana-bloco"
                           style={estilo}
-                          title={`${dia}, ${formatarHora(b.hora_inicio)}–${formatarHora(b.hora_fim)}${b.sala ? ` · ${b.sala}` : ''} — ${b.alunos.join(', ')}`}
+                          title={`${b.nome ? `${b.nome} — ` : ''}${dia}, ${formatarHora(b.hora_inicio)}–${formatarHora(b.hora_fim)}${b.sala ? ` · ${b.sala}` : ''} — ${b.alunos.join(', ')}`}
                         >
                           <time>{formatarHora(b.hora_inicio)}</time>
                           <small>{legenda}</small>

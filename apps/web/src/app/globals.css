@@ -8911,3 +8911,25 @@ html[data-tema='escuro'] .pinterest-pedir-aula-grupo > div > a { color: var(--da
 html[data-tema='escuro'] .pinterest-pedir-aula-grupo > div > a + a { border-color: rgba(255,255,255,.08); }
 html[data-tema='escuro'] .pinterest-pedir-aula-grupo > div > a > span:first-child { background: #2b333a; color: #cfd6dd; }
 @media (prefers-reduced-motion: reduce) { .pinterest-pedir-aula-grupo[open] > summary > svg:last-child { transform: none; } }
+
+/* Nome da turma, na ficha da aula.
+   -------------------------------
+   Fica no fim e nao no cabecalho: o cabecalho ja mostra o nome, e este
+   e o sitio de o mudar — uma coisa que se faz uma vez e nao se volta a
+   tocar. Cartao branco como os outros, para nao parecer uma definicao
+   escondida. */
+.pinterest-detalhe-nome { margin-top: 28px; padding: 16px 15px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-detalhe-nome > h2 { margin: 0; font-size: 16px; font-weight: 730; }
+.pinterest-detalhe-nome > p { margin: 5px 0 12px; color: #797e85; font-size: 12.5px; line-height: 1.5; }
+.pinterest-detalhe-nome form { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 9px; align-items: stretch; }
+.pinterest-detalhe-nome input { width: 100%; min-width: 0; height: 48px; padding: 0 14px; border: 1px solid #e0e4e8; border-radius: 14px; background: #fbfcfd; color: #17191c; font-family: inherit; font-size: 16px; }
+.pinterest-detalhe-nome input:focus { border-color: #78aede; background: #fff; box-shadow: 0 0 0 3px rgba(120,174,222,.28); outline: none; }
+.pinterest-detalhe-nome button { min-height: 48px; padding: 0 18px; border: 0; border-radius: 14px; background: #1b4f7a; color: #fff; font-size: 14.5px; font-weight: 650; }
+.pinterest-detalhe-nome button:disabled { opacity: .55; }
+.pinterest-detalhe-nome :is(input,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+
+html[data-tema='escuro'] .pinterest-detalhe-nome { border-color: var(--dark-border); background: var(--dark-surface); }
+html[data-tema='escuro'] .pinterest-detalhe-nome > h2 { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-detalhe-nome > p { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-detalhe-nome input { border-color: var(--dark-border); background: var(--dark-raised); color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-detalhe-nome input::placeholder { color: #778089; }
