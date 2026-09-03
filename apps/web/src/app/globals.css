@@ -7270,11 +7270,34 @@ html[data-tema='escuro'] .pinterest-horarios :is(.pinterest-semana-bloco-livre,.
   background: #232b32;
   color: #d7dde2;
 }
+html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-bloco {
+  border-color:#3d799e;
+  background:linear-gradient(145deg,#28546f 0%,#223f53 100%);
+  color:#f4faff;
+  box-shadow:0 5px 14px rgba(19,94,143,.22),inset 0 1px rgba(255,255,255,.08);
+}
+html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-bloco small { color:#b9d8ec; }
+html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-bloco-livre {
+  border-color:#3a5264;
+  background:linear-gradient(145deg,#222b32,#20272d);
+  color:#d2d9df;
+  box-shadow:none;
+}
+html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-bloco-livre small { color:#9ba8b2; }
+html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-bloco-bloqueado {
+  border-color:#4a3e43;
+  background:#292326;
+  color:#bcaeb3;
+  box-shadow:none;
+}
 html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-regua { background:var(--dark-surface); }
 html[data-tema='escuro'] .pinterest-horarios :is(.pinterest-semana-regua-topo,.pinterest-semana-regua-corpo,.pinterest-semana-dia-topo,.pinterest-semana-dia-corpo) { border-color:var(--dark-border); }
 html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-dia-corpo {
-  background-image:repeating-linear-gradient(to bottom,#303940 0,#303940 1px,transparent 1px,transparent var(--altura-hora));
+  background-color:#1b2126;
+  background-image:repeating-linear-gradient(to bottom,#303b43 0,#303b43 1px,transparent 1px,transparent var(--altura-hora));
 }
+html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-dia:nth-child(even) .pinterest-semana-dia-corpo { background-color:#1d2429; }
+html[data-tema='escuro'] .pinterest-horarios .pinterest-semana-dia-topo { background:#20272d; color:#aab4bd; }
 html[data-tema='escuro'] .pinterest-horarios .empty-editorial {
   min-height:0;
   padding:20px;
