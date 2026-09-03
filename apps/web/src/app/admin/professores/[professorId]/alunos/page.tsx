@@ -67,7 +67,7 @@ export default async function AdminProfessorAlunosPage({
     .sort((a, b) => a.nome.localeCompare(b.nome))
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
+    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina pinterest-admin-professor-alunos">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho"><VoltarAtras destino={`/admin/professores/${professorId}`} className="partitura-voltar" rotulo="Voltar à ficha do professor">←</VoltarAtras><div><p className="partitura-sobretitulo">Alunos do professor</p><h1>{professorData.nome}</h1><p>{alunos.length} {alunos.length === 1 ? 'aluno' : 'alunos'}</p></div></header>
 
@@ -79,6 +79,7 @@ export default async function AdminProfessorAlunosPage({
           <div className="admin-diretorio"><ListaComPesquisa
             itens={alunos}
             hrefPrefix="/admin/alunos/"
+            hrefSuffix={`?voltar=${encodeURIComponent(`/admin/professores/${professorId}/alunos`)}`}
             placeholder="Pesquisar aluno por nome…"
           /></div>
         )}

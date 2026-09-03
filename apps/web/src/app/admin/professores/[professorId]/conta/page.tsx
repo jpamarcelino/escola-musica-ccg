@@ -81,7 +81,7 @@ export default async function AdminProfessorContaPage({
   const instrumentos = (instrumentosData ?? []) as unknown as InstrumentoProfessor[]
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-subficha-pagina">
+    <main id="conteudo-principal" className="partitura-pagina admin-subficha-pagina pinterest-admin-professor-conta">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho"><VoltarAtras destino={`/admin/professores/${professorId}`} className="partitura-voltar" rotulo="Voltar à ficha do professor">←</VoltarAtras><div><p className="partitura-sobretitulo">Conta · {professor.admin ? 'Administrador' : 'Professor'}</p><h1>{professor.nome}</h1><p>Dados de contacto, escola e disciplinas.</p></div></header>
 

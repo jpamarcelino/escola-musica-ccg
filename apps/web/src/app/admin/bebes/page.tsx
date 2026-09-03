@@ -2,12 +2,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { Baby, CalendarClock, ChevronLeft, ChevronRight, ClipboardCheck } from 'lucide-react'
 
-// A escola de Bebés, vista da secretaria.
-//
-// Fica no design antigo de propósito: o resto de /admin ainda não foi
-// redesenhado, e uma página nova em Pinterest no meio das outras vinte
-// dava a entender que a secretaria já tinha mudado.
 export default async function AdminBebesPage() {
   const supabase = await createClient()
   const {
@@ -37,33 +33,34 @@ export default async function AdminBebesPage() {
     : { count: 0 }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-financas-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras>
-          <div>
-            <p className="partitura-sobretitulo">Escola</p>
-            <h1>Música para Bebés</h1>
-            <p>As duas turmas são da escola: o horário e as inscrições decidem-se aqui.</p>
-          </div>
+    <main id="conteudo-principal" className="admin-bebes">
+      <div className="admin-bebes-folha">
+        <header className="admin-bebes-cabecalho">
+          <VoltarAtras destino="/admin" className="admin-bebes-voltar" rotulo="Voltar à visão geral"><ChevronLeft size={22} /></VoltarAtras>
+          <div><h1>Música para Bebés</h1><p>Turmas, equipa e novas inscrições</p></div>
+          <span className="admin-bebes-marca"><Baby size={23} /></span>
         </header>
 
-        <nav className="admin-escolha" aria-label="Áreas da escola de bebés">
+        <section className="admin-bebes-resumo">
+          <span><Baby size={22} /></span>
+          <div><small>Escola dos 0 aos 5 anos</small><strong>Duas turmas, um só lugar para as gerir.</strong><p>O horário pertence à escola e as famílias inscrevem-se diretamente na turma certa.</p></div>
+          <b>{porResponder ?? 0}<small>por responder</small></b>
+        </section>
+
+        <nav className="admin-bebes-opcoes" aria-label="Áreas da escola de bebés">
           <Link href="/admin/bebes/horarios">
-            <span className="partitura-indice">01 · Turmas</span>
-            <strong>Horários e professores</strong>
-            <p>Mudar o dia e a hora de cada turma, e escolher quem as dá.</p>
-            <i aria-hidden="true">→</i>
+            <span className="admin-bebes-opcao-icone"><CalendarClock size={22} /></span>
+            <span><small>Turmas</small><strong>Horários e professores</strong><p>Consulta a lotação, altera a hora e gere a equipa.</p></span>
+            <ChevronRight size={20} />
           </Link>
           <Link href="/admin/bebes/pedidos">
-            <span className="partitura-indice">02 · Inscrições</span>
-            <strong>Pedidos de inscrição</strong>
-            <p>
+            <span className="admin-bebes-opcao-icone"><ClipboardCheck size={22} /></span>
+            <span><small>Inscrições</small><strong>Pedidos de inscrição</strong><p>
               {(porResponder ?? 0) > 0
                 ? `${porResponder} ${porResponder === 1 ? 'pedido aguarda' : 'pedidos aguardam'} resposta.`
                 : 'Sem pedidos por responder.'}
-            </p>
-            <i aria-hidden="true">→</i>
+            </p></span>
+            <ChevronRight size={20} />
           </Link>
         </nav>
       </div>
