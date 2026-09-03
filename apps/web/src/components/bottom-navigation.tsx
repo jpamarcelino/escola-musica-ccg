@@ -63,7 +63,6 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
     >
       <div
         className="bottom-nav-bar relative flex w-full max-w-[430px] items-stretch gap-[2px] rounded-[var(--radius-pill)] px-[8px] py-[8px]"
-        style={{ backgroundColor: 'var(--color-ink)', boxShadow: 'var(--shadow-flutuante)' }}
       >
         <div className="desktop-nav-brand" aria-hidden="true">
           <span className="desktop-nav-brand-mark">
@@ -87,10 +86,6 @@ export function BottomNavigation({ itens }: { itens: ItemNav[] }) {
               href={item.href}
               aria-current={ativo ? 'page' : undefined}
               className="bottom-nav-item relative flex min-h-[52px] min-w-0 flex-1 flex-col items-center justify-center gap-[3px] rounded-[var(--radius-pill)] px-[2px] motion-safe:active:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              style={{
-                color: ativo ? '#ffffff' : 'rgba(255,255,255,.68)',
-                backgroundColor: 'transparent',
-              }}
             >
               {ativo && <span className="bottom-nav-ativo" aria-hidden="true" />}
               <span className="relative">

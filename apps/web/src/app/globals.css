@@ -143,7 +143,13 @@ body {
   background-color: #ffffff;
 }
 
-.bottom-nav-bar { border: 1px solid color-mix(in srgb, white 15%, transparent); }
+.bottom-nav-bar {
+  border: 1px solid color-mix(in srgb,white 15%,transparent);
+  background: var(--color-ink);
+  box-shadow: var(--shadow-flutuante);
+}
+.bottom-nav-item { color: rgba(255,255,255,.68); background: transparent; }
+.bottom-nav-item[aria-current='page'] { color: #fff; }
 .bottom-nav-ativo { position: absolute; right: 18%; bottom: 4px; left: 18%; height: 2px; border-radius: 999px; background: var(--marca-ciano); }
 /* Encostado ao canto do ícone, com um anel da cor da barra para se
    destacar mesmo quando cai por cima de um traço do ícone. */
@@ -177,10 +183,11 @@ body {
     align-items: stretch;
     gap: 6px;
     padding: 18px 12px 14px;
-    border: 1px solid rgba(255,255,255,.12);
+    border: 1px solid #dfe4e9;
     border-radius: 28px;
-    background: #241f1c !important;
-    box-shadow: 0 16px 44px rgba(36,31,28,.16) !important;
+    background: rgba(255,255,255,.88) !important;
+    box-shadow: 0 12px 34px rgba(31,47,61,.08) !important;
+    backdrop-filter: blur(18px);
   }
 
   .desktop-nav-brand {
@@ -189,8 +196,8 @@ body {
     gap: 11px;
     margin: 2px 4px 22px;
     padding: 2px 4px 20px;
-    border-bottom: 1px solid rgba(255,255,255,.12);
-    color: #fff;
+    border-bottom: 1px solid #e7eaee;
+    color: #20252a;
   }
 
   .desktop-nav-brand-mark {
@@ -200,13 +207,13 @@ body {
     flex: 0 0 38px;
     place-items: center;
     border-radius: 12px;
-    background: rgba(255,255,255,.08);
-    color: var(--marca-ciano);
+    background: #eaf4fb;
+    color: #279fc3;
   }
 
   .desktop-nav-brand-mark svg { width: 23px; height: 25px; }
   .desktop-nav-brand strong { display: block; font-size: 13px; font-weight: 700; line-height: 1.2; }
-  .desktop-nav-brand small { display: block; margin-top: 3px; color: rgba(255,255,255,.56); font-size: 9.5px; line-height: 1.25; }
+  .desktop-nav-brand small { display: block; margin-top: 3px; color: #7c858e; font-size: 9.5px; line-height: 1.25; }
 
   .app-primary-nav .bottom-nav-item {
     min-height: 48px;
@@ -219,7 +226,10 @@ body {
   }
 
   .app-primary-nav .bottom-nav-item::before { inset: 0; border-radius: 14px; }
-  .app-primary-nav .bottom-nav-item[aria-current='page']::before { background: rgba(255,255,255,.13); }
+  .app-primary-nav .bottom-nav-item { color: #737d86; }
+  .app-primary-nav .bottom-nav-item[aria-current='page'] { color: #1b5d8d; }
+  .app-primary-nav .bottom-nav-item[aria-current='page']::before { background: #e8f2f9; }
+  .app-primary-nav .bottom-nav-item:focus-visible { outline-color: #3d7fb8; }
   .app-primary-nav .bottom-nav-label { font-size: 13.5px; font-weight: 600; }
   .app-primary-nav .bottom-nav-icon { width: 21px; height: 21px; }
   .app-primary-nav .bottom-nav-ativo {
@@ -6788,6 +6798,19 @@ html[data-tema='escuro'] :is(.modal-caixa,.sheet-caixa,.pinterest-dialogo) :is(h
 html[data-tema='escuro'] :is(.modal-caixa,.sheet-caixa,.pinterest-dialogo) :is(p,small) { color: var(--dark-muted); }
 html[data-tema='escuro'] .pinterest-dialogo-cancelar { border-color: var(--dark-border); background: var(--dark-raised); color: var(--dark-text); }
 html[data-tema='escuro'] .app-primary-nav .bottom-nav-bar { background: #181614 !important; }
+@media (min-width:1024px) {
+  html[data-tema='escuro'] .app-primary-nav .bottom-nav-bar {
+    border-color: #2e353b;
+    background: #191d21 !important;
+    box-shadow: 0 18px 48px rgba(0,0,0,.22) !important;
+  }
+  html[data-tema='escuro'] .desktop-nav-brand { border-bottom-color: #30373d; color: var(--dark-text); }
+  html[data-tema='escuro'] .desktop-nav-brand-mark { background: #242c32; color: #42cbea; }
+  html[data-tema='escuro'] .desktop-nav-brand small { color: #919aa3; }
+  html[data-tema='escuro'] .app-primary-nav .bottom-nav-item { color: #9ba4ad; }
+  html[data-tema='escuro'] .app-primary-nav .bottom-nav-item[aria-current='page'] { color: #d8edfc; }
+  html[data-tema='escuro'] .app-primary-nav .bottom-nav-item[aria-current='page']::before { background: #263b4b; }
+}
 
 html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-agenda .agenda-ligacao-calendario,
