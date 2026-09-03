@@ -88,7 +88,7 @@ export default async function ReposicoesPage({
         {erro && <MensagemErro>{erro}</MensagemErro>}
         {criada && <MensagemInfo>Vaga criada.</MensagemInfo>}
 
-        <nav className="pinterest-reposicoes-pedidos">
+        <nav className="pinterest-reposicoes-entrada">
           <Link
             href="/dashboard/reposicoes/pedidos"
           >
