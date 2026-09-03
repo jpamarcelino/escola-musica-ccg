@@ -788,3 +788,66 @@ conhecia e a migracao rebentou — tinham sido acrescentados quatro tipos
 de aviso entretanto. A 0058 passou a estender a constraint que esta na
 base de dados (`pg_get_constraintdef` + `replace`), o que a torna imune a
 isso e idempotente.
+
+## Escola de Musica para Bebes
+
+Modelacao (migracoes 0059 e 0060): a escola tem **duas turmas fixas**, com
+horario da escola e capacidade 10. Um professor de Bebes e um professor de
+Musica (ou Danca) com uma **atribuicao** a mais — o `programa` dele nao
+muda e a pagina normal dele fica intacta.
+
+As turmas espelham-se em `horarios` normais, um por professor atribuido,
+com `estado = 'bloqueado'` e `turma_bebes_id` a apontar para a turma. E a
+decisao que faz a agenda, as presencas e as mensalidades funcionarem sem
+saberem que os Bebes existem: para elas e uma matricula num horario. A
+ligacao e pelo `turma_bebes_id` e nao pela coincidencia de dia e hora —
+sem isso, mudar a hora criava um horario novo e deixava o antigo com os
+alunos la dentro.
+
+Quem faz o que:
+
+- **Secretaria** (`/admin/bebes`, design antigo de proposito porque o
+  resto de `/admin` ainda nao foi redesenhado): muda o horario das turmas,
+  atribui professores e aceita ou recusa inscricoes.
+- **Professor** (`/dashboard/bebes`): ve as turmas que da, quem esta
+  inscrito, e desmarca uma aula (a turma toda ou so uma crianca). Nao muda
+  a hora, e a pagina di-lo.
+
+O separador so aparece a quem da pelo menos uma turma — na Home e na
+propria rota, que redireciona quem nao tenha nenhuma. A pergunta vive em
+`lib/bebes.ts` para nao divergir entre os sitios que a fazem.
+
+`/dashboard/pedidos` do professor **exclui** as disciplinas de Bebes: a
+turma e da escola e quem inscreve e a secretaria. Sem essa exclusao, quem
+da Bebes via-as na fila dele e podia aceita-las por cima de quem decide.
+
+`desmarcarAulaProfessor` e `desmarcarDiaProfessor` passaram a aceitar um
+`voltarPara`: a mesma accao serve a agenda e os Bebes, e cada uma volta
+para si propria.
+
+## Bebés: pedido, mensagens e o que ja funcionava
+
+**Pedido de inscricao.** Nos Bebes o assistente acaba na disciplina: nao ha
+professor para escolher nem horas para marcar, porque a turma e uma so com
+hora da escola. O passo do professor aparecia vazio de qualquer maneira —
+um professor de Bebes e atribuido a TURMA e nao a disciplina, por isso a
+consulta a `professor_instrumentos` nunca o encontrava.
+
+O ecra diz a hora da turma, quantos lugares restam, e manda o pedido para a
+secretaria. O `professor_id` da matricula e um dos professores da turma,
+escrito so porque a coluna nao aceita vazio; quem fica mesmo com o aluno e
+decidido ao aceitar.
+
+**Mensagens.** A seleccao rapida por turma nao e um filtro novo: preenche a
+escolha aluno a aluno que ja existia. Assim quem escreve ve exactamente
+quem recebe e pode tirar alguem, o que um filtro fechado nao deixava. Sai
+da lista que ja vinha do servidor — um professor ve as turmas dele, a
+secretaria ve as duas — e nao aparece a quem nao tenha alunos de Bebes.
+
+**Presencas e mensalidades ja funcionavam.** Verificado a ler as consultas:
+nenhuma das duas filtra por `estado` do horario, por isso um horario
+bloqueado com matriculas confirmadas aparece na chamada e gera mensalidade
+como qualquer outro. Era esse o objectivo do espelho.
+
+**Nota sobre o `AGENTS.md`:** manda ler `node_modules/next/dist/docs/`
+antes de escrever codigo, mas essa pasta nao existe nesta instalacao.

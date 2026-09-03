@@ -46,7 +46,14 @@ export default async function PedidosPage({
     redirect('/dashboard')
   }
 
-  const { data: pedidosData } = await supabase
+  // As inscrições em Música para Bebés são aceites pela secretaria e não
+  // aqui: a turma é da escola, tem limite de dez e a hora não é escolhida
+  // pelo professor. Sem esta exclusão, quem dá Bebés via-as nesta fila e
+  // podia aceitá-las por engano, saltando por cima de quem decide.
+  const { data: turmasBebes } = await supabase.from('turmas_bebes').select('instrumento_id')
+  const disciplinasDeBebes = (turmasBebes ?? []).map((t) => t.instrumento_id)
+
+  let consultaPedidos = supabase
     .from('matriculas')
     .select(
       'id, criado_em, mensagem, alunos(nome, encarregado:profiles!alunos_encarregado_id_fkey(telefone)), instrumentos(nome), disponibilidades_selecionadas(horario_id, horarios(dia_semana, hora_inicio, hora_fim))'
@@ -54,6 +61,16 @@ export default async function PedidosPage({
     .eq('professor_id', user.id)
     .eq('estado', 'a_escolher')
     .order('criado_em')
+
+  if (disciplinasDeBebes.length > 0) {
+    consultaPedidos = consultaPedidos.not(
+      'instrumento_id',
+      'in',
+      `(${disciplinasDeBebes.join(',')})`
+    )
+  }
+
+  const { data: pedidosData } = await consultaPedidos
   const pedidos = (pedidosData ?? []) as unknown as Pedido[]
 
   // Para o professor poder propor uma hora à escolha dele, o ecrã precisa

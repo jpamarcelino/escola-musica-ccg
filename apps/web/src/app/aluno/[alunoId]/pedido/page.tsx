@@ -6,13 +6,15 @@ import { DIAS_SEMANA, calcularIdade, MUSICA_IDADE_MIN, MUSICA_IDADE_MAX, separar
 import { CartaoLink } from '@/components/cartao-link'
 import { Wizard, ListaEscolhas } from '@/components/wizard'
 import { BotaoPrimario } from '@/components/botao-primario'
-import { CampoTextarea } from '@/components/campo-formulario'
+import { CampoTextarea, classesCampo } from '@/components/campo-formulario'
 import {
   CampoRecomendacao,
   type ProfessorParaRecomendacao,
 } from '@/components/campo-recomendacao'
 import { MensagemErro } from '@/components/mensagem'
 import { AvisoUmHorario } from '@/components/confirmar-um-horario'
+import { SubmitButton } from '@/components/submit-button'
+import { pedirInscricaoBebes } from '@/lib/actions/bebes'
 
 // Nomes das escolas para as etiquetas de "escolhas até agora". Este
 // percurso tem quatro passos e não cinco como o público: a idade não é
@@ -222,6 +224,82 @@ export default async function PedidoPage({
           Cancela-o no dashboard antes de pedir outro professor para a mesma
           disciplina. Podes pedir outra disciplina à vontade.
         </p>
+      </Wizard>
+    )
+  }
+
+  // Nos Bebés o assistente acaba aqui.
+  //
+  // Não há professor para escolher nem horas para marcar: a turma é uma
+  // só, com hora definida pela escola, e quem responde é a secretaria.
+  // Mostrar os dois passos seguintes seria pedir decisões que não
+  // existem — e o passo do professor aparecia vazio, porque um professor
+  // de Bebés é atribuído à turma e não à disciplina.
+  if (programa === 'bebes' && instrumentoAtual) {
+    const { data: turma } = await supabase
+      .from('turmas_bebes')
+      .select('id, dia_semana, hora_inicio, hora_fim, capacidade')
+      .eq('instrumento_id', instrumento)
+      .maybeSingle()
+
+    const { count: quantosProfs } = turma
+      ? await supabase
+          .from('turmas_bebes_professores')
+          .select('professor_id', { count: 'exact', head: true })
+          .eq('turma_id', turma.id)
+      : { count: 0 }
+
+    const { data: ocupacao } = turma
+      ? await supabase.rpc('ocupacao_turma_bebes', { p_turma_id: turma.id })
+      : { data: 0 }
+
+    const lugares = turma ? turma.capacidade - Number(ocupacao ?? 0) : 0
+    const podePedir = Boolean(turma) && (quantosProfs ?? 0) > 0 && lugares > 0
+
+    return (
+      <Wizard
+        title={instrumentoAtual.nome}
+        voltar={`/aluno/${alunoId}/pedido?programa=bebes`}
+      >
+        {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
+
+        <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
+          {turma
+            ? `A turma é ${turma.dia_semana.toLowerCase()}, das ${turma.hora_inicio.slice(0, 5)} às ${turma.hora_fim.slice(0, 5)}. O horário é o mesmo para toda a gente e é definido pela escola.`
+            : 'Esta turma ainda não está aberta.'}
+        </p>
+
+        {!podePedir ? (
+          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-tinta-suave)' }}>
+            {!turma
+              ? 'Fala com a secretaria para saber quando abre.'
+              : (quantosProfs ?? 0) === 0
+                ? 'Ainda não há professor atribuído a esta turma. Fala com a secretaria.'
+                : 'A turma está cheia. Fala com a secretaria para entrares em lista de espera.'}
+          </p>
+        ) : (
+          <form action={pedirInscricaoBebes} className="space-y-[14px]">
+            <input type="hidden" name="alunoId" value={alunoId} />
+            <input type="hidden" name="instrumentoId" value={instrumento} />
+            <label className="block space-y-[6px]">
+              <span className="text-[12.5px] font-medium" style={{ color: 'var(--color-tinta-suave)' }}>
+                Mensagem para a secretaria (opcional)
+              </span>
+              <textarea
+                name="mensagem"
+                rows={3}
+                maxLength={500}
+                placeholder="Alguma coisa que a escola deva saber?"
+                className={classesCampo}
+              />
+            </label>
+            <p className="text-[13px] leading-[1.5]" style={{ color: 'var(--color-tinta-suave)' }}>
+              {lugares === 1 ? 'Resta 1 lugar.' : `Restam ${lugares} lugares.`} O pedido vai para a
+              secretaria, que confirma a inscrição.
+            </p>
+            <SubmitButton textoAGuardar="A enviar…">Pedir inscrição</SubmitButton>
+          </form>
+        )}
       </Wizard>
     )
   }

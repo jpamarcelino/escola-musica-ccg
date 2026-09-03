@@ -55,6 +55,9 @@ export async function carregarAlunosAlvo(
       if (programa && !existente.programas.includes(programa)) {
         existente.programas.push(programa)
       }
+      if (disciplina && !existente.disciplinas.includes(disciplina)) {
+        existente.disciplinas.push(disciplina)
+      }
       if (disciplina) existente.sub = `${existente.sub} · ${disciplina}`
       continue
     }
@@ -67,6 +70,7 @@ export async function carregarAlunosAlvo(
       sub: [disciplina, professorId ? null : professor].filter(Boolean).join(' · '),
       professores: [l.professor_id],
       programas: programa ? [programa] : [],
+      disciplinas: disciplina ? [disciplina] : [],
     })
   }
 

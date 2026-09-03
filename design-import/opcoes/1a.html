@@ -1,0 +1,85 @@
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Vitrine — uma peça de cada vez, escolha por cápsula</div>
+<div class="dv-card" style="width:414px;padding:11px;background:#231F20;border-radius:56px;box-shadow:0 24px 60px rgba(35,31,32,.28),0 2px 6px rgba(35,31,32,.2);border:none">
+<div style="position:relative;width:392px;height:844px;border-radius:45px;overflow:hidden;background:#FBF8F3">
+
+<div style="position:absolute;top:0;left:0;right:0;height:54px;z-index:9;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 34px;font-size:15px;font-weight:600;color:#231F20;letter-spacing:-.01em">
+<span>9:41</span>
+<span style="display:flex;align-items:center;gap:6px">
+<span style="display:flex;align-items:flex-end;gap:2px;height:11px"><i style="width:3px;height:5px;border-radius:1px;background:#231F20"></i><i style="width:3px;height:7px;border-radius:1px;background:#231F20"></i><i style="width:3px;height:9px;border-radius:1px;background:#231F20"></i><i style="width:3px;height:11px;border-radius:1px;background:#231F20"></i></span>
+<i style="width:23px;height:11px;border:1.5px solid #231F20;border-radius:3.5px;padding:1.5px;box-sizing:border-box;display:block"><i style="display:block;width:70%;height:100%;border-radius:1.5px;background:#231F20"></i></i>
+</span>
+</div>
+<div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#231F20;z-index:10"></div>
+
+<div class="scr" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none">
+
+<div style="position:sticky;top:0;z-index:8;height:54px;background:linear-gradient(#FBF8F3 60%,rgba(251,248,243,0))"></div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;padding:2px 22px 0">
+<span style="display:flex;align-items:center;gap:9px"><img src="7e54576b-1d7a-46a8-80f7-92850367d247" alt="" style="width:19px;height:21px;display:block"><span style="font-size:12px;font-weight:600;letter-spacing:-.01em;color:#231F20">Centro Cultural da Guarda</span></span>
+<a href="#1a" style="font-size:15px;font-weight:500;color:#06707F;text-decoration:none;letter-spacing:-.01em">Entrar</a>
+</div>
+
+<div style="padding:38px 22px 0">
+<p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#6B615A">Escolas artísticas</p>
+<h1 style="margin:12px 0 0;font-family:Fraunces,ui-serif,serif;font-size:52px;font-weight:600;line-height:.95;letter-spacing:-.04em;color:#231F20;text-wrap:balance">Onde começa<br><em style="font-style:italic;font-weight:400">uma prática.</em></h1>
+<p style="margin:16px 0 0;max-width:30ch;font-size:16px;line-height:1.45;color:#6B615A;letter-spacing:-.01em">Música, dança e primeiros sons na Guarda. Escolhe uma direcção e vê as aulas.</p>
+</div>
+
+<div style="position:relative;margin:30px 16px 0;height:326px;border-radius:34px;overflow:hidden;background:linear-gradient(170deg,#FFFFFF 0%,#F3EDE4 100%);border:1px solid rgba(35,31,32,.06)">
+<span style="position:absolute;top:20px;left:22px;font-family:Fraunces,ui-serif,serif;font-size:15px;font-weight:600;color:#06707F;letter-spacing:.02em">{{ aNumero }}</span>
+<img class="hero-a" data-i="0" src="d3cd9297-d2bd-44c2-a1a8-8b84a79491d2" alt="" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:270px;height:270px;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(35,31,32,.16));transition:opacity .38s cubic-bezier(.22,1,.36,1)">
+<img class="hero-a" data-i="1" src="06c0fa14-952a-4932-91ab-ea474a42ef17" alt="" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:270px;height:270px;object-fit:contain;opacity:0;filter:drop-shadow(0 18px 30px rgba(35,31,32,.16));transition:opacity .38s cubic-bezier(.22,1,.36,1)">
+<img class="hero-a" data-i="2" src="f7876373-2618-4251-87a8-48ca1ed4f6c9" alt="" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:270px;height:270px;object-fit:contain;opacity:0;filter:drop-shadow(0 18px 30px rgba(35,31,32,.16));transition:opacity .38s cubic-bezier(.22,1,.36,1)">
+<div style="position:absolute;left:0;right:0;bottom:0;padding:56px 22px 20px;background:linear-gradient(rgba(251,248,243,0),rgba(251,248,243,.94) 55%,#FBF8F3)">
+<strong style="display:block;font-family:Fraunces,ui-serif,serif;font-size:30px;font-weight:600;letter-spacing:-.03em;color:#231F20">{{ aNome }}</strong>
+<span style="display:block;margin-top:3px;font-size:13.5px;color:#6B615A;letter-spacing:-.005em">{{ aDetalhe }}</span>
+</div>
+</div>
+
+<div style="display:flex;gap:6px;margin:16px 16px 0;padding:5px;border-radius:999px;background:#F3EDE4">
+<sc-for list="{{ oferta }}" as="o" hint-placeholder-count="3">
+<button sc-camel-on-click="{{ o.escolher }}" style="flex:1;border:none;cursor:pointer;padding:11px 4px;border-radius:999px;font:600 13.5px -apple-system,system-ui,sans-serif;letter-spacing:-.01em;transition:background .28s cubic-bezier(.22,1,.36,1),color .28s" style-hover="opacity:.9" data-sel="{{ o.sel }}" class="{{ o.cls }}">{{ o.nome }}</button>
+</sc-for>
+</div>
+
+<div style="margin:44px 22px 0">
+<p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#6B615A">{{ n02 }} Como começa</p>
+<h2 style="margin:0;font-family:Fraunces,ui-serif,serif;font-size:28px;font-weight:600;letter-spacing:-.03em;color:#231F20">Três passos, cinco minutos.</h2>
+</div>
+
+<div style="position:relative;margin:22px 22px 0;padding-left:30px">
+<i style="position:absolute;left:4px;top:8px;bottom:8px;width:2px;border-radius:2px;background:{{ acento }}"></i>
+<div style="display:flex;flex-direction:column;gap:26px">
+<div style="position:relative"><i style="position:absolute;left:-30px;top:5px;width:10px;height:10px;margin-left:0;border-radius:50%;background:{{ acento }};box-shadow:0 0 0 4px #FBF8F3"></i><strong style="display:block;font-size:16px;font-weight:600;letter-spacing:-.01em;color:#231F20">Escolhes a direcção</strong><span style="display:block;margin-top:3px;font-size:14px;line-height:1.45;color:#6B615A">Música, dança ou primeiros sons.</span></div>
+<div style="position:relative"><i style="position:absolute;left:-30px;top:5px;width:10px;height:10px;border-radius:50%;background:#E4DACC;box-shadow:0 0 0 4px #FBF8F3"></i><strong style="display:block;font-size:16px;font-weight:600;letter-spacing:-.01em;color:#231F20">Vês os horários livres</strong><span style="display:block;margin-top:3px;font-size:14px;line-height:1.45;color:#6B615A">A disponibilidade real dos professores.</span></div>
+<div style="position:relative"><i style="position:absolute;left:-30px;top:5px;width:10px;height:10px;border-radius:50%;background:#E4DACC;box-shadow:0 0 0 4px #FBF8F3"></i><strong style="display:block;font-size:16px;font-weight:600;letter-spacing:-.01em;color:#231F20">Pedes a aula</strong><span style="display:block;margin-top:3px;font-size:14px;line-height:1.45;color:#6B615A">A secretaria confirma e ficas com conta.</span></div>
+</div>
+</div>
+
+<a href="#1a" style="display:flex;align-items:center;gap:16px;margin:40px 16px 0;padding:20px;border-radius:26px;background:#FFFFFF;border:1px solid rgba(35,31,32,.07);text-decoration:none">
+<span style="flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#F3EDE4"><img src="7e54576b-1d7a-46a8-80f7-92850367d247" alt="" style="width:20px;height:22px"></span>
+<span style="display:flex;flex-direction:column;min-width:0"><strong style="font-family:Fraunces,ui-serif,serif;font-size:18px;font-weight:600;letter-spacing:-.02em;color:#231F20">Levar a aplicação contigo</strong><small style="margin-top:2px;font-size:13px;color:#6B615A">Instalar no telemóvel, sem loja.</small></span>
+<span style="margin-left:auto;font-size:19px;color:#8C8177">›</span>
+</a>
+
+<div style="margin:34px 22px 0;padding-top:20px;border-top:1px solid #E4DACC">
+<p style="margin:0;font-family:Fraunces,ui-serif,serif;font-size:15px;font-style:italic;color:#6B615A">Pela Guarda, pela arte e pela cultura.</p>
+<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px"><a href="#1a" style="font-size:12px;color:#6B615A;text-decoration:none">Termos</a><a href="#1a" style="font-size:12px;color:#6B615A;text-decoration:none">Privacidade</a><a href="#1a" style="font-size:12px;color:#6B615A;text-decoration:none">Livro de Reclamações</a></div>
+<p style="margin:10px 0 0;font-size:11.5px;line-height:1.5;color:#6B615A">Centro Cultural da Guarda · NIPC 501 430 881</p>
+</div>
+
+<div style="height:132px"></div>
+</div>
+
+<div style="position:absolute;left:16px;right:16px;bottom:26px;z-index:11;display:flex;align-items:center;gap:8px;padding:7px 7px 7px 22px;border-radius:999px;background:rgba(35,31,32,.94);backdrop-filter:blur(20px);box-shadow:0 12px 32px rgba(35,31,32,.34)">
+<span style="display:flex;flex-direction:column"><small style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:{{ acento }}">{{ aNome }}</small><strong style="margin-top:1px;font-size:15.5px;font-weight:600;letter-spacing:-.01em;color:#fff">Pedir uma aula</strong></span>
+<a href="#1a" style="margin-left:auto;display:grid;place-items:center;height:46px;padding:0 22px;border-radius:999px;background:#fff;color:#231F20;font-size:15px;font-weight:600;letter-spacing:-.01em;text-decoration:none">Começar</a>
+</div>
+<div style="position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:138px;height:5px;border-radius:3px;background:#231F20;opacity:.85;z-index:12"></div>
+
+</div>
+</div>
+</div>
+

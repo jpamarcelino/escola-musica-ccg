@@ -5,7 +5,8 @@ import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { agoraNaEscola, estadoTemporalAula, proximaAulaPorAcontecer, hojeISO, formatarHora, formatarSala, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
-import { Bell, CalendarDays, ChevronRight, ClipboardCheck, Clock3, Inbox, MessageSquare, Music2, RefreshCw, Send, UserRoundCog, UsersRound, WalletCards } from 'lucide-react'
+import { Baby, Bell, CalendarDays, ChevronRight, ClipboardCheck, Clock3, Inbox, MessageSquare, Music2, RefreshCw, Send, UserRoundCog, UsersRound, WalletCards } from 'lucide-react'
+import { daAlgumaTurmaDeBebes } from '@/lib/bebes'
 
 type AulaConfirmada = {
   id: number
@@ -95,6 +96,9 @@ export default async function DashboardPage({
       atual.add(d.data)
       canceladasPorMatricula.set(d.matricula_id, atual)
     }
+
+    // O separador dos Bebés só existe para quem dá pelo menos uma turma.
+    const daBebes = await daAlgumaTurmaDeBebes(supabase, user.id)
 
     // Ocupação da agenda: horários (não bloqueados) com pelo menos um
     // aluno confirmado ÷ horários disponíveis. Em dança vários alunos
@@ -217,6 +221,10 @@ export default async function DashboardPage({
               <Link href="/dashboard/enviar-material"><span><Send size={20} aria-hidden="true" /></span><strong>Enviar material</strong><ChevronRight size={18} aria-hidden="true" /></Link>
               <Link href="/dashboard/mensalidades"><span><WalletCards size={20} aria-hidden="true" /></span><strong>Mensalidades</strong><ChevronRight size={18} aria-hidden="true" /></Link>
               {profile.programa === 'musica' && <Link href="/dashboard/reposicoes"><span><RefreshCw size={20} aria-hidden="true" /></span><strong>Reposições</strong><ChevronRight size={18} aria-hidden="true" /></Link>}
+              {/* Só a quem dá pelo menos uma turma. Não é uma área da
+                  escola aberta a todos os professores — é a página de
+                  quem lá dá aulas. */}
+              {daBebes && <Link href="/dashboard/bebes"><span><Baby size={20} aria-hidden="true" /></span><strong>Música para Bebés</strong><ChevronRight size={18} aria-hidden="true" /></Link>}
             </nav>
           </section>
           </div>
