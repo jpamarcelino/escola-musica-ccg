@@ -6763,14 +6763,14 @@ html[data-tema='escuro'] .app-shell-content main[class*='pinterest-'] :is(p,smal
 html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-aula,.pinterest-alunos,.pinterest-atalhos a,
   .pinterest-professor-seguintes,.pinterest-professor-gestao,
-  .pinterest-agenda-atalhos a,.pinterest-agenda-calendario,
+  .pinterest-agenda-atalhos a,
   .pinterest-detalhe-contexto,
   .pinterest-aluno-aula,
   .pinterest-horario-aula,.pinterest-materiais-vazio,
-  .pinterest-mensalidades-resumo,.pinterest-mensalidades-nota,
-  .pinterest-conta-cartao,.pinterest-conta-seccao,.pinterest-conta-avancado-seccao,
+  .pinterest-mensalidades-resumo,
+  .pinterest-conta-cartao,.pinterest-conta-avancado-seccao,
   .pinterest-pedido-bloco,.pinterest-pedir-reposicao-aula,
-  .pinterest-pedir-reposicao-formulario,.pinterest-pedir-reposicao-nota,
+  .pinterest-pedir-reposicao-formulario,
   .lista-item,.empty-editorial,article
 ) { border-color: var(--dark-border); background: var(--dark-surface); color: var(--dark-text); box-shadow: 0 8px 22px rgba(0,0,0,.12); }
 
@@ -6799,6 +6799,12 @@ html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-home-seccao-topo > a,.pinterest-detalhe-seccao p,
   .pinterest-conta-nota,.lista-item-sub,.empty-editorial-descricao
 ) { color: var(--dark-muted); }
+
+/* A lista de disciplinas fixa a cor da tinta clara em cada <li>, e a regra
+   geral de texto escuro so apanha p/small/strong — sem isto, o nome da
+   disciplina ficava tinta escura sobre fundo escuro. */
+html[data-tema='escuro'] .app-shell-content .pinterest-conta-disciplinas li { color: var(--dark-text); }
+html[data-tema='escuro'] .app-shell-content .pinterest-conta-disciplinas li span { color: var(--dark-muted); }
 
 html[data-tema='escuro'] .app-shell-content :is(.pinterest-home-alerta,.pinterest-agenda-mensagem,.pinterest-pedido-ajuda) {
   border-color: #4a402c; background: #292419; color: #f2e3bd;
