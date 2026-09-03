@@ -7085,6 +7085,54 @@ html[data-tema='escuro'] .pinterest-horario-aula-fundo button {
 html[data-tema='escuro'] .pinterest-horario-aula-topo > div > span,
 html[data-tema='escuro'] .pinterest-aluno-aula > span { color: var(--dark-muted); }
 html[data-tema='escuro'] .pinterest-aluno-cabecalho > a:last-child { color: #a9d5f7; }
+
+/* Restos de superfícies claras nas páginas da família. Alguns destes
+   seletores têm !important na versão clara e precisam de uma decisão
+   explícita no tema escuro. */
+html[data-tema='escuro'] .pinterest-conta-avancado-folha > div:first-child > :is(a,button) {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: #a9d5f7;
+  box-shadow: none;
+}
+html[data-tema='escuro'] .pinterest-conta-avancado-folha > div:first-child h1 {
+  color: var(--dark-text) !important;
+}
+html[data-tema='escuro'] .pinterest-conta-avancado-folha > div:first-child p {
+  color: var(--dark-muted) !important;
+}
+
+html[data-tema='escuro'] .app-shell-content .pinterest-materiais .materiais-separador {
+  color: #cbd2d9 !important;
+}
+html[data-tema='escuro'] .app-shell-content .pinterest-materiais .materiais-separador[aria-selected='true'] {
+  background: #263b4b !important;
+  color: #a9d9fb !important;
+  box-shadow: inset 0 0 0 1px #38586f !important;
+}
+
+html[data-tema='escuro'] .pinterest-adicionar details {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+  box-shadow: 0 8px 22px rgba(0,0,0,.12);
+}
+html[data-tema='escuro'] .pinterest-adicionar summary { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-adicionar summary > svg:last-child { color: #aab3bc; }
+html[data-tema='escuro'] .pinterest-adicionar summary > span:first-child {
+  background: #183c3b;
+  color: #65d2ca;
+}
+html[data-tema='escuro'] .pinterest-adicionar details:nth-child(2) summary > span:first-child {
+  background: #263b4b;
+  color: #a9d9fb;
+}
+html[data-tema='escuro'] .pinterest-adicionar-identidade {
+  background: var(--dark-raised);
+}
+html[data-tema='escuro'] .pinterest-adicionar :is(.pinterest-adicionar-campo > span,.pinterest-adicionar-identidade span,.pinterest-adicionar-declaracao span) {
+  color: var(--dark-muted);
+}
 html[data-tema='escuro'] .pinterest-aluno-aula time,
 html[data-tema='escuro'] .pinterest-horario .aluno-aula-registo summary time { color: #91caf5; }
 html[data-tema='escuro'] .pinterest-aluno-aula small { color: #67d0c8; }
