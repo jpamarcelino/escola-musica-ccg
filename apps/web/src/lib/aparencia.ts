@@ -5,12 +5,21 @@
 // à noite e claro no computador da secretaria. Guardá-la no perfil
 // obrigaria os dois a concordar.
 //
-// Nota: por agora a app ainda só tem paleta clara. A escolha fica
-// guardada e o atributo é escrito no <html>, mas nenhuma regra de CSS o
-// lê ainda — quando o tema escuro existir, basta escrever as regras
-// contra `[data-tema="escuro"]` e tudo o que está aqui passa a pintar.
 
 export const CHAVE_APARENCIA = 'ccg-aparencia'
+
+// A cor que o sistema operativo pinta à volta da página: a faixa das
+// horas e da bateria no iPhone quando a app corre do ecrã principal, e a
+// barra do browser no resto. Não é decoração — sem ela, o topo do ecrã
+// fica preto por baixo de uma página que já não é preta, e o desenho
+// parece acabar a meio.
+//
+// No escuro não é o `--dark-bg` puro: o topo das páginas leva um banho
+// azul, e a faixa tem de o acompanhar ou vê-se a emenda.
+export const COR_TEMA: Record<'claro' | 'escuro', string> = {
+  claro: '#26619c',
+  escuro: '#182029',
+}
 
 export type Aparencia = 'claro' | 'escuro' | 'sistema'
 
@@ -57,6 +66,8 @@ export function guardarAparencia(escolha: Aparencia): void {
 // a escolha da pessoa (o que o seletor há de mostrar marcado).
 export function aplicarAparencia(escolha: Aparencia): void {
   const raiz = document.documentElement
+  const tema = resolverAparencia(escolha)
   raiz.dataset.aparencia = escolha
-  raiz.dataset.tema = resolverAparencia(escolha)
+  raiz.dataset.tema = tema
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', COR_TEMA[tema])
 }
