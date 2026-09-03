@@ -83,8 +83,8 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Administracao
 
-- [ ] `/admin` - administracao - mobile - modo claro - redesenhado no Pinterest, os dois estados do destaque vistos em ensaio a 360 e 430 px; falta ver com conta de administrador real
-- [ ] `/admin/conta`
+- [x] `/admin` - secretaria - Home Pinterest concluida e validada com a conta real a 390 px e 1440 px; claro e escuro, sem overflow; preserva pedidos, numeros, avisos, recomendacoes e Musica para Bebes
+- [x] `/admin/conta` - secretaria - dados, seguranca, painel de professor, aparencia, notificacoes, saida e zona sensivel redesenhados; validado a 390 px e 1440 px em claro e escuro
 - [ ] `/admin/alunos` - administracao - mobile - modo claro - tratamento Pinterest so abaixo dos 720 px, a mesa do computador fica como estava; lista, folha do dossier e alvos de toque vistos em ensaio a 360 px; falta ver com conta de administrador real
 - [ ] `/admin/alunos/[alunoId]`
 - [ ] `/admin/professores` - administracao - mobile - modo claro - redesenhado no Pinterest com os componentes partilhados vestidos por descendencia; visto em ensaio a 360 px com o CSS compilado da build; falta ver com conta de administrador real

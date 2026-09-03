@@ -349,7 +349,7 @@ Fica como o unico `[ ]` das publicas.
 1. Fechar o percurso familiar mobile claro: Agenda, Avisos, Conta, Gerir alunos, Mensalidades e paginas do aluno.
 2. Consolidar componentes reutilizaveis apenas depois de existirem dois ou tres exemplos reais.
 3. Fazer o percurso do professor mobile claro.
-4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
+4. Continuar a administracao a partir da Home e Conta ja concluidas, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
 7. Publicas concluidas, excepto validar `/redefinir-password` (precisa de uma sessao de recuperacao).
