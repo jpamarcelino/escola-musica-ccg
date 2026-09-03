@@ -7636,3 +7636,9 @@ html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha
 html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dd:has(>svg),
 html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .escolher-horario summary { color:#83c8f6; }
 html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .escolher-horario-conta { background:#30475a; color:#d4ecfd; }
+html[data-tema='escuro'] .pinterest-confirmar-presencas .presencas-grupo:first-of-type > header small {
+  border:1px solid #743e47;
+  background:#45262c;
+  color:#ffbdc6;
+  box-shadow:0 0 12px rgba(220,84,105,.12);
+}
