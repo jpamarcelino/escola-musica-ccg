@@ -120,10 +120,11 @@ export default async function SemanaPage() {
     )
   }
 
-  // Só os dias com aulas. Um professor que dá segunda a sexta não precisa
-  // de duas colunas vazias a roubar largura ao telemóvel — e as colunas
-  // que ficam podem ser mais largas.
-  const dias = DIAS_SEMANA.filter((dia) => blocos.some((b) => b.dia_semana === dia))
+  // A semana inteira, sempre. Mostrar só os dias com aulas dava grelhas
+  // de forma diferente a cada professor, e uma coluna que desaparece
+  // quando se desmarca a última aula lê-se como um erro. Quem não tem
+  // aula nenhuma não chega aqui — a grelha vazia acima trata desse caso.
+  const dias = [...DIAS_SEMANA]
 
   const primeiraHora = Math.floor(Math.min(...blocos.map((b) => paraMinutos(b.hora_inicio))) / 60)
   const ultimaHora = Math.ceil(Math.max(...blocos.map((b) => paraMinutos(b.hora_fim))) / 60)
