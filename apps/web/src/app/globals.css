@@ -4835,6 +4835,176 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
   .indicacao-recusar input { min-width: 100%; }
 }
 
+/* Secretaria: Programa de Recomendacao — tema escuro -----------------
+   Mantem a hierarquia do modo claro, mas usa as mesmas superficies e o
+   mesmo banho azul discreto da home administrativa. */
+html[data-tema='escuro'] :is(
+  .recomendacoes-admin-pagina,
+  .recomendacao-nova-pagina,
+  .recomendacao-detalhe-pagina,
+  .admin-recomendacoes-estudo
+) {
+  background: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+html[data-tema='escuro'] :is(
+  .recomendacoes-admin-pagina,
+  .recomendacao-nova-pagina,
+  .recomendacao-detalhe-pagina
+) :is(.partitura-agenda-cabecalho h1, .partitura-sobretitulo),
+html[data-tema='escuro'] :is(
+  .recomendacoes-admin-pagina,
+  .recomendacao-nova-pagina,
+  .recomendacao-detalhe-pagina,
+  .admin-recomendacoes-estudo
+) :is(h2, h3, strong, dd, .lista-item-titulo, .recomendacao-nomes p) {
+  color: var(--dark-text);
+}
+
+html[data-tema='escuro'] :is(
+  .recomendacoes-admin-pagina,
+  .recomendacao-nova-pagina,
+  .recomendacao-detalhe-pagina,
+  .admin-recomendacoes-estudo
+) :is(p, small, dt, label, .lista-item-sub, .stat-tile-legenda) {
+  color: var(--dark-muted);
+}
+
+html[data-tema='escuro'] :is(
+  .recomendacoes-admin-pagina,
+  .recomendacao-nova-pagina,
+  .recomendacao-detalhe-pagina
+) .partitura-voltar {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: #a9d9fb;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, .18);
+}
+
+html[data-tema='escuro'] .recomendacoes-balanco {
+  border-color: #35536b;
+  background: var(--dark-surface);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .22);
+}
+html[data-tema='escuro'] .recomendacoes-prioridade {
+  background: linear-gradient(145deg, #164b73, #203744 72%);
+}
+html[data-tema='escuro'] .recomendacoes-balanco dl { background: var(--dark-surface); }
+html[data-tema='escuro'] .recomendacoes-balanco dl > div + div { border-color: var(--dark-border); }
+html[data-tema='escuro'] .recomendacoes-balanco dd { color: var(--dark-text); }
+
+html[data-tema='escuro'] .recomendacoes-acoes a {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: #a9d9fb;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .17);
+}
+html[data-tema='escuro'] .recomendacoes-acoes a:first-child {
+  border-color: #3c759b;
+  background: #205c88;
+  color: #fff;
+}
+
+html[data-tema='escuro'] :is(.indicacoes-lista, .recomendacoes-lista) {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .17);
+}
+html[data-tema='escuro'] :is(.indicacoes-lista a, .recomendacao-linha) {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+}
+html[data-tema='escuro'] :is(.indicacoes-lista a, .recomendacao-linha):hover {
+  background: #24333e;
+}
+html[data-tema='escuro'] .indicacao-origem {
+  border-color: #355d70;
+  background: #1b3039;
+}
+html[data-tema='escuro'] :is(.indicacao-recusar input, .indicacao-recusar button) {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+}
+
+html[data-tema='escuro'] :is(.recomendacao-passo, .recomendacao-seccao) {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .17);
+}
+html[data-tema='escuro'] :is(.recomendacao-form, .recomendacao-seccao form) :is(input:not([type='hidden']), select, textarea) {
+  border-color: #3b4852;
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  caret-color: #8dcfff;
+}
+html[data-tema='escuro'] :is(.recomendacao-form, .recomendacao-seccao form) :is(input, textarea)::placeholder {
+  color: #89949e;
+}
+html[data-tema='escuro'] .recomendacao-seccao > :is(div, form, p).rounded-\[13px\] {
+  background: #22292f;
+  color: var(--dark-muted);
+}
+html[data-tema='escuro'] .recomendacao-seccao .lista-item {
+  background: #22292f;
+  color: var(--dark-text);
+}
+html[data-tema='escuro'] .recomendacao-perigo {
+  border-color: #69393e;
+  background: #281b1e;
+}
+html[data-tema='escuro'] .recomendacao-perigo > h2 { color: #ffaaa5; }
+html[data-tema='escuro'] .recomendacao-perigo > form button { color: #ffaaa5; }
+
+html[data-tema='escuro'] .admin-recomendacoes-estudo .page-header a {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: #a9d9fb;
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo .stat-tile {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .16);
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo .stat-tile:nth-child(-n+2) {
+  border-color: #355d76;
+  background: linear-gradient(145deg, rgba(31, 105, 153, .28), var(--dark-surface) 76%);
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo .stat-tile-numero { color: #9bd8fa; }
+html[data-tema='escuro'] .admin-recomendacoes-estudo :is(
+  section > .space-y-2,
+  .estudo-comparacao-coluna,
+  .overflow-x-auto
+) {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo section > .space-y-2 .lista-item {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo section > .space-y-2 .lista-item:last-child {
+  border-left-color: #63c7dc;
+  background: #20313b;
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo section > .space-y-2 .lista-item:last-child .lista-item-sub {
+  color: #9bd8fa;
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo table { background: var(--dark-surface); }
+html[data-tema='escuro'] .admin-recomendacoes-estudo th {
+  border-color: var(--dark-border);
+  background: #252d34;
+  color: #b8c3cc;
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo td {
+  border-color: var(--dark-border);
+  color: #e6eaee;
+}
+html[data-tema='escuro'] .admin-recomendacoes-estudo tbody tr:hover { background: #24333e; }
+
 /* Calendário do ano letivo -------------------------------------------
    Doze meses numa página, um por linha, para se percorrer o ano a
    deslizar. Cada mês é uma <table> porque é mesmo uma tabela — dias em
