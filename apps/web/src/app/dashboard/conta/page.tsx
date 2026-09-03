@@ -76,11 +76,19 @@ export default async function ContaPage({
   }
   const ehProfessor = profile.tipo === 'professor'
 
+  // Todas as disciplinas, e não só as da escola de onde o professor veio.
+  // `programa` diz de onde ele é, não o que sabe ensinar — e no CCG a
+  // mesma pessoa dá Guitarra à quarta e Dança Moderna ao sábado. Quem
+  // decide continua a ser a secretaria; isto é um pedido.
+  //
+  // Bebés fora: ali não se pede uma disciplina, a secretaria atribui a
+  // turma em /admin/bebes.
   const instrumentosQuery = ehProfessor
     ? supabase
         .from('instrumentos')
-        .select('id, nome')
-        .eq('programa', profile.programa)
+        .select('id, nome, programa')
+        .neq('programa', 'bebes')
+        .order('programa')
         .order('nome')
     : Promise.resolve({ data: [] })
 
@@ -257,11 +265,21 @@ export default async function ContaPage({
                       <option value="" disabled>
                         Escolhe uma disciplina
                       </option>
-                      {porPedir.map((i) => (
-                        <option key={i.id} value={i.id}>
-                          {i.nome}
-                        </option>
-                      ))}
+                      {/* Agrupado por escola: catorze nomes seguidos,
+                          com Acordeão a meio de Ballet, não se lê. */}
+                      {(['musica', 'danca'] as const).map((prog) => {
+                        const desteProg = porPedir.filter((i) => i.programa === prog)
+                        if (desteProg.length === 0) return null
+                        return (
+                          <optgroup key={prog} label={prog === 'musica' ? 'Música' : 'Dança'}>
+                            {desteProg.map((i) => (
+                              <option key={i.id} value={i.id}>
+                                {i.nome}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )
+                      })}
                     </select>
                   </div>
                   <div className="space-y-[6px]">
