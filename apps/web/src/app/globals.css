@@ -226,12 +226,16 @@ body {
   }
 
   .app-primary-nav .bottom-nav-item::before { inset: 0; border-radius: 14px; }
-  .app-primary-nav .bottom-nav-item { color: #737d86; }
-  .app-primary-nav .bottom-nav-item[aria-current='page'] { color: #1b5d8d; }
+  .app-primary-nav .bottom-nav-item { color: #4f5b65; }
+  .app-primary-nav .bottom-nav-item[aria-current='page'] { color: #174f78; }
   .app-primary-nav .bottom-nav-item[aria-current='page']::before { background: #e8f2f9; }
   .app-primary-nav .bottom-nav-item:focus-visible { outline-color: #3d7fb8; }
-  .app-primary-nav .bottom-nav-label { font-size: 13.5px; font-weight: 600; }
+  .app-primary-nav .bottom-nav-label { font-size: 13.5px; font-weight: 650; }
   .app-primary-nav .bottom-nav-icon { width: 21px; height: 21px; }
+  .app-primary-nav .bottom-nav-item:not([aria-current='page']) .bottom-nav-icon {
+    opacity: 1;
+    stroke-width: 1.8;
+  }
   .app-primary-nav .bottom-nav-ativo {
     inset: 13px auto 13px 0;
     width: 3px;
