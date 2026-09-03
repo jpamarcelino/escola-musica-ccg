@@ -7,6 +7,7 @@ import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { formatarDataEscolar } from '@ccg/core'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type Pedido = {
   id: number
@@ -40,15 +41,14 @@ export default async function DisciplinasPage({
     redirect('/login')
   }
 
-  const { data: perfil } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfil?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A direção vê a ficha toda e não escreve nada nela.
+  const podeMexer = ehSecretaria(papel)
 
   const { data } = await supabase
     .from('pedidos_instrumento')
@@ -100,6 +100,7 @@ export default async function DisciplinasPage({
                   {p.mensagem && (
                     <p className="text-sm italic text-foreground/70">“{p.mensagem}”</p>
                   )}
+                  {podeMexer && (
                   <div className="flex flex-wrap items-center gap-2">
                     <form action={aceitarDisciplina}>
                       <input type="hidden" name="pedidoId" value={p.id} />
@@ -132,6 +133,7 @@ export default async function DisciplinasPage({
                       </SubmitButton>
                     </form>
                   </div>
+                  )}
                 </div>
               ))}
             </div>

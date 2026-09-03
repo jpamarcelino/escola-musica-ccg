@@ -7,6 +7,7 @@ import { ConvidarProfessorForm } from '@/components/convite-forms'
 import { EmptyState } from '@/components/empty-state'
 import { ListaComPesquisa } from '@/components/lista-com-pesquisa'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type Professor = {
   id: string
@@ -23,15 +24,14 @@ export default async function AdminProfessoresPage() {
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A direção vê a ficha toda e não escreve nada nela.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: professoresData } = await supabase
     .from('perfis_escola')
@@ -88,12 +88,14 @@ export default async function AdminProfessoresPage() {
           </Link>
         </nav>
 
-        <section className="pinterest-diretorio-seccao">
-          <h2>Convidar professor</h2>
-          <div className="pinterest-diretorio-convite">
-            <ConvidarProfessorForm action={criarConviteProfessor} />
-          </div>
-        </section>
+        {podeMexer && (
+          <section className="pinterest-diretorio-seccao">
+            <h2>Convidar professor</h2>
+            <div className="pinterest-diretorio-convite">
+              <ConvidarProfessorForm action={criarConviteProfessor} />
+            </div>
+          </section>
+        )}
 
         <section className="pinterest-diretorio-seccao">
           <h2>Na escola</h2>

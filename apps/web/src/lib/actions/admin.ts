@@ -50,6 +50,45 @@ export async function removerAdministrador(formData: FormData) {
   await definirAdministrador(userId, false, '/admin/administradores')
 }
 
+// Dar e tirar a secretaria dentro da administração.
+//
+// Um administrador sem isto é um diretor: vê a escola toda e não escreve
+// nada. Mesma escolha da função acima — quem verifica é a base de dados,
+// para a regra não viver em dois sítios.
+async function definirSecretaria(userId: string, secretaria: boolean, destino: string) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { error } = await supabase.rpc('definir_secretaria', {
+    p_user_id: userId,
+    p_secretaria: secretaria,
+  })
+
+  if (error) {
+    redirect(`${destino}?erro=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath('/admin')
+  revalidatePath('/admin/administradores')
+  redirect(destino)
+}
+
+export async function tornarSecretaria(formData: FormData) {
+  const userId = String(formData.get('userId') ?? '')
+  await definirSecretaria(userId, true, `/admin/administradores/${userId}`)
+}
+
+export async function retirarSecretaria(formData: FormData) {
+  const userId = String(formData.get('userId') ?? '')
+  await definirSecretaria(userId, false, `/admin/administradores/${userId}`)
+}
+
 // Criar horários para um professor, a partir do painel da secretaria.
 //
 // Existe por causa da Música para Bebés: são aulas de grupo, e a grelha é

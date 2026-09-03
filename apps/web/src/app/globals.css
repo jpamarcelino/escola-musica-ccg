@@ -3770,6 +3770,14 @@ body {
   white-space: nowrap;
 }
 .admin-cobranca > form.admin-cobranca-pago p { flex: 1 1 190px; margin: 0; }
+
+/* A mesma ficha, vista por quem dirige: os números que os formulários
+   gravam, em texto. Nao e um formulario desativado — um campo cinzento
+   continua a dizer "aqui escreve-se", e aqui nao se escreve. */
+.admin-so-leitura { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 10px; }
+.admin-so-leitura > div { display: flex; flex-direction: column; gap: 2px; }
+.admin-so-leitura dt { color: var(--color-tinta-suave); font-size: 11px; }
+.admin-so-leitura dd { margin: 0; color: var(--color-tinta); font-size: 13px; font-weight: 600; }
 .admin-cobranca button:focus-visible,
 .admin-cobranca input:focus-visible,
 .admin-guardar:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 3px; }

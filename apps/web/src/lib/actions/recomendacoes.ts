@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import type { MatriculaEstado } from '@ccg/types'
+import { ehSecretaria } from '@/lib/permissoes'
 
 type AlunoParaRecomendacao = {
   id: string
@@ -23,11 +24,14 @@ async function exigirAdmin() {
 
   const { data: perfilAtual } = await supabase
     .from('perfis_escola')
-    .select('admin')
+    .select('admin, secretaria, super_admin')
     .eq('id', user.id)
     .single()
 
-  if (!perfilAtual?.admin) {
+  // A direção vê as mensalidades e não lhes toca. A porta verdadeira é a
+  // policy; isto evita a viagem à base de dados e dá um destino a quem
+  // chegar aqui pelo endereço.
+  if (!ehSecretaria(perfilAtual)) {
     redirect('/dashboard')
   }
 

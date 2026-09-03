@@ -8,6 +8,7 @@ import {
   definirNumeroFatura,
 } from '@/lib/actions/pagamentos'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type MatriculaResumo = {
   id: number
@@ -45,15 +46,16 @@ export default async function ConfirmarMensalidadesProfessorPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A direção vê a mesma lista e os mesmos números, sem um único botão.
+  // Não é a página que a impede de gravar — é a policy; isto é só não
+  // pôr à frente de alguém ações que hão de falhar.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: professorPerfilData } = await supabase
     .from('perfis_escola')
@@ -156,6 +158,8 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       desativado, antes do campo que o desbloqueia. Quem
                       chegava via a ação principal morta sem nada a explicar
                       porquê. */}
+                  {podeMexer ? (
+                  <>
                   <form action={definirValorMensal} className="flex items-center gap-2">
                     <input type="hidden" name="matriculaId" value={m.id} />
                     <label htmlFor={`valor-${m.id}`} className="text-xs text-foreground/60">
@@ -264,6 +268,24 @@ export default async function ConfirmarMensalidadesProfessorPage({
                       </p>
                     )}
                   </form>
+                  </>
+                  ) : (
+                    /* A mesma informação, sem nada em que se possa tocar. */
+                    <dl className="admin-so-leitura">
+                      <div>
+                        <dt>Valor mensal</dt>
+                        <dd>{valor === null ? 'Sem preço definido' : `${valor.toFixed(2)} €`}</dd>
+                      </div>
+                      <div>
+                        <dt>10 € do CCG</dt>
+                        <dd>{m.isento_ccg ? 'Isento' : 'Paga'}</dd>
+                      </div>
+                      <div>
+                        <dt>Nº fatura</dt>
+                        <dd>{numeroFatura || 'Por preencher'}</dd>
+                      </div>
+                    </dl>
+                  )}
                 </article>
               )
             })}

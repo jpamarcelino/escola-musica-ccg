@@ -12,6 +12,7 @@ import {
   removerProfessorTurmaBebes,
 } from '@/lib/actions/bebes'
 import { ConfirmarHorarioTurma } from '@/components/confirmar-horario-turma'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type Turma = {
   id: number
@@ -36,13 +37,13 @@ export default async function AdminBebesHorariosPage({
 
   if (!user) redirect('/login')
 
-  const { data: perfil } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfil?.admin) redirect('/dashboard')
+  if (!papel.admin) redirect('/dashboard')
+
+  // Quem dirige vê as turmas, a hora e quem as dá. Mudar o sábado de dez
+  // famílias — ou tirar-lhes o professor — é da secretaria.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: turmasData } = await supabase
     .from('turmas_bebes')
@@ -123,6 +124,7 @@ export default async function AdminBebesHorariosPage({
               {/* A confirmação é obrigatória: mudar a hora mexe no sábado
                   de dez famílias, e é o tipo de coisa que não se faz por
                   engano num campo de horas. */}
+              {podeMexer ? (
               <ConfirmarHorarioTurma
                 turmaId={turma.id}
                 nome={turma.instrumentos?.nome ?? 'a turma'}
@@ -133,6 +135,11 @@ export default async function AdminBebesHorariosPage({
                 dias={[...DIAS_SEMANA]}
                 action={mudarHorarioTurmaBebes}
               />
+              ) : (
+                <p className="horarios-turma-hora">
+                  {turma.dia_semana}, {turma.hora_inicio.slice(0, 5)} às {turma.hora_fim.slice(0, 5)}
+                </p>
+              )}
 
               <div className="horarios-alunos" style={{ marginTop: 18 }}>
                 {daTurma.length === 0 && (
@@ -147,22 +154,24 @@ export default async function AdminBebesHorariosPage({
                       <strong>{p.nome}</strong>
                       <small>Dá esta turma</small>
                     </span>
-                    <span>
-                      <BotaoAcaoDestruir
-                        label="Retirar"
-                        titulo="Retirar da turma?"
-                        mensagem={`${p.nome} deixa de dar ${turma.instrumentos?.nome}.\n\nSe já tiver alunos inscritos, o horário dele mantém-se — as aulas que existem não se desfazem sozinhas.`}
-                        action={removerProfessorTurmaBebes}
-                      >
-                        <input type="hidden" name="turmaId" value={turma.id} />
-                        <input type="hidden" name="professorId" value={p.id} />
-                      </BotaoAcaoDestruir>
-                    </span>
+                    {podeMexer && (
+                      <span>
+                        <BotaoAcaoDestruir
+                          label="Retirar"
+                          titulo="Retirar da turma?"
+                          mensagem={`${p.nome} deixa de dar ${turma.instrumentos?.nome}.\n\nSe já tiver alunos inscritos, o horário dele mantém-se — as aulas que existem não se desfazem sozinhas.`}
+                          action={removerProfessorTurmaBebes}
+                        >
+                          <input type="hidden" name="turmaId" value={turma.id} />
+                          <input type="hidden" name="professorId" value={p.id} />
+                        </BotaoAcaoDestruir>
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
 
-              {porAtribuir.length > 0 && (
+              {podeMexer && porAtribuir.length > 0 && (
                 <form action={atribuirProfessorTurmaBebes} className="space-y-2" style={{ marginTop: 14 }}>
                   <input type="hidden" name="turmaId" value={turma.id} />
                   <label className="block text-[12.5px] font-medium" htmlFor={`prof-${turma.id}`} style={{ color: 'var(--color-tinta-suave)' }}>

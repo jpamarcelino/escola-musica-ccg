@@ -5,6 +5,7 @@ import { SubmitButton } from '@/components/submit-button'
 import { recusarIndicacao, registarRecomendacao } from '@/lib/actions/recomendacoes'
 import type { MatriculaEstado } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type ProfessorAderente = {
   id: string
@@ -38,14 +39,16 @@ export default async function NovaRecomendacaoPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
+  }
+
+  // Registar é da secretaria. Um diretor que chegue aqui pelo endereço
+  // volta à lista, onde tem tudo o que lhe interessa ver.
+  if (!ehSecretaria(papel)) {
+    redirect('/admin/recomendacoes')
   }
 
   // Quando se chega aqui a partir de uma indicação escrita por quem pediu

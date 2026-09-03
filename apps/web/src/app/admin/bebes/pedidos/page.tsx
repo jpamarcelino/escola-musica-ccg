@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/empty-state'
 import { classesCampo } from '@/components/campo-formulario'
 import { formatarHora } from '@ccg/core'
 import { aceitarPedidoBebes, recusarPedidoBebes } from '@/lib/actions/bebes'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type Pedido = {
   id: number
@@ -35,13 +36,13 @@ export default async function AdminBebesPedidosPage({
 
   if (!user) redirect('/login')
 
-  const { data: perfil } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfil?.admin) redirect('/dashboard')
+  if (!papel.admin) redirect('/dashboard')
+
+  // A lista de quem está à espera é para todos verem. Aceitar e recusar
+  // é da secretaria — é o que inscreve uma criança e cria a mensalidade.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: turmasData } = await supabase
     .from('turmas_bebes')
@@ -190,7 +191,7 @@ export default async function AdminBebesPedidosPage({
                       ocupados. Para aceitar mais alguém, aumenta a capacidade da turma primeiro.
                     </p>
                   </div>
-                ) : (
+                ) : !podeMexer ? null : (
                   <form action={aceitarPedidoBebes} className="space-y-2">
                     <input type="hidden" name="matriculaId" value={pedido.id} />
                     <label className="block text-[12.5px] font-medium" style={{ color: 'var(--color-tinta-suave)' }}>
@@ -221,6 +222,7 @@ export default async function AdminBebesPedidosPage({
                   </form>
                 )}
 
+                {podeMexer && (
                 <footer>
                   <BotaoAcaoDestruir
                     label="Recusar"
@@ -232,6 +234,7 @@ export default async function AdminBebesPedidosPage({
                     <input type="hidden" name="matriculaId" value={pedido.id} />
                   </BotaoAcaoDestruir>
                 </footer>
+                )}
               </article>
             )
           })}

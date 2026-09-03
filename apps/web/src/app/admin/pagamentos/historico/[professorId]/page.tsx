@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/empty-state'
 import { atualizarHistoricoMensalidades } from '@/lib/actions/pagamentos'
 import { MESES_ANO_LETIVO, rotuloMes } from '@ccg/core'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type MatriculaAtual = {
   aluno_id: string
@@ -41,15 +42,16 @@ export default async function HistoricoPagamentosProfessorPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A direção lê o arquivo inteiro. As células ficam em leitura e o
+  // botão de guardar não chega a existir — a tabela é a mesma, o que
+  // muda é poder-se escrever nela.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: professorPerfilData } = await supabase
     .from('perfis_escola')
@@ -219,6 +221,7 @@ export default async function HistoricoPagamentosProfessorPage({
                               <input
                                 type="text"
                                 inputMode="decimal"
+                                readOnly={!podeMexer}
                                 name={`v_${aluno.chave}_${ano}_${mes}`}
                                 defaultValue={celula?.valor != null ? celula.valor.toFixed(2) : ''}
                                 placeholder="--"
@@ -229,6 +232,7 @@ export default async function HistoricoPagamentosProfessorPage({
                               <input
                                 type="text"
                                 maxLength={10}
+                                readOnly={!podeMexer}
                                 name={`f_${aluno.chave}_${ano}_${mes}`}
                                 defaultValue={celula?.numero_fatura ?? ''}
                                 placeholder="--"
@@ -248,9 +252,11 @@ export default async function HistoricoPagamentosProfessorPage({
                 cada ponta da tabela; dois botões idênticos no mesmo
                 formulário são uma pergunta ("fazem o mesmo?") sem
                 ganho nenhum. */}
-            <button type="submit" className="admin-guardar">
-              Guardar alterações
-            </button>
+            {podeMexer && (
+              <button type="submit" className="admin-guardar">
+                Guardar alterações
+              </button>
+            )}
           </form>
         )}
       </div>

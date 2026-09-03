@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/empty-state'
 import { BotaoSecundario } from '@/components/botao-secundario'
 import type { RecomendacaoEstado } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type RecomendacaoLinha = {
   id: number
@@ -47,15 +48,13 @@ export default async function RecomendacoesPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  const podeMexer = ehSecretaria(papel)
 
   const { data: recomendacoesData } = await supabase
     .from('recomendacoes')
@@ -99,7 +98,7 @@ export default async function RecomendacoesPage({
           <dl><div><dt>Validadas</dt><dd>{validadas}</dd></div><div><dt>Meses por usar</dt><dd>{pendentes}</dd></div><div><dt>Meses já dados</dt><dd>{usados}</dd></div></dl>
         </section>
 
-        <nav className="recomendacoes-acoes" aria-label="Ações do programa"><Link href="/admin/recomendacoes/nova">Registar recomendação <i aria-hidden="true">＋</i></Link><Link href="/admin/recomendacoes/estudo">Dados para o estudo <i aria-hidden="true">→</i></Link></nav>
+        <nav className="recomendacoes-acoes" aria-label="Ações do programa">{podeMexer && <Link href="/admin/recomendacoes/nova">Registar recomendação <i aria-hidden="true">＋</i></Link>}<Link href="/admin/recomendacoes/estudo">Dados para o estudo <i aria-hidden="true">→</i></Link></nav>
 
         {indicacoes.length > 0 && (
           <section className="indicacoes-seccao" aria-labelledby="indicacoes-titulo">
@@ -151,7 +150,7 @@ export default async function RecomendacoesPage({
             <EmptyState
               titulo="Ainda não há recomendações registadas"
               descricao="Quando um encarregado trouxer outra família, regista aqui a recomendação para o benefício ser atribuído."
-              acao={<BotaoSecundario href="/admin/recomendacoes/nova">Registar recomendação</BotaoSecundario>}
+              acao={podeMexer ? <BotaoSecundario href="/admin/recomendacoes/nova">Registar recomendação</BotaoSecundario> : undefined}
             />
           ) : (
             <div className="recomendacoes-lista">

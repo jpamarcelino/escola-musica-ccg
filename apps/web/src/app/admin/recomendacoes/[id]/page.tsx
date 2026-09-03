@@ -10,6 +10,7 @@ import {
 import { MESES_ANO_LETIVO, euros } from '@ccg/core'
 import type { BeneficioEstado, RecomendacaoEstado } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type Recomendacao = {
   id: number
@@ -67,15 +68,15 @@ export default async function RecomendacaoPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A ficha inteira é visível para quem dirige. Validar, corrigir e
+  // anular é que são atos da secretaria.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: recomendacaoData } = await supabase
     .from('recomendacoes')
@@ -139,15 +140,17 @@ export default async function RecomendacaoPage({
                 Confirma que a inscrição e a primeira mensalidade foram pagas antes de validar
                 (Art. 11.º).
               </p>
-              <form action={validarRecomendacao}>
-                <input type="hidden" name="id" value={recomendacao.id} />
-                <SubmitButton
-                  textoAGuardar="A validar…"
-                  className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
-                >
-                  Validar e atribuir mês grátis
-                </SubmitButton>
-              </form>
+              {podeMexer && (
+                <form action={validarRecomendacao}>
+                  <input type="hidden" name="id" value={recomendacao.id} />
+                  <SubmitButton
+                    textoAGuardar="A validar…"
+                    className="rounded-[13px] bg-[var(--color-azul-fundo)] px-4 py-2 text-[14px] font-semibold text-white"
+                  >
+                    Validar e atribuir mês grátis
+                  </SubmitButton>
+                </form>
+              )}
             </div>
           )}
           {recomendacao.estado === 'validada' && (
@@ -201,6 +204,9 @@ export default async function RecomendacaoPage({
             className="space-y-3 rounded-[13px] border border-[var(--color-linha)] p-3"
           >
             <input type="hidden" name="id" value={recomendacao.id} />
+            {/* Um fieldset e nao vinte readOnly: sao os mesmos campos, e
+                travar o conjunto num sitio so nao deixa nenhum de fora. */}
+            <fieldset disabled={!podeMexer} className="contents">
             <div className="flex flex-wrap gap-4">
               <div className="space-y-1">
                 <label
@@ -279,16 +285,19 @@ export default async function RecomendacaoPage({
                 className="w-full rounded-[13px] border border-[var(--color-linha)] bg-white px-3 py-2 text-[14px] text-[var(--color-tinta)]"
               />
             </div>
-            <SubmitButton
-              textoAGuardar="A guardar…"
-              className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
-            >
-              Guardar correções
-            </SubmitButton>
+            </fieldset>
+            {podeMexer && (
+              <SubmitButton
+                textoAGuardar="A guardar…"
+                className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
+              >
+                Guardar correções
+              </SubmitButton>
+            )}
           </form>
         </section>
 
-        {recomendacao.estado !== 'anulada' && (
+        {podeMexer && recomendacao.estado !== 'anulada' && (
           <section className="recomendacao-seccao recomendacao-perigo">
             <h2>Anular</h2>
             <p className="text-[13px] text-[var(--color-tinta-suave)]">

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { MESES_ANO_LETIVO } from '@ccg/core'
+import { ehSecretaria } from '@/lib/permissoes'
 
 type SupabaseServidor = Awaited<ReturnType<typeof createClient>>
 
@@ -21,7 +22,10 @@ async function nomesDosAlunos(supabase: SupabaseServidor, alunoIds: string[]) {
   return new Map(((data ?? []) as { id: string; nome: string }[]).map((a) => [a.id, a.nome]))
 }
 
-export async function definirValorMensal(formData: FormData) {
+// Todas as ações desta página escrevem dinheiro, e todas exigem o mesmo:
+// ser da secretaria. A direção lê as mesmas páginas e não tem nenhum
+// destes botões — a porta que conta é a policy, isto só evita a viagem.
+async function exigirSecretaria() {
   const supabase = await createClient()
   const {
     data: { user },
@@ -30,6 +34,22 @@ export async function definirValorMensal(formData: FormData) {
   if (!user) {
     redirect('/login')
   }
+
+  const { data: perfilAtual } = await supabase
+    .from('perfis_escola')
+    .select('admin, secretaria, super_admin')
+    .eq('id', user.id)
+    .single()
+
+  if (!ehSecretaria(perfilAtual)) {
+    redirect('/dashboard')
+  }
+
+  return { supabase, user }
+}
+
+export async function definirValorMensal(formData: FormData) {
+  const { supabase, user } = await exigirSecretaria()
 
   const matriculaId = String(formData.get('matriculaId') ?? '')
   const valorTexto = String(formData.get('valor') ?? '').replace(',', '.')
@@ -58,24 +78,7 @@ export async function definirValorMensal(formData: FormData) {
 // retenção que valeu nesse mês, e reescrever o passado mudava contas de
 // professores que já foram fechadas.
 export async function definirIsencaoCcg(formData: FormData) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
-
-  if (!perfilAtual?.admin) {
-    redirect('/dashboard')
-  }
+  const { supabase } = await exigirSecretaria()
 
   const matriculaId = String(formData.get('matriculaId') ?? '')
   const isento = String(formData.get('isento') ?? '') === 'true'
@@ -86,14 +89,7 @@ export async function definirIsencaoCcg(formData: FormData) {
 }
 
 export async function marcarMensalidadePaga(formData: FormData) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
+  const { supabase, user } = await exigirSecretaria()
 
   const matriculaId = Number(formData.get('matriculaId') ?? 0)
   const alunoId = String(formData.get('alunoId') ?? '')
@@ -134,14 +130,7 @@ export async function marcarMensalidadePaga(formData: FormData) {
 }
 
 export async function definirNumeroFatura(formData: FormData) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
+  const { supabase, user } = await exigirSecretaria()
 
   const matriculaId = Number(formData.get('matriculaId') ?? 0)
   const alunoId = String(formData.get('alunoId') ?? '')
@@ -184,24 +173,7 @@ export async function definirNumeroFatura(formData: FormData) {
 // apaga o registo desse mês (o que faz o aluno voltar a aparecer em
 // "por confirmar" se for o mês atual); célula preenchida = grava.
 export async function atualizarHistoricoMensalidades(formData: FormData) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
-
-  if (!perfilAtual?.admin) {
-    redirect('/dashboard')
-  }
+  const { supabase, user } = await exigirSecretaria()
 
   const professorId = String(formData.get('professorId') ?? '')
 

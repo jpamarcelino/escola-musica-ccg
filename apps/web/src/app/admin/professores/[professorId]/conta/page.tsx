@@ -33,15 +33,14 @@ export default async function AdminProfessorContaPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A direção vê a ficha toda e não escreve nada nela.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: professorPerfilData } = await supabase
     .from('perfis_escola')
@@ -123,6 +122,7 @@ export default async function AdminProfessorContaPage({
 
           <form action={guardarFichaProfessor} className="space-y-[16px]">
             <input type="hidden" name="professorId" value={professorId} />
+            <fieldset disabled={!podeMexer} className="contents">
 
             <div className="admin-ficha-foto">
               {professorPerfil.profiles?.foto_url ? (
@@ -154,9 +154,12 @@ export default async function AdminProfessorContaPage({
               />
             </div>
 
-            <SubmitButton textoAGuardar="A guardar…" className="recomendacao-submeter">
-              Guardar ficha
-            </SubmitButton>
+            </fieldset>
+            {podeMexer && (
+              <SubmitButton textoAGuardar="A guardar…" className="recomendacao-submeter">
+                Guardar ficha
+              </SubmitButton>
+            )}
           </form>
         </section>
       </div>
@@ -170,3 +173,4 @@ import { classesCampo, Rotulo } from '@/components/campo-formulario'
 import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { SubmitButton } from '@/components/submit-button'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'

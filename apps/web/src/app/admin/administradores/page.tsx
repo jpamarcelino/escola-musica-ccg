@@ -20,6 +20,7 @@ type Pessoa = {
   email: string | null
   tipo: PerfisEscolaTipo
   admin: boolean
+  secretaria: boolean
   super_admin: boolean
 }
 
@@ -28,6 +29,7 @@ function paraPessoas(linhas: unknown): Pessoa[] {
     id: string
     tipo: PerfisEscolaTipo
     admin: boolean
+    secretaria: boolean
     super_admin: boolean
     profiles: { nome: string; email: string | null } | null
   }[]).map((p) => ({
@@ -36,6 +38,7 @@ function paraPessoas(linhas: unknown): Pessoa[] {
     email: p.profiles?.email ?? null,
     tipo: p.tipo,
     admin: p.admin,
+    secretaria: p.secretaria,
     super_admin: p.super_admin,
   }))
 }
@@ -79,7 +82,7 @@ export default async function AdminAdministradoresPage({
 
   const { data: adminsData } = await supabase
     .from('perfis_escola')
-    .select('id, tipo, admin, super_admin, profiles!inner(nome, email)')
+    .select('id, tipo, admin, secretaria, super_admin, profiles!inner(nome, email)')
     .eq('admin', true)
     .order('nome', { referencedTable: 'profiles' })
   const admins = paraPessoas(adminsData)
@@ -90,7 +93,7 @@ export default async function AdminAdministradoresPage({
   if (procura.length >= 3) {
     const { data } = await supabase
       .from('perfis_escola')
-      .select('id, tipo, admin, super_admin, profiles!inner(nome, email)')
+      .select('id, tipo, admin, secretaria, super_admin, profiles!inner(nome, email)')
       .ilike('profiles.email', `%${procura}%`)
       .limit(10)
     resultados = paraPessoas(data)
@@ -183,7 +186,11 @@ export default async function AdminAdministradoresPage({
                     </span>
                     <span className="lista-item-sub">
                       {pessoa.email}
-                      {pessoa.super_admin && ' · super administrador'}
+                      {pessoa.super_admin
+                        ? ' · super administrador'
+                        : pessoa.secretaria
+                          ? ' · secretaria'
+                          : ' · direção'}
                     </span>
                   </span>
                   <span aria-hidden="true">→</span>

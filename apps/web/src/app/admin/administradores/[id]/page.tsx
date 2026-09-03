@@ -1,8 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { removerAdministrador } from '@/lib/actions/admin'
+import { removerAdministrador, retirarSecretaria, tornarSecretaria } from '@/lib/actions/admin'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { MensagemErro, MensagemNota } from '@/components/mensagem'
+import { SubmitButton } from '@/components/submit-button'
 import type { PerfisEscolaTipo } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
 
@@ -47,7 +48,7 @@ export default async function AdministradorPage({
 
   const { data } = await supabase
     .from('perfis_escola')
-    .select('id, tipo, admin, super_admin, profiles!inner(nome, email)')
+    .select('id, tipo, admin, secretaria, super_admin, profiles!inner(nome, email)')
     .eq('id', id)
     .maybeSingle()
 
@@ -55,6 +56,7 @@ export default async function AdministradorPage({
     id: string
     tipo: PerfisEscolaTipo
     admin: boolean
+    secretaria: boolean
     super_admin: boolean
     profiles: { nome: string; email: string | null } | null
   } | null
@@ -118,6 +120,54 @@ export default async function AdministradorPage({
             </>
           )}
         </section>
+
+        {/* O papel dentro da administração. Só aparece a quem já lá está:
+            secretaria sem acesso ao painel não seria nada, e a base de
+            dados recusa-o na mesma. */}
+        {pessoa.admin && (
+          <section className="space-y-3 pt-2">
+            <h2 className="font-semibold">Papel</h2>
+            {pessoa.super_admin ? (
+              <MensagemNota>
+                É super administrador — trata de tudo, por definição.
+              </MensagemNota>
+            ) : souEu ? (
+              <MensagemNota>És tu. O teu próprio papel não se muda aqui.</MensagemNota>
+            ) : pessoa.secretaria ? (
+              <>
+                <p className="text-sm text-foreground/70">
+                  <strong>Secretaria.</strong> Trata da escola: lança mensalidades, regista
+                  recomendações, atribui disciplinas e mexe nas turmas de bebés.
+                </p>
+                <form action={retirarSecretaria}>
+                  <input type="hidden" name="userId" value={pessoa.id} />
+                  <SubmitButton
+                    textoAGuardar="A guardar…"
+                    className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
+                  >
+                    Passar a direção
+                  </SubmitButton>
+                </form>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-foreground/70">
+                  <strong>Direção.</strong> Vê a escola inteira — alunos, professores,
+                  mensalidades, recomendações — e não altera nada. Pode mandar mensagens.
+                </p>
+                <form action={tornarSecretaria}>
+                  <input type="hidden" name="userId" value={pessoa.id} />
+                  <SubmitButton
+                    textoAGuardar="A guardar…"
+                    className="rounded-[13px] border border-[var(--color-linha)] px-3 py-2 text-[14px] font-medium text-[var(--color-azul-fundo)]"
+                  >
+                    Passar a secretaria
+                  </SubmitButton>
+                </form>
+              </>
+            )}
+          </section>
+        )}
       </div>
     </main>
   )

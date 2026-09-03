@@ -16,6 +16,7 @@ import { MensagemErro, MensagemInfo } from '@/components/mensagem'
 import { criarHorariosDeProfessor } from '@/lib/actions/admin'
 import type { PerfisEscolaPrograma } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 type Confirmado = {
   id: number
@@ -57,15 +58,14 @@ export default async function AdminProfessorHorarioPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A direção vê a ficha toda e não escreve nada nela.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: professorPerfilData } = await supabase
     .from('perfis_escola')
@@ -166,6 +166,7 @@ export default async function AdminProfessorHorarioPage({
             onde a grelha é da escola e não de cada professor — mas serve
             para qualquer um: a secretaria pode ter de abrir uma hora a
             quem não está à frente do computador. */}
+        {podeMexer && (
         <details className="horarios-criar">
           <summary>
             <span><b>+</b><strong>Abrir horários</strong></span>
@@ -210,6 +211,7 @@ export default async function AdminProfessorHorarioPage({
             </form>
           </section>
         </details>
+        )}
 
         {blocos.length === 0 ? (
           <EmptyState titulo="Ainda não tem aulas confirmadas" />

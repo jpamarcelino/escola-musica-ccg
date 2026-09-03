@@ -6,6 +6,7 @@ import { LinhaLista, GrupoLista } from '@/components/lista'
 import { SubmitButton } from '@/components/submit-button'
 import { definirAdesaoRecomendacao } from '@/lib/actions/recomendacoes'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
 
 export default async function AdminProfessorPage({
   params,
@@ -23,15 +24,14 @@ export default async function AdminProfessorPage({
     redirect('/login')
   }
 
-  const { data: perfilAtual } = await supabase
-    .from('perfis_escola')
-    .select('admin')
-    .eq('id', user.id)
-    .single()
+  const papel = await papelDoAdmin(supabase, user.id)
 
-  if (!perfilAtual?.admin) {
+  if (!papel.admin) {
     redirect('/dashboard')
   }
+
+  // A direção vê a ficha toda e não escreve nada nela.
+  const podeMexer = ehSecretaria(papel)
 
   const { data: professorPerfilData } = await supabase
     .from('perfis_escola')
@@ -113,6 +113,7 @@ export default async function AdminProfessorPage({
                 </>
               )}
             </p>
+            {podeMexer && (
             <form action={definirAdesaoRecomendacao}>
               <input type="hidden" name="professorId" value={professorId} />
               <input
@@ -127,6 +128,7 @@ export default async function AdminProfessorPage({
                 {professorPerfil.adere_recomendacao ? 'Retirar adesão' : 'Marcar como aderente'}
               </SubmitButton>
             </form>
+            )}
             {professorPerfil.adere_recomendacao && (
               <p className="text-xs text-foreground/50">
                 Retirar a adesão não afeta benefícios já atribuídos — esses só se anulam um a
