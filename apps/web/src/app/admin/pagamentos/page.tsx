@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ChevronLeft, ChevronRight, CircleCheckBig, History, WalletCards } from 'lucide-react'
 
 export default async function PagamentosPage() {
   const supabase = await createClient()
@@ -24,13 +25,13 @@ export default async function PagamentosPage() {
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-financas-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras><div><p className="partitura-sobretitulo">Controlo financeiro</p><h1>Mensalidades</h1><p>Confirmações mensais e arquivo de pagamentos.</p></div></header>
+    <main id="conteudo-principal" className="admin-financeiro admin-financas-pagina">
+      <div className="admin-financeiro-folha">
+        <header className="admin-financeiro-cabecalho"><VoltarAtras destino="/admin" className="admin-financeiro-voltar" rotulo="Voltar à visão geral"><ChevronLeft size={22} /></VoltarAtras><div><h1>Mensalidades</h1><p>Confirmações e arquivo financeiro</p></div><span className="admin-financeiro-marca"><WalletCards size={22} /></span></header>
 
         <nav className="admin-escolha" aria-label="Áreas de mensalidades">
-          <Link href="/admin/pagamentos/confirmar"><span className="partitura-indice">01 · Ação mensal</span><strong>Por confirmar</strong><p>Rever os pagamentos em falta, organizados por professor.</p><i aria-hidden="true">→</i></Link>
-          <Link href="/admin/pagamentos/historico"><span className="partitura-indice">02 · Arquivo</span><strong>Histórico</strong><p>Consultar mensalidades anteriores por professor.</p><i aria-hidden="true">→</i></Link>
+          <Link href="/admin/pagamentos/confirmar"><span className="admin-escolha-icone"><CircleCheckBig size={22} /></span><span><small>Ação mensal</small><strong>Por confirmar</strong><p>Rever pagamentos em falta, organizados por professor.</p></span><ChevronRight size={20} /></Link>
+          <Link href="/admin/pagamentos/historico"><span className="admin-escolha-icone"><History size={22} /></span><span><small>Arquivo</small><strong>Histórico</strong><p>Consultar e corrigir mensalidades anteriores.</p></span><ChevronRight size={20} /></Link>
         </nav>
       </div>
     </main>

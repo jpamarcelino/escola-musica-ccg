@@ -93,11 +93,11 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/admin/professores/[professorId]/conta`
 - [ ] `/admin/professores/[professorId]/horario`
 - [ ] `/admin/professores/disciplinas`
-- [ ] `/admin/pagamentos`
-- [ ] `/admin/pagamentos/confirmar`
-- [ ] `/admin/pagamentos/confirmar/[professorId]`
-- [ ] `/admin/pagamentos/historico`
-- [ ] `/admin/pagamentos/historico/[professorId]`
+- [x] `/admin/pagamentos` - secretaria - entrada de Mensalidades concluida em mobile e desktop, modo claro
+- [x] `/admin/pagamentos/confirmar` - secretaria - pendentes priorizados e professores em dia; validado com dados reais a 390 px e 1440 px
+- [x] `/admin/pagamentos/confirmar/[professorId]` - secretaria - valor, isencao CCG, fatura e confirmacao reorganizados; validado com duas mensalidades reais em mobile e desktop
+- [x] `/admin/pagamentos/historico` - secretaria - diretorio de professores concluido em mobile e desktop, modo claro
+- [x] `/admin/pagamentos/historico/[professorId]` - secretaria - arquivo anual responsivo, scroll interno e coluna do aluno fixa; validado com dados reais em mobile e desktop
 - [ ] `/admin/recomendacoes`
 - [ ] `/admin/recomendacoes/[id]`
 - [ ] `/admin/recomendacoes/nova`
