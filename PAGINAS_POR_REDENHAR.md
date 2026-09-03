@@ -107,11 +107,11 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [x] `/admin/recomendacoes/[id]` - secretaria - detalhe responsivo com estado, beneficio, correcoes administrativas e anulacao
 - [x] `/admin/recomendacoes/nova` - secretaria - registo guiado responsivo, incluindo tratamento de indicacoes por confirmar
 - [x] `/admin/recomendacoes/estudo` - secretaria - indicadores, balanco, comparacao e tabelas responsivas com exportacao CSV
-- [ ] `/admin/avisos`
-- [ ] `/admin/avisos/[avisoId]`
-- [ ] `/admin/mensagens`
-- [ ] `/admin/administradores`
-- [ ] `/admin/administradores/[id]`
+- [x] `/admin/avisos` - secretaria - caixa de entrada responsiva em claro e escuro, com estados lido/novo, acoes e ponte para os avisos de professor
+- [x] `/admin/avisos/[avisoId]` - secretaria - leitura e acao contextual no mesmo modelo final dos avisos de aluno e professor
+- [x] `/admin/mensagens` - compositor completo e historico responsivos em claro e escuro; falta apenas inspecao autenticada com dados reais
+- [x] `/admin/administradores` - super administracao - pesquisa, promocao e diretorio de acessos redesenhados para mobile/desktop, claro/escuro
+- [x] `/admin/administradores/[id]` - super administracao - identidade, acesso, papel e acoes sensiveis reorganizados para mobile/desktop, claro/escuro
 
 ## Sem interface propria
 

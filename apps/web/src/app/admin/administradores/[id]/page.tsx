@@ -6,6 +6,7 @@ import { MensagemErro, MensagemNota } from '@/components/mensagem'
 import { SubmitButton } from '@/components/submit-button'
 import type { PerfisEscolaTipo } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ShieldCheck, UserRoundCog } from 'lucide-react'
 
 const ROTULO_TIPO: Record<string, string> = {
   conta: 'Conta CCG',
@@ -69,12 +70,11 @@ export default async function AdministradorPage({
   const nome = pessoa.profiles?.nome?.trim() || 'Sem nome'
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-permissoes-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/admin/administradores" className="partitura-voltar" rotulo="Voltar aos administradores">←</VoltarAtras>
+    <main id="conteudo-principal" className="superadmin-pagina superadmin-detalhe">
+      <div className="superadmin-folha">
+        <header className="superadmin-cabecalho">
+          <VoltarAtras destino="/admin/administradores" className="superadmin-voltar" rotulo="Voltar aos administradores" tamanho={23} />
           <div>
-            <p className="partitura-sobretitulo">Administrador</p>
             <h1>{nome}</h1>
             <p>
               {pessoa.profiles?.email} · {ROTULO_TIPO[pessoa.tipo] ?? pessoa.tipo}
@@ -84,8 +84,14 @@ export default async function AdministradorPage({
 
         {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
 
-        <section className="space-y-3 pt-2">
-          <h2 className="font-semibold">Acesso</h2>
+        <div className="superadmin-identidade">
+          <span aria-hidden="true">{nome.charAt(0).toUpperCase()}</span>
+          <div><strong>{nome}</strong><small>{pessoa.profiles?.email ?? 'Sem email'}</small><em>{ROTULO_TIPO[pessoa.tipo] ?? pessoa.tipo}</em></div>
+        </div>
+
+        <div className="superadmin-detalhe-grelha">
+        <section className="superadmin-painel superadmin-acesso">
+          <header><span aria-hidden="true"><ShieldCheck size={20} /></span><div><h2>Acesso à administração</h2><p>Permissão para gerir toda a escola.</p></div></header>
           {!pessoa.admin && (
             <p className="text-sm text-foreground/70">Esta pessoa não é administradora.</p>
           )}
@@ -125,8 +131,8 @@ export default async function AdministradorPage({
             secretaria sem acesso ao painel não seria nada, e a base de
             dados recusa-o na mesma. */}
         {pessoa.admin && (
-          <section className="space-y-3 pt-2">
-            <h2 className="font-semibold">Papel</h2>
+          <section className="superadmin-painel superadmin-papel">
+            <header><span aria-hidden="true"><UserRoundCog size={20} /></span><div><h2>Papel</h2><p>Define o que pode alterar no painel.</p></div></header>
             {pessoa.super_admin ? (
               <MensagemNota>
                 É super administrador — trata de tudo, por definição.
@@ -168,6 +174,7 @@ export default async function AdministradorPage({
             )}
           </section>
         )}
+        </div>
       </div>
     </main>
   )

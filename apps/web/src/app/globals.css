@@ -657,6 +657,12 @@ body {
 .pinterest-avisos :is(a,button):active,
 .pinterest-aviso :is(a,button):active { transform: scale(.98); }
 @media (min-width: 431px) { .pinterest-avisos,.pinterest-aviso { padding-inline: 24px; } }
+@media (min-width: 900px) {
+  .pinterest-admin-avisos .pinterest-avisos-folha { max-width: 820px; }
+  .pinterest-admin-avisos .avisos-lista { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; }
+  .pinterest-admin-avisos .avisos-lista > div,
+  .pinterest-admin-avisos .avisos-lista > form { min-width: 0; }
+}
 @media (prefers-reduced-motion: reduce) { .pinterest-avisos :is(a,button),.pinterest-aviso :is(a,button) { transition: none; } }
 
 /* Design Pinterest - mensalidades da familia. */
@@ -8760,6 +8766,93 @@ html[data-tema='escuro'] .metronomo-claro > button:last-child {
   box-shadow:0 8px 22px rgba(18,104,160,.3);
 }
 
+/* Secretaria - mensagens. O compositor e o historico partilham a pagina,
+   mas mantêm pesos diferentes: escrever domina, consultar acompanha. */
+.pinterest-admin-mensagens {
+  min-height:100dvh;
+  padding:28px clamp(20px,4vw,56px) 72px;
+  background:#f4f6f8;
+  color:#17191c;
+  font-family:-apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif;
+}
+.pinterest-admin-mensagens-folha { width:100%; max-width:1240px; margin-inline:auto; }
+.pinterest-admin-mensagens-cabecalho { display:grid; grid-template-columns:48px minmax(0,1fr); gap:14px; align-items:center; margin-bottom:28px; }
+.pinterest-admin-mensagens-voltar { display:grid; width:48px; height:48px; place-items:center; border:1px solid #dce3e8; border-radius:15px; background:#fff; color:#20242a; box-shadow:0 4px 14px rgba(31,45,57,.06); }
+.pinterest-admin-mensagens-sobretitulo { margin-bottom:3px; color:#66717a; font-size:11px; font-weight:720; text-transform:uppercase; }
+.pinterest-admin-mensagens-cabecalho h1 { font-size:32px; font-weight:760; line-height:1.05; }
+.pinterest-admin-mensagens-cabecalho h1 + p { margin-top:5px; color:#737b83; font-size:14px; }
+.pinterest-admin-mensagens-grelha { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(310px,.75fr); gap:28px; align-items:start; }
+.pinterest-admin-mensagens-seccao-titulo { display:grid; grid-template-columns:42px minmax(0,1fr); gap:11px; align-items:center; margin:0 2px 14px; }
+.pinterest-admin-mensagens-seccao-titulo > span { display:grid; width:42px; height:42px; place-items:center; border-radius:13px; background:#e3eff8; color:#1c5a86; }
+.pinterest-admin-mensagens-seccao-titulo h2 { font-size:19px; font-weight:730; line-height:1.15; }
+.pinterest-admin-mensagens-seccao-titulo p { margin-top:2px; color:#7d858d; font-size:12px; }
+.pinterest-admin-mensagens .mensagens-nova { margin:0; }
+.pinterest-admin-mensagens .mensagens-nova > form { display:flex; flex-direction:column; gap:22px; margin:0; padding:24px; border:1px solid #dfe5ea; border-radius:22px; background:#fff; box-shadow:0 10px 30px rgba(31,45,57,.06); }
+.pinterest-admin-mensagens .mensagens-nova form > * { margin:0; }
+.pinterest-admin-mensagens .mensagem-legenda,
+.pinterest-admin-mensagens form label { color:#58626b!important; font-size:12.5px; font-weight:670; }
+.pinterest-admin-mensagens .mensagem-opcoes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; padding:4px; border-radius:14px; background:#edf0f3; }
+.pinterest-admin-mensagens .mensagem-opcao { min-height:42px; justify-content:center; padding:8px 10px; border:0; border-radius:10px; color:#626c75; font-size:12.5px; font-weight:650; text-align:center; }
+.pinterest-admin-mensagens .mensagem-opcao[aria-pressed='true'] { background:#fff; color:#174f7b; box-shadow:0 2px 8px rgba(31,45,57,.09); }
+.pinterest-admin-mensagens :is(input[type='text'],input[type='search']) { width:100%; min-height:50px; padding:0 14px; border:1px solid #dce3e8; border-radius:13px; background:#f8fafb; color:#17191c; font-family:inherit; font-size:14.5px; }
+.pinterest-admin-mensagens input[type='search'] { padding-left:40px; }
+.pinterest-admin-mensagens textarea { width:100%; min-height:140px; padding:14px; border:1px solid #dce3e8; border-radius:13px; background:#f8fafb; color:#17191c; font-family:inherit; font-size:14.5px; line-height:1.5; }
+.pinterest-admin-mensagens .mensagem-sem-nome { align-items:center; padding:11px 13px; border-radius:13px; background:#f4f7f9; }
+.pinterest-admin-mensagens .mensagem-sem-nome input { width:18px; height:18px; margin:0; accent-color:#1f628f; }
+.pinterest-admin-mensagens .mensagem-escolha { max-height:290px; border-color:#dfe5ea; border-radius:14px; background:#f8fafb; }
+.pinterest-admin-mensagens .mensagem-escolha-linha { min-height:58px; align-items:center; padding:10px 13px; }
+.pinterest-admin-mensagens .mensagem-escolha-linha input { width:19px; height:19px; margin:0; accent-color:#1f628f; }
+.pinterest-admin-mensagens .mensagem-previsao { padding:16px; border:1px solid #cfe1ee; border-radius:16px; background:#edf5fa; }
+.pinterest-admin-mensagens .mensagem-previsao-etiqueta { margin-bottom:8px; color:#527891; font-size:10px; }
+.pinterest-admin-mensagens .mensagem-previsao strong { color:#153f5d; font-size:14.5px; }
+.pinterest-admin-mensagens .mensagem-previsao p:last-child { color:#526775; font-size:13.5px; }
+.pinterest-admin-mensagens .mensagem-enviar { min-height:54px; height:54px; border:0; border-radius:15px; background:#1f5f8d; color:#fff; font-weight:700; box-shadow:0 6px 17px rgba(31,95,141,.2); }
+.pinterest-admin-mensagens .mensagem-enviar:disabled { background:#dce1e5; color:#858d94; box-shadow:none; opacity:1; }
+.pinterest-admin-mensagens .mensagens-historico { position:sticky; top:24px; margin:0; min-width:0; }
+.pinterest-admin-mensagens-historico-lista { display:flex; max-height:calc(100dvh - 150px); flex-direction:column; gap:9px; overflow-y:auto; padding-right:4px; scrollbar-width:thin; }
+.pinterest-admin-mensagens-historico-lista article { padding:15px; border:1px solid #dfe5ea; border-radius:17px; background:#fff; box-shadow:0 5px 16px rgba(31,45,57,.045); }
+.pinterest-admin-mensagens-historico-lista strong { display:block; font-size:14px; font-weight:700; }
+.pinterest-admin-mensagens-historico-lista article > span { display:block; margin-top:3px; color:#7c858d; font-size:10.5px; line-height:1.45; }
+.pinterest-admin-mensagens .mensagens-historico-corpo { display:-webkit-box; overflow:hidden; margin-top:8px; color:#3d454c; font-size:13px; line-height:1.5; -webkit-box-orient:vertical; -webkit-line-clamp:4; }
+.pinterest-admin-mensagens .empty-editorial { padding:22px 18px; border:1px solid #dfe5ea; border-radius:18px; background:#fff; text-align:left; }
+.pinterest-admin-mensagens .empty-editorial::before { display:none; }
+.pinterest-admin-mensagens .empty-editorial-titulo { max-width:none; font-family:inherit; font-size:16px; }
+.pinterest-admin-mensagens :is(a,button,input,textarea):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
+
+html[data-tema='escuro'] .pinterest-admin-mensagens { background:var(--dark-bg); color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-mensagens-voltar { border-color:var(--dark-border); background:var(--dark-raised); color:#a9d9fb; }
+html[data-tema='escuro'] .pinterest-admin-mensagens :is(.pinterest-admin-mensagens-sobretitulo,.pinterest-admin-mensagens-cabecalho h1 + p,.pinterest-admin-mensagens-seccao-titulo p) { color:var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-admin-mensagens-seccao-titulo > span { background:#263f50; color:#9bd8fa; }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagens-nova > form,
+html[data-tema='escuro'] .pinterest-admin-mensagens-historico-lista article,
+html[data-tema='escuro'] .pinterest-admin-mensagens .empty-editorial { border-color:var(--dark-border); background:var(--dark-surface); color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagem-opcoes { background:#14191d; }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagem-opcao { color:#c3cad1; }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagem-opcao[aria-pressed='true'] { background:#29465a; color:#b9e1ff; box-shadow:inset 0 0 0 1px #426984; }
+html[data-tema='escuro'] .pinterest-admin-mensagens :is(.mensagem-legenda,form label) { color:#d8dde2!important; }
+html[data-tema='escuro'] .pinterest-admin-mensagens :is(input[type='text'],input[type='search'],textarea,.mensagem-escolha) { border-color:var(--dark-border); background:var(--dark-raised); color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagem-sem-nome { background:#222a30; }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagem-previsao { border-color:#3c617a; background:linear-gradient(145deg,#29465a,#20282e 72%); }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagem-previsao :is(strong,p:last-child) { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-admin-mensagens .mensagens-historico-corpo { color:#d7dde2; }
+html[data-tema='escuro'] .pinterest-admin-mensagens-historico-lista article > span { color:#aeb7bf; }
+
+@media (max-width:820px) {
+  .pinterest-admin-mensagens { padding:max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); }
+  .pinterest-admin-mensagens-folha { max-width:560px; }
+  .pinterest-admin-mensagens-cabecalho { grid-template-columns:44px minmax(0,1fr); margin-bottom:24px; }
+  .pinterest-admin-mensagens-voltar { width:44px; height:44px; }
+  .pinterest-admin-mensagens-cabecalho h1 { font-size:29px; }
+  .pinterest-admin-mensagens-grelha { grid-template-columns:1fr; gap:32px; }
+  .pinterest-admin-mensagens .mensagens-nova > form { padding:18px; }
+  .pinterest-admin-mensagens .mensagens-historico { position:static; }
+  .pinterest-admin-mensagens-historico-lista { max-height:none; overflow:visible; padding:0; }
+}
+@media (max-width:430px) {
+  .pinterest-admin-mensagens .mensagem-opcoes { grid-template-columns:1fr 1fr; }
+  .pinterest-admin-mensagens .mensagem-opcao { min-width:0; overflow-wrap:anywhere; }
+}
+
 /* Correcções finas de contraste: texto nunca recebe a superfície do ícone. */
 html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos :is(.agenda-ligacao-calendario,.pinterest-agenda-semana) > span {
   width:auto;
@@ -9086,3 +9179,61 @@ html[data-tema='escuro'] .pinterest-detalhe-nome > h2 { color: var(--dark-text);
 html[data-tema='escuro'] .pinterest-detalhe-nome > p { color: var(--dark-muted); }
 html[data-tema='escuro'] .pinterest-detalhe-nome input { border-color: var(--dark-border); background: var(--dark-raised); color: var(--dark-text); }
 html[data-tema='escuro'] .pinterest-detalhe-nome input::placeholder { color: #778089; }
+
+/* Super administracao: o ultimo nivel do painel mantem o ritmo Pinterest,
+   mas torna permissoes e acoes irreversiveis especialmente explicitas. */
+.superadmin-pagina { min-height:100dvh; padding:max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background:#f5f6f8; color:#17191c; font-family:-apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
+.superadmin-folha { width:100%; max-width:720px; margin-inline:auto; }
+.superadmin-cabecalho { display:grid; grid-template-columns:44px minmax(0,1fr); gap:12px; align-items:center; padding:6px 2px 22px; }
+.superadmin-voltar { display:grid; width:44px; height:44px; place-items:center; border:1px solid #e1e5e9; border-radius:15px; background:#fff; color:#20242a; text-decoration:none; box-shadow:0 3px 12px rgba(31,35,39,.05); }
+.superadmin-cabecalho h1 { overflow-wrap:anywhere; font-size:29px; font-weight:760; line-height:1.08; letter-spacing:0; }
+.superadmin-cabecalho p { margin-top:4px; max-width:54ch; color:#767c84; font-size:14px; line-height:1.4; }
+.superadmin-resumo { display:flex; min-height:86px; align-items:center; gap:13px; margin-bottom:20px; padding:16px; border:1px solid #dce6ee; border-radius:22px; background:linear-gradient(145deg,rgba(120,174,222,.17),rgba(120,174,222,.04) 48%,#fff 86%); box-shadow:0 6px 20px rgba(31,35,39,.05); }
+.superadmin-resumo > span,.superadmin-adicionar > header > span,.superadmin-painel > header > span { display:grid; width:44px; height:44px; flex:0 0 auto; place-items:center; border-radius:14px; background:#e7f1fa; color:#1b4f7a; }
+.superadmin-resumo > div { display:flex; flex-direction:column; }
+.superadmin-resumo strong { color:#123a5b; font-size:29px; line-height:1; font-variant-numeric:tabular-nums; }
+.superadmin-resumo small { margin-top:5px; color:#62717d; font-size:12px; }
+.superadmin-adicionar,.superadmin-painel { margin-bottom:24px; padding:17px; border:1px solid #e3e7eb; border-radius:22px; background:#fff; box-shadow:0 4px 15px rgba(31,35,39,.05); }
+.superadmin-adicionar > header,.superadmin-painel > header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.superadmin-adicionar h2,.superadmin-painel h2,.superadmin-listagem h2 { font-size:19px; font-weight:740; letter-spacing:0; }
+.superadmin-adicionar header p,.superadmin-painel header p { margin-top:2px; color:#7b8188; font-size:12px; }
+.superadmin-pesquisa { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; }
+.superadmin-pesquisa label { display:grid; grid-template-columns:20px minmax(0,1fr); align-items:center; gap:8px; min-width:0; padding:0 13px; border:1px solid #dce1e6; border-radius:15px; background:#f7f8f9; color:#838990; }
+.superadmin-pesquisa input { width:100%; min-width:0; min-height:50px; padding:0 !important; border:0 !important; background:transparent !important; box-shadow:none !important; }
+.superadmin-pesquisa button { min-height:50px; padding:0 18px; border:0; border-radius:15px; background:#205c89; color:#fff; font-size:14px; font-weight:700; }
+.superadmin-resultado { display:flex; align-items:center; gap:12px; margin-top:12px; padding:13px; border-radius:16px; background:#f4f6f8; }
+.superadmin-resultado > span { min-width:0; flex:1; }
+.superadmin-promover > button { min-width:108px; border-radius:13px !important; }
+.superadmin-listagem > header { display:flex; min-height:42px; align-items:center; justify-content:space-between; margin:0 2px 8px; }
+.superadmin-listagem > header > span { display:grid; min-width:27px; height:27px; place-items:center; border-radius:10px; background:#e7f1fa; color:#1b4f7a; font-size:12px; font-weight:750; }
+.superadmin-lista { overflow:hidden; border:1px solid #e3e7eb; border-radius:22px; background:#fff; box-shadow:0 4px 15px rgba(31,35,39,.05); }
+.superadmin-pessoa { display:grid; grid-template-columns:42px minmax(0,1fr) auto; gap:12px; min-height:78px; align-items:center; padding:13px 15px; color:#17191c; text-decoration:none; }
+.superadmin-pessoa + .superadmin-pessoa { border-top:1px solid #eceef1; }
+.superadmin-avatar,.superadmin-identidade > span { display:grid; width:42px; height:42px; place-items:center; border-radius:14px; background:#e3f1ef; color:#176d70; font-size:15px; font-weight:750; }
+.superadmin-pessoa-texto { min-width:0; }
+.superadmin-pessoa-texto .lista-item-titulo,.superadmin-resultado .lista-item-titulo { overflow:hidden; color:#17191c; font-size:15px; font-weight:700; text-overflow:ellipsis; white-space:nowrap; }
+.superadmin-pessoa-texto .lista-item-sub,.superadmin-resultado .lista-item-sub { display:block; overflow:hidden; margin-top:3px; color:#7b8188; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+.superadmin-pessoa > svg { color:#92989f; }
+.superadmin-identidade { display:grid; grid-template-columns:58px minmax(0,1fr); gap:14px; align-items:center; margin-bottom:22px; padding:18px; border:1px solid #dce6ee; border-radius:22px; background:linear-gradient(145deg,rgba(120,174,222,.14),#fff 72%); }
+.superadmin-identidade > span { width:58px; height:58px; border-radius:18px; font-size:21px; }
+.superadmin-identidade > div { display:flex; min-width:0; flex-direction:column; align-items:flex-start; }
+.superadmin-identidade strong { font-size:18px; }
+.superadmin-identidade small { overflow:hidden; max-width:100%; margin-top:3px; color:#707780; text-overflow:ellipsis; white-space:nowrap; }
+.superadmin-identidade em { margin-top:8px; padding:5px 8px; border-radius:8px; background:#e7f1fa; color:#1b4f7a; font-size:10px; font-style:normal; font-weight:700; }
+.superadmin-painel > p { color:#626a72; font-size:14px; line-height:1.55; }
+.superadmin-painel form { margin-top:16px; }
+.superadmin-painel form button { min-height:44px; border-radius:13px; }
+.superadmin-painel .mensagem { margin-top:4px; }
+.superadmin-pagina :is(a,button):focus-visible { outline:3px solid #78aede; outline-offset:2px; }
+.superadmin-pagina :is(a,button):active { transform:scale(.98); }
+html[data-tema='escuro'] .superadmin-pagina { background:var(--dark-bg); color:var(--dark-text); }
+html[data-tema='escuro'] :is(.superadmin-voltar,.superadmin-adicionar,.superadmin-lista,.superadmin-painel) { border-color:var(--dark-border); background:var(--dark-surface); color:var(--dark-text); box-shadow:0 8px 22px rgba(0,0,0,.16); }
+html[data-tema='escuro'] :is(.superadmin-resumo,.superadmin-identidade) { border-color:#29465d; background:linear-gradient(145deg,rgba(31,105,153,.28),var(--dark-surface) 72%); }
+html[data-tema='escuro'] :is(.superadmin-cabecalho p,.superadmin-adicionar header p,.superadmin-painel header p,.superadmin-painel>p,.superadmin-identidade small,.superadmin-pessoa-texto .lista-item-sub,.superadmin-resultado .lista-item-sub) { color:var(--dark-muted); }
+html[data-tema='escuro'] :is(.superadmin-resumo strong,.superadmin-pessoa-texto .lista-item-titulo,.superadmin-resultado .lista-item-titulo,.superadmin-pessoa) { color:var(--dark-text); }
+html[data-tema='escuro'] .superadmin-pesquisa label { border-color:var(--dark-border); background:var(--dark-field); }
+html[data-tema='escuro'] .superadmin-resultado { background:var(--dark-field); }
+html[data-tema='escuro'] .superadmin-pessoa + .superadmin-pessoa { border-color:rgba(255,255,255,.08); }
+@media (max-width:520px) { .superadmin-pesquisa { grid-template-columns:1fr; } .superadmin-pesquisa button { width:100%; } .superadmin-resultado { align-items:flex-start; flex-direction:column; } .superadmin-promover,.superadmin-promover > button { width:100%; } }
+@media (min-width:900px) { .superadmin-pagina { padding:36px 32px 80px; } .superadmin-folha { max-width:900px; } .superadmin-detalhe-grelha { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:start; } .superadmin-detalhe-grelha .superadmin-painel { margin-bottom:0; } }
+@media (prefers-reduced-motion:reduce) { .superadmin-pagina :is(a,button) { transition:none; } }

@@ -854,6 +854,28 @@ quem recebe e pode tirar alguem, o que um filtro fechado nao deixava. Sai
 da lista que ja vinha do servidor — um professor ve as turmas dele, a
 secretaria ve as duas — e nao aparece a quem nao tenha alunos de Bebes.
 
+Em `/admin/mensagens`, a secretaria tem agora um compositor responsivo
+proprio: destinatarios, assinatura, corpo, previsao e envio formam o fluxo
+principal; as ultimas 20 mensagens ocupam uma coluna lateral no desktop e
+passam para baixo no telemovel. Ha estilos completos para claro e escuro.
+A rota compila e responde no localhost, mas a sessao usada durante esta
+alteracao estava autenticada como aluno; falta a inspeccao visual final com
+uma conta de secretaria e dados reais antes de publicar.
+
+## Super administracao
+
+`/admin/administradores` e `/admin/administradores/[id]` fecham o percurso
+de administracao. A entrada privilegia a tarefa real: procurar uma conta
+existente, dar acesso e consultar quem ja o tem. O detalhe separa identidade,
+acesso integral e papel de direcao/secretaria, mantendo remocao de acesso
+como uma acao deliberada e confirmada.
+
+As duas rotas tem composicao propria para mobile e desktop, estados claro e
+escuro, foco de teclado e alvos de toque consistentes com o restante Design
+Pinterest. Typecheck, lint e verificacao do diff passaram; o lint conserva
+apenas dois avisos pre-existentes em `lib/actions/pagamentos.ts`. Falta uma
+inspeccao visual autenticada com uma conta super admin antes de publicar.
+
 **Presencas e mensalidades ja funcionavam.** Verificado a ler as consultas:
 nenhuma das duas filtra por `estado` do horario, por isso um horario
 bloqueado com matriculas confirmadas aparece na chamada e gera mensalidade
@@ -861,3 +883,17 @@ como qualquer outro. Era esse o objectivo do espelho.
 
 **Nota sobre o `AGENTS.md`:** manda ler `node_modules/next/dist/docs/`
 antes de escrever codigo, mas essa pasta nao existe nesta instalacao.
+
+## Avisos da secretaria
+
+`/admin/avisos` e `/admin/avisos/[avisoId]` usam agora o mesmo sistema
+visual final das caixas da familia e do professor: cabecalho compacto,
+contagem, cartoes com icone, barra de prioridade para nao lidos, resumo
+legivel e acao contextual separada. Mantem-se a separacao funcional entre
+os dois papeis quando uma conta e simultaneamente professor e secretaria.
+
+No desktop, a caixa administrativa cresce ate 820 px e distribui os avisos
+em duas colunas; no telemovel regressa a uma coluna. O detalhe usa a
+variante Pinterest partilhada, incluindo modo escuro. Typecheck e lint
+foram executados; falta apenas inspecao autenticada com dados reais de
+secretaria. Nao foi feito commit nem deploy nesta etapa.

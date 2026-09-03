@@ -7,6 +7,8 @@ import { MensagemErro } from '@/components/mensagem'
 import { classesCampo } from '@/components/campo-formulario'
 import type { PerfisEscolaTipo } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ChevronRight, Search, ShieldCheck, UserRoundPlus } from 'lucide-react'
+import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 
 const ROTULO_TIPO: Record<string, string> = {
   conta: 'Conta CCG',
@@ -100,12 +102,11 @@ export default async function AdminAdministradoresPage({
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-permissoes-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras>
+    <main id="conteudo-principal" className="superadmin-pagina">
+      <div className="superadmin-folha">
+        <header className="superadmin-cabecalho">
+          <VoltarAtras destino="/admin" className="superadmin-voltar" rotulo="Voltar à visão geral" tamanho={23} />
           <div>
-            <p className="partitura-sobretitulo">Super administração</p>
             <h1>Administradores</h1>
             <p>
               {admins.length} {admins.length === 1 ? 'pessoa tem' : 'pessoas têm'} acesso à gestão
@@ -116,22 +117,18 @@ export default async function AdminAdministradoresPage({
 
         {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
 
-        <section className="space-y-3 pt-2">
-          <h2 className="font-semibold">Adicionar</h2>
+        <div className="superadmin-resumo">
+          <span aria-hidden="true"><ShieldCheck size={23} /></span>
+          <div><strong>{admins.length}</strong><small>com acesso integral</small></div>
+        </div>
+
+        <section className="superadmin-adicionar">
+          <header><span aria-hidden="true"><UserRoundPlus size={20} /></span><div><h2>Adicionar administrador</h2><p>Procura uma conta existente pelo email.</p></div></header>
           {/* Um GET e não uma Server Action: a procura fica no URL, dá
               para voltar atrás e para recarregar sem repetir nada. */}
-          <form method="get" className="flex flex-wrap gap-2">
-            <input
-              type="search"
-              name="q"
-              defaultValue={procura}
-              placeholder="Email da pessoa"
-              aria-label="Procurar pessoa por email"
-              className={`${classesCampo} flex-1 min-w-[220px]`}
-            />
-            <button type="submit" className="botao-cartao">
-              Procurar
-            </button>
+          <form method="get" className="superadmin-pesquisa">
+            <label><Search size={18} aria-hidden="true" /><input type="search" name="q" defaultValue={procura} placeholder="Email da pessoa" aria-label="Procurar pessoa por email" className={classesCampo} /></label>
+            <button type="submit">Procurar</button>
           </form>
 
           {procura.length > 0 && procura.length < 3 && (
@@ -146,8 +143,8 @@ export default async function AdminAdministradoresPage({
           )}
 
           {resultados.map((pessoa) => (
-            <div key={pessoa.id} className="lista-item flex flex-wrap items-center gap-3">
-              <span className="flex-1">
+            <div key={pessoa.id} className="superadmin-resultado">
+              <span>
                 <span className="lista-item-titulo block">{pessoa.nome}</span>
                 <span className="lista-item-sub">
                   {pessoa.email} · {ROTULO_TIPO[pessoa.tipo] ?? pessoa.tipo}
@@ -156,30 +153,36 @@ export default async function AdminAdministradoresPage({
               {pessoa.admin ? (
                 <span className="text-sm text-foreground/60">Já é administrador</span>
               ) : (
-                <form action={tornarAdministrador}>
+                <div className="superadmin-promover">
+                  <BotaoAcaoDestruir
+                    label="Dar acesso"
+                    titulo="Adicionar administrador?"
+                    mensagem={`${pessoa.nome} (${pessoa.email ?? 'sem email'}) passa a poder gerir alunos, professores, pagamentos e definições da escola.\n\nConfirma apenas se reconheces esta pessoa e pretendes mesmo dar-lhe acesso integral.`}
+                    action={tornarAdministrador}
+                    tom="neutro"
+                  >
                   <input type="hidden" name="userId" value={pessoa.id} />
-                  <button type="submit" className="botao-cartao">
-                    Dar acesso
-                  </button>
-                </form>
+                  </BotaoAcaoDestruir>
+                </div>
               )}
             </div>
           ))}
         </section>
 
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-          <h2 className="font-semibold">Com acesso</h2>
+        <section className="superadmin-listagem">
+          <header><h2>Com acesso</h2><span>{admins.length}</span></header>
           {admins.length === 0 ? (
             <EmptyState titulo="Ainda ninguém tem acesso à administração" />
           ) : (
-            <div className="space-y-2">
+            <div className="superadmin-lista">
               {admins.map((pessoa) => (
                 <Link
                   key={pessoa.id}
                   href={`/admin/administradores/${pessoa.id}`}
-                  className="lista-item flex items-center gap-3"
+                  className="superadmin-pessoa"
                 >
-                  <span className="flex-1">
+                  <span className="superadmin-avatar" aria-hidden="true">{pessoa.nome.charAt(0).toUpperCase()}</span>
+                  <span className="superadmin-pessoa-texto">
                     <span className="lista-item-titulo block">
                       {pessoa.nome}
                       {pessoa.id === user.id && ' (tu)'}
@@ -193,7 +196,7 @@ export default async function AdminAdministradoresPage({
                           : ' · direção'}
                     </span>
                   </span>
-                  <span aria-hidden="true">→</span>
+                  <ChevronRight size={19} aria-hidden="true" />
                 </Link>
               ))}
             </div>

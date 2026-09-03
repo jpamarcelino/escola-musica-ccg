@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/empty-state'
 import { accaoDoAviso, avisoDoPapel, type TipoAviso } from '@/lib/avisos'
 import { VoltarAtras } from '@/components/voltar-atras'
 import { AvisoDeslizavel } from '@/components/aviso-deslizavel'
+import { Bell, ChevronRight } from 'lucide-react'
 
 type Notificacao = {
   id: number
@@ -74,12 +75,11 @@ export default async function AdminAvisosPage() {
   const porLer = avisos.filter((n) => !n.lida).length
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina avisos-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras>
+    <main id="conteudo-principal" className="pinterest-avisos pinterest-admin-avisos">
+      <div className="pinterest-avisos-folha">
+        <header className="pinterest-avisos-cabecalho">
+          <VoltarAtras destino="/admin" className="pinterest-avisos-voltar" rotulo="Voltar à visão geral" tamanho={23} />
           <div>
-            <p className="partitura-sobretitulo">Secretaria</p>
             <h1>Avisos</h1>
             <p>
               {porLer > 0
@@ -112,10 +112,16 @@ export default async function AdminAvisosPage() {
             descricao="Aqui aparecem os cancelamentos de matrícula e o resto do que a escola precisa de saber."
           />
         ) : (
-          <section className="avisos-lista" aria-label="Arquivo de avisos">
-            {avisos.map((n) => {
+          <section aria-labelledby="admin-avisos-recentes">
+            <header className="pinterest-avisos-seccao">
+              <h2 id="admin-avisos-recentes">Recentes</h2>
+              <span>{avisos.length}</span>
+            </header>
+            <div className="avisos-lista" aria-label="Arquivo de avisos">
+              {avisos.map((n) => {
               const linha = (
               <article data-lida={n.lida}>
+                <span className="avisos-icone" aria-hidden="true"><Bell size={18} /></span>
                 <time>{new Date(n.criado_em).toLocaleDateString('pt-PT')}</time>
                 {/* Abre o aviso. A mensagem vem cortada a três linhas: a
                     lista é para varrer, a página do aviso é para ler. */}
@@ -130,7 +136,7 @@ export default async function AdminAvisosPage() {
                     href={accaoDoAviso(tipos.get(n.tipo)?.destino)!.href}
                     className="avisos-destino"
                   >
-                    Ver
+                    <span>Ver</span><ChevronRight size={18} aria-hidden="true" />
                   </Link>
                 )}
               </article>
@@ -144,7 +150,8 @@ export default async function AdminAvisosPage() {
               ) : (
                 <div key={n.id}>{linha}</div>
               )
-            })}
+              })}
+            </div>
           </section>
         )}
       </div>
