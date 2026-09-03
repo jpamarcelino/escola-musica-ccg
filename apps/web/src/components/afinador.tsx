@@ -113,7 +113,7 @@ function Mostrador({ saida, a4, acidente }: { saida: SaidaAfinador; a4: number; 
           : 'Toca uma nota e deixa-a soar.'
     return (
       <div
-        className="flex min-h-[196px] flex-col items-center justify-center gap-[8px] rounded-[18px] border-[1.5px] px-[18px] text-center"
+        className="afinador-mostrador afinador-mostrador-vazio flex min-h-[196px] flex-col items-center justify-center gap-[8px] rounded-[18px] border-[1.5px] px-[18px] text-center"
         style={{ borderColor: 'var(--color-linha)', backgroundColor: 'var(--color-papel-2)' }}
       >
         <p className="text-[17px] font-semibold" style={{ color: 'var(--color-tinta)' }}>
@@ -137,7 +137,7 @@ function Mostrador({ saida, a4, acidente }: { saida: SaidaAfinador; a4: number; 
 
   return (
     <div
-      className="rounded-[18px] border-[1.5px] px-[18px] py-[16px]"
+      className="afinador-mostrador rounded-[18px] border-[1.5px] px-[18px] py-[16px]"
       style={{
         borderColor: afinado ? 'var(--color-positive)' : 'var(--color-linha)',
         backgroundColor: 'var(--color-papel-2)',
@@ -219,13 +219,13 @@ export function Afinador() {
   const { fase, iniciar, parar, aOuvir } = useAfinador({ a4 })
 
   return (
-    <div className="max-w-[380px] space-y-[18px]">
+    <div className="afinador-claro max-w-[520px] space-y-[18px]">
       {/* O aviso de privacidade aparece ANTES de o microfone ser pedido,
           e não escondido numas definições: é neste momento que a pessoa
           decide, por isso é aqui que a informação tem de estar. */}
       {!aOuvir && (
         <p
-          className="rounded-[13px] border-[1.5px] px-[12px] py-[10px] text-[12px] leading-[1.45]"
+          className="afinador-privacidade rounded-[13px] border-[1.5px] px-[12px] py-[10px] text-[12px] leading-[1.45]"
           style={{ borderColor: 'var(--color-linha)', color: 'var(--color-tinta-suave)' }}
         >
           {TEXTOS_LEGAIS.microfoneAfinador}
@@ -237,7 +237,7 @@ export function Afinador() {
           {/* Enquanto ouve, diz-se que ouve. O indicador do browser não
               chega: no telemóvel fica fora do ecrã da app. */}
           <p
-            className="flex items-center justify-center gap-[6px] text-[12px] font-semibold"
+            className="afinador-microfone flex items-center justify-center gap-[6px] text-[12px] font-semibold"
             style={{ color: 'var(--color-positive)' }}
           >
             <Mic size={14} aria-hidden="true" />
@@ -249,7 +249,7 @@ export function Afinador() {
 
       {fase.fase === 'a-pedir' && (
         <div
-          className="flex min-h-[196px] flex-col items-center justify-center gap-[8px] rounded-[18px] border-[1.5px] px-[18px] text-center"
+          className="afinador-mostrador flex min-h-[196px] flex-col items-center justify-center gap-[8px] rounded-[18px] border-[1.5px] px-[18px] text-center"
           style={{ borderColor: 'var(--color-linha)', backgroundColor: 'var(--color-papel-2)' }}
         >
           <p className="text-[15px] font-semibold">A pedir acesso ao microfone…</p>
@@ -285,11 +285,14 @@ export function Afinador() {
         </p>
       )}
 
-      <BotaoPrimario onClick={aOuvir ? parar : iniciar}>
-        {aOuvir ? 'Parar afinador' : 'Iniciar afinador'}
-      </BotaoPrimario>
+      <div className="afinador-acao">
+        <BotaoPrimario onClick={aOuvir ? parar : iniciar}>
+          {aOuvir ? 'Parar afinador' : 'Iniciar afinador'}
+        </BotaoPrimario>
+      </div>
 
-      <div className="space-y-[6px]">
+      <div className="afinador-definicoes">
+      <div className="afinador-referencia space-y-[6px]">
         <div className="flex items-baseline justify-between gap-[10px]">
           <label
             htmlFor="afinador-a4"
@@ -328,7 +331,7 @@ export function Afinador() {
         )}
       </div>
 
-      <div className="space-y-[6px]">
+      <div className="afinador-notacao space-y-[6px]">
         <p className="text-[12.5px] font-medium" style={{ color: 'var(--color-tinta-suave)' }}>
           Escrita das notas alteradas
         </p>
@@ -361,7 +364,9 @@ export function Afinador() {
         </div>
       </div>
 
-      <div>
+      </div>
+
+      <div className="afinador-ajuda">
         <button
           type="button"
           onClick={() => setAjudaAberta((v) => !v)}
