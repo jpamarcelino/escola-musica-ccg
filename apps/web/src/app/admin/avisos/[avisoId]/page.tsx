@@ -60,6 +60,7 @@ export default async function AdminAvisoPage({
       accao={accaoDoAviso(tipo?.destino)}
       voltarPara="/admin/avisos"
       variante="pinterest"
+      classePagina="pinterest-admin-aviso"
     />
   )
 }

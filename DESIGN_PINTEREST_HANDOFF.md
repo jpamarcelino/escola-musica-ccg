@@ -893,7 +893,7 @@ legivel e acao contextual separada. Mantem-se a separacao funcional entre
 os dois papeis quando uma conta e simultaneamente professor e secretaria.
 
 No desktop, a caixa administrativa cresce ate 820 px e distribui os avisos
-em duas colunas; no telemovel regressa a uma coluna. O detalhe usa a
-variante Pinterest partilhada, incluindo modo escuro. Typecheck e lint
-foram executados; falta apenas inspecao autenticada com dados reais de
-secretaria. Nao foi feito commit nem deploy nesta etapa.
+em duas colunas; no telemovel regressa a uma coluna. O modo escuro segue a
+home da secretaria: carvao azulado, cartoes cinza, banho azul nos avisos por
+ler e contraste reduzido nos ja lidos. O detalhe tem classe administrativa
+propria para manter esta linguagem sem alterar os avisos dos outros papeis.

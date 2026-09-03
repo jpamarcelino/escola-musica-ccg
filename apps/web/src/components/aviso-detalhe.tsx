@@ -26,6 +26,7 @@ export function AvisoDetalhe({
   accao,
   voltarPara,
   variante = 'partitura',
+  classePagina = '',
 }: {
   id: number
   sobretitulo: string
@@ -36,12 +37,13 @@ export function AvisoDetalhe({
   accao: { href: string; texto: string } | null
   voltarPara: string
   variante?: 'partitura' | 'pinterest'
+  classePagina?: string
 }) {
   const data = new Date(criadoEm)
   const pinterest = variante === 'pinterest'
 
   return (
-    <main id="conteudo-principal" className={pinterest ? 'pinterest-aviso' : 'partitura-pagina aviso-pagina'}>
+    <main id="conteudo-principal" className={`${pinterest ? 'pinterest-aviso' : 'partitura-pagina aviso-pagina'} ${classePagina}`.trim()}>
       <div className={pinterest ? 'pinterest-aviso-folha' : 'partitura-folha'}>
         <header className={pinterest ? 'pinterest-aviso-cabecalho' : 'partitura-agenda-cabecalho'}>
           <VoltarAtras destino={voltarPara} className={pinterest ? 'pinterest-aviso-voltar' : 'partitura-voltar'} rotulo="Voltar aos avisos">{pinterest ? <ChevronLeft size={23} aria-hidden="true" /> : '←'}</VoltarAtras>

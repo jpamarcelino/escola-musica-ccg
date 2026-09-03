@@ -8293,6 +8293,64 @@ html[data-tema='escuro'] .pinterest-avisos :is(.avisos-titulo,.avisos-resumo) { 
 html[data-tema='escuro'] .pinterest-avisos .avisos-lista article[data-lida='true'] .avisos-resumo { color: var(--dark-muted); }
 html[data-tema='escuro'] .pinterest-avisos-seccao span { background: #263d52; color: #9dd0f6; }
 
+/* Secretaria: avisos escuros. A base e partilhada com familia e professor,
+   mas a caixa administrativa ganha largura, contraste e hierarquia proprios. */
+html[data-tema='escuro'] .pinterest-admin-avisos,
+html[data-tema='escuro'] .pinterest-admin-aviso {
+  background:
+    radial-gradient(ellipse 90% 36% at 50% -8%,rgba(61,127,184,.2),transparent 68%),
+    var(--dark-bg);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] :is(.pinterest-admin-avisos,.pinterest-admin-aviso) :is(h1,h2,strong) { color:var(--dark-text); }
+html[data-tema='escuro'] :is(.pinterest-admin-avisos,.pinterest-admin-aviso) :is(p,small,time) { color:var(--dark-muted); }
+html[data-tema='escuro'] :is(.pinterest-admin-avisos .pinterest-avisos-voltar,.pinterest-admin-aviso .pinterest-aviso-voltar) {
+  border-color:var(--dark-border);
+  background:var(--dark-raised);
+  color:#a9d9fb;
+  box-shadow:0 6px 18px rgba(0,0,0,.2);
+}
+html[data-tema='escuro'] .pinterest-admin-avisos .avisos-outra-caixa {
+  border-color:#3c5669;
+  background:linear-gradient(145deg,rgba(50,110,153,.22),var(--dark-surface) 68%);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-admin-avisos .avisos-marcar-todos { color:#91ccf8; }
+html[data-tema='escuro'] .pinterest-admin-avisos .avisos-lista article {
+  border-color:#3a4b59;
+  background:linear-gradient(145deg,rgba(53,121,171,.2),#20282f 52%,var(--dark-surface));
+  box-shadow:0 10px 26px rgba(0,0,0,.18);
+}
+html[data-tema='escuro'] .pinterest-admin-avisos .avisos-lista article[data-lida='true'] {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+}
+html[data-tema='escuro'] .pinterest-admin-avisos .avisos-lista article:not([data-lida='true']) .avisos-icone {
+  background:#24465e;
+  color:#a9dcff;
+  box-shadow:0 0 18px rgba(72,161,220,.2);
+}
+html[data-tema='escuro'] .pinterest-admin-avisos :is(.avisos-aluno,.avisos-destino) { color:#9ed5fb; }
+html[data-tema='escuro'] .pinterest-admin-avisos .empty-editorial {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  color:var(--dark-text);
+  box-shadow:0 9px 24px rgba(0,0,0,.16);
+}
+html[data-tema='escuro'] .pinterest-admin-aviso .pinterest-aviso-cabecalho > div > p:first-child { color:#8fd0fb; }
+html[data-tema='escuro'] .pinterest-admin-aviso .aviso-corpo {
+  border-color:#3a4b59;
+  background:linear-gradient(145deg,rgba(53,121,171,.14),var(--dark-surface) 42%);
+  color:#eef3f7;
+  box-shadow:0 10px 28px rgba(0,0,0,.2);
+}
+html[data-tema='escuro'] .pinterest-admin-aviso .aviso-accao {
+  border-color:#426984;
+  background:#263f52;
+  color:#b9e1ff;
+  box-shadow:0 7px 20px rgba(0,0,0,.16);
+}
+
 /* Mensalidades: dinheiro e pendencias usam ambar; em dia usa verde. */
 html[data-tema='escuro'] .pinterest-mensalidades-resumo > span {
   background: #3f351e;
