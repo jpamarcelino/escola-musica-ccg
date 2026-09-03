@@ -6058,39 +6058,40 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
    das horas que o encarregado indicou. Propor outra hora fica fechado, e
    recusar fica no fim, atras de confirmacao. */
 .pinterest-pedidos { min-height: 100dvh; padding: max(18px,env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #17191c; font-family: -apple-system,BlinkMacSystemFont,var(--font-geist-sans),sans-serif; }
-.pinterest-pedidos-folha { width: 100%; max-width: 430px; margin-inline: auto; }
+.pinterest-pedidos-folha { width: 100%; max-width: 720px; margin-inline: auto; }
 .pinterest-pedidos-cabecalho { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; align-items: center; padding: 6px 2px 22px; }
 .pinterest-pedidos-voltar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid #e1e5e9; border-radius: 15px; background: #fff; color: #20242a; text-decoration: none; box-shadow: 0 3px 12px rgba(31,35,39,.05); }
 .pinterest-pedidos-cabecalho h1 { font-size: 29px; font-weight: 760; line-height: 1.08; letter-spacing: 0; }
 .pinterest-pedidos-cabecalho p { margin-top: 4px; color: #767c84; font-size: 14px; }
 .pinterest-pedidos-mensagem { margin-bottom: 20px; padding: 13px 15px; border: 1px solid #e6e9ed; border-radius: 18px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
 .pinterest-pedidos-fila { display: flex; flex-direction: column; gap: 16px; }
-.pinterest-pedido { display: flex; flex-direction: column; gap: 13px; padding: 16px; border: 1px solid #e4e8ec; border-radius: 23px; background: linear-gradient(145deg, rgba(120,174,222,.16) 0%, rgba(120,174,222,.05) 38%, #fff 72%); box-shadow: 0 6px 20px rgba(31,35,39,.06); }
+.pinterest-pedido { display: flex; flex-direction: column; gap: 18px; padding: 18px; border: 1px solid #dfe6ec; border-radius: 22px; background: #fff; box-shadow: 0 12px 32px rgba(35,55,72,.07); }
 .pinterest-pedido-topo { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 12px; align-items: center; }
-.pinterest-pedido-inicial { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 15px; background: #fff; color: #1b4f7a; font-size: 17px; font-weight: 720; line-height: 1; }
+.pinterest-pedido-inicial { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 14px; background: #e8f2fa; color: #1b4f7a; font-size: 17px; font-weight: 720; line-height: 1; }
 .pinterest-pedido-topo > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
 .pinterest-pedido-topo strong { overflow: hidden; font-size: 16.5px; font-weight: 730; text-overflow: ellipsis; white-space: nowrap; }
 .pinterest-pedido-topo small { margin-top: 2px; color: #6d737a; font-size: 12.5px; }
 .pinterest-pedido-topo time { color: #7b8188; font-size: 11.5px; white-space: nowrap; }
-.pinterest-pedido-telefone { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border: 1px solid #d7e5f2; border-radius: 14px; background: #fff; color: #1b4f7a; font-size: 13.5px; font-weight: 650; text-decoration: none; }
+.pinterest-pedido-telefone { display: inline-flex; width: fit-content; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border: 1px solid #d5e2ec; border-radius: 12px; background: #f7fafc; color: #1b4f7a; font-size: 13.5px; font-weight: 650; text-decoration: none; }
 /* Sem aspas desenhadas a toda a altura: a mensagem e uma citacao curta e
    basta a superficie recuada para se ler como voz de outra pessoa. */
 .pinterest-pedido-mensagem { margin: 0; padding: 12px 14px; border-radius: 15px; background: rgba(255,255,255,.75); color: #4a5058; font-size: 13.5px; font-style: italic; line-height: 1.5; }
-.pinterest-pedido-bloco { display: flex; flex-direction: column; gap: 9px; }
+.pinterest-pedido-bloco { display: flex; flex-direction: column; gap: 8px; }
 .pinterest-pedido-bloco h3 { color: #6d737a; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .pinterest-pedido-bloco > p { color: #5d646b; font-size: 13px; line-height: 1.5; }
-.pinterest-pedido-horarios { display: flex; flex-direction: column; gap: 8px; }
+.pinterest-pedido-horarios { overflow: hidden; display: flex; flex-direction: column; border-block: 1px solid #e8edf1; }
 /* A hora e o rotulo em colunas: o professor le a hora, nao o verbo. */
-.pinterest-pedido-horarios button { display: grid; width: 100%; grid-template-columns: minmax(0,1fr) auto; gap: 14px; align-items: center; min-height: 56px; padding: 0 10px 0 14px; border: 1px solid #d7e5f2; border-radius: 16px; background: #fff; color: #17191c; text-align: left; transition: background-color .15s ease; }
+.pinterest-pedido-horarios form + form { border-top: 1px solid #e8edf1; }
+.pinterest-pedido-horarios button { display: grid; width: 100%; grid-template-columns: minmax(0,1fr) auto; gap: 14px; align-items: center; min-height: 62px; padding: 8px 0; border: 0; border-radius: 0; background: transparent; color: #17191c; text-align: left; transition: background-color .15s ease; }
 .pinterest-pedido-horarios button:hover { background: #f4f9fd; }
 .pinterest-pedido-horarios button:hover i { background: #16405f; }
 .pinterest-pedido-horarios button:disabled { opacity: .5; }
-.pinterest-pedido-horarios b { overflow: hidden; font-size: 14.5px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.pinterest-pedido-horarios b { overflow: hidden; font-size: 15px; font-weight: 690; text-overflow: ellipsis; white-space: nowrap; }
 /* "Confirmar" desenhado como botao dentro da linha: encostado a hora
    lia-se como parte dela, e nao como a accao que dispara. */
-.pinterest-pedido-horarios i { display: grid; min-height: 38px; place-items: center; padding: 0 15px; border-radius: 999px; background: #1b4f7a; color: #fff; font-size: 12.5px; font-style: normal; font-weight: 680; }
+.pinterest-pedido-horarios i { display: grid; min-width: 92px; min-height: 38px; place-items: center; padding: 0 14px; border-radius: 12px; background: #1f5b88; color: #fff; font-size: 12.5px; font-style: normal; font-weight: 680; }
 .pinterest-pedido-proposta > p { padding: 12px 14px; border: 1px solid #e7ddb8; border-radius: 15px; background: #fff9e8; color: #635d4b; }
-.pinterest-pedido-propor { border-top: 1px solid rgba(31,35,39,.07); padding-top: 13px; }
+.pinterest-pedido-propor { border-top: 1px solid #e8edf1; padding-top: 8px; }
 .pinterest-pedido-propor > summary { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; min-height: 44px; color: #1b4f7a; font-size: 14px; font-weight: 680; cursor: pointer; list-style: none; }
 .pinterest-pedido-propor > summary::-webkit-details-marker { display: none; }
 .pinterest-pedido-propor > summary svg { transition: transform .18s ease; }
@@ -6118,11 +6119,16 @@ body:has(.pinterest-publico-pagina) { background: #f5f6f8; }
 .pinterest-pedido-propor-enviar:disabled { opacity: .5; }
 /* Recusar fica no fim, sozinho e sem preenchimento: e a unica accao desta
    pagina que apaga alguma coisa. */
-.pinterest-pedido-recusar { display: flex; justify-content: flex-end; border-top: 1px solid rgba(31,35,39,.07); padding-top: 13px; }
+.pinterest-pedido-recusar { display: flex; justify-content: flex-start; border-top: 1px solid #e8edf1; padding-top: 16px; }
 .pinterest-pedido-recusar button { min-height: 40px; padding: 0 15px; border-radius: 999px; border-width: 1px; font-size: 13px; font-weight: 640; }
 .pinterest-pedidos .estado-vazio { border-radius: 21px; background: #fff; }
 .pinterest-pedidos :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 .pinterest-pedidos :is(a,button):active { transform: scale(.99); }
+@media (max-width: 430px) {
+  .pinterest-pedido { gap:16px; padding:16px; border-radius:20px; }
+  .pinterest-pedido-topo { grid-template-columns:44px minmax(0,1fr); }
+  .pinterest-pedido-topo time { grid-column:2; margin-top:-8px; }
+}
 @media (min-width: 431px) { .pinterest-pedidos { padding-inline: 24px; } }
 @media (prefers-reduced-motion: reduce) { .pinterest-pedidos :is(a,button,svg) { transition: none; } }
 
@@ -7716,6 +7722,64 @@ html[data-tema='escuro'] .admin-conta-perigo { border-color: #69393e; background
   .metronomo-claro .metronomo-subdivisoes [role='radiogroup'] { grid-template-columns:repeat(5,minmax(0,1fr)); }
 }
 
+/* Afinador: o mostrador e o instrumento; calibracao e notacao ficam num
+   plano secundario para a nota continuar a ser a leitura dominante. */
+.afinador-claro {
+  width:100%;
+  margin-inline:auto;
+  padding:18px;
+  border:1px solid #e0e7ed;
+  border-radius:24px;
+  background:#fff;
+  box-shadow:0 10px 30px rgba(28,55,77,.07);
+}
+.afinador-privacidade { margin:0; background:#f7fafc; }
+.afinador-mostrador {
+  overflow:hidden;
+  min-height:250px;
+  border-color:#cbdde9 !important;
+  background:radial-gradient(circle at 50% 18%,#fff 0%,#edf6fb 68%,#e7f1f7 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.afinador-mostrador-vazio::before {
+  content:'♪';
+  display:grid;
+  width:54px;
+  height:54px;
+  margin-bottom:6px;
+  place-items:center;
+  border-radius:18px;
+  background:#dcecf6;
+  color:#1f628e;
+  font-size:25px;
+}
+.afinador-microfone {
+  width:fit-content;
+  margin:0 auto -8px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#e6f4ed;
+}
+.afinador-acao button { width:100%; min-height:54px; border-radius:16px; background:#1f5f8d !important; color:#fff !important; box-shadow:0 7px 18px rgba(27,79,122,.18); }
+.afinador-definicoes {
+  display:grid;
+  gap:18px;
+  padding:16px;
+  border:1px solid #e5eaee;
+  border-radius:18px;
+  background:#f8fafb;
+}
+.afinador-referencia input[type='range'] { accent-color:#2878a5; }
+.afinador-notacao [role='radio'] { border-radius:12px !important; background:#fff; }
+.afinador-notacao [role='radio'] { gap:4px !important; padding-inline:7px; font-size:11.5px !important; line-height:1.1; }
+.afinador-notacao [role='radio'] span { font-size:10.5px; }
+.afinador-ajuda { padding-inline:2px; }
+.afinador-ajuda > button { text-decoration:none !important; font-weight:650; }
+@media (min-width:700px) {
+  .afinador-claro { max-width:620px; padding:22px; }
+  .afinador-definicoes { grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); align-items:start; }
+}
+
 /* Tema escuro Pinterest. A escolha ja e aplicada ao <html> por
    aparencia.ts; esta camada cobre a area autenticada e os seus dialogos. */
 html[data-tema='escuro'] {
@@ -8446,22 +8510,23 @@ html[data-tema='escuro'] .pinterest-pedidos :is(.pinterest-pedidos-mensagem,.est
   color:var(--dark-text);
 }
 html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido {
-  border-color:#3c5264;
-  background:linear-gradient(145deg,rgba(55,126,180,.20),var(--dark-surface) 58%);
+  border-color:#34434f;
+  background:#1d252b;
   color:var(--dark-text);
   box-shadow:0 8px 24px rgba(0,0,0,.16);
 }
 html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-inicial,
 html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-telefone {
-  border-color:#41647e;
-  background:#293b49;
+  border-color:#3c5669;
+  background:#253846;
   color:#a9d9fb;
 }
 html[data-tema='escuro'] .pinterest-pedidos :is(.pinterest-pedido-mensagem,.pinterest-pedido-propor-corpo) {
   background:#20272d;
   color:var(--dark-text);
 }
-html[data-tema='escuro'] .pinterest-pedidos :is(.pinterest-pedido-propor,.pinterest-pedido-recusar) { border-color:var(--dark-border); }
+html[data-tema='escuro'] .pinterest-pedidos :is(.pinterest-pedido-propor,.pinterest-pedido-recusar,.pinterest-pedido-horarios) { border-color:var(--dark-border); }
+html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios form + form { border-color:var(--dark-border); }
 html[data-tema='escuro'] .pinterest-pedidos :is(.pinterest-pedido-nova label > span,.pinterest-pedido-campo > span,.pinterest-pedido-ajuda,.pinterest-pedido-bloco > p) { color:var(--dark-muted); }
 html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-propor-corpo :is(select,input[type='time'],textarea),
 html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-vagas label {
@@ -8604,8 +8669,96 @@ html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-aluno { border-co
 html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-aluno > a { color:var(--dark-text); }
 html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-desmarcar { border-color:var(--dark-border); background:#20272d; }
 
-html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button { border-color:#3d596d; background:#263946; color:var(--dark-text); }
-html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button:hover { background:#2b4558; }
+html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button { background:transparent; color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button:hover { background:#232f38; }
+html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios i { background:#2878b2; }
+
+html[data-tema='escuro'] .afinador-claro {
+  border-color:#34434f;
+  background:#1b2228;
+  box-shadow:0 12px 32px rgba(0,0,0,.22);
+}
+html[data-tema='escuro'] .afinador-privacidade {
+  border-color:#34434f !important;
+  background:#202a31;
+  color:#c7d0d7 !important;
+}
+html[data-tema='escuro'] .afinador-mostrador {
+  border-color:#3d596d !important;
+  background:radial-gradient(circle at 50% 16%,#2b4659 0%,#202b33 55%,#1c242a 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+html[data-tema='escuro'] .afinador-mostrador-vazio::before { background:#294b61; color:#8ed1fa; }
+html[data-tema='escuro'] .afinador-microfone { background:#183a30; color:#79d6ac !important; }
+html[data-tema='escuro'] .afinador-definicoes { border-color:#34434f; background:#20282e; }
+html[data-tema='escuro'] .afinador-notacao [role='radio'] { background:#252e35; }
+html[data-tema='escuro'] .afinador-notacao [role='radio'][aria-checked='true'] { border-color:#65b8eb !important; color:#9bd8fa !important; background:#263d4c !important; }
+html[data-tema='escuro'] .afinador-acao button { background:#287eb7 !important; }
+
+html[data-tema='escuro'] .metronomo-claro {
+  border-color:#34434f;
+  background:#1b2228;
+  color:var(--dark-text);
+  box-shadow:0 12px 32px rgba(0,0,0,.24);
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-bpm {
+  border-color:#3f6278;
+  background:radial-gradient(circle at 22% 15%,#2b4c62 0%,#22343f 48%,#1f292f 100%);
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-bpm label { color:#a8cce2; }
+html[data-tema='escuro'] .metronomo-claro .metronomo-bpm input {
+  background:transparent !important;
+  color:#f7fbff !important;
+  -webkit-text-fill-color:#f7fbff;
+}
+html[data-tema='escuro'] .metronomo-claro :is(.metronomo-compasso,.metronomo-subdivisoes,.metronomo-volumes) {
+  border-color:#34434f;
+  background:#20282e;
+}
+html[data-tema='escuro'] .metronomo-claro :is(label,.metronomo-volumes p,.metronomo-volumes span) { color:#c7d0d7 !important; }
+html[data-tema='escuro'] .metronomo-claro .metronomo-compasso input {
+  border-color:#40505c !important;
+  background:#273139 !important;
+  color:#f5f7f9 !important;
+  -webkit-text-fill-color:#f5f7f9;
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-compasso button {
+  border-color:#45535e !important;
+  background:#252e35;
+  color:#c7d0d7 !important;
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-compasso button[style*='background-color'] {
+  border-color:#4ea0d3 !important;
+  background:#287eb7 !important;
+  color:#fff !important;
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-subdivisoes [role='radio'] {
+  border-color:#414e58 !important;
+  background:#252e35;
+  color:#b9c2c9 !important;
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-subdivisoes [role='radio'][aria-checked='true'] {
+  border-color:#65b8eb !important;
+  background:#263f50 !important;
+  color:#9bd8fa !important;
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-acento {
+  border-color:#426984 !important;
+  background:#243947 !important;
+  color:#a9d9fb !important;
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-acento[aria-pressed='false'] {
+  border-color:#414e58 !important;
+  background:#252e35 !important;
+  color:#b9c2c9 !important;
+}
+html[data-tema='escuro'] .metronomo-claro .metronomo-volumes input[type='range'] { accent-color:#46a3da; }
+html[data-tema='escuro'] .metronomo-claro .metronomo-pulsos span { background:#46535d !important; }
+html[data-tema='escuro'] .metronomo-claro > button:last-child {
+  background:#287eb7 !important;
+  color:#fff !important;
+  box-shadow:0 8px 22px rgba(18,104,160,.3);
+}
 
 /* Correcções finas de contraste: texto nunca recebe a superfície do ícone. */
 html[data-tema='escuro'] .pinterest-agenda .pinterest-agenda-atalhos :is(.agenda-ligacao-calendario,.pinterest-agenda-semana) > span {
