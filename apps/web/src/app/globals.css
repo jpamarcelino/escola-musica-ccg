@@ -6825,6 +6825,11 @@ input[type="month"] {
 .pinterest-bebes-desmarcar { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 10px 15px; border-top: 1px solid #eef0f2; background: #fbfcfd; }
 .pinterest-bebes-desmarcar > p { min-width: 0; color: #868c93; font-size: 11.5px; }
 .pinterest-bebes-desmarcar button { min-height: 36px; padding: 0 13px; border-radius: 999px; border-width: 1px; font-size: 12px; font-weight: 640; white-space: nowrap; }
-.pinterest-bebes .estado-vazio { border-radius: 20px; background: #fff; }
+/* O estado vazio vinha com a serifa editorial e o risco azul por cima —
+   o mesmo tratamento que ja levaram as mensalidades e os materiais. */
+.pinterest-bebes .empty-editorial { margin-top: 2px; padding: 20px; border: 1px solid #e5e8ec; border-radius: 21px; background: #fff; box-shadow: 0 4px 15px rgba(31,35,39,.05); }
+.pinterest-bebes .empty-editorial::before { display: none; }
+.pinterest-bebes .empty-editorial-titulo { color: #17191c; font-family: inherit; font-size: 17px; font-weight: 740; line-height: 1.3; }
+.pinterest-bebes .empty-editorial-descricao { margin-top: 5px; color: #777e85; font-size: 13px; line-height: 1.5; }
 .pinterest-bebes :is(a,button):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
 @media (min-width: 431px) { .pinterest-bebes { padding-inline: 24px; } }
