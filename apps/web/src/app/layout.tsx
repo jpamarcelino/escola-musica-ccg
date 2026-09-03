@@ -5,7 +5,7 @@ import { CabecalhoPublico } from "@/components/cabecalho-publico";
 import { NavigationFeedback } from "@/components/navigation-feedback";
 import { PageTransition } from "@/components/page-transition";
 import { RegistarServiceWorker } from "@/components/registar-service-worker";
-import { APARENCIA_PREDEFINIDA, CHAVE_APARENCIA } from "@/lib/aparencia";
+import { APARENCIA_PREDEFINIDA, CHAVE_APARENCIA, COR_TEMA } from "@/lib/aparencia";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -48,9 +48,11 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
 };
 
-export const viewport = {
-  themeColor: "#26619c",
-};
+// Sem `themeColor` no viewport de propósito: o Next escreveria uma meta
+// fixa, e esta cor tem de seguir a escolha guardada neste aparelho — que
+// pode ser "escuro" com o telemóvel em claro. A meta abaixo é escrita à
+// mão e o script de arranque corrige-a antes da primeira pintura.
+export const viewport = {};
 
 export default function RootLayout({
   children,
@@ -69,6 +71,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <head>
+        {/* A cor da faixa do sistema — as horas e a bateria no iPhone.
+            Arranca no claro e o script abaixo corrige-a antes de pintar. */}
+        <meta name="theme-color" content={COR_TEMA.claro} />
         {/* Corre antes de qualquer pintura, e por isso tem de ser um
             script em texto e não um componente: quando o tema escuro
             existir, esperar pelo React para o aplicar mostraria um
@@ -81,7 +86,7 @@ export default function RootLayout({
               CHAVE_APARENCIA,
             )});if(e!=="claro"&&e!=="escuro"&&e!=="sistema")e=${JSON.stringify(
               APARENCIA_PREDEFINIDA,
-            )};var r=document.documentElement;r.dataset.aparencia=e;r.dataset.tema=e==="sistema"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"escuro":"claro"):e;}catch(_){}})()`,
+            )};var r=document.documentElement;r.dataset.aparencia=e;var t=e==="sistema"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"escuro":"claro"):e;r.dataset.tema=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="escuro"?${JSON.stringify(COR_TEMA.escuro)}:${JSON.stringify(COR_TEMA.claro)});}catch(_){}})()`,
           }}
         />
       </head>

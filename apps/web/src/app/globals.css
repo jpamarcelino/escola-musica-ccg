@@ -6745,6 +6745,12 @@ html[data-tema='escuro'] :is(.app-shell-content,.admin-conteudo,.admin-conteudo 
   --color-papel-2: var(--dark-surface);
   --color-linha: var(--dark-border);
 }
+/* O <html> e nao so o <body>: e a cor do <html> que o iOS pinta na faixa
+   das horas e da bateria, e a que aparece quando a pagina e puxada para
+   alem do topo. Sem isto o desenho parecia acabar a meio do ecra. E o
+   mesmo tom do banho azul que as paginas levam no topo, para nao se ver
+   a emenda. */
+html[data-tema='escuro'] { background: #182029; }
 html[data-tema='escuro'] body { background: var(--dark-bg); color: var(--dark-text); }
 html[data-tema='escuro'] .app-shell-content { background: var(--dark-bg); }
 html[data-tema='escuro'] .admin-conteudo { background: var(--dark-bg); color: var(--dark-text); }
