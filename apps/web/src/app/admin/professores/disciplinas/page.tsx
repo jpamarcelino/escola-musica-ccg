@@ -62,7 +62,7 @@ export default async function DisciplinasPage({
   const respondidos = pedidos.filter((p) => p.estado !== 'pendente').slice(0, 20)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina">
+    <main id="conteudo-principal" className="partitura-pagina pinterest-admin-professor-disciplinas">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho">
           <VoltarAtras destino="/admin/professores" className="partitura-voltar" rotulo="Voltar aos professores">←</VoltarAtras>

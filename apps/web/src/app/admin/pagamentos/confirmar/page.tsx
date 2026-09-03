@@ -4,6 +4,7 @@ import { LinhaLista, GrupoLista, TituloSeccao } from '@/components/lista'
 import { Distintivo } from '@/components/distintivo'
 import { EmptyState } from '@/components/empty-state'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ChevronLeft, CircleCheckBig } from 'lucide-react'
 
 type Professor = {
   id: string
@@ -91,9 +92,9 @@ export default async function ConfirmarMensalidadesPage() {
   const emDia = professores.filter((p) => (porConfirmarPorProfessor.get(p.id) ?? 0) === 0)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/pagamentos" className="partitura-voltar" rotulo="Voltar a mensalidades">←</VoltarAtras><div><p className="partitura-sobretitulo">Ação mensal</p><h1>Por confirmar</h1><p>{porConfirmarPorProfessor.size} {porConfirmarPorProfessor.size === 1 ? 'professor com pagamentos pendentes' : 'professores com pagamentos pendentes'}</p></div></header>
+    <main id="conteudo-principal" className="admin-financeiro admin-financeiro-diretorio">
+      <div className="admin-financeiro-folha">
+        <header className="admin-financeiro-cabecalho"><VoltarAtras destino="/admin/pagamentos" className="admin-financeiro-voltar" rotulo="Voltar a mensalidades"><ChevronLeft size={22} /></VoltarAtras><div><h1>Por confirmar</h1><p>{porConfirmarPorProfessor.size} {porConfirmarPorProfessor.size === 1 ? 'professor com pagamentos pendentes' : 'professores com pagamentos pendentes'}</p></div><span className="admin-financeiro-marca"><CircleCheckBig size={22} /></span></header>
 
         {professores.length === 0 ? (
           <EmptyState titulo="Ainda não há professores registados" />

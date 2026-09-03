@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { LinhaLista, GrupoLista } from '@/components/lista'
 import { EmptyState } from '@/components/empty-state'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ChevronLeft, History } from 'lucide-react'
 
 type Professor = {
   id: string
@@ -42,9 +43,9 @@ export default async function HistoricoPagamentosPage() {
   })) as Professor[]
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-diretorio-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/pagamentos" className="partitura-voltar" rotulo="Voltar a mensalidades">←</VoltarAtras><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>Histórico</h1><p>Seleciona um professor para consultar o registo mensal.</p></div></header>
+    <main id="conteudo-principal" className="admin-financeiro admin-financeiro-diretorio">
+      <div className="admin-financeiro-folha">
+        <header className="admin-financeiro-cabecalho"><VoltarAtras destino="/admin/pagamentos" className="admin-financeiro-voltar" rotulo="Voltar a mensalidades"><ChevronLeft size={22} /></VoltarAtras><div><h1>Histórico</h1><p>Arquivo mensal por professor</p></div><span className="admin-financeiro-marca"><History size={22} /></span></header>
 
         {professores.length === 0 ? (
           <EmptyState titulo="Ainda não há professores registados" />

@@ -83,25 +83,30 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Administracao
 
-- [ ] `/admin` - administracao - mobile - modo claro - redesenhado no Pinterest, os dois estados do destaque vistos em ensaio a 360 e 430 px; falta ver com conta de administrador real
-- [ ] `/admin/conta`
+- [x] `/admin` - secretaria - Home Pinterest concluida e validada com a conta real a 390 px e 1440 px; claro e escuro, sem overflow; preserva pedidos, numeros, avisos, recomendacoes e Musica para Bebes
+- [x] `/admin/bebes` - secretaria - entrada de Musica para Bebes redesenhada em modo claro para mobile e desktop; resumo operacional e acessos a turmas e inscricoes
+- [x] `/admin/bebes/horarios` - secretaria - gestao das duas turmas redesenhada em modo claro; horario, lotacao e professores responsivos
+- [x] `/admin/bebes/pedidos` - secretaria - estado das turmas e fluxo de aceitar/recusar inscricoes redesenhados em modo claro para mobile e desktop
+- [x] `/admin/alunos` - secretaria - diretorio redesenhado em modo claro para mobile e desktop; pesquisa, filtros, selecao, exportacao e dossier rapido preservados
+- [x] `/admin/alunos/[alunoId]` - secretaria - ficha completa redesenhada em modo claro; contactos, matriculas, presencas, recomendacoes e mensalidades responsivos
+- [x] `/admin/conta` - secretaria - dados, seguranca, painel de professor, aparencia, notificacoes, saida e zona sensivel redesenhados; validado a 390 px e 1440 px em claro e escuro
 - [ ] `/admin/alunos` - administracao - mobile - modo claro - tratamento Pinterest so abaixo dos 720 px, a mesa do computador fica como estava; lista, folha do dossier e alvos de toque vistos em ensaio a 360 px; falta ver com conta de administrador real
 - [ ] `/admin/alunos/[alunoId]`
-- [ ] `/admin/professores` - administracao - mobile - modo claro - redesenhado no Pinterest com os componentes partilhados vestidos por descendencia; visto em ensaio a 360 px com o CSS compilado da build; falta ver com conta de administrador real
-- [ ] `/admin/professores/[professorId]`
-- [ ] `/admin/professores/[professorId]/alunos`
-- [ ] `/admin/professores/[professorId]/conta`
-- [ ] `/admin/professores/[professorId]/horario`
-- [ ] `/admin/professores/disciplinas`
-- [ ] `/admin/pagamentos`
-- [ ] `/admin/pagamentos/confirmar`
-- [ ] `/admin/pagamentos/confirmar/[professorId]`
-- [ ] `/admin/pagamentos/historico`
-- [ ] `/admin/pagamentos/historico/[professorId]`
-- [ ] `/admin/recomendacoes`
-- [ ] `/admin/recomendacoes/[id]`
-- [ ] `/admin/recomendacoes/nova`
-- [ ] `/admin/recomendacoes/estudo`
+- [x] `/admin/professores` - secretaria - diretorio, pedidos pendentes, convite e pesquisa preservados; modo claro responsivo
+- [x] `/admin/professores/[professorId]` - secretaria - ficha de gestao responsiva com atalhos, evolucao de alunos e Programa de Recomendacao
+- [x] `/admin/professores/[professorId]/alunos` - secretaria - diretorio compacto e pesquisavel dos alunos do professor
+- [x] `/admin/professores/[professorId]/conta` - secretaria - dados, disciplinas e edicao da ficha publica em mobile e desktop
+- [x] `/admin/professores/[professorId]/horario` - secretaria - criacao de disponibilidade e grelha semanal responsiva com scroll contido
+- [x] `/admin/professores/disciplinas` - secretaria - pedidos pendentes e historico de respostas redesenhados para mobile e desktop
+- [x] `/admin/pagamentos` - secretaria - entrada de Mensalidades concluida em mobile e desktop, modo claro
+- [x] `/admin/pagamentos/confirmar` - secretaria - pendentes priorizados e professores em dia; validado com dados reais a 390 px e 1440 px
+- [x] `/admin/pagamentos/confirmar/[professorId]` - secretaria - valor, isencao CCG, fatura e confirmacao reorganizados; validado com duas mensalidades reais em mobile e desktop
+- [x] `/admin/pagamentos/historico` - secretaria - diretorio de professores concluido em mobile e desktop, modo claro
+- [x] `/admin/pagamentos/historico/[professorId]` - secretaria - arquivo anual responsivo, scroll interno e coluna do aluno fixa; validado com dados reais em mobile e desktop
+- [x] `/admin/recomendacoes` - secretaria - visao geral responsiva em modo claro, com balanco, acoes, indicacoes por confirmar e registos
+- [x] `/admin/recomendacoes/[id]` - secretaria - detalhe responsivo com estado, beneficio, correcoes administrativas e anulacao
+- [x] `/admin/recomendacoes/nova` - secretaria - registo guiado responsivo, incluindo tratamento de indicacoes por confirmar
+- [x] `/admin/recomendacoes/estudo` - secretaria - indicadores, balanco, comparacao e tabelas responsivas com exportacao CSV
 - [ ] `/admin/avisos`
 - [ ] `/admin/avisos/[avisoId]`
 - [ ] `/admin/mensagens`

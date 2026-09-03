@@ -13,6 +13,7 @@ import { classesCampo } from '@/components/campo-formulario'
 export function ListaComPesquisa({
   itens,
   hrefPrefix,
+  hrefSuffix = '',
   placeholder = 'Pesquisar por nome…',
 }: {
   itens: { id: string; nome: string }[]
@@ -20,6 +21,7 @@ export function ListaComPesquisa({
   // dentro, em vez de receber uma função: um Server Component não pode
   // passar funções como prop a um Client Component.
   hrefPrefix: string
+  hrefSuffix?: string
   placeholder?: string
 }) {
   const [termo, setTermo] = useState('')
@@ -61,7 +63,7 @@ export function ListaComPesquisa({
           {filtrados.map((item) => (
             <LinhaLista
               key={item.id}
-              href={`${hrefPrefix}${item.id}`}
+              href={`${hrefPrefix}${item.id}${hrefSuffix}`}
               titulo={item.nome}
             />
           ))}

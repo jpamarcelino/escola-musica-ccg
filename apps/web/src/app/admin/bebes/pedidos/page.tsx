@@ -9,6 +9,7 @@ import { classesCampo } from '@/components/campo-formulario'
 import { formatarHora } from '@ccg/core'
 import { aceitarPedidoBebes, recusarPedidoBebes } from '@/lib/actions/bebes'
 import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
+import { Baby, ChevronLeft, ClipboardCheck, Phone, Users } from 'lucide-react'
 
 type Pedido = {
   id: number
@@ -92,19 +93,16 @@ export default async function AdminBebesPedidosPage({
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina pedidos-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/admin/bebes" className="partitura-voltar" rotulo="Voltar à escola de bebés">←</VoltarAtras>
-          <div>
-            <p className="partitura-sobretitulo">Música para Bebés</p>
-            <h1>Pedidos de inscrição</h1>
-            <p>
+    <main id="conteudo-principal" className="admin-bebes admin-bebes-pedidos">
+      <div className="admin-bebes-folha">
+        <header className="admin-bebes-cabecalho">
+          <VoltarAtras destino="/admin/bebes" className="admin-bebes-voltar" rotulo="Voltar à escola de bebés"><ChevronLeft size={22} /></VoltarAtras>
+          <div><h1>Inscrições</h1><p>
               {pedidos.length > 0
                 ? `${pedidos.length} ${pedidos.length === 1 ? 'pedido aguarda' : 'pedidos aguardam'} resposta.`
                 : 'Está tudo em dia.'}
-            </p>
-          </div>
+            </p></div>
+          <span className="admin-bebes-marca"><ClipboardCheck size={22} /></span>
         </header>
 
         {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
@@ -113,47 +111,47 @@ export default async function AdminBebesPedidosPage({
         {/* O estado das turmas antes dos pedidos: aceitar um pedido para
             uma turma cheia não é possível, e é melhor sabê-lo antes de
             abrir o formulário do que ao levar com o erro. */}
-        <section className="partitura-seccao">
-          <div className="partitura-seccao-cabecalho">
-            <div><p className="partitura-indice">01</p><h2>As turmas</h2></div>
-          </div>
-          <div className="horarios-alunos">
+        <section className="admin-bebes-estado-turmas">
+          <header><Users size={18} /><div><h2>Estado das turmas</h2><p>Confirma se há lugar e professor antes de aceitar.</p></div></header>
+          <div>
             {turmas.map((t) => {
               const inscritos = ocupacoes.get(t.id) ?? 0
               const profs = profsPorTurma.get(t.id) ?? []
               return (
-                <div key={t.id} className="horarios-aluno">
+                <div key={t.id} className="admin-bebes-estado-turma">
                   <span>
                     <strong>{t.instrumentos?.nome}</strong>
                     <small>
-                      {t.dia_semana}, {formatarHora(t.hora_inicio)}–{formatarHora(t.hora_fim)} ·{' '}
-                      {inscritos}/{t.capacidade}
-                      {inscritos >= t.capacidade ? ' · cheia' : ''}
+                      {t.dia_semana}, {formatarHora(t.hora_inicio)}–{formatarHora(t.hora_fim)}
                       {profs.length === 0 ? ' · sem professor' : ` · ${profs.map((p) => p.nome).join(', ')}`}
                     </small>
                   </span>
+                  <b className={inscritos >= t.capacidade ? 'esta-cheia' : ''}>
+                      {inscritos}/{t.capacidade}
+                      {inscritos >= t.capacidade ? ' · cheia' : ''}
+                  </b>
                 </div>
               )
             })}
           </div>
         </section>
 
-        <section className="pedidos-fila" aria-label="Pedidos por responder">
+        <section className="admin-bebes-fila" aria-label="Pedidos por responder">
           {pedidos.length === 0 && (
             <EmptyState
               titulo="Não há pedidos pendentes"
               descricao="Os pedidos de inscrição em Música para Bebés aparecem aqui."
             />
           )}
-          {pedidos.map((pedido, indice) => {
+          {pedidos.map((pedido) => {
             const turma = turmas.find((t) => t.instrumento_id === pedido.instrumento_id)
             const profs = turma ? profsPorTurma.get(turma.id) ?? [] : []
             const inscritos = turma ? ocupacoes.get(turma.id) ?? 0 : 0
             const cheia = turma ? inscritos >= turma.capacidade : false
             return (
-              <article key={pedido.id} className="pedido-registo">
+              <article key={pedido.id} className="admin-bebes-pedido">
                 <header>
-                  <span className="pedido-indice">{String(indice + 1).padStart(2, '0')}</span>
+                  <span className="admin-bebes-pedido-inicial"><Baby size={19} /></span>
                   <div>
                     <h2>{pedido.alunos?.nome}</h2>
                     <p>{pedido.instrumentos?.nome}</p>
@@ -161,12 +159,12 @@ export default async function AdminBebesPedidosPage({
                 </header>
 
                 {pedido.alunos?.encarregado?.telefone && (
-                  <p className="pedido-contacto">
+                  <p className="admin-bebes-contacto">
                     <a
                       href={`tel:${pedido.alunos.encarregado.telefone}`}
                       className="inline-flex min-h-[44px] items-center font-semibold underline underline-offset-4"
                     >
-                      Ligar para {pedido.alunos.encarregado.nome ?? 'o encarregado'}
+                      <Phone size={16} /> Ligar para {pedido.alunos.encarregado.nome ?? 'o encarregado'}
                       {' — '}
                       {pedido.alunos.encarregado.telefone}
                     </a>
@@ -176,23 +174,23 @@ export default async function AdminBebesPedidosPage({
                 {pedido.mensagem && <blockquote>“{pedido.mensagem}”</blockquote>}
 
                 {profs.length === 0 ? (
-                  <div className="pedido-disponibilidade">
+                  <div className="admin-bebes-indisponivel">
                     <p>Sem professor na turma</p>
-                    <p className="pedido-disponibilidade-vazio">
+                    <p>
                       Atribui um professor a esta turma em “Horários e professores” antes de
                       aceitar. Sem professor não há horário onde inscrever o aluno.
                     </p>
                   </div>
                 ) : cheia ? (
-                  <div className="pedido-disponibilidade">
+                  <div className="admin-bebes-indisponivel">
                     <p>Turma cheia</p>
-                    <p className="pedido-disponibilidade-vazio">
+                    <p>
                       {turma?.instrumentos?.nome} tem {inscritos} de {turma?.capacidade} lugares
                       ocupados. Para aceitar mais alguém, aumenta a capacidade da turma primeiro.
                     </p>
                   </div>
                 ) : !podeMexer ? null : (
-                  <form action={aceitarPedidoBebes} className="space-y-2">
+                  <form action={aceitarPedidoBebes} className="admin-bebes-aceitar">
                     <input type="hidden" name="matriculaId" value={pedido.id} />
                     <label className="block text-[12.5px] font-medium" style={{ color: 'var(--color-tinta-suave)' }}>
                       Professor da turma

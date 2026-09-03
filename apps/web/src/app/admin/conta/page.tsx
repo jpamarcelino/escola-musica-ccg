@@ -10,9 +10,19 @@ import {
 import { EditarNomeForm, AlterarPasswordForm } from '@/components/conta-forms'
 import { BotaoAcaoDestruir } from '@/components/botao-acao-destruir'
 import { ApagarContaSuperAdminForm } from '@/components/apagar-conta-super-admin-form'
-import { LigacaoTerciaria } from '@/components/ligacao-terciaria'
 import { AtivarNotificacoes } from '@/components/ativar-notificacoes'
 import { SeletorAparencia } from '@/components/seletor-aparencia'
+import {
+  Bell,
+  ChevronLeft,
+  GraduationCap,
+  KeyRound,
+  LogOut,
+  MonitorCog,
+  ShieldAlert,
+  UserRound,
+} from 'lucide-react'
+import Link from 'next/link'
 
 export default async function AdminContaPage({
   searchParams,
@@ -88,36 +98,51 @@ export default async function AdminContaPage({
   const chavePublica = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ''
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-conta-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin" className="partitura-voltar" rotulo="Voltar à visão geral">←</VoltarAtras><div><p className="partitura-sobretitulo">Definições pessoais</p><h1>Conta</h1><p>{user.email}</p></div></header>
+    <main id="conteudo-principal" className="admin-conta-pagina">
+      <div className="admin-conta-folha">
+        <header className="admin-conta-cabecalho">
+          <VoltarAtras destino="/admin" className="admin-conta-voltar" rotulo="Voltar à visão geral">
+            <ChevronLeft size={22} aria-hidden="true" />
+          </VoltarAtras>
+          <div>
+            <h1>Conta</h1>
+            <p>Dados, segurança e preferências</p>
+          </div>
+          <span className="admin-conta-avatar" aria-hidden="true">
+            {(profile.nome[0] ?? 'S').toUpperCase()}
+          </span>
+        </header>
 
         {erro && (
           <p className="admin-alerta" role="alert">{erro}</p>
         )}
 
-        <section className="space-y-4">
-          <h2 className="font-semibold">Dados</h2>
-          <EditarNomeForm action={atualizarNomeConta} nomeAtual={profile.nome} />
-          <p className="text-sm">
-            <span className="text-foreground/60">Email: </span>
-            {user.email}
-          </p>
+        <section className="admin-conta-seccao">
+          <header>
+            <span><UserRound size={20} aria-hidden="true" /></span>
+            <div><h2>Dados pessoais</h2><p>A tua identificação na plataforma</p></div>
+          </header>
+          <div className="admin-conta-corpo">
+            <EditarNomeForm action={atualizarNomeConta} nomeAtual={profile.nome} />
+            <div className="admin-conta-email"><span>Email</span><strong>{user.email}</strong></div>
+          </div>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="font-semibold">Alterar password</h2>
-          <AlterarPasswordForm action={atualizarPasswordConta} />
+        <section className="admin-conta-seccao">
+          <header>
+            <span><KeyRound size={20} aria-hidden="true" /></span>
+            <div><h2>Segurança</h2><p>Altera a password de acesso</p></div>
+          </header>
+          <div className="admin-conta-corpo"><AlterarPasswordForm action={atualizarPasswordConta} /></div>
         </section>
 
         {temPainelProprio && (
-          <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-            <h2 className="font-semibold">As tuas aulas</h2>
-            <p className="text-sm text-foreground/60">
-              A tua foto, as disciplinas que ensinas e a tua agenda estão no painel
-              de professor.
-            </p>
-            <LigacaoTerciaria href="/dashboard">Voltar ao painel de professor</LigacaoTerciaria>
+          <section className="admin-conta-seccao admin-conta-ligacao">
+            <header>
+              <span><GraduationCap size={20} aria-hidden="true" /></span>
+              <div><h2>As tuas aulas</h2><p>Foto, disciplinas e agenda de professor</p></div>
+            </header>
+            <Link href="/dashboard">Abrir painel de professor <span aria-hidden="true">→</span></Link>
           </section>
         )}
 
@@ -125,29 +150,36 @@ export default async function AdminContaPage({
             professor e da secretaria ao mesmo tempo liga uma vez e
             recebe tudo. Por isso esta secção está fora do bloco de
             professor. */}
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-          <h2 className="font-semibold">Aparência</h2>
-          <SeletorAparencia />
+        <section className="admin-conta-seccao">
+          <header>
+            <span><MonitorCog size={20} aria-hidden="true" /></span>
+            <div><h2>Aparência</h2><p>Escolhe como vês a aplicação</p></div>
+          </header>
+          <div className="admin-conta-corpo"><SeletorAparencia /></div>
         </section>
 
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
-          <h2 className="font-semibold">Notificações no telemóvel</h2>
-          {chavePublica ? (
-            <AtivarNotificacoes chavePublica={chavePublica} endpointsGuardados={endpoints} />
-          ) : (
-            <p className="text-sm text-foreground/60">
-              As notificações ainda não estão configuradas nesta instalação.
-            </p>
-          )}
+        <section className="admin-conta-seccao">
+          <header>
+            <span><Bell size={20} aria-hidden="true" /></span>
+            <div><h2>Notificações</h2><p>Avisos importantes neste aparelho</p></div>
+          </header>
+          <div className="admin-conta-corpo">
+            {chavePublica ? (
+              <AtivarNotificacoes chavePublica={chavePublica} endpointsGuardados={endpoints} />
+            ) : (
+              <p className="text-sm text-foreground/60">As notificações ainda não estão configuradas nesta instalação.</p>
+            )}
+          </div>
         </section>
 
-        <section className="border-t border-[var(--color-linha)] pt-6">
+        <section className="admin-conta-sair">
           <form action={logout}>
-            <LigacaoTerciaria>Sair da conta</LigacaoTerciaria>
+            <button type="submit"><LogOut size={19} aria-hidden="true" /> Sair da conta</button>
           </form>
         </section>
 
-        <section className="space-y-3 border-t border-[var(--color-linha)] pt-6">
+        <section className="admin-conta-perigo">
+          <header><ShieldAlert size={20} aria-hidden="true" /><strong>Zona sensível</strong></header>
           {profile.super_admin ? (
             <ApagarContaSuperAdminForm action={apagarContaSuperAdmin} outrosAdmins={outrosAdmins} />
           ) : (

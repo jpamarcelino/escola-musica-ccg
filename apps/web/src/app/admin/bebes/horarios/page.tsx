@@ -13,6 +13,7 @@ import {
 } from '@/lib/actions/bebes'
 import { ConfirmarHorarioTurma } from '@/components/confirmar-horario-turma'
 import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
+import { Baby, ChevronLeft, Clock3, UserPlus, Users } from 'lucide-react'
 
 type Turma = {
   id: number
@@ -87,15 +88,12 @@ export default async function AdminBebesHorariosPage({
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-subficha-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho">
-          <VoltarAtras destino="/admin/bebes" className="partitura-voltar" rotulo="Voltar à escola de bebés">←</VoltarAtras>
-          <div>
-            <p className="partitura-sobretitulo">Música para Bebés</p>
-            <h1>Horários e professores</h1>
-            <p>O horário é da escola. Mudá-lo avisa os professores e as famílias.</p>
-          </div>
+    <main id="conteudo-principal" className="admin-bebes admin-bebes-horarios">
+      <div className="admin-bebes-folha">
+        <header className="admin-bebes-cabecalho">
+          <VoltarAtras destino="/admin/bebes" className="admin-bebes-voltar" rotulo="Voltar à escola de bebés"><ChevronLeft size={22} /></VoltarAtras>
+          <div><h1>Turmas</h1><p>Horários, lotação e professores</p></div>
+          <span className="admin-bebes-marca"><Clock3 size={22} /></span>
         </header>
 
         {erro && <MensagemErro>{decodeURIComponent(erro)}</MensagemErro>}
@@ -106,20 +104,12 @@ export default async function AdminBebesHorariosPage({
           const porAtribuir = todos.filter((p) => !daTurma.some((d) => d.id === p.id))
           const inscritos = ocupacoes.get(turma.id) ?? 0
           return (
-            <section key={turma.id} className="partitura-seccao">
-              <div className="partitura-seccao-cabecalho">
-                <div>
-                  <p className="partitura-indice">{String(indice + 1).padStart(2, '0')}</p>
-                  <h2>{turma.instrumentos?.nome}</h2>
-                </div>
-              </div>
-
-              <p className="text-sm" style={{ color: 'var(--color-tinta-suave)' }}>
-                {turma.dia_semana}, {formatarHora(turma.hora_inicio)}–{formatarHora(turma.hora_fim)}
-                {' · '}
-                {inscritos} de {turma.capacidade} {inscritos === 1 ? 'inscrito' : 'inscritos'}
-                {inscritos >= turma.capacidade ? ' · turma cheia' : ''}
-              </p>
+            <section key={turma.id} className="admin-bebes-turma">
+              <header className="admin-bebes-turma-cabecalho">
+                <span><Baby size={21} /></span>
+                <div><small>Turma {String(indice + 1).padStart(2, '0')}</small><h2>{turma.instrumentos?.nome}</h2><p>{turma.dia_semana}, {formatarHora(turma.hora_inicio)}–{formatarHora(turma.hora_fim)}</p></div>
+                <b className={inscritos >= turma.capacidade ? 'esta-cheia' : ''}>{inscritos}/{turma.capacidade}<small>{inscritos >= turma.capacidade ? 'Cheia' : 'Inscritos'}</small></b>
+              </header>
 
               {/* A confirmação é obrigatória: mudar a hora mexe no sábado
                   de dez famílias, e é o tipo de coisa que não se faz por
@@ -141,15 +131,16 @@ export default async function AdminBebesHorariosPage({
                 </p>
               )}
 
-              <div className="horarios-alunos" style={{ marginTop: 18 }}>
+              <div className="admin-bebes-equipa">
+                <h3><Users size={17} /> Professores</h3>
                 {daTurma.length === 0 && (
-                  <p className="text-sm" style={{ color: 'var(--color-tinta-suave)' }}>
+                  <p className="admin-bebes-vazio">
                     Ainda não há professores nesta turma. Sem professor, a turma não pode
                     receber inscrições.
                   </p>
                 )}
                 {daTurma.map((p) => (
-                  <div key={p.id} className="horarios-aluno">
+                  <div key={p.id} className="admin-bebes-professor">
                     <span>
                       <strong>{p.nome}</strong>
                       <small>Dá esta turma</small>
@@ -172,11 +163,9 @@ export default async function AdminBebesHorariosPage({
               </div>
 
               {podeMexer && porAtribuir.length > 0 && (
-                <form action={atribuirProfessorTurmaBebes} className="space-y-2" style={{ marginTop: 14 }}>
+                <form action={atribuirProfessorTurmaBebes} className="admin-bebes-atribuir">
                   <input type="hidden" name="turmaId" value={turma.id} />
-                  <label className="block text-[12.5px] font-medium" htmlFor={`prof-${turma.id}`} style={{ color: 'var(--color-tinta-suave)' }}>
-                    Acrescentar professor
-                  </label>
+                  <label htmlFor={`prof-${turma.id}`}><UserPlus size={16} /> Acrescentar professor</label>
                   <select id={`prof-${turma.id}`} name="professorId" required defaultValue="" className={classesCampo}>
                     <option value="" disabled>Escolhe</option>
                     {porAtribuir.map((p) => (

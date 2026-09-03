@@ -9,6 +9,7 @@ import {
 } from '@/lib/actions/pagamentos'
 import { VoltarAtras } from '@/components/voltar-atras'
 import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
+import { ChevronLeft, ReceiptText } from 'lucide-react'
 
 type MatriculaResumo = {
   id: number
@@ -129,9 +130,9 @@ export default async function ConfirmarMensalidadesProfessorPage({
     .sort((a, b) => (a.aluno?.nome ?? '').localeCompare(b.aluno?.nome ?? ''))
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-cobranca-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/pagamentos/confirmar" className="partitura-voltar" rotulo="Voltar à lista de confirmações">←</VoltarAtras><div><p className="partitura-sobretitulo">Mensalidades · {String(mes).padStart(2, '0')}/{ano}</p><h1>{professorData.nome}</h1><p>{porConfirmar.length} {porConfirmar.length === 1 ? 'pagamento por confirmar' : 'pagamentos por confirmar'}</p></div></header>
+    <main id="conteudo-principal" className="admin-financeiro admin-cobranca-pagina">
+      <div className="admin-financeiro-folha">
+        <header className="admin-financeiro-cabecalho"><VoltarAtras destino="/admin/pagamentos/confirmar" className="admin-financeiro-voltar" rotulo="Voltar à lista de confirmações"><ChevronLeft size={22} /></VoltarAtras><div><h1>{professorData.nome}</h1><p>{String(mes).padStart(2, '0')}/{ano} · {porConfirmar.length} {porConfirmar.length === 1 ? 'pagamento por confirmar' : 'pagamentos por confirmar'}</p></div><span className="admin-financeiro-marca"><ReceiptText size={22} /></span></header>
 
         {erro && <p className="admin-alerta" role="alert">{decodeURIComponent(erro)}</p>}
 

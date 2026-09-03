@@ -344,12 +344,20 @@ As dez estao no sistema, com uma ressalva: `/redefinir-password` esta
 implementado mas nao foi visto, porque exige uma sessao de recuperacao.
 Fica como o unico `[ ]` das publicas.
 
+### Secretaria - Programa de Recomendacao
+
+O modulo administrativo do Programa de Recomendacao foi redesenhado em modo claro para mobile e desktop: resumo em `/admin/recomendacoes`, registo guiado em `/admin/recomendacoes/nova`, detalhe em `/admin/recomendacoes/[id]` e estudo em `/admin/recomendacoes/estudo`. A linguagem visual usa superficies brancas sobre fundo cinza muito claro, azul CCG nas acoes e hierarquia sans consistente. As tabelas do estudo mantem largura de leitura e passam a ter scroll interno no telemovel. A logica, as server actions e a exportacao CSV foram preservadas. Typecheck, lint e build completo passaram; falta apenas validacao visual autenticada porque a sessao local disponivel no fim deste bloco era de aluno.
+
+### Secretaria - Professores
+
+O diretorio de professores foi preservado e todas as paginas internas receberam a linguagem clara Pinterest em mobile e desktop: ficha de gestao, alunos, conta e ficha publica, horario e pedidos de disciplina. A grelha semanal tem scroll contido em ecras pequenos, os formularios nao ultrapassam os seus paineis e a ficha principal separa atalhos, evolucao e adesao ao Programa de Recomendacao. Typecheck, lint e build completo passaram; a validacao visual autenticada continua a depender de uma sessao local de administrador.
+
 ## Ordem de trabalho recomendada
 
 1. Fechar o percurso familiar mobile claro: Agenda, Avisos, Conta, Gerir alunos, Mensalidades e paginas do aluno.
 2. Consolidar componentes reutilizaveis apenas depois de existirem dois ou tres exemplos reais.
 3. Fazer o percurso do professor mobile claro.
-4. Fazer administracao mobile claro, adaptando a densidade ao trabalho operacional.
+4. Continuar a administracao a partir da Home e Conta ja concluidas, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
 7. Publicas concluidas, excepto validar `/redefinir-password` (precisa de uma sessao de recuperacao).
@@ -806,9 +814,11 @@ alunos la dentro.
 
 Quem faz o que:
 
-- **Secretaria** (`/admin/bebes`, design antigo de proposito porque o
-  resto de `/admin` ainda nao foi redesenhado): muda o horario das turmas,
-  atribui professores e aceita ou recusa inscricoes.
+- **Secretaria** (`/admin/bebes`): modulo claro e responsivo proprio, com
+  resumo operacional, gestao de horarios e professores e fila de pedidos.
+  Muda o horario das turmas, atribui professores e aceita ou recusa
+  inscricoes. O verde suave distingue Bebes sem quebrar a linguagem iOS
+  usada no resto da secretaria.
 - **Professor** (`/dashboard/bebes`): ve as turmas que da, quem esta
   inscrito, e desmarca uma aula (a turma toda ou so uma crianca). Nao muda
   a hora, e a pagina di-lo.

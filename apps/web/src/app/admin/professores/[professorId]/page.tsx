@@ -67,7 +67,7 @@ export default async function AdminProfessorPage({
   const haPassado = pontos.some((p) => !p.previsto)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-professor-pagina">
+    <main id="conteudo-principal" className="partitura-pagina admin-professor-pagina pinterest-admin-professor">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/professores" className="partitura-voltar" rotulo="Voltar ao diretório de professores">←</VoltarAtras><div><p className="partitura-sobretitulo">Ficha de professor</p><h1>{professorData.nome}</h1><p>{professorPerfil.adere_recomendacao ? 'Aderente ao Programa de Recomendação' : 'Gestão de conta e atividade letiva'}</p></div></header>
 

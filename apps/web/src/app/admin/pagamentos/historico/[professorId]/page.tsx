@@ -6,6 +6,7 @@ import { atualizarHistoricoMensalidades } from '@/lib/actions/pagamentos'
 import { MESES_ANO_LETIVO, rotuloMes } from '@ccg/core'
 import { VoltarAtras } from '@/components/voltar-atras'
 import { ehSecretaria, papelDoAdmin } from '@/lib/permissoes'
+import { ChevronLeft, TableProperties } from 'lucide-react'
 
 type MatriculaAtual = {
   aluno_id: string
@@ -143,9 +144,9 @@ export default async function HistoricoPagamentosProfessorPage({
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-historico-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/pagamentos/historico" className="partitura-voltar" rotulo="Voltar ao histórico">←</VoltarAtras><div><p className="partitura-sobretitulo">Arquivo financeiro</p><h1>{professorData.nome}</h1><p>Ano letivo completo · {alunos.size} {alunos.size === 1 ? 'aluno' : 'alunos'}{linhas.length !== alunos.size && ` · ${linhas.length} disciplinas`}</p></div></header>
+    <main id="conteudo-principal" className="admin-financeiro admin-historico-pagina">
+      <div className="admin-financeiro-folha admin-historico-folha">
+        <header className="admin-financeiro-cabecalho"><VoltarAtras destino="/admin/pagamentos/historico" className="admin-financeiro-voltar" rotulo="Voltar ao histórico"><ChevronLeft size={22} /></VoltarAtras><div><h1>{professorData.nome}</h1><p>Ano letivo · {alunos.size} {alunos.size === 1 ? 'aluno' : 'alunos'}{linhas.length !== alunos.size && ` · ${linhas.length} disciplinas`}</p></div><span className="admin-financeiro-marca"><TableProperties size={22} /></span></header>
 
         {linhas.length === 0 ? (
           <EmptyState titulo="Ainda não há histórico de mensalidades" />

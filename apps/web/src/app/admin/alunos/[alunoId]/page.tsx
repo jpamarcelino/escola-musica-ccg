@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/empty-state'
 import { formatarSala, calcularIdade, euros, eurosOuTexto, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado, PresencaEstado } from '@ccg/types'
 import { VoltarAtras } from '@/components/voltar-atras'
+import { ChevronLeft, UserRound } from 'lucide-react'
 
 type AlunoPerfil = {
   nome: string
@@ -77,10 +78,17 @@ const ESTADO_PRESENCA_LABEL: Record<string, string> = {
 
 export default async function AdminAlunoPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ alunoId: string }>
+  searchParams: Promise<{ voltar?: string }>
 }) {
   const { alunoId } = await params
+  const { voltar } = await searchParams
+  const destinoVoltar =
+    voltar && /^\/admin\/professores\/[^/]+\/alunos$/.test(voltar)
+      ? voltar
+      : '/admin/alunos'
 
   const supabase = await createClient()
   const {
@@ -171,9 +179,9 @@ export default async function AdminAlunoPage({
   const idade = calcularIdade(aluno.data_nascimento)
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina admin-ficha-pagina">
-      <div className="partitura-folha">
-        <header className="partitura-agenda-cabecalho"><VoltarAtras destino="/admin/alunos" className="partitura-voltar" rotulo="Voltar ao diretório de alunos">←</VoltarAtras><div><p className="partitura-sobretitulo">Ficha de aluno</p><h1>{aluno.nome}</h1><p>{idade !== null ? `${idade} anos · ` : ''}{matriculas.length} {matriculas.length === 1 ? 'matrícula' : 'matrículas'}</p></div></header>
+    <main id="conteudo-principal" className="admin-aluno-ficha admin-ficha-pagina">
+      <div className="admin-aluno-folha">
+        <header className="admin-aluno-cabecalho"><VoltarAtras destino={destinoVoltar} className="admin-aluno-voltar" rotulo="Voltar à lista anterior"><ChevronLeft size={22} /></VoltarAtras><div><small>Ficha de aluno</small><h1>{aluno.nome}</h1><p>{idade !== null ? `${idade} anos · ` : ''}{matriculas.length} {matriculas.length === 1 ? 'matrícula' : 'matrículas'}</p></div><span className="admin-aluno-avatar"><UserRound size={22} /></span></header>
 
         <div className="admin-ficha-grelha"><aside><section className="admin-ficha-seccao">
           <h2 className="secao-titulo">Encarregado de educação</h2>

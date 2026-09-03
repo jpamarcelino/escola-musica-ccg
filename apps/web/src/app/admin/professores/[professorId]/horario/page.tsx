@@ -3,7 +3,6 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import {
   DIAS_SEMANA,
-  HOUR_HEIGHT,
   duracaoDaAula,
   paraMinutos,
   formatarHora,
@@ -38,6 +37,8 @@ type BlocoAgenda = {
   sala: string | null
   alunos: string[]
 }
+
+const ALTURA_HORA_ADMIN = 96
 
 export default async function AdminProfessorHorarioPage({
   params,
@@ -133,7 +134,7 @@ export default async function AdminProfessorHorarioPage({
       { length: horaFimGrade - horaInicioGrade },
       (_, i) => horaInicioGrade + i
     )
-    alturaGrade = horasGrade.length * HOUR_HEIGHT
+    alturaGrade = horasGrade.length * ALTURA_HORA_ADMIN
 
     for (const dia of DIAS_SEMANA) horariosPorDia.set(dia, [])
     for (const b of blocos) horariosPorDia.get(b.dia_semana)?.push(b)
@@ -151,7 +152,7 @@ export default async function AdminProfessorHorarioPage({
   }
 
   return (
-    <main id="conteudo-principal" className="partitura-pagina horarios-pagina admin-horario-professor">
+    <main id="conteudo-principal" className="partitura-pagina horarios-pagina admin-horario-professor pinterest-admin-professor-horario">
       <div className="partitura-folha">
         <header className="partitura-agenda-cabecalho"><VoltarAtras destino={`/admin/professores/${professorId}`} className="partitura-voltar" rotulo="Voltar à ficha do professor">←</VoltarAtras><div><p className="partitura-sobretitulo">Horário semanal</p><h1>{professorData.nome}</h1><p>{blocos.length} {blocos.length === 1 ? 'aula confirmada' : 'aulas confirmadas'}</p></div></header>
 
@@ -220,7 +221,7 @@ export default async function AdminProfessorHorarioPage({
             <div className="horarios-coluna-horas">
               <div className="horarios-coluna-horas-cabecalho" />
               {horasGrade.map((hora) => (
-                <div key={hora} className="horarios-hora-label" style={{ height: HOUR_HEIGHT }}>
+                <div key={hora} className="horarios-hora-label" style={{ height: ALTURA_HORA_ADMIN }}>
                   {hora}h
                 </div>
               ))}
@@ -232,15 +233,15 @@ export default async function AdminProfessorHorarioPage({
                   className="horarios-coluna-dia-corpo"
                   style={{
                     height: alturaGrade,
-                    backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${HOUR_HEIGHT}px)`,
+                    backgroundImage: `repeating-linear-gradient(to bottom, rgba(0,0,0,0.08) 0, rgba(0,0,0,0.08) 1px, transparent 1px, transparent ${ALTURA_HORA_ADMIN}px)`,
                   }}
                 >
                   {horariosPorDia.get(dia)?.map((b) => {
                     const inicioMin = paraMinutos(b.hora_inicio)
                     const fimMin = paraMinutos(b.hora_fim)
                     const estilo = {
-                      top: ((inicioMin - horaInicioGrade * 60) / 60) * HOUR_HEIGHT,
-                      height: ((fimMin - inicioMin) / 60) * HOUR_HEIGHT,
+                      top: ((inicioMin - horaInicioGrade * 60) / 60) * ALTURA_HORA_ADMIN,
+                      height: ((fimMin - inicioMin) / 60) * ALTURA_HORA_ADMIN,
                       '--card-index': indicePorHorario.get(b.horarioId) ?? 0,
                     } as CSSProperties
 

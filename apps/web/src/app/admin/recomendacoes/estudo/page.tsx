@@ -53,8 +53,8 @@ export default async function EstudoRecomendacoesPage() {
   const grupoNaoAderentes = desempenho.filter((p) => !p.aderente)
 
   return (
-    <main id="conteudo-principal" className="flex-1 flex justify-center p-6 pb-[104px]">
-      <div className="w-full max-w-4xl space-y-8">
+    <main id="conteudo-principal" className="admin-recomendacoes-estudo">
+      <div className="admin-recomendacoes-estudo-conteudo">
         <PageHeader voltar="/admin/recomendacoes" titulo="Dados para o estudo" subtitulo="Art. 30.º do Regulamento — base do relatório final do ano letivo." />
 
         <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
