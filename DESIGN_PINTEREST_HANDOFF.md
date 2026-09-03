@@ -171,6 +171,12 @@ Depois de feedback de falta de clareza, a chamada individual foi revista em `8d4
 
 O Historico de Presencas e o detalhe por aluno foram implementados e publicados em `24cb560`. O indice usa um cartao por aluno com contagem discreta; o detalhe abre com percentagem de presencas e agrupa os registos por mes, usando verde, amarelo e vermelho apenas nos estados. O estado vazio do indice foi validado autenticado a 360 px, 390 px e 430 px. A conta de teste nao tem alunos, por isso as listas preenchidas e o detalhe individual aguardam dados reais.
 
+Em `3 de setembro de 2026`, a variante escura do historico individual foi
+fechada por codigo para todos os estados: resumo verde-carvao, grupos mensais,
+presente verde, falta avisada amarela e falta sem aviso vermelha. Continua por
+validar visualmente com registos reais; a ausencia de presencas em setembro nao
+deve ser confundida com falta de implementacao.
+
 A lista de alunos do professor foi implementada e publicada em `c4891d5`. Mantem o cabecalho compacto da area do professor e apresenta cada aluno como um cartao acionavel, com inicial, disciplina, horario e idade quando existirem. O estado vazio real foi validado autenticado a 360 px, 390 px e 430 px, sem overflow. A lista preenchida aguarda uma conta com alunos reais para a inspecao visual final.
 
 A ficha individual e o envio de materiais foram redesenhados e publicados em `d88398b`. A ficha organiza dados, contactos, proposta de novo horario, historico de materiais e desmatricula em superficies separadas; a confirmacao destrutiva usa o dialogo movel Pinterest. O envio de materiais ganhou seletor segmentado Video/Partitura, formulario, preview e selecao de destinatarios na mesma linguagem. O estado vazio de `/dashboard/enviar-material` foi validado autenticado em producao; os formularios preenchidos, a ficha e os dialogos aguardam alunos reais para a inspecao visual final.

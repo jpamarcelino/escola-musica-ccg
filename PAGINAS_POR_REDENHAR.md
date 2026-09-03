@@ -59,6 +59,13 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 ## Professor
 
+> Auditoria de 3 de setembro de 2026: todas as rotas visiveis de professor
+> receberam mobile, desktop vertical e tema escuro na branch. A ronda escura
+> foi afinada entre `a730a0f` e `b5b77bf`. O historico individual esta preparado
+> para resumo, agrupamento mensal e estados presente/falta, mas continua sem
+> validacao com registos reais. Os `[ ]` abaixo preservam essa distincao entre
+> implementado e validado, conforme a definicao de pagina concluida.
+
 - [ ] `/dashboard/horarios` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
 - [ ] `/professor/horarios/[id]` - professor - mobile - modo claro - implementado, falta validar com conta de professor real
 - [ ] `/dashboard/meus-alunos` - professor - mobile - modo claro - implementado e publicado (`c4891d5`), estado vazio validado; falta validar com alunos reais

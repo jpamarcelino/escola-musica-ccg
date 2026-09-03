@@ -7642,3 +7642,21 @@ html[data-tema='escuro'] .pinterest-confirmar-presencas .presencas-grupo:first-o
   color:#ffbdc6;
   box-shadow:0 0 12px rgba(220,84,105,.12);
 }
+
+/* Historico individual: preparado para os estados preenchidos mesmo
+   quando o mes atual ainda nao tem presencas para ensaio. */
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .pinterest-presencas-resumo {
+  border-color:#355849;
+  background:linear-gradient(145deg,rgba(54,128,92,.24),var(--dark-surface) 66%);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .pinterest-presencas-resumo small { color:#9fd6b5; }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .pinterest-presencas-resumo strong { color:#e9fff1; }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .pinterest-presencas-resumo p { color:var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico h2 { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico header span { background:#293b49; color:#a9d9fb; }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico article + article { border-color:var(--dark-border); }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico article > span { color:var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico article > strong { background:#234132; color:#a9e3bd; }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico article > strong[data-estado='falta_aviso'] { background:#493d20; color:#f1d37f; }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico article > strong[data-estado='falta_sem_aviso'] { background:#49272d; color:#ffadb8; }
