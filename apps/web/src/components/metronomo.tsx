@@ -409,8 +409,8 @@ export function Metronomo() {
     : batidasCruas.toFixed(1).replace('.', ',')
 
   return (
-    <div className="max-w-[380px] space-y-[22px]">
-      <div className="space-y-[6px]">
+    <div className="metronomo-claro max-w-[380px] space-y-[22px]">
+      <div className="metronomo-bpm space-y-[6px]">
         {/* "da semínima" e não só "BPM": agora que o denominador muda a
             velocidade, é preciso dizer a que figura é que o número se
             refere, senão parece que o metrónomo se desregulou sozinho ao
@@ -429,7 +429,7 @@ export function Metronomo() {
         />
       </div>
 
-      <div className="space-y-[6px]">
+      <div className="metronomo-compasso space-y-[6px]">
         <Rotulo htmlFor="metronomo-numerador">Compasso</Rotulo>
         <div className="flex items-center gap-[10px]">
           <input
@@ -476,7 +476,7 @@ export function Metronomo() {
         )}
       </div>
 
-      <div className="space-y-[6px]">
+      <div className="metronomo-subdivisoes space-y-[6px]">
         <Rotulo htmlFor="metronomo-subdivisao">Subdivisão</Rotulo>
         {/* radiogroup e não nove botões soltos: só uma pode estar ligada,
             e é isso que faz o leitor de ecrã anunciar "1 de 9" e as setas
@@ -529,7 +529,7 @@ export function Metronomo() {
         type="button"
         onClick={() => setAcentuar((v) => !v)}
         aria-pressed={acentuar}
-        className="flex h-[44px] w-full items-center justify-center gap-[10px] rounded-[13px] border-[1.5px] text-[14px] font-semibold transition-colors"
+        className="metronomo-acento flex h-[44px] w-full items-center justify-center gap-[10px] rounded-[13px] border-[1.5px] text-[14px] font-semibold transition-colors"
         style={
           acentuar
             ? { borderColor: 'var(--color-azul-fundo)', color: 'var(--color-azul-fundo)', backgroundColor: 'var(--color-papel-2)' }
@@ -549,7 +549,7 @@ export function Metronomo() {
       {/* Cabeçalho e não <Rotulo>: um rótulo aponta para um controlo, e
           este está por cima de três. Apontado ao primeiro, o leitor de
           ecrã anunciava esse fader como "Volumes 1.º tempo". */}
-      <div role="group" aria-labelledby="metronomo-volumes" className="space-y-[14px]">
+      <div role="group" aria-labelledby="metronomo-volumes" className="metronomo-volumes space-y-[14px]">
         <p
           id="metronomo-volumes"
           className="text-[12.5px] font-medium"
@@ -581,7 +581,7 @@ export function Metronomo() {
         />
       </div>
 
-      <div className="flex justify-center gap-[6px]">
+      <div className="metronomo-pulsos flex justify-center gap-[6px]">
         {Array.from({ length: numerador }, (_, i) => (
           <span
             key={i}

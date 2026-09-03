@@ -1,0 +1,10 @@
+.git
+.next
+.next-verificacao
+apps/web/.next
+apps/web/.next-verificacao
+node_modules
+apps/*/node_modules
+packages/*/node_modules
+coverage
+*.log

@@ -7665,6 +7665,57 @@ html[data-tema='escuro'] .admin-conta-perigo { border-color: #69393e; background
   }
 }
 
+/* Metronomo claro: instrumento compacto, nao formulario corrido. */
+.metronomo-claro {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+  padding: 18px;
+  border: 1px solid #e1e7ec;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(28,55,77,.07);
+}
+.metronomo-claro .metronomo-bpm {
+  padding: 20px;
+  border: 1px solid #cfe0eb;
+  border-radius: 19px;
+  background: linear-gradient(145deg,#eaf5fb 0%,#fff 72%);
+}
+.metronomo-claro .metronomo-bpm label { color:#456276; font-size:12px; font-weight:700; }
+.metronomo-claro .metronomo-bpm input {
+  height: 76px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #174f7b;
+  font-size: 46px;
+  font-weight: 780;
+  line-height: 1;
+  box-shadow: none;
+}
+.metronomo-claro :is(.metronomo-compasso,.metronomo-subdivisoes,.metronomo-volumes) {
+  padding: 16px;
+  border: 1px solid #e5eaee;
+  border-radius: 18px;
+  background: #f8fafb;
+}
+.metronomo-claro .metronomo-compasso input { background:#fff; }
+.metronomo-claro .metronomo-subdivisoes [role='radio'] { background:#fff; }
+.metronomo-claro .metronomo-subdivisoes [role='radio'][aria-checked='true'] {
+  border-color:#78aede !important;
+  background:#e7f1fa !important;
+  color:#174f7b !important;
+}
+.metronomo-claro .metronomo-acento { min-height:50px; border-radius:16px; background:#f4f8fb !important; }
+.metronomo-claro .metronomo-volumes input[type='range'] { accent-color:#2a769f; }
+.metronomo-claro .metronomo-pulsos { min-height:22px; align-items:center; }
+.metronomo-claro > button:last-child { min-height:56px; border-radius:17px; box-shadow:0 7px 18px rgba(27,79,122,.2); }
+@media (min-width:700px) {
+  .metronomo-claro { max-width:620px; padding:22px; }
+  .metronomo-claro .metronomo-subdivisoes [role='radiogroup'] { grid-template-columns:repeat(5,minmax(0,1fr)); }
+}
+
 /* Tema escuro Pinterest. A escolha ja e aplicada ao <html> por
    aparencia.ts; esta camada cobre a area autenticada e os seus dialogos. */
 html[data-tema='escuro'] {
