@@ -6850,6 +6850,13 @@ html[data-tema='escuro'] :is(.app-shell-content,.admin-conteudo,.admin-conteudo 
 html[data-tema='escuro'] body { background: var(--dark-bg); color: var(--dark-text); }
 html[data-tema='escuro'] .app-shell-content { background: var(--dark-bg); }
 html[data-tema='escuro'] .admin-conteudo { background: var(--dark-bg); color: var(--dark-text); }
+@media (min-width:1024px) {
+  html[data-tema='escuro'] .admin-conteudo + nav {
+    border: 0;
+    background: transparent;
+    backdrop-filter: none;
+  }
+}
 html[data-tema='escuro'] .admin-conteudo :is(h1,h2,h3,h4,strong,label) { color: var(--dark-text); }
 html[data-tema='escuro'] .admin-conteudo :is(p,small,dt) { color: var(--dark-muted); }
 html[data-tema='escuro'] .admin-conteudo :is(input:not([type='checkbox']):not([type='radio']),select,textarea) {
