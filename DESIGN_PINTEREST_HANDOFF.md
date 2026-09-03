@@ -346,7 +346,7 @@ Fica como o unico `[ ]` das publicas.
 
 ### Secretaria - Programa de Recomendacao
 
-O modulo administrativo do Programa de Recomendacao foi redesenhado em modo claro para mobile e desktop: resumo em `/admin/recomendacoes`, registo guiado em `/admin/recomendacoes/nova`, detalhe em `/admin/recomendacoes/[id]` e estudo em `/admin/recomendacoes/estudo`. A linguagem visual usa superficies brancas sobre fundo cinza muito claro, azul CCG nas acoes e hierarquia sans consistente. As tabelas do estudo mantem largura de leitura e passam a ter scroll interno no telemovel. A logica, as server actions e a exportacao CSV foram preservadas. Typecheck, lint e build completo passaram; falta apenas validacao visual autenticada porque a sessao local disponivel no fim deste bloco era de aluno.
+O modulo administrativo do Programa de Recomendacao foi redesenhado em modo claro e escuro para mobile e desktop: resumo em `/admin/recomendacoes`, registo guiado em `/admin/recomendacoes/nova`, detalhe em `/admin/recomendacoes/[id]` e estudo em `/admin/recomendacoes/estudo`. No claro usa superficies brancas sobre cinza muito claro; no escuro segue a home da secretaria, com fundo carvao azulado, cartoes cinza escuro, contraste alto e destaques azuis discretos. As tabelas do estudo mantem largura de leitura e scroll interno no telemovel. A logica, as server actions e a exportacao CSV foram preservadas.
 
 ### Secretaria - Professores
 

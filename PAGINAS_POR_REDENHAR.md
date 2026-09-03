@@ -103,10 +103,10 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [x] `/admin/pagamentos/confirmar/[professorId]` - secretaria - valor, isencao CCG, fatura e confirmacao reorganizados; validado com duas mensalidades reais em mobile e desktop
 - [x] `/admin/pagamentos/historico` - secretaria - diretorio de professores concluido em mobile e desktop, modo claro
 - [x] `/admin/pagamentos/historico/[professorId]` - secretaria - arquivo anual responsivo, scroll interno e coluna do aluno fixa; validado com dados reais em mobile e desktop
-- [x] `/admin/recomendacoes` - secretaria - visao geral responsiva em modo claro, com balanco, acoes, indicacoes por confirmar e registos
-- [x] `/admin/recomendacoes/[id]` - secretaria - detalhe responsivo com estado, beneficio, correcoes administrativas e anulacao
-- [x] `/admin/recomendacoes/nova` - secretaria - registo guiado responsivo, incluindo tratamento de indicacoes por confirmar
-- [x] `/admin/recomendacoes/estudo` - secretaria - indicadores, balanco, comparacao e tabelas responsivas com exportacao CSV
+- [x] `/admin/recomendacoes` - secretaria - visao geral responsiva em modo claro e escuro, com balanco, acoes, indicacoes por confirmar e registos
+- [x] `/admin/recomendacoes/[id]` - secretaria - detalhe responsivo em modo claro e escuro com estado, beneficio, correcoes administrativas e anulacao
+- [x] `/admin/recomendacoes/nova` - secretaria - registo guiado responsivo em modo claro e escuro, incluindo tratamento de indicacoes por confirmar
+- [x] `/admin/recomendacoes/estudo` - secretaria - indicadores, balanco, comparacao e tabelas responsivas em modo claro e escuro com exportacao CSV
 - [x] `/admin/avisos` - secretaria - caixa de entrada responsiva em claro e escuro, com estados lido/novo, acoes e ponte para os avisos de professor
 - [x] `/admin/avisos/[avisoId]` - secretaria - leitura e acao contextual no mesmo modelo final dos avisos de aluno e professor
 - [x] `/admin/mensagens` - compositor completo e historico responsivos em claro e escuro; falta apenas inspecao autenticada com dados reais
