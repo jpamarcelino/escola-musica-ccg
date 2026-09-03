@@ -289,7 +289,6 @@ export default async function ConsultarHorarioPage({
           </section>
         )}
 
-        <Link href={`/aluno/${alunoId}/pedido`} className="aluno-pedir-mais"><span><strong>Pedir outra aula</strong><small>Escolher disciplina, professor e disponibilidade</small></span><i aria-hidden="true">→</i></Link>
       </div>
     </main>
   )

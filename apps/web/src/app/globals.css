@@ -8838,3 +8838,76 @@ html[data-tema='escuro'] .pinterest-bebes-desmarcar { border-color:var(--dark-bo
   .admin-bebes-aceitar,.admin-bebes-indisponivel { grid-column:2; grid-row:1 / span 3; align-self:stretch; margin:16px 16px 16px 0; }
   .admin-bebes-pedido > footer { grid-column:1/-1; }
 }
+
+/* Pedir uma aula, no fim da home da familia.
+   ------------------------------------------
+   Nao entra na grelha de "Acesso rapido": aquilo sao quatro destinos do
+   dia a dia, e isto e uma accao que se faz uma vez por ano. Largura
+   inteira e por baixo, onde a pagina acaba — visivel sem competir.
+
+   Com mais do que um aluno e um <details>: a pergunta "para quem" tem de
+   ser feita, e um elemento nativo responde-a sem JavaScript e sem um
+   ecra novo. O <summary> e desenhado como o cartao simples para os dois
+   estados serem a mesma coisa aos olhos de quem ca chega. */
+.pinterest-pedir-aula,
+.pinterest-pedir-aula-grupo > summary {
+  display: grid;
+  grid-template-columns: 38px minmax(0,1fr) auto;
+  gap: 11px;
+  align-items: center;
+  min-height: 68px;
+  padding: 12px 14px;
+  border: 1px solid #e8eaed;
+  border-radius: 20px;
+  background: #fff;
+  color: #17191c;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(31,35,39,.05);
+}
+.pinterest-pedir-aula { margin-top: 26px; }
+.pinterest-pedir-aula-grupo { margin-top: 26px; }
+.pinterest-pedir-aula-grupo > summary { cursor: pointer; list-style: none; }
+.pinterest-pedir-aula-grupo > summary::-webkit-details-marker { display: none; }
+.pinterest-pedir-aula > span:first-child,
+.pinterest-pedir-aula-grupo > summary > span:first-child {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 13px;
+  background: #e2f1ef;
+  color: #176b70;
+}
+.pinterest-pedir-aula > span:nth-child(2),
+.pinterest-pedir-aula-grupo > summary > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
+.pinterest-pedir-aula strong,
+.pinterest-pedir-aula-grupo > summary strong { font-size: 14.5px; font-weight: 680; }
+.pinterest-pedir-aula small,
+.pinterest-pedir-aula-grupo > summary small { margin-top: 3px; color: #797e85; font-size: 12px; line-height: 1.35; }
+.pinterest-pedir-aula > svg:last-child,
+.pinterest-pedir-aula-grupo > summary > svg:last-child { color: #969ba1; }
+/* A seta roda quando a lista abre: o mesmo elemento passa a apontar para
+   baixo, que e onde a resposta aparece. */
+.pinterest-pedir-aula-grupo[open] > summary > svg:last-child { transform: rotate(90deg); }
+.pinterest-pedir-aula-grupo[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.pinterest-pedir-aula-grupo > div { padding: 4px 14px 12px; border: 1px solid #e8eaed; border-top: 0; border-radius: 0 0 20px 20px; background: #fff; }
+.pinterest-pedir-aula-grupo > div > p { margin: 8px 0 6px; color: #797e85; font-size: 12px; }
+.pinterest-pedir-aula-grupo > div > a { display: grid; grid-template-columns: 32px minmax(0,1fr) auto; gap: 10px; align-items: center; min-height: 52px; color: #17191c; text-decoration: none; }
+.pinterest-pedir-aula-grupo > div > a + a { border-top: 1px solid #f0f2f4; }
+.pinterest-pedir-aula-grupo > div > a > span:first-child { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 11px; background: #eef1f4; color: #4c525a; font-size: 13px; font-weight: 700; }
+.pinterest-pedir-aula-grupo > div > a strong { font-size: 14.5px; font-weight: 650; }
+.pinterest-pedir-aula-grupo > div > a > svg { color: #969ba1; }
+:is(.pinterest-pedir-aula,.pinterest-pedir-aula-grupo summary,.pinterest-pedir-aula-grupo a):active { transform: scale(.98); }
+:is(.pinterest-pedir-aula,.pinterest-pedir-aula-grupo summary,.pinterest-pedir-aula-grupo a):focus-visible { outline: 3px solid #78aede; outline-offset: 2px; }
+
+html[data-tema='escuro'] :is(.pinterest-pedir-aula,.pinterest-pedir-aula-grupo > summary,.pinterest-pedir-aula-grupo > div) {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+}
+html[data-tema='escuro'] :is(.pinterest-pedir-aula,.pinterest-pedir-aula-grupo > summary) > span:first-child { background: #23383a; color: #9fd8d3; }
+html[data-tema='escuro'] :is(.pinterest-pedir-aula small,.pinterest-pedir-aula-grupo > summary small,.pinterest-pedir-aula-grupo > div > p) { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-pedir-aula-grupo > div > a { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-pedir-aula-grupo > div > a + a { border-color: rgba(255,255,255,.08); }
+html[data-tema='escuro'] .pinterest-pedir-aula-grupo > div > a > span:first-child { background: #2b333a; color: #cfd6dd; }
+@media (prefers-reduced-motion: reduce) { .pinterest-pedir-aula-grupo[open] > summary > svg:last-child { transform: none; } }

@@ -5,7 +5,7 @@ import { MensagemErro } from '@/components/mensagem'
 import { EmptyState } from '@/components/empty-state'
 import { agoraNaEscola, estadoTemporalAula, proximaAulaPorAcontecer, hojeISO, formatarHora, formatarSala, DIAS_SEMANA, type DiaSemana } from '@ccg/core'
 import type { MatriculaEstado } from '@ccg/types'
-import { Baby, Bell, CalendarDays, ChevronRight, ClipboardCheck, Clock3, Inbox, MessageSquare, Music2, RefreshCw, Send, UserRoundCog, UsersRound, WalletCards } from 'lucide-react'
+import { Baby, Bell, CalendarDays, ChevronRight, ClipboardCheck, Clock3, Inbox, MessageSquare, Music2, Plus, RefreshCw, Send, UserRoundCog, UsersRound, WalletCards } from 'lucide-react'
 import { daAlgumaTurmaDeBebes } from '@/lib/bebes'
 
 type AulaConfirmada = {
@@ -430,6 +430,50 @@ export default async function DashboardPage({
             <Link href="/dashboard/avisos"><span><Bell size={22} aria-hidden="true" /></span><strong>Avisos</strong><small>Novidades</small></Link>
           </nav>
         </section>
+
+        {/* Pedir uma aula vivia no fundo do horário de cada aluno — três
+            toques abaixo desta página, e depois de percorrer a lista de
+            aulas toda. É das poucas coisas aqui que traz dinheiro à
+            escola, e estava onde só chegava quem já sabia o caminho.
+            Fica em último de propósito: é uma ação de vez em quando, não
+            um atalho do dia a dia.
+
+            Com um aluno vai direto ao pedido. Com mais do que um há uma
+            pergunta a fazer primeiro — para quem — e ela abre-se aqui,
+            num <details>, em vez de mandar a pessoa a um ecrã só para
+            escolher um nome. Sem alunos não aparece: a secção acima já
+            está a pedir que se adicione um. */}
+        {meusAlunos.length === 1 ? (
+          <Link href={`/aluno/${meusAlunos[0].id}/pedido`} className="pinterest-pedir-aula">
+            <span aria-hidden="true"><Plus size={20} /></span>
+            <span>
+              <strong>Pedir uma aula</strong>
+              <small>Escolher disciplina, professor e disponibilidade</small>
+            </span>
+            <ChevronRight size={18} aria-hidden="true" />
+          </Link>
+        ) : meusAlunos.length > 1 ? (
+          <details className="pinterest-pedir-aula-grupo">
+            <summary>
+              <span aria-hidden="true"><Plus size={20} /></span>
+              <span>
+                <strong>Pedir uma aula</strong>
+                <small>Escolher disciplina, professor e disponibilidade</small>
+              </span>
+              <ChevronRight size={18} aria-hidden="true" />
+            </summary>
+            <div>
+              <p>Para quem?</p>
+              {meusAlunos.map((aluno) => (
+                <Link key={aluno.id} href={`/aluno/${aluno.id}/pedido`}>
+                  <span aria-hidden="true">{aluno.nome.trim().slice(0, 1).toUpperCase()}</span>
+                  <strong>{aluno.nome}</strong>
+                  <ChevronRight size={17} aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </details>
+        ) : null}
         </div>
       </div>
     </main>
