@@ -6730,14 +6730,32 @@ html[data-tema='escuro'] {
   --dark-raised: #252b31;
   --dark-border: #343c44;
   --dark-text: #f7f8fa;
-  --dark-muted: #b3bac2;
+  --dark-muted: #c3cad1;
   --background: var(--dark-bg);
   --foreground: var(--dark-text);
   --color-ink: var(--dark-text);
   --color-surface-raised: var(--dark-raised);
 }
+html[data-tema='escuro'] :is(.app-shell-content,.admin-conteudo,.admin-conteudo + nav) {
+  --color-text-primary: var(--dark-text);
+  --color-text-secondary: var(--dark-muted);
+  --color-tinta: var(--dark-text);
+  --color-tinta-suave: var(--dark-muted);
+  --color-papel: var(--dark-bg);
+  --color-papel-2: var(--dark-surface);
+  --color-linha: var(--dark-border);
+}
 html[data-tema='escuro'] body { background: var(--dark-bg); color: var(--dark-text); }
 html[data-tema='escuro'] .app-shell-content { background: var(--dark-bg); }
+html[data-tema='escuro'] .admin-conteudo { background: var(--dark-bg); color: var(--dark-text); }
+html[data-tema='escuro'] .admin-conteudo :is(h1,h2,h3,h4,strong,label) { color: var(--dark-text); }
+html[data-tema='escuro'] .admin-conteudo :is(p,small,dt) { color: var(--dark-muted); }
+html[data-tema='escuro'] .admin-conteudo :is(input:not([type='checkbox']):not([type='radio']),select,textarea) {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  caret-color: #78aede;
+}
 html[data-tema='escuro'] .app-shell-content main[class*='pinterest-'] { background: var(--dark-bg); color: var(--dark-text); }
 html[data-tema='escuro'] .app-shell-content main[class*='pinterest-'] :is(h1,h2,h3,h4,strong,dd) { color: var(--dark-text); }
 html[data-tema='escuro'] .app-shell-content main[class*='pinterest-'] :is(p,small,time,dt,label) { color: var(--dark-muted); }
@@ -6746,8 +6764,8 @@ html[data-tema='escuro'] .app-shell-content :is(
   .pinterest-aula,.pinterest-alunos,.pinterest-atalhos a,
   .pinterest-professor-seguintes,.pinterest-professor-gestao,
   .pinterest-agenda-atalhos a,.pinterest-agenda-calendario,
-  .pinterest-detalhe-contexto,.pinterest-detalhe-seccao,
-  .pinterest-alunos-seccao,.pinterest-aluno-seccao,.pinterest-aluno-aula,
+  .pinterest-detalhe-contexto,
+  .pinterest-aluno-aula,
   .pinterest-horario-aula,.pinterest-materiais-vazio,
   .pinterest-mensalidades-resumo,.pinterest-mensalidades-nota,
   .pinterest-conta-cartao,.pinterest-conta-seccao,.pinterest-conta-avancado-seccao,
@@ -7054,6 +7072,19 @@ html[data-tema='escuro'] .pinterest-horario-aula {
   border-color: #3b5870;
   background: linear-gradient(145deg,rgba(61,127,184,.24),rgba(43,76,103,.13) 42%,var(--dark-surface) 78%);
 }
+html[data-tema='escuro'] .pinterest-horario-aula-fundo {
+  border-top-color: var(--dark-border);
+  background: #242a30;
+}
+html[data-tema='escuro'] .pinterest-horario-aula-fundo p { color: #c3cad1; }
+html[data-tema='escuro'] .pinterest-horario-aula-fundo button {
+  border-color: #a85d66;
+  background: #42272c;
+  color: #ffb3bb !important;
+}
+html[data-tema='escuro'] .pinterest-horario-aula-topo > div > span,
+html[data-tema='escuro'] .pinterest-aluno-aula > span { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-aluno-cabecalho > a:last-child { color: #a9d5f7; }
 html[data-tema='escuro'] .pinterest-aluno-aula time,
 html[data-tema='escuro'] .pinterest-horario .aluno-aula-registo summary time { color: #91caf5; }
 html[data-tema='escuro'] .pinterest-aluno-aula small { color: #67d0c8; }
