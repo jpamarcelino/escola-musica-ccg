@@ -7482,3 +7482,113 @@ html[data-tema='escuro'] .pinterest-reposicoes-pedidos :is(input,select,textarea
   color-scheme:dark;
 }
 html[data-tema='escuro'] .pinterest-reposicoes-pedidos label { color:#d8dde2; }
+
+/* Paginas secundarias do professor. */
+html[data-tema='escuro'] :is(.pinterest-editar-horario,.pinterest-presencas,.pinterest-presencas-fluxo,.pinterest-professor-alunos,.pinterest-professor-aluno-detalhe,.pinterest-semana,.pinterest-detalhe,.pinterest-pedidos) {
+  background:var(--dark-bg);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] :is(
+  .pinterest-editar-horario-voltar,.pinterest-presencas-voltar,
+  .pinterest-presencas-fluxo-voltar,.pinterest-professor-alunos-voltar,
+  .pinterest-professor-aluno-detalhe-voltar,.pinterest-semana-voltar,
+  .pinterest-detalhe-voltar,.pinterest-pedidos-voltar
+) {
+  border-color:var(--dark-border);
+  background:var(--dark-raised);
+  color:#a9d9fb;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+html[data-tema='escuro'] :is(.pinterest-editar-horario,.pinterest-presencas,.pinterest-presencas-fluxo,.pinterest-professor-alunos,.pinterest-professor-aluno-detalhe,.pinterest-semana,.pinterest-detalhe,.pinterest-pedidos) :is(h1,h2,h3,strong) { color:var(--dark-text); }
+html[data-tema='escuro'] :is(.pinterest-editar-horario,.pinterest-presencas,.pinterest-presencas-fluxo,.pinterest-professor-alunos,.pinterest-professor-aluno-detalhe,.pinterest-semana,.pinterest-detalhe,.pinterest-pedidos) :is(p,small,time,dt,label) { color:var(--dark-muted); }
+
+html[data-tema='escuro'] .pinterest-editar-horario :is(.pinterest-editar-horario-contexto,.pinterest-editar-horario-form,.pinterest-editar-horario-mensagem) {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-contexto {
+  border-color:#3c5264;
+  background:linear-gradient(145deg,rgba(55,126,180,.22),var(--dark-surface) 62%);
+}
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-contexto > svg { background:#293b49; color:#a9d9fb; }
+html[data-tema='escuro'] .pinterest-editar-horario :is(input,select) { border-color:var(--dark-border); background:var(--dark-raised); color:var(--dark-text); color-scheme:dark; }
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-perigo { border-color:#66373e; background:#2b1d20; }
+html[data-tema='escuro'] .pinterest-editar-horario .pinterest-editar-horario-perigo button { border-color:#92505a; color:#ffadb8; }
+
+html[data-tema='escuro'] .pinterest-presencas .presencas-estado {
+  border-color:#3c5264;
+  background:linear-gradient(145deg,rgba(55,126,180,.25),var(--dark-surface) 64%);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-presencas .presencas-estado > span { background:#293b49; color:#a9d9fb; }
+html[data-tema='escuro'] .pinterest-presencas .presencas-estado :is(strong,small) { color:inherit; }
+html[data-tema='escuro'] .pinterest-presencas .presencas-destinos a,
+html[data-tema='escuro'] .pinterest-presencas-fluxo :is(.empty-editorial,.presencas-alunos a,.presencas-data-form,.presencas-aluno-chamada) {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-presencas .presencas-destinos a > span:first-child,
+html[data-tema='escuro'] .pinterest-presencas-fluxo .presencas-alunos a > span:first-child { background:#293b49; color:#a9d9fb; }
+html[data-tema='escuro'] .pinterest-confirmar-presencas :is(a,article,.lista-item) { border-color:var(--dark-border); background:var(--dark-surface); color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-confirmar-presencas :is(a,article,.lista-item) :is(strong,p,small,time) { color:inherit; }
+html[data-tema='escuro'] .pinterest-chamada-presencas .presencas-data-form input { border-color:var(--dark-border); background:var(--dark-raised); color:var(--dark-text); color-scheme:dark; }
+html[data-tema='escuro'] .pinterest-chamada-presencas .presencas-progresso-bar { background:#303940; }
+html[data-tema='escuro'] .pinterest-chamada-presencas .presencas-estados label { border-color:var(--dark-border); background:#20272d; color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-chamada-presencas .presencas-estados label > svg { background:#303940; color:#c6d0d8; }
+html[data-tema='escuro'] .pinterest-chamada-presencas .presencas-estados label:has(:checked) { border-color:#4e8db9; background:#263f52; color:#c7e8ff; }
+html[data-tema='escuro'] .pinterest-chamada-presencas .presencas-guardar:disabled { background:#30373d; color:#9ca6af; }
+html[data-tema='escuro'] .pinterest-presencas-historico-aluno .presencas-historico section > div { border-color:var(--dark-border); background:var(--dark-surface); }
+
+html[data-tema='escuro'] .pinterest-professor-alunos .pinterest-professor-alunos-lista > a,
+html[data-tema='escuro'] .pinterest-professor-alunos .empty-editorial {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-professor-alunos .pinterest-professor-alunos-lista > a > span:first-child { background:#214846; color:#74ddd4; }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe :is(.detalhe-aluno-ficha,.escolher-horario,.detalhe-materiais) {
+  border-color:var(--dark-border);
+  background:var(--dark-surface);
+  color:var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha > header > span { background:#293b49; color:#a9d9fb; }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dl,
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dl > div + div { border-color:var(--dark-border); }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-aluno-ficha dd { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-material-enviar { background:#263f52; color:#b9e1ff; }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-zona-perigo { border-color:#66373e; background:#2b1d20; }
+html[data-tema='escuro'] .pinterest-professor-aluno-detalhe .detalhe-zona-perigo button { background:#44272c; color:#ffadb8; }
+
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-resumo {
+  border-color:#3c5264;
+  background:linear-gradient(140deg,rgba(55,126,180,.28),var(--dark-surface) 66%);
+}
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-grelha { border-color:var(--dark-border); background:var(--dark-surface); }
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-regua { background:var(--dark-surface); }
+html[data-tema='escuro'] .pinterest-semana :is(.pinterest-semana-regua-topo,.pinterest-semana-regua-corpo,.pinterest-semana-dia-topo,.pinterest-semana-dia-corpo) { border-color:var(--dark-border); }
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-dia-topo { background:#20272d; color:#aab4bd; }
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-dia-corpo { background-color:#1b2126; background-image:repeating-linear-gradient(to bottom,#303b43 0,#303b43 1px,transparent 1px,transparent var(--altura-hora)); }
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-bloco { border-color:#3d799e; background:linear-gradient(145deg,#28546f,#223f53); color:#f4faff; box-shadow:0 5px 14px rgba(19,94,143,.22); }
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-bloco small { color:#b9d8ec; }
+html[data-tema='escuro'] .pinterest-semana .pinterest-semana-descarregar { border-color:var(--dark-border); background:var(--dark-surface); color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-semana .empty-editorial {
+  min-height:0;
+  padding:20px;
+  border:1px solid var(--dark-border);
+  border-radius:20px;
+  background:var(--dark-surface);
+  box-shadow:none;
+}
+html[data-tema='escuro'] .pinterest-semana .empty-editorial::before { display:none; }
+html[data-tema='escuro'] .pinterest-semana .empty-editorial-titulo { color:var(--dark-text); font-family:inherit; font-size:17px; line-height:1.25; }
+
+html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-contexto { border-color:#3c5264; background:linear-gradient(145deg,rgba(55,126,180,.22),var(--dark-surface) 62%); }
+html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-contexto > svg { background:#293b49; color:#a9d9fb; }
+html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-aluno { border-color:var(--dark-border); background:var(--dark-surface); }
+html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-aluno > a { color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-detalhe .pinterest-detalhe-desmarcar { border-color:var(--dark-border); background:#20272d; }
+
+html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button { border-color:#3d596d; background:#263946; color:var(--dark-text); }
+html[data-tema='escuro'] .pinterest-pedidos .pinterest-pedido-horarios button:hover { background:#2b4558; }
