@@ -83,7 +83,7 @@ export default async function AlunosPage({
                 const idade = calcularIdade(aluno.data_nascimento)
                 const proprio = aluno.propria_conta_id === user.id
                 return (
-                  <Link key={aluno.id} href={`/aluno/${aluno.id}`}>
+                  <Link key={aluno.id} href={`/aluno/${aluno.id}?voltar=alunos`}>
                     <span className="pinterest-aluno-avatar" aria-hidden="true">
                       {aluno.nome.slice(0, 1).toUpperCase()}
                     </span>

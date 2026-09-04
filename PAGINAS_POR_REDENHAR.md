@@ -7,6 +7,11 @@ Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por 
 > `apps/web/src/lib/actions/pagamentos.ts`). As rotas marcadas como
 > "implementadas" mas ainda com `[ ]` precisam de validacao autenticada com
 > dados reais; nao devem ser dadas como concluidas apenas por existirem.
+>
+> Segunda ronda, 4 de setembro de 2026: as 11 rotas de familia/aluno foram
+> percorridas com a conta real a 390 px e 1440 px, em claro e escuro, sem
+> overflow fora das faixas horizontais previstas nem erros de consola. A ficha
+> do aluno passou a regressar a lista quando e aberta por `/dashboard/alunos`.
 
 ## Concluido no Design Pinterest
 
@@ -28,6 +33,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [x] `/login` - publica - mobile - modo claro
 - [x] `/registo` - publica - mobile - modo claro
 - [x] `/esqueci-password` - publica - mobile - modo claro
+- [ ] `/confirmar-email` - publica - mobile e desktop - claro e escuro - implementado na branch; falta validar com um codigo real recebido por email
 - [ ] `/redefinir-password` - publica - mobile - modo claro - implementado; o reencaminhamento sem sessao de recuperacao esta validado em producao, falta o formulario da password nova (exige link de email real)
 - [x] `/instalar` - publica - mobile - modo claro (os dois separadores)
 - [x] `/legal` - publica - mobile - modo claro (validado visualmente a 360 px)
@@ -55,11 +61,11 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 
 - [ ] Area familia/aluno - mobile e desktop - modo escuro - sistema implementado em localhost; falta auditoria visual autenticada rota a rota
 
-- [ ] `/dashboard/alunos` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
-- [ ] `/dashboard/materiais` - familia - mobile - modo claro - implementado, falta validar com conta real
-- [ ] `/aluno/[alunoId]` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
-- [ ] `/aluno/[alunoId]/horario` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
-- [ ] `/aluno/[alunoId]/materiais` - familia/aluno - mobile - modo claro - implementado, falta validar com conta real
+- [x] `/dashboard/alunos` - familia/aluno - mobile e desktop - claro e escuro - validado com conta e aluno reais
+- [x] `/dashboard/materiais` - familia - mobile e desktop - claro e escuro - redirecionamento e caderno real validados
+- [x] `/aluno/[alunoId]` - familia/aluno - mobile e desktop - claro e escuro - dados, atalhos e regresso contextual validados
+- [x] `/aluno/[alunoId]/horario` - familia/aluno - mobile e desktop - claro e escuro - aula e estado real validados
+- [x] `/aluno/[alunoId]/materiais` - familia/aluno - mobile e desktop - claro e escuro - estado real validado
 - [ ] `/aluno/[alunoId]/pedido` - familia/aluno - mobile - modo claro - passou ao Pinterest com a mesma moldura do percurso publico; a lista de escolhas e vestida por descendencia porque o CartaoLink e partilhado; visto em ensaio a 360 px com o CSS compilado; falta ver com conta real
 - [ ] `/aluno/[alunoId]/reposicao/[aulaId]` - familia/aluno - mobile - modo claro - implementado e publicado (`703dd56`), falta validar com uma aula desmarcada elegivel
 
@@ -86,6 +92,7 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [ ] `/dashboard/mensagens` - professor - mobile - modo claro - implementado e publicado (`7bce7b4`), estado vazio validado; falta testar composicao e historico com alunos reais
 - [ ] `/dashboard/enviar-material` - professor - mobile - modo claro - implementado e publicado (`d88398b`), estado vazio validado; falta testar video, PDF e selecao com alunos reais
 - [ ] `/dashboard/mensalidades` - professor - mobile - modo claro - implementado e publicado (`7d84fb0`), resumo e estado vazio validados; falta testar movimentos reais
+- [ ] `/dashboard/bebes` - professor de Musica para Bebes - mobile e desktop - claro e escuro - implementado; acesso negado a familia validado, falta validar turmas reais com professor atribuido
 
 ## Administracao
 

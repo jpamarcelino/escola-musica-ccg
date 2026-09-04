@@ -16,10 +16,14 @@ type Matricula = {
 
 export default async function AlunoHubPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ alunoId: string }>
+  searchParams: Promise<{ voltar?: string }>
 }) {
   const { alunoId } = await params
+  const { voltar } = await searchParams
+  const destinoVoltar = voltar === 'alunos' ? '/dashboard/alunos' : '/dashboard'
 
   const { supabase, user } = await getAuthContext()
 
@@ -54,7 +58,11 @@ export default async function AlunoHubPage({
     <main id="conteudo-principal" className="pinterest-aluno">
       <div className="pinterest-aluno-folha">
         <header className="pinterest-aluno-cabecalho">
-          <VoltarAtras destino="/dashboard" className="pinterest-aluno-voltar" rotulo="Voltar ao início" />
+          <VoltarAtras
+            destino={destinoVoltar}
+            className="pinterest-aluno-voltar"
+            rotulo={voltar === 'alunos' ? 'Voltar aos alunos' : 'Voltar ao início'}
+          />
           <div>
             <h1>{aluno.nome}</h1>
             <p>{dataHoje}</p>

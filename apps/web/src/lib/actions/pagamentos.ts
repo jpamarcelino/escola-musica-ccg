@@ -49,7 +49,7 @@ async function exigirSecretaria() {
 }
 
 export async function definirValorMensal(formData: FormData) {
-  const { supabase, user } = await exigirSecretaria()
+  const { supabase } = await exigirSecretaria()
 
   const matriculaId = String(formData.get('matriculaId') ?? '')
   const valorTexto = String(formData.get('valor') ?? '').replace(',', '.')
@@ -130,7 +130,7 @@ export async function marcarMensalidadePaga(formData: FormData) {
 }
 
 export async function definirNumeroFatura(formData: FormData) {
-  const { supabase, user } = await exigirSecretaria()
+  const { supabase } = await exigirSecretaria()
 
   const matriculaId = Number(formData.get('matriculaId') ?? 0)
   const alunoId = String(formData.get('alunoId') ?? '')
