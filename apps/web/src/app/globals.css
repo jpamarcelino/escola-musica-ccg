@@ -10128,3 +10128,155 @@ html[data-tema='escuro'] .pinterest-publico-tema-pastilha {
   background: #3d464f;
   box-shadow: 0 1px 3px rgba(0,0,0,.4);
 }
+
+/* ── Pedir uma aula (percurso publico), no tema escuro ──────────────
+   O invólucro `.pinterest-publico-pagina` ja pinta o fundo desde a home;
+   aqui trata-se do miolo do assistente, dos dialogos que ele abre (o
+   popup da idade, o de conta, o de "so escolheste um horario") e da
+   ficha publica do professor, que se alcanca do passo dos professores.
+
+   Primeiro os tokens. As folhas partilhadas — a grelha de horarios, os
+   campos, as etiquetas — desenham-se com `--color-linha` e
+   `--color-tinta-suave`, e esses so estavam remapeados dentro de
+   `.app-shell-content` e `.admin-conteudo`. O publico e os dialogos
+   vivem fora dos dois (um dialogo do Radix sai para um portal no body),
+   e por isso ficavam com os valores claros: linhas quase brancas por
+   cima de superficies escuras. */
+html[data-tema='escuro'] :is(.pinterest-publico-pagina,.modal-caixa,.sheet-caixa,.pinterest-dialogo) {
+  --color-text-primary: var(--dark-text);
+  --color-text-secondary: var(--dark-muted);
+  --color-tinta: var(--dark-text);
+  --color-tinta-suave: var(--dark-muted);
+  --color-papel: var(--dark-bg);
+  --color-papel-2: var(--dark-surface);
+  --color-linha: var(--dark-border);
+  --color-botao-primario: #2f6ea8;
+}
+
+/* O titulo de um sheet e um <h1> — a regra que ja existia apanhava h2 e
+   h3 e deixava-o de fora. E o campo de um dialogo levava `bg-white` da
+   classe partilhada: e o select da idade, branco em cheio no escuro. */
+html[data-tema='escuro'] :is(.modal-caixa,.sheet-caixa,.pinterest-dialogo) h1 { color: var(--dark-text); }
+html[data-tema='escuro'] :is(.modal-caixa,.sheet-caixa,.pinterest-dialogo) :is(input:not([type='checkbox']):not([type='radio']),select,textarea) {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  caret-color: #78aede;
+}
+
+/* Cabecalho e progresso. */
+html[data-tema='escuro'] .pinterest-pedir { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-pedir :is(h1,h2,strong,b) { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-pedido-voltar {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  box-shadow: none;
+}
+html[data-tema='escuro'] .pinterest-pedido-cabecalho > div > p:first-of-type { color: #8f969e; }
+html[data-tema='escuro'] .pinterest-pedido-cabecalho > div > p + p { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-pedido-progresso li { background: #2b3238; }
+html[data-tema='escuro'] .pinterest-pedido-progresso li[data-estado='feito'] { background: #3d6f9c; }
+html[data-tema='escuro'] .pinterest-pedido-progresso li[data-estado='atual'] { background: #9dc9ea; }
+html[data-tema='escuro'] .pinterest-pedido-feitas :is(a,span) { background: #1c2c3b; color: #9dc9ea; }
+html[data-tema='escuro'] .pinterest-pedido-feitas a { border-color: #2c4257; }
+
+/* As opcoes: disciplinas e professores.
+
+   A caixa da ilustracao fica clara, pela mesma razao da home — sao
+   tracos quase pretos sobre transparente e num banho escuro
+   desapareciam. A do professor com fotografia nao precisa, mas partilha
+   a mesma classe e uma foto nao sofre com o fundo por baixo dela. */
+html[data-tema='escuro'] .pinterest-pedido-opcao {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .pinterest-pedido-opcao-imagem { background: #e4e8ec; }
+html[data-tema='escuro'] .pinterest-pedido-opcao small { color: #99a0a8; }
+html[data-tema='escuro'] .pinterest-pedido-opcao > svg { color: #7f868e; }
+/* Fora da faixa etaria: recuada em vez de apagada — no escuro isso e
+   descer abaixo da superficie e nao subir para um cinzento claro. */
+html[data-tema='escuro'] .pinterest-pedido-opcao[aria-disabled='true'] {
+  border-color: #262c32;
+  background: #191d21;
+  color: #949aa1;
+}
+html[data-tema='escuro'] .pinterest-pedido-opcao-nota { background: #2a3037; color: #a5acb4; }
+html[data-tema='escuro'] .pinterest-pedido-conhecer {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: #9dc9ea;
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+
+html[data-tema='escuro'] .pinterest-pedido-aviso {
+  border-color: #4a412a;
+  background: #2b2519;
+  color: #e2d6ba;
+}
+html[data-tema='escuro'] .pinterest-pedido-aviso a { color: #9dc9ea; }
+html[data-tema='escuro'] .pinterest-pedido-vazio { color: var(--dark-muted); }
+
+/* O passo do formulario: mensagem, etiquetas e o botao de enviar. */
+html[data-tema='escuro'] .pinterest-pedir textarea {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  box-shadow: none;
+}
+html[data-tema='escuro'] .pinterest-pedir textarea::placeholder { color: #868d95; }
+html[data-tema='escuro'] .pinterest-pedir label:not(.horario-bloco) { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-pedir button[type='submit'] {
+  background: #2f6ea8;
+  box-shadow: none;
+}
+
+/* A grelha de horarios. Os quatro gradientes sao as sombras que dizem
+   que ha mais para o lado; sao brancos por fora e tem de ser repintados
+   com o tom da grelha, ou fica uma faixa clara nas duas pontas. */
+html[data-tema='escuro'] .pinterest-pedir .horarios-grade {
+  border-color: var(--dark-border);
+  background-color: #1a2027;
+  background-image:
+    linear-gradient(to right,#1a2027 30%,rgba(26,32,39,0)),
+    linear-gradient(to right,rgba(26,32,39,0),#1a2027 70%) 100% 0,
+    linear-gradient(to right,rgba(0,0,0,.35),rgba(0,0,0,0)),
+    linear-gradient(to left,rgba(0,0,0,.35),rgba(0,0,0,0)) 100% 0;
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .pinterest-pedir .horarios-coluna-horas { background: #1a2027; }
+html[data-tema='escuro'] .pinterest-pedir .horario-bloco { border-color: #2c4257; background: #1c2c3b; color: #9dc9ea; }
+html[data-tema='escuro'] .pinterest-pedir .horario-bloco:has(input:checked) { border-color: #4d8ec4; background: #2f6ea8; color: #fff; }
+
+/* ── Ficha publica do professor, no tema escuro ─────────────────────
+   Alcanca-se do passo dos professores, pelo "conhecer". O retrato e a
+   inicial ficam com o verde claro que ja tinham: e uma fotografia ou
+   uma letra escura, e sao o assunto do cartao. */
+html[data-tema='escuro'] .ficha-professor { color: var(--dark-text); }
+html[data-tema='escuro'] .ficha-professor :is(h1,h2) { color: var(--dark-text); }
+html[data-tema='escuro'] .ficha-professor-voltar {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  box-shadow: none;
+}
+html[data-tema='escuro'] .ficha-professor-identidade {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .ficha-professor-identidade p { color: #8f969e; }
+html[data-tema='escuro'] .ficha-professor-disciplinas li { background: #1c2c3b; color: #9dc9ea; }
+html[data-tema='escuro'] .ficha-professor-bio {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-muted);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .ficha-professor-sem-bio {
+  border-color: #3a424a;
+  background: #191d21;
+  color: #949aa1;
+}
