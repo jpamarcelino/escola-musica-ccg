@@ -9938,7 +9938,8 @@ html[data-tema='escuro'] :is(
    O desenho estava feito para telemovel e nao tinha travao nenhum: a
    pagina inicial e o percurso de pedir aula esticavam ate aos 1425px de
    um ecra de 1440, com cartoes de uma linha so e um h1 a atravessar o
-   monitor. As paginas de formulario (entrar, criar conta, instalar) ja
+   monitor. A ficha publica do professor tinha o mesmo — passou-me na
+   primeira passagem por so se alcancar de dentro do assistente. As paginas de formulario (entrar, criar conta, instalar) ja
    vinham travadas nos 420px pelo FundoPapel e ficam como estao — um
    formulario curto centrado e o que se quer num ecra grande.
 
@@ -9949,7 +9950,8 @@ html[data-tema='escuro'] :is(
    lado, que e uma escolha e le-se melhor em paralelo. */
 @media (min-width: 768px) {
   .pinterest-publico,
-  .pinterest-pedir { width: 100%; max-width: 768px; margin-inline: auto; padding-inline: 32px; }
+  .pinterest-pedir,
+  .ficha-professor { width: 100%; max-width: 768px; margin-inline: auto; padding-inline: 32px; }
   .pinterest-publico-intro { padding-block: 8px 34px; }
   .pinterest-publico-intro h1 { font-size: 42px; }
   .pinterest-publico-intro > span { max-width: 46ch; font-size: 16px; }
@@ -9999,8 +10001,14 @@ html[data-tema='escuro'] :is(
      pergunta de cada vez, e uma linha de escolha com 1000px de largura
      obrigava o olho a atravessar o ecra a cada passo. */
   .pinterest-pedir { max-width: 640px; }
+  /* A ficha do professor e uma pagina de leitura: o que la esta de
+     substancia e uma apresentacao escrita por ele. Fica na mesma
+     medida dos documentos juridicos, e nao na do assistente — nao ha
+     escolhas para percorrer, ha um texto para ler. */
+  .ficha-professor { max-width: 680px; }
   .pinterest-publico-pagina:has(> .pinterest-publico) > .rodape-legal { max-width: 1080px; }
   .pinterest-publico-pagina:has(> .pinterest-pedir) > .rodape-legal { max-width: 640px; }
+  .pinterest-publico-pagina:has(> .ficha-professor) > .rodape-legal { max-width: 680px; }
 }
 
 @media (min-width: 1024px) {
