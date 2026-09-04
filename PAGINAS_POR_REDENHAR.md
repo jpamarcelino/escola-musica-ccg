@@ -2,6 +2,12 @@
 
 Ler primeiro `DESIGN_PINTEREST_HANDOFF.md`. Este checklist regista o estado por rota e variante. `[x]` significa que a variante indicada cumpre a definicao de concluida do guia; nao significa automaticamente desktop ou modo escuro.
 
+> Auditoria tecnica de 4 de setembro de 2026: 311 testes, typecheck, lint e
+> build de producao (62 paginas) executados com sucesso. O lint mantem 2 avisos pre-existentes em
+> `apps/web/src/lib/actions/pagamentos.ts`). As rotas marcadas como
+> "implementadas" mas ainda com `[ ]` precisam de validacao autenticada com
+> dados reais; nao devem ser dadas como concluidas apenas por existirem.
+
 ## Concluido no Design Pinterest
 
 - [x] `/dashboard` - familia/aluno - mobile - modo claro (`d9b22d2`, acabamento `067da9d`)
@@ -90,8 +96,6 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [x] `/admin/alunos` - secretaria - diretorio redesenhado em modo claro para mobile e desktop; pesquisa, filtros, selecao, exportacao e dossier rapido preservados
 - [x] `/admin/alunos/[alunoId]` - secretaria - ficha completa redesenhada em modo claro; contactos, matriculas, presencas, recomendacoes e mensalidades responsivos
 - [x] `/admin/conta` - secretaria - dados, seguranca, painel de professor, aparencia, notificacoes, saida e zona sensivel redesenhados; validado a 390 px e 1440 px em claro e escuro
-- [ ] `/admin/alunos` - administracao - mobile - modo claro - tratamento Pinterest so abaixo dos 720 px, a mesa do computador fica como estava; lista, folha do dossier e alvos de toque vistos em ensaio a 360 px; falta ver com conta de administrador real
-- [ ] `/admin/alunos/[alunoId]`
 - [x] `/admin/professores` - secretaria - diretorio, pedidos pendentes, convite e pesquisa preservados; modo claro responsivo
 - [x] `/admin/professores/[professorId]` - secretaria - ficha de gestao responsiva com atalhos, evolucao de alunos e Programa de Recomendacao
 - [x] `/admin/professores/[professorId]/alunos` - secretaria - diretorio compacto e pesquisavel dos alunos do professor
@@ -122,10 +126,11 @@ Nao redesenhar estas rotas; apenas redirecionam:
 
 ## Ordem recomendada imediata
 
-1. `/dashboard/conta`
-2. `/dashboard/alunos`
-3. paginas `/aluno/[alunoId]/*`
-4. `/dashboard/agenda` e detalhe - professor
+1. Validar `/dashboard/conta`, `/dashboard/alunos` e `/aluno/[alunoId]/*` com a conta familiar real
+2. Validar agenda, horarios, presencas e reposicoes com dados reais de professor
+3. Validar os fluxos de envio de mensagens e materiais com destinatarios reais
+4. Validar `/redefinir-password` atraves de um link de recuperacao real
+5. Criar smoke tests E2E para navegacao, regressao visual e temas claro/escuro
 
 ## Regra de atualizacao
 

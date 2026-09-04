@@ -164,8 +164,8 @@ export const MENSAGENSESCOLAPUBLICO_VALORES = [
   'professores',
 ] as const satisfies readonly MensagensEscolaPublico[]
 
-// notificacoes.tipo — fixado em 0046_aviso_de_pedido_de_aula.sql
-export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada' | 'aula_desmarcada' | 'reposicao_pedida' | 'reposicao_agendada' | 'reposicao_nao_possivel' | 'reposicao_sem_opcoes' | 'reposicao_expirada' | 'reposicao_lembrete' | 'proposta_horario' | 'proposta_aceite' | 'proposta_recusada' | 'reposicao_proposta' | 'reposicao_proposta_recusada' | 'disciplina_pedida' | 'disciplina_aceite' | 'disciplina_recusada' | 'mensagem_escola' | 'pedido_aula'
+// notificacoes.tipo — fixado em 0064_fixar_tipos_de_notificacao.sql
+export type NotificacaoTipo = 'pedido_aceite' | 'lembrete_aula' | 'lembrete_pagamento' | 'mudanca_horario' | 'novo_material' | 'matricula_cancelada' | 'aula_desmarcada' | 'reposicao_pedida' | 'reposicao_agendada' | 'reposicao_nao_possivel' | 'reposicao_sem_opcoes' | 'reposicao_expirada' | 'reposicao_lembrete' | 'proposta_horario' | 'proposta_aceite' | 'proposta_recusada' | 'reposicao_proposta' | 'reposicao_proposta_recusada' | 'disciplina_pedida' | 'disciplina_aceite' | 'disciplina_recusada' | 'mensagem_escola' | 'pedido_aula' | 'reposicao_cancelada' | 'turma_bebes_alterada'
 
 export const NOTIFICACAOTIPO_VALORES = [
   'pedido_aceite',
@@ -191,6 +191,8 @@ export const NOTIFICACAOTIPO_VALORES = [
   'disciplina_recusada',
   'mensagem_escola',
   'pedido_aula',
+  'reposicao_cancelada',
+  'turma_bebes_alterada',
 ] as const satisfies readonly NotificacaoTipo[]
 
 // pedidos_instrumento.estado — fixado em 0040_pedidos_de_disciplina.sql
@@ -283,3 +285,16 @@ export const REPOSICAOESTADO_VALORES = [
   'confirmada',
   'recusada',
 ] as const satisfies readonly ReposicaoEstado[]
+
+// turmas_bebes.dia_semana — fixado em 0059_escola_de_bebes.sql
+export type TurmasBebeDiaSemana = 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado' | 'Domingo'
+
+export const TURMASBEBEDIASEMANA_VALORES = [
+  'Segunda',
+  'Terça',
+  'Quarta',
+  'Quinta',
+  'Sexta',
+  'Sábado',
+  'Domingo',
+] as const satisfies readonly TurmasBebeDiaSemana[]
