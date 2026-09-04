@@ -6613,7 +6613,12 @@ html[data-tema='escuro'] .admin-recomendacoes-estudo tbody tr:hover { background
    horários SÃO labels (envolvem o checkbox), e um `display: block` aqui
    desfazia-lhes o flex em coluna — as duas horas colavam-se numa só,
    "10h10h50". */
-.pinterest-pedir label:not(.horario-bloco) { display: block; margin-bottom: 7px; color: #3d434a; font-size: 13.5px; font-weight: 620; }
+/* `.recomendacao-pergunta` tambem sai daqui, e nao e detalhe: essa
+   label e um flex de 10px de intervalo entre a caixa e a frase, e o
+   `display: block` desfazia-o — a caixa ficava colada ao texto, sem
+   espaco nenhum. Vinha assim desde que esta regra existe, nos dois
+   temas. */
+.pinterest-pedir label:not(.horario-bloco):not(.recomendacao-pergunta) { display: block; margin-bottom: 7px; color: #3d434a; font-size: 13.5px; font-weight: 620; }
 /* O botão principal do sistema: azul escuro, raio 15, 50 de altura — o
    mesmo de `.pinterest-adicionar`. O preto do formulário antigo era do
    outro sistema. */
@@ -10203,6 +10208,10 @@ html[data-tema='escuro'] .pinterest-pedido-opcao[aria-disabled='true'] {
   background: #191d21;
   color: #949aa1;
 }
+/* O nome tambem recua. A regra larga de cima poe todos os `strong` do
+   percurso a branco, e sem esta excecao a disciplina fora da faixa
+   etaria lia-se tao acesa como as outras. */
+html[data-tema='escuro'] .pinterest-pedido-opcao[aria-disabled='true'] strong { color: #949aa1; }
 html[data-tema='escuro'] .pinterest-pedido-opcao-nota { background: #2a3037; color: #a5acb4; }
 html[data-tema='escuro'] .pinterest-pedido-conhecer {
   border-color: var(--dark-border);
@@ -10220,14 +10229,38 @@ html[data-tema='escuro'] .pinterest-pedido-aviso a { color: #9dc9ea; }
 html[data-tema='escuro'] .pinterest-pedido-vazio { color: var(--dark-muted); }
 
 /* O passo do formulario: mensagem, etiquetas e o botao de enviar. */
-html[data-tema='escuro'] .pinterest-pedir textarea {
+/* Todos os campos e nao so a caixa de mensagem: os do bloco da
+   recomendacao vem da classe partilhada, que traz `bg-white` fixo. Com
+   o texto ja em quase branco, ficavam branco sobre branco — escrevia-se
+   as cegas. Fora as caixas de marcar, que se desenham a parte, e as da
+   grelha, que sao um `input` de 1px escondido dentro do bloco. */
+html[data-tema='escuro'] .pinterest-pedir :is(input:not([type='checkbox']):not([type='radio']),select,textarea) {
   border-color: var(--dark-border);
   background: var(--dark-raised);
   color: var(--dark-text);
+  caret-color: #78aede;
   box-shadow: none;
 }
-html[data-tema='escuro'] .pinterest-pedir textarea::placeholder { color: #868d95; }
+html[data-tema='escuro'] .pinterest-pedir :is(input,textarea)::placeholder { color: #868d95; }
 html[data-tema='escuro'] .pinterest-pedir label:not(.horario-bloco) { color: var(--dark-muted); }
+/* A unica caixa de marcar do percurso. O `color-scheme: dark` do <html>
+   devia bastar para o browser a pintar escura, e nao basta: em Chrome
+   no Android continua a sair um quadrado claro, que sobre esta pagina
+   se ve mais do que o proprio texto ao lado. Aqui e desenhada a mao,
+   com o visto como imagem em vez do glifo do sistema. */
+html[data-tema='escuro'] .recomendacao-pergunta input[type='checkbox'] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #4a545e;
+  border-radius: 6px;
+  background: var(--dark-raised);
+}
+html[data-tema='escuro'] .recomendacao-pergunta input[type='checkbox']:checked {
+  border-color: #4d8ec4;
+  background: #2f6ea8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5 9.5 18 20 6.5'/%3E%3C/svg%3E") center / 13px no-repeat;
+}
+
 html[data-tema='escuro'] .pinterest-pedir button[type='submit'] {
   background: #2f6ea8;
   box-shadow: none;
