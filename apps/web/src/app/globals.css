@@ -9926,3 +9926,78 @@ html[data-tema='escuro'] :is(
   .pinterest-admin-professor-alunos,
   .pinterest-admin-professor-disciplinas
 ) :is(a,button,input,select,textarea):focus-visible { outline-color:#8ed2ff; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Paginas publicas em desktop.
+   ═══════════════════════════════════════════════════════════════
+   O desenho estava feito para telemovel e nao tinha travao nenhum: a
+   pagina inicial e o percurso de pedir aula esticavam ate aos 1425px de
+   um ecra de 1440, com cartoes de uma linha so e um h1 a atravessar o
+   monitor. As paginas de formulario (entrar, criar conta, instalar) ja
+   vinham travadas nos 420px pelo FundoPapel e ficam como estao — um
+   formulario curto centrado e o que se quer num ecra grande.
+
+   A regra segue o que a area com sessao ja faz: conservar a composicao
+   vertical aprovada no telemovel e dar-lhe uma coluna mais larga, em vez
+   de inventar um segundo desenho. O que muda a partir dos 1024px e so
+   onde a largura serve mesmo para alguma coisa — as tres escolas lado a
+   lado, que e uma escolha e le-se melhor em paralelo. */
+@media (min-width: 768px) {
+  .pinterest-publico,
+  .pinterest-pedir { width: 100%; max-width: 768px; margin-inline: auto; padding-inline: 32px; }
+  .pinterest-publico-intro { padding-block: 8px 34px; }
+  .pinterest-publico-intro h1 { font-size: 42px; }
+  .pinterest-publico-intro > span { max-width: 46ch; font-size: 16px; }
+  /* O rodape vive fora do <main>, para o cinzento da pagina passar por
+     baixo dele. Como fica de fora, nao herda a largura de nada — e a
+     pagina inicial e o assistente nao tem a mesma. `:has()` faz o
+     rodape seguir o irmao que ali esta, em vez de eu escolher um numero
+     que fica errado numa das duas. */
+  .pinterest-publico-pagina > .rodape-legal { max-width: 768px; margin-inline: auto; }
+  /* Um documento juridico a 430px sao 45 caracteres por linha; a
+     leitura corrida quer o dobro. */
+  .pinterest-legal-folha { max-width: 680px; }
+}
+
+@media (min-width: 1024px) {
+  .pinterest-publico { max-width: 1080px; padding-inline: 40px; }
+  .pinterest-publico-topo { min-height: 64px; margin-bottom: 34px; }
+  .pinterest-publico-intro { padding-block: 14px 42px; }
+  .pinterest-publico-intro h1 { font-size: 54px; letter-spacing: -.02em; }
+  .pinterest-publico-seccao { margin-bottom: 38px; }
+  .pinterest-publico-seccao > h2 { margin-bottom: 15px; font-size: 23px; }
+
+  /* As tres escolas passam de lista a fila. E aqui que o cartao muda de
+     forma: em coluna a imagem sobe para cima do texto e a seta encosta
+     ao fundo, para os tres terem a mesma altura sem depender do
+     comprimento da descricao. */
+  .pinterest-publico-escolas { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+  .pinterest-publico-escola {
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+    align-items: start;
+    padding: 22px;
+  }
+  .pinterest-publico-escola > svg { justify-self: end; }
+  .pinterest-publico-escola strong { font-size: 19px; }
+  .pinterest-publico-escola:hover { transform: translateY(-3px); }
+
+  /* "Já tens conta?" em duas colunas: sao duas saidas independentes, e
+     empilhadas deixavam meia pagina vazia ao lado. */
+  .pinterest-publico-lista { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .pinterest-publico-lista a + a { border-top: 0; border-left: 1px solid #eceef0; }
+
+  .pinterest-publico-assinatura { padding-top: 40px; }
+
+  /* O percurso de pedir aula nao alarga tanto: continua a ser uma
+     pergunta de cada vez, e uma linha de escolha com 1000px de largura
+     obrigava o olho a atravessar o ecra a cada passo. */
+  .pinterest-pedir { max-width: 640px; }
+  .pinterest-publico-pagina:has(> .pinterest-publico) > .rodape-legal { max-width: 1080px; }
+  .pinterest-publico-pagina:has(> .pinterest-pedir) > .rodape-legal { max-width: 640px; }
+}
+
+@media (min-width: 1024px) {
+  html[data-tema='escuro'] .pinterest-publico-lista a + a { border-left-color: rgba(255,255,255,.08); }
+}
