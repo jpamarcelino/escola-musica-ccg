@@ -60,3 +60,9 @@ next-env.d.ts
 
 # Ficheiros temporarios da CLI do Supabase
 supabase/.temp/
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/
+.env.e2e.local

@@ -146,7 +146,40 @@ correspondente em `PAGINAS_POR_REDENHAR.md`.
 
 ### Fase 2 - E2E e regressao visual
 
-Criar smoke tests Playwright para os percursos essenciais:
+Comecada. Playwright instalado em `apps/web`, com dois projetos (390 e
+1440 px) e alvo configuravel:
+
+```bash
+pnpm --filter web test:e2e                          # producao
+E2E_URL=http://localhost:3000 pnpm --filter web test:e2e
+```
+
+- `e2e/publico.spec.ts` — **60 testes a passar**. Cobre as 9 rotas
+  publicas nos dois temas, overflow a 360/390/430/1440, erros de consola,
+  o interruptor de tema (incluindo persistir ao recarregar e nao existir
+  fora da home), o beco da idade no assistente, o reencaminhamento da
+  password e o 404. Corre sem credenciais nenhumas.
+- `e2e/autenticado.spec.ts` — esqueleto dos tres papeis, **saltado**
+  enquanto nao houver credenciais no ambiente (`E2E_PROF_EMAIL`,
+  `E2E_PROF_PASSWORD`, e o mesmo para `FAMILIA` e `ADMIN`). Saltar em vez
+  de falhar e deliberado: uma suite vermelha por falta de configuracao
+  ensina a ignorar o vermelho. Guardar as credenciais em `.env.e2e.local`
+  (ja ignorado pelo git) ou exportar na shell — nunca no repositorio.
+
+Duas licoes ja aprendidas nesta suite, para nao se repetirem:
+
+- `addInitScript` volta a correr a cada navegacao, incluindo `reload()`.
+  Usado para fixar o tema, reescrevia a escolha que o teste acabara de
+  fazer. Onde se testa a persistencia, finge-se o `colorScheme` do sistema
+  e deixa-se a app decidir.
+- assercoes de consola contra producao tem de excluir o ruido de rede, ou
+  falham sozinhas de vez em quando.
+
+A verificacao do `next` do `/auth/confirm` NAO esta nos E2E: sem um token
+valido a rota nunca chega a usa-lo. A funcao foi extraida para
+`src/lib/auth/destino-seguro.ts` e tem testes unitarios proprios.
+
+Falta ainda:
 
 - login por papel e logout;
 - familia: Hoje -> Alunos -> ficha -> voltar;
