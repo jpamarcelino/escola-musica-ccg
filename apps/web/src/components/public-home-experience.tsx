@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronRight, Download, LogIn } from 'lucide-react'
 import { SimboloCCG } from '@/components/simbolo-ccg'
+import { InterruptorTema } from '@/components/interruptor-tema'
 
 // As três escolas. O `href` entra no assistente já com a escola
 // escolhida, pelo que o passo de escolher escola é saltado — a idade é
@@ -35,8 +36,11 @@ const OFERTA = [
 // Substituiu um carrossel que rodava sozinho de cinco em cinco segundos e
 // pedia um componente de cliente com temporizador e estado. As três
 // escolas cabem as três no ecrã; mostrar uma de cada vez escondia duas
-// terças partes da oferta e obrigava a esperar para as ver. Agora a
-// página não leva JavaScript nenhum.
+// terças partes da oferta e obrigava a esperar para as ver.
+//
+// O único JavaScript que aqui ficou é o interruptor de tema: precisa de
+// ler o localStorage e de escrever no <html>, e nenhuma das duas coisas
+// se faz no servidor.
 export function PublicHomeExperience() {
   return (
     <main id="conteudo-principal" className="pinterest-publico">
@@ -54,6 +58,14 @@ export function PublicHomeExperience() {
           <Link href="/registo">Criar conta</Link>
         </div>
       </nav>
+
+      {/* Numa linha só dele, por baixo do Entrar/Criar conta e alinhado
+          à direita com eles. Na barra de cima não cabia: a 360px essa
+          linha já anda no limite, e um terceiro controlo comia o nome
+          do Centro. */}
+      <div className="pinterest-publico-tema-linha">
+        <InterruptorTema />
+      </div>
 
       <header className="pinterest-publico-intro">
         <p>Escolas Artísticas</p>
