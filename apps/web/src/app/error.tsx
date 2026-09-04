@@ -20,7 +20,7 @@ export default function ErrorBoundary({
   }, [error])
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center px-[22px] py-[26px] text-center">
+    <main className="pagina-recado flex-1 flex flex-col items-center justify-center px-[22px] py-[26px] text-center">
       <div className="w-full max-w-[380px] space-y-[22px]">
         <div>
           <p

@@ -7975,6 +7975,10 @@ html[data-tema='escuro'] {
   --foreground: var(--dark-text);
   --color-ink: var(--dark-text);
   --color-surface-raised: var(--dark-raised);
+  /* No <html> e nao em cada involucro: o BotaoPrimario aparece tambem
+     no 404 e na pagina de erro, que nao estao dentro de nenhum. Sem
+     isto ficavam brancos com texto branco. */
+  --color-botao-primario: #2f6ea8;
 }
 html[data-tema='escuro'] :is(.app-shell-content,.admin-conteudo,.admin-conteudo + nav) {
   --color-text-primary: var(--dark-text);
@@ -10163,7 +10167,6 @@ html[data-tema='escuro'] :is(.pinterest-publico-pagina,.auth-pagina,.pinterest-i
   --color-papel: var(--dark-bg);
   --color-papel-2: var(--dark-surface);
   --color-linha: var(--dark-border);
-  --color-botao-primario: #2f6ea8;
 }
 
 /* O titulo de um sheet e um <h1> — a regra que ja existia apanhava h2 e
@@ -10380,3 +10383,72 @@ html[data-tema='escuro'] .pinterest-instalar ol {
 html[data-tema='escuro'] .pinterest-instalar ol > li + li { border-top-color: var(--dark-border); }
 html[data-tema='escuro'] .pinterest-instalar ol > li > span:first-child { background: #1c2c3b !important; color: #9dc9ea !important; }
 html[data-tema='escuro'] .pinterest-instalar a { color: #9dc9ea; }
+
+/* ── Documentos legais, no tema escuro ──────────────────────────────
+   O indice (`/legal`) e cada documento (`/legal/[documento]`). Sao
+   publicos e chega-se la do rodape de todas as paginas, com ou sem
+   conta — passaram-me nas passagens anteriores por nao estarem dentro
+   do `.pinterest-publico-pagina` nem de nenhum outro involucro que ja
+   tivesse tema.
+
+   Um documento juridico e para ler do principio ao fim, e por isso o
+   corpo fica no cinzento claro do tema e nao no branco puro: e menos
+   brilho durante muito mais tempo de leitura. */
+html[data-tema='escuro'] .pinterest-legal {
+  --color-tinta: var(--dark-text);
+  --color-tinta-suave: var(--dark-muted);
+  --color-linha: var(--dark-border);
+  background: var(--dark-bg);
+  color: var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-legal :is(h1,h2,strong) { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-legal-voltar {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  box-shadow: none;
+}
+html[data-tema='escuro'] .pinterest-legal-cabecalho p { color: var(--dark-muted); }
+
+html[data-tema='escuro'] .pinterest-legal-indice a {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+  box-shadow: 0 4px 15px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .pinterest-legal-indice small { color: #99a0a8; }
+html[data-tema='escuro'] .pinterest-legal-indice svg { color: #7f868e; }
+
+html[data-tema='escuro'] .pinterest-legal-corpo {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .pinterest-legal-corpo > section + section { border-top-color: var(--dark-border); }
+/* Os titulos de artigo mantem o azul: e o que separa um artigo do
+   seguinte numa parede de texto. Sobe de tom para se ler sobre o
+   escuro. */
+html[data-tema='escuro'] .pinterest-legal-corpo h2 { color: #9dc9ea; }
+html[data-tema='escuro'] .pinterest-legal-corpo :is(p,li) { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-legal-corpo a { color: #9dc9ea; }
+
+html[data-tema='escuro'] .pinterest-legal-tabela-caixa { border-color: var(--dark-border); }
+html[data-tema='escuro'] .pinterest-legal-tabela :is(th,td) { border-bottom-color: var(--dark-border); }
+html[data-tema='escuro'] .pinterest-legal-tabela th { background: var(--dark-raised); color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-legal-tabela td { color: var(--dark-muted); }
+
+html[data-tema='escuro'] .pinterest-legal-nota { color: #99a0a8; }
+html[data-tema='escuro'] .pinterest-legal-nota a { color: #9dc9ea; }
+html[data-tema='escuro'] .pinterest-legal-voltar-indice { background: #2f6ea8; box-shadow: none; }
+
+/* ── As paginas de recado (404 e erro), no tema escuro ──────────────
+   Nao tem involucro nenhum — assentam direto no <body> — e por isso
+   nenhum dos remapeamentos de token lhes chegava: o titulo ficava no
+   azul escuro de fundo claro e o texto no castanho-acinzentado do tema
+   claro, os dois sobre preto. O fundo ja vinha certo do <body>; o que
+   faltava era a tinta. */
+html[data-tema='escuro'] .pagina-recado {
+  --color-tinta-suave: var(--dark-muted);
+  --color-azul-fundo: #9dc9ea;
+  --color-azul-logo: #78aede;
+}
