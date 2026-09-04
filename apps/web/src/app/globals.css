@@ -10147,7 +10147,7 @@ html[data-tema='escuro'] .pinterest-publico-tema-pastilha {
    vivem fora dos dois (um dialogo do Radix sai para um portal no body),
    e por isso ficavam com os valores claros: linhas quase brancas por
    cima de superficies escuras. */
-html[data-tema='escuro'] :is(.pinterest-publico-pagina,.modal-caixa,.sheet-caixa,.pinterest-dialogo) {
+html[data-tema='escuro'] :is(.pinterest-publico-pagina,.auth-pagina,.pinterest-instalar,.modal-caixa,.sheet-caixa,.pinterest-dialogo) {
   --color-text-primary: var(--dark-text);
   --color-text-secondary: var(--dark-muted);
   --color-tinta: var(--dark-text);
@@ -10248,15 +10248,13 @@ html[data-tema='escuro'] .pinterest-pedir label:not(.horario-bloco) { color: var
    no Android continua a sair um quadrado claro, que sobre esta pagina
    se ve mais do que o proprio texto ao lado. Aqui e desenhada a mao,
    com o visto como imagem em vez do glifo do sistema. */
-html[data-tema='escuro'] .recomendacao-pergunta input[type='checkbox'] {
+html[data-tema='escuro'] :is(.recomendacao-pergunta,.auth-pagina) input[type='checkbox'] {
   appearance: none;
-  width: 20px;
-  height: 20px;
   border: 1.5px solid #4a545e;
   border-radius: 6px;
   background: var(--dark-raised);
 }
-html[data-tema='escuro'] .recomendacao-pergunta input[type='checkbox']:checked {
+html[data-tema='escuro'] :is(.recomendacao-pergunta,.auth-pagina) input[type='checkbox']:checked {
   border-color: #4d8ec4;
   background: #2f6ea8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5 9.5 18 20 6.5'/%3E%3C/svg%3E") center / 13px no-repeat;
 }
@@ -10313,3 +10311,64 @@ html[data-tema='escuro'] .ficha-professor-sem-bio {
   background: #191d21;
   color: #949aa1;
 }
+
+/* ── Entrar, criar conta e instalar, no tema escuro ─────────────────
+   As quatro paginas de conta (`/login`, `/registo`, `/esqueci-password`
+   e `/redefinir-password`, todas com `.auth-pagina`) e a de instalar a
+   app. Os tokens ja vao com elas — estao na lista mais acima, junto com
+   o publico e os dialogos; aqui ficam as cores escritas em hexadecimal.
+
+   Ha `!important` de mais nesta zona, e nao e capricho meu: a folha
+   clara ja os usa, para vencer estilos inline e classes utilitarias.
+   Onde a regra clara leva um, a escura tem de levar outro — nao por
+   enfase, mas porque sem ele fica empatada e perde. */
+html[data-tema='escuro'] .auth-pagina { background: var(--dark-bg) !important; color: var(--dark-text); }
+html[data-tema='escuro'] .auth-pagina form,
+html[data-tema='escuro'] .auth-pagina .auth-cartao {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .auth-pagina form h1 { color: var(--dark-text) !important; }
+html[data-tema='escuro'] .auth-pagina :is(h1,h2,strong) { color: var(--dark-text); }
+html[data-tema='escuro'] .auth-pagina label { color: var(--dark-muted); }
+html[data-tema='escuro'] .auth-pagina input:not([type='checkbox']) {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  caret-color: #78aede;
+}
+html[data-tema='escuro'] .auth-pagina input::placeholder { color: #868d95; }
+html[data-tema='escuro'] .auth-pagina form a { color: #9dc9ea; }
+/* O convite para instalar a app ja assenta no tom elevado; o que
+   faltava era o passar do rato, que a classe utilitaria manda para um
+   cinzento claro e acendia o cartao todo. */
+html[data-tema='escuro'] .auth-pagina .cartao-opcao:hover { background: var(--dark-border); }
+html[data-tema='escuro'] .auth-pagina .rodape-legal { border-top-color: var(--dark-border); }
+html[data-tema='escuro'] .auth-pagina .rodape-legal :is(a,p) { color: #99a0a8; }
+
+html[data-tema='escuro'] .pinterest-instalar { background: var(--dark-bg) !important; color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-instalar h1 { color: var(--dark-text) !important; }
+/* A seta de voltar desta pagina e a `.back-button` partilhada e nao a
+   do cabecalho — daqui o alcance ficar preso ao involucro, para nao
+   mexer na mesma seta dentro da area com sessao. */
+html[data-tema='escuro'] .pinterest-instalar .back-button {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+}
+html[data-tema='escuro'] .pinterest-instalar [role='tablist'] { background: #21262b; }
+html[data-tema='escuro'] .pinterest-instalar [role='tablist'] button { color: #99a0a8 !important; }
+html[data-tema='escuro'] .pinterest-instalar [role='tablist'] button[aria-selected='true'] {
+  background: var(--dark-raised) !important;
+  color: var(--dark-text) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.32);
+}
+html[data-tema='escuro'] .pinterest-instalar ol {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .pinterest-instalar ol > li + li { border-top-color: var(--dark-border); }
+html[data-tema='escuro'] .pinterest-instalar ol > li > span:first-child { background: #1c2c3b !important; color: #9dc9ea !important; }
+html[data-tema='escuro'] .pinterest-instalar a { color: #9dc9ea; }
