@@ -10452,3 +10452,61 @@ html[data-tema='escuro'] .pagina-recado {
   --color-azul-fundo: #9dc9ea;
   --color-azul-logo: #78aede;
 }
+
+/* ── O campo do codigo de seis algarismos ───────────────────────────
+   Uma caixa so, larga, com os algarismos afastados uns dos outros. A
+   fonte e tabular de proposito: com algarismos de largura variavel o
+   campo dança enquanto se escreve, e um "1" ao lado de um "8" fica com
+   espaços diferentes entre si. */
+.campo-codigo {
+  width: 100%;
+  height: 62px;
+  padding: 0 14px;
+  border: 1px solid var(--color-linha);
+  border-radius: 13px;
+  background: #fff;
+  color: var(--color-tinta);
+  font-family: inherit;
+  font-size: 27px;
+  font-weight: 640;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .34em;
+  /* O `letter-spacing` acrescenta espaço tambem DEPOIS do ultimo
+     algarismo, e sem isto o conjunto aparece sempre um bocado a
+     esquerda do centro. */
+  text-indent: .34em;
+  text-align: center;
+  outline: none;
+  transition: border-color .15s ease;
+}
+.campo-codigo::placeholder { color: #c8ccd1; letter-spacing: .34em; }
+.campo-codigo:focus { border-color: var(--color-azul-logo); }
+.campo-codigo:focus-visible { outline: 2px solid var(--color-azul); outline-offset: 1px; }
+.campo-codigo-ajuda { margin-top: 6px; font-size: 12.5px; line-height: 1.45; color: var(--color-tinta-suave); }
+
+.reenviar-codigo { display: flex; flex-direction: column; gap: 10px; }
+.reenviar-codigo button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border-radius: 13px;
+  color: var(--color-tinta-suave);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.reenviar-codigo button:disabled { opacity: .55; cursor: default; }
+.reenviar-codigo button:not(:disabled):hover { color: var(--color-azul-fundo); }
+
+html[data-tema='escuro'] .campo-codigo {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: var(--dark-text);
+  caret-color: #78aede;
+}
+html[data-tema='escuro'] .campo-codigo::placeholder { color: #5c646c; }
+html[data-tema='escuro'] .campo-codigo-ajuda { color: #99a0a8; }
+html[data-tema='escuro'] .reenviar-codigo button { color: #99a0a8; }
+html[data-tema='escuro'] .reenviar-codigo button:not(:disabled):hover { color: #9dc9ea; }

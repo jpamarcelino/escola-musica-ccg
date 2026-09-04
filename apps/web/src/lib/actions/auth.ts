@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { normalizarNIF, validarNIF, validarPassword, validarRegisto } from '@ccg/core'
 
@@ -150,15 +150,108 @@ export async function signup(
     return { error: error.message, valores }
   }
 
-  // Se a confirmação de email estiver ativa no Supabase, ainda não há sessão
-  // criada nesta fase — o utilizador só consegue entrar depois de confirmar.
+  // Se a confirmação de email estiver ativa no Supabase, ainda não há
+  // sessão nesta fase: a conta existe, mas só se entra depois de provar
+  // que o email é mesmo desta pessoa. Segue-se para o ecrã do código.
   if (!data.session) {
-    return {
-      info: 'Conta criada! Verifica o teu email para confirmares a conta antes de entrares.',
-    }
+    await guardarEmailPorConfirmar(email)
+    redirect('/confirmar-email')
   }
 
   redirect('/dashboard')
+}
+
+// O email que está à espera de confirmação, entre o registo e o código.
+//
+// Num cookie e não na URL: é um dado pessoal, e uma morada com o email
+// dentro fica no histórico do browser, nos registos do servidor e em
+// qualquer sítio por onde a ligação seja partilhada. Aqui não sai do
+// aparelho — `httpOnly` para nem o JavaScript da própria página lhe
+// chegar, e meia hora de validade, que é mais do que o código dura.
+const COOKIE_POR_CONFIRMAR = 'ccg-email-por-confirmar'
+
+async function guardarEmailPorConfirmar(email: string) {
+  const armazem = await cookies()
+  armazem.set(COOKIE_POR_CONFIRMAR, email, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 30,
+  })
+}
+
+export async function emailPorConfirmar(): Promise<string | null> {
+  const armazem = await cookies()
+  return armazem.get(COOKIE_POR_CONFIRMAR)?.value ?? null
+}
+
+async function esquecerEmailPorConfirmar() {
+  const armazem = await cookies()
+  armazem.delete(COOKIE_POR_CONFIRMAR)
+}
+
+// Seis dígitos, nem mais nem menos. A pessoa cola o código do email e
+// vem quase sempre com espaços à volta; tirar o que não é algarismo
+// evita o erro mais parvo desta página.
+function limparCodigo(bruto: string) {
+  return bruto.replace(/\D/g, '').slice(0, 6)
+}
+
+export async function confirmarEmail(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const codigo = limparCodigo(String(formData.get('codigo') ?? ''))
+  // O email vem do cookie. Se a pessoa fechou o separador e voltou mais
+  // tarde, o cookie pode já não estar cá — nesse caso ela escreve-o, e é
+  // por isso que o campo existe no formulário.
+  const email = (await emailPorConfirmar()) ?? String(formData.get('email') ?? '').trim()
+
+  if (!email) {
+    return { error: 'Escreve o email com que criaste a conta.' }
+  }
+  if (codigo.length !== 6) {
+    return { error: 'O código tem seis algarismos.' }
+  }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.verifyOtp({
+    email,
+    token: codigo,
+    type: 'signup',
+  })
+
+  if (error) {
+    return {
+      error: 'Código errado ou já expirado. Confere o email ou pede um novo código.',
+      valores: { email },
+    }
+  }
+
+  await esquecerEmailPorConfirmar()
+  redirect('/dashboard')
+}
+
+export async function reenviarCodigoRegisto(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const email = (await emailPorConfirmar()) ?? String(formData.get('email') ?? '').trim()
+
+  if (!email) {
+    return { error: 'Escreve o email com que criaste a conta.' }
+  }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.resend({ type: 'signup', email })
+
+  if (error) {
+    return { error: 'Não foi possível enviar outro código. Tenta daqui a pouco.' }
+  }
+
+  await guardarEmailPorConfirmar(email)
+  return { info: 'Enviámos outro código. Pode demorar um minuto a chegar.' }
 }
 
 export async function login(
@@ -199,6 +292,10 @@ export async function pedirRecuperacaoPassword(
   }
 
   const supabase = await createClient()
+  // O mesmo pedido de sempre. O que muda é o email que sai dele: assim
+  // que o modelo no Supabase incluir o `{{ .Token }}`, esta chamada
+  // passa a mandar um código de seis algarismos além do link. O
+  // `redirectTo` fica, para quem preferir clicar.
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${await origem()}/auth/confirm?next=/redefinir-password`,
   })
@@ -207,16 +304,31 @@ export async function pedirRecuperacaoPassword(
     return { error: 'Não foi possível enviar o email. Tenta novamente.' }
   }
 
-  return {
-    info: 'Se existir uma conta com esse email, foi enviado um link para repores a password.',
-  }
+  // Guarda-se o email para a página seguinte não o voltar a pedir. Note-se
+  // que se chega aqui mesmo quando a conta não existe: a mensagem é
+  // deliberadamente vaga e o percurso é o mesmo nos dois casos, para esta
+  // página não servir para descobrir quem tem conta na escola.
+  await guardarEmailPorConfirmar(email)
+  redirect('/redefinir-password')
 }
 
+// Repor a password por dois caminhos, na mesma página.
+//
+// Quem clicou no link do email chega aqui já com sessão (o /auth/confirm
+// trocou o código por uma) e só tem de escrever a password nova. Quem
+// veio pelo código escreve os seis algarismos, e é o `verifyOtp` que lhe
+// dá a sessão antes de a password ser mudada.
+//
+// Os dois existem de propósito. O link parte com facilidade — clientes
+// de email que o pré-visitam e o gastam, apps que o abrem num browser
+// interno sem os cookies do outro. O código atravessa tudo isso porque
+// é a pessoa que o transporta.
 export async function atualizarPassword(
   _prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
   const password = String(formData.get('password') ?? '')
+  const codigo = limparCodigo(String(formData.get('codigo') ?? ''))
 
   const erroPassword = validarPassword(password)
   if (erroPassword) {
@@ -229,7 +341,27 @@ export async function atualizarPassword(
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'O link expirou. Pede um novo email de recuperação.' }
+    const email = (await emailPorConfirmar()) ?? String(formData.get('email') ?? '').trim()
+
+    if (!email) {
+      return { error: 'Escreve o email da tua conta.' }
+    }
+    if (codigo.length !== 6) {
+      return { error: 'O código tem seis algarismos.' }
+    }
+
+    const { error: erroCodigo } = await supabase.auth.verifyOtp({
+      email,
+      token: codigo,
+      type: 'recovery',
+    })
+
+    if (erroCodigo) {
+      return {
+        error: 'Código errado ou já expirado. Pede um novo email de recuperação.',
+        valores: { email },
+      }
+    }
   }
 
   const { error } = await supabase.auth.updateUser({ password })
@@ -238,6 +370,7 @@ export async function atualizarPassword(
     return { error: 'Não foi possível atualizar a password. Tenta novamente.' }
   }
 
+  await esquecerEmailPorConfirmar()
   redirect('/dashboard')
 }
 
