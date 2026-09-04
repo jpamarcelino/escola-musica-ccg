@@ -33,11 +33,24 @@ Estas rotas funcionam com o design herdado da `main`, mas todas precisam de rede
 - [x] `/login` - publica - mobile - modo claro
 - [x] `/registo` - publica - mobile - modo claro
 - [x] `/esqueci-password` - publica - mobile - modo claro
-- [ ] `/confirmar-email` - publica - mobile e desktop - claro e escuro - implementado na branch; falta validar com um codigo real recebido por email
-- [ ] `/redefinir-password` - publica - mobile - modo claro - implementado; o reencaminhamento sem sessao de recuperacao esta validado em producao, falta o formulario da password nova (exige link de email real)
+- [ ] `/redefinir-password` - publica - mobile e desktop - claro e escuro - a pagina ja se ve. Deixou de exigir sessao: aceita codigo de 6 algarismos alem do link (`da0e373`), e o caminho de erro foi validado em producao contra o Supabase real. Continua `[ ]` pelo ponto 4 da definicao - o caminho de sucesso exige um codigo valido, e nao existe nenhum enquanto nao houver SMTP proprio
 - [x] `/instalar` - publica - mobile - modo claro (os dois separadores)
 - [x] `/legal` - publica - mobile - modo claro (validado visualmente a 360 px)
 - [x] `/legal/[documento]` - publica - mobile - modo claro (validado visualmente a 360 px)
+- [ ] `/confirmar-email` - publica - mobile e desktop - claro e escuro - rota nova (`da0e373`), para o codigo de confirmacao do registo. As duas variantes (com cookie e sem) e o contador de reenvio foram vistos em producao; falta o caminho de sucesso, pela mesma razao do `/redefinir-password`
+- [x] `/404` e pagina de erro - publica - mobile - claro e escuro (`06e891d`); nao tinham involucro, por isso nenhum remapeamento de token lhes chegava
+
+## Publicas - desktop e modo escuro
+
+Entrega separada da linha de cima, como manda o guia. Varredura final de
+`394d22c`: 10 rotas x 360, 390 e 430 px em modo escuro, sem overflow
+horizontal em nenhuma das 30 combinacoes.
+
+- [x] Todas as publicas - desktop (`262fc1e`, ficha do professor em `90d3a16`) - a composicao vertical do telemovel numa coluna travada: 1080 px na home, 640 px no assistente, 680 px na ficha do professor e nos documentos legais. As de formulario ficam nos 420 px do `FundoPapel`
+- [x] `/` - publica - modo escuro (`5c8371a`) - inclui o interruptor de tema (`7eaa2ed`), a unica coisa que traz JavaScript a esta pagina
+- [x] `/pedir-aula` e `/professor/[professorId]` - modo escuro (`70f184e`, `da5b629`) - inclui o popup da idade, o de conta e o de "so um horario"
+- [x] `/login`, `/registo`, `/esqueci-password`, `/redefinir-password` e `/instalar` - modo escuro (`55e3a0b`)
+- [x] `/legal`, `/legal/[documento]`, 404 e pagina de erro - modo escuro (`06e891d`)
 
 ## Internas partilhadas
 

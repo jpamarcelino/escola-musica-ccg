@@ -100,8 +100,10 @@ Home tambem segue esta regra; a grelha assimetrica experimental de `88cd205`
 foi retirada. O objetivo e consistencia e velocidade, semelhante a uma app
 social que abre no computador sem se transformar noutro produto.
 
-Enquanto o limite de deploys da Vercel estiver esgotado, trabalhar e validar
-em localhost. Nao publicar novamente sem indicacao do utilizador.
+Nota de setembro de 2026: o limite de deploys da Vercel deixou de estar
+esgotado e o dono do projeto passou a pedir publicacao a cada passo. As
+publicas foram todas validadas em producao. Continua a valer a regra de
+fundo: publicar quando o dono pedir, nao por iniciativa propria.
 
 ## Tema escuro
 
@@ -340,9 +342,87 @@ houver mais uma, vale a pena um componente que saiba nao se repetir.
 
 ### As publicas estao fechadas
 
-As dez estao no sistema, com uma ressalva: `/redefinir-password` esta
-implementado mas nao foi visto, porque exige uma sessao de recuperacao.
-Fica como o unico `[ ]` das publicas.
+As dez estao no sistema, em **mobile claro, desktop e modo escuro** — as
+tres entregas, nao so a primeira. A ressalva antiga (`/redefinir-password`
+implementado mas nunca visto) deixou de existir: a pagina abre-se hoje sem
+depender de um email real.
+
+Desktop (`262fc1e`, `90d3a16`): a composicao vertical do telemovel numa
+coluna travada, nunca um segundo desenho. Home a 1080 px com as tres
+escolas lado a lado, assistente a 640 px porque continua a ser uma
+pergunta de cada vez, ficha do professor e documentos legais a 680 px
+porque sao para ler. O rodape legal vive fora do `<main>` e nao herda
+largura de ninguem: segue o irmao por `:has()`.
+
+Modo escuro (`5c8371a` a `06e891d`): o principio foi remapear tokens antes
+de repetir cores. As pecas partilhadas desenham-se com `--color-linha` e
+`--color-tinta-suave`, e esses so estavam remapeados dentro de
+`.app-shell-content` e `.admin-conteudo` — o publico, os dialogos e as
+paginas de recado ficavam de fora. Um bloco de tokens resolveu a grelha de
+horarios, os campos e as etiquetas de uma vez.
+
+Duas decisoes que se repetem e convem nao desfazer:
+
+- as caixas de ilustracao (escolas na home, disciplinas no assistente)
+  **ficam claras no escuro**. As imagens sao tracos quase pretos sobre
+  transparente, com luminancia media a rondar 30 em 255; sobre um banho
+  escuro desapareciam, e sao o que distingue uma escola da outra;
+- as caixas de marcar sao desenhadas a mao no escuro. O `color-scheme:
+  dark` do `<html>` devia bastar e nao basta: em Chrome no Android sai na
+  mesma um quadrado claro.
+
+O `BotaoPrimario` ganhou um token proprio para o fundo
+(`--color-botao-primario`, definido no `<html>`). No escuro o
+`--color-ink` e quase branco — e esta certo assim, porque no resto da app
+ele e cor de TEXTO e de contornos. No botao primario e uma superficie com
+texto branco por cima, e estava branco sobre branco em todo o lado onde
+esse botao aparece.
+
+Varredura final em `394d22c`: 10 rotas x 360, 390 e 430 px em modo escuro,
+sem overflow horizontal em nenhuma das 30 combinacoes.
+
+O interruptor de tema (`7eaa2ed`) vive so na home publica, numa linha por
+baixo do Entrar/Criar conta. Duas posicoes e nao tres: mostra o tema em
+vigor e mexer nele grava uma escolha explicita, deixando de seguir o
+sistema. Quem quiser voltar a "Sistema" tem essa opcao na conta. Usa a
+mesma chave (`ccg-aparencia`), pelo que a escolha feita antes de haver
+conta sobrevive ao registo.
+
+### Confirmacao de email e reposicao de password por codigo
+
+`da0e373`, `70693ee` e `394d22c`. Escrito antes de existir SMTP proprio,
+para estar pronto quando existir. **Nada disto muda enquanto o "Confirm
+email" estiver desligado no Supabase.**
+
+O codigo de 6 algarismos e nativo do Supabase — nao ha tabela de codigos
+nem expiracao escrita por nos. O que faltava era onde o escrever:
+`/confirmar-email` para o registo, e a `/redefinir-password` a aceitar
+codigo alem do link.
+
+Os dois caminhos (link e codigo) ficam de proposito. O link parte com
+facilidade: filtros de spam e pre-visualizadores VISITAM o link antes da
+pessoa e gastam o token de uso unico. Por isso o `/auth/confirm` aceita
+tambem `token_hash` + `type`, que aguenta ser visitado.
+
+Nesse mesmo ficheiro, o `next` vinha da morada e nao era verificado —
+bastava altera-lo para levar quem clicasse a outro sitio, logo a seguir a
+entrar na conta. Passa a ter de ser um caminho interno, com `//` e `/\`
+de fora.
+
+O email pendente vai num cookie `httpOnly` de 30 minutos e nao na URL: e
+um dado pessoal, e uma morada com o email dentro fica no historico e nos
+registos do servidor.
+
+O campo e uma caixa so e nao seis caixinhas — colar o codigo inteiro
+raramente funciona nas seis, o apagar salta de forma imprevisivel e os
+leitores de ecra anunciam seis campos sem nome. Leva
+`autocomplete="one-time-code"`.
+
+Falta, quando houver SMTP: pôr `{{ .Token }}` nos modelos "Confirm sign
+up" e "Reset password", e mudar a linha do link para o formato
+`token_hash`. Remetente decidido:
+`nao-responder@escolas.centroculturalguarda.pt`, nome "Escolas Artisticas
+do CCG".
 
 ### Secretaria - Programa de Recomendacao
 
@@ -360,9 +440,21 @@ O diretorio de professores foi preservado e todas as paginas internas receberam 
 4. Continuar a administracao a partir da Home e Conta ja concluidas, adaptando a densidade ao trabalho operacional.
 5. Rever e implementar desktop responsivo.
 6. Criar modo escuro a partir dos componentes ja estabilizados.
-7. Publicas concluidas, excepto validar `/redefinir-password` (precisa de uma sessao de recuperacao).
+7. Publicas concluidas em mobile claro, desktop e modo escuro. Falta so o
+   caminho de sucesso do codigo (`/confirmar-email` e `/redefinir-password`),
+   que depende de haver SMTP proprio.
 
-Proxima pagina sugerida: voltar ao percurso com sessao — `/aluno/[alunoId]`, que o handoff ja sugeria antes das publicas, ou a variante professor de `/dashboard`.
+Proxima pagina sugerida: voltar ao percurso com sessao — `/aluno/[alunoId]`,
+que o handoff ja sugeria antes das publicas, ou a variante professor de
+`/dashboard`.
+
+**O que bloqueia o resto.** Quase tudo o que falta no inventario nao esta
+por implementar — esta por *validar*, e a validacao exige sessao iniciada
+(pontos 4 e 8 da definicao de concluida). Um agente nao entra em contas do
+dono do projeto nem escreve credenciais em formularios, por isso essas
+linhas so podem passar a `[x]` com o dono presente. Nao voltar a
+reimplementa-las por as encontrar com `[ ]`: ler a nota da linha primeiro,
+que distingue implementado de validado.
 
 ### Nota sobre `/aluno/[alunoId]/reposicao/[aulaId]`
 
