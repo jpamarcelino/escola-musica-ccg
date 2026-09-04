@@ -3986,9 +3986,15 @@ body {
    identifica o Centro logo abaixo. */
 .auth-pagina > div { position: relative; z-index: 1; }
 
-/* O cartão branco, com o raio e a sombra do sistema. */
-.auth-pagina form { padding: 22px 18px; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
-.auth-pagina form h1 { margin-bottom: 4px; font-family: inherit !important; font-size: 26px !important; font-weight: 750 !important; line-height: 1.12; color: #17191c !important; }
+/* O cartão branco, com o raio e a sombra do sistema.
+
+   `:not(.reenviar-codigo)` porque estas regras apanham QUALQUER `form`
+   dentro da página, e o pedido de outro código também é um — sem a
+   excepção, ele ganhava cartão próprio e o botão dele ficava azul
+   cheio, a competir com o "Confirmar" que está mesmo por cima. É uma
+   acção de recurso, não a acção da página. */
+.auth-pagina form:not(.reenviar-codigo) { padding: 22px 18px; border: 1px solid #e8eaed; border-radius: 22px; background: #fff; box-shadow: 0 5px 18px rgba(31,35,39,.06); }
+.auth-pagina form:not(.reenviar-codigo) h1 { margin-bottom: 4px; font-family: inherit !important; font-size: 26px !important; font-weight: 750 !important; line-height: 1.12; color: #17191c !important; }
 .auth-pagina label { color: #3d434a; font-size: 13.5px; font-weight: 620; }
 /* `:not([type="checkbox"])` pela mesma razão que a grelha de horários
    precisou de `:not(.horario-bloco)`: as declarações do registo são
@@ -4003,7 +4009,7 @@ body {
    inline só se vence assim. A alternativa era dar-lhe uma variante, e
    ele é usado por meia app — mais risco do que este ponto de exclamação
    com alcance de quatro páginas. */
-.auth-pagina form > button { min-height: 50px; border-radius: 15px; background: #1b4f7a !important; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
+.auth-pagina form:not(.reenviar-codigo) > button { min-height: 50px; border-radius: 15px; background: #1b4f7a !important; font-size: 15px; font-weight: 700; box-shadow: 0 5px 16px rgba(27,79,122,.18); }
 /* O Cartao envolve o formulário, e o formulário já é o cartão: ficavam
    dois, um dentro do outro, que é das poucas coisas que o handoff proíbe
    pelo nome. O de fora desaparece. */
@@ -4011,10 +4017,10 @@ body {
    um div de largura máxima, e contar níveis parte assim que alguém
    acrescenta um. */
 .auth-pagina div:has(> form) { padding: 0; border: 0; background: none; border-radius: 0; box-shadow: none; }
-.auth-pagina form > button:disabled { opacity: .55; }
+.auth-pagina form:not(.reenviar-codigo) > button:disabled { opacity: .55; }
 /* As ligações secundárias em pílula, com 44px de altura — eram texto
    sublinhado solto, difícil de acertar com o polegar. */
-.auth-pagina form a { display: inline-flex; min-height: 44px; align-items: center; padding-inline: 12px; border-radius: 999px; color: #1b4f7a; font-size: 13.5px; font-weight: 600; text-decoration: none; }
+.auth-pagina form:not(.reenviar-codigo) a { display: inline-flex; min-height: 44px; align-items: center; padding-inline: 12px; border-radius: 999px; color: #1b4f7a; font-size: 13.5px; font-weight: 600; text-decoration: none; }
 /* O /redefinir-password não envolve o formulário; usa o `.auth-cartao`.
    Sem esta regra ficava um cartão translúcido do sistema antigo sobre o
    cinzento do novo. Não foi possível vê-lo — a página exige uma sessão
@@ -10334,13 +10340,13 @@ html[data-tema='escuro'] .ficha-professor-sem-bio {
    Onde a regra clara leva um, a escura tem de levar outro — nao por
    enfase, mas porque sem ele fica empatada e perde. */
 html[data-tema='escuro'] .auth-pagina { background: var(--dark-bg) !important; color: var(--dark-text); }
-html[data-tema='escuro'] .auth-pagina form,
+html[data-tema='escuro'] .auth-pagina form:not(.reenviar-codigo),
 html[data-tema='escuro'] .auth-pagina .auth-cartao {
   border-color: var(--dark-border);
   background: var(--dark-surface);
   box-shadow: 0 5px 18px rgba(0,0,0,.34);
 }
-html[data-tema='escuro'] .auth-pagina form h1 { color: var(--dark-text) !important; }
+html[data-tema='escuro'] .auth-pagina form:not(.reenviar-codigo) h1 { color: var(--dark-text) !important; }
 html[data-tema='escuro'] .auth-pagina :is(h1,h2,strong) { color: var(--dark-text); }
 html[data-tema='escuro'] .auth-pagina label { color: var(--dark-muted); }
 html[data-tema='escuro'] .auth-pagina input:not([type='checkbox']) {
@@ -10350,7 +10356,7 @@ html[data-tema='escuro'] .auth-pagina input:not([type='checkbox']) {
   caret-color: #78aede;
 }
 html[data-tema='escuro'] .auth-pagina input::placeholder { color: #868d95; }
-html[data-tema='escuro'] .auth-pagina form a { color: #9dc9ea; }
+html[data-tema='escuro'] .auth-pagina form:not(.reenviar-codigo) a { color: #9dc9ea; }
 /* O convite para instalar a app ja assenta no tom elevado; o que
    faltava era o passar do rato, que a classe utilitaria manda para um
    cinzento claro e acendia o cartao todo. */
