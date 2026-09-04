@@ -10001,3 +10001,65 @@ html[data-tema='escuro'] :is(
 @media (min-width: 1024px) {
   html[data-tema='escuro'] .pinterest-publico-lista a + a { border-left-color: rgba(255,255,255,.08); }
 }
+
+/* ── A pagina inicial publica, no tema escuro ───────────────────────
+   A escolha de aparencia ja esta no <html> desde o primeiro pixel
+   (o script de aparencia.ts corre em todas as paginas, tambem nas
+   publicas), mas o desenho desta so existia em claro: quem tem o
+   sistema em escuro chegava a porta de entrada e levava com uma folha
+   branca. Aqui nao se muda composicao nenhuma — so as superficies, que
+   no ficheiro claro estao escritas em hexadecimal e por isso tem de ser
+   repetidas uma a uma.
+
+   As tres caixas de icone ficam claras tambem no escuro, e nao ha erro
+   nisso: as ilustracoes sao tracos quase pretos sobre transparente
+   (luminancia media a rondar 30 em 255), e sobre um banho escuro
+   desapareciam — a imagem e o que distingue uma escola da outra e e a
+   primeira coisa que se ve no cartao. Os matizes sao os mesmos (verde,
+   azul, ambar), so um degrau abaixo dos claros, para nao serem a coisa
+   mais brilhante do ecra. */
+html[data-tema='escuro'] body:has(.pinterest-publico-pagina) { background: var(--dark-bg); }
+html[data-tema='escuro'] .pinterest-publico-pagina { background: var(--dark-bg); }
+html[data-tema='escuro'] .pinterest-publico { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-publico :is(h1,h2,strong) { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-publico-marca { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-publico-marca small { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-publico-entrar a:first-child { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-publico-entrar a:last-child {
+  border-color: var(--dark-border);
+  background: var(--dark-raised);
+  color: #9dc9ea;
+  box-shadow: 0 3px 12px rgba(0,0,0,.32);
+}
+html[data-tema='escuro'] .pinterest-publico-intro p { color: #8f969e; }
+html[data-tema='escuro'] .pinterest-publico-intro > span { color: var(--dark-muted); }
+
+html[data-tema='escuro'] .pinterest-publico-escola {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .pinterest-publico-escola:nth-child(1) .pinterest-publico-escola-imagem { background: #cfe4e0; }
+html[data-tema='escuro'] .pinterest-publico-escola:nth-child(2) .pinterest-publico-escola-imagem { background: #d5d9ee; }
+html[data-tema='escuro'] .pinterest-publico-escola:nth-child(3) .pinterest-publico-escola-imagem { background: #efdec1; }
+html[data-tema='escuro'] .pinterest-publico-escola small { color: #99a0a8; }
+html[data-tema='escuro'] .pinterest-publico-escola p { color: var(--dark-muted); }
+html[data-tema='escuro'] .pinterest-publico-escola > svg { color: #7f868e; }
+
+html[data-tema='escuro'] .pinterest-publico-lista {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  box-shadow: 0 5px 18px rgba(0,0,0,.34);
+}
+html[data-tema='escuro'] .pinterest-publico-lista a { color: var(--dark-text); }
+html[data-tema='escuro'] .pinterest-publico-lista a + a { border-top-color: var(--dark-border); }
+html[data-tema='escuro'] .pinterest-publico-lista a > span:first-child { background: #1c2c3b; color: #9dc9ea; }
+html[data-tema='escuro'] .pinterest-publico-lista small { color: #99a0a8; }
+html[data-tema='escuro'] .pinterest-publico-lista svg:last-child { color: #7f868e; }
+
+html[data-tema='escuro'] .pinterest-publico-assinatura { color: #8f969e; }
+
+html[data-tema='escuro'] .pinterest-publico-pagina .rodape-legal { border-top-color: var(--dark-border); }
+html[data-tema='escuro'] .pinterest-publico-pagina .rodape-legal :is(a,p) { color: #99a0a8; }
+html[data-tema='escuro'] .pinterest-publico-pagina .rodape-legal a:hover { color: #9dc9ea; }
